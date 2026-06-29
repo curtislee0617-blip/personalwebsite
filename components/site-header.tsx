@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const links = [
   ["/", "Home"], ["/about", "About"], ["/cv", "CV"],
@@ -13,6 +13,10 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname !== "/") window.sessionStorage.setItem("home-entry", "menu");
+  }, [pathname]);
 
   if (pathname === "/") return null;
 

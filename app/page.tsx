@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 const orbitLinks = [
   { href: "/about", label: "About", detail: "The person" },
@@ -15,11 +15,67 @@ const orbitLinks = [
 
 export default function HomePage() {
   const router = useRouter();
+  const isLeaving = useRef(false);
+  const [entryMode, setEntryMode] = useState<"pending" | "center" | "menu">("pending");
 
-  function leaveHome(event: MouseEvent<HTMLAnchorElement>, href: string) {
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const cameFromMenu = window.sessionStorage.getItem("home-entry") === "menu";
+      window.sessionStorage.removeItem("home-entry");
+      setEntryMode(cameFromMenu ? "menu" : "center");
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (entryMode !== "menu") return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const source = { x: 44, y: 44 };
+      const bubbles = document.querySelectorAll<HTMLElement>(".orbit-link");
+      const menuGlyph = document.querySelector<HTMLElement>(".home-menu-glyph");
+
+      bubbles.forEach((bubble, index) => {
+        const box = bubble.getBoundingClientRect();
+        const moveX = source.x - (box.left + box.width / 2);
+        const moveY = source.y - (box.top + box.height / 2);
+
+        bubble.animate(
+          [
+            { translate: `${moveX}px ${moveY}px`, scale: "0", rotate: "-180deg", opacity: 0 },
+            { offset: 0.2, opacity: 0.75 },
+            { offset: 0.78, scale: "1.08", opacity: 1 },
+            { translate: "0 0", scale: "1", rotate: "0deg", opacity: 1 },
+          ],
+          {
+            duration: 880,
+            delay: 120 + index * 42,
+            easing: "cubic-bezier(.16, 1, .3, 1)",
+            fill: "forwards",
+          },
+        );
+      });
+
+      menuGlyph?.animate(
+        [
+          { opacity: 1, scale: "1", rotate: "0deg" },
+          { offset: 0.55, opacity: 1, scale: "0.9", rotate: "-5deg" },
+          { opacity: 0, scale: "0.15", rotate: "25deg" },
+        ],
+        { duration: 440, delay: 80, easing: "cubic-bezier(.7, 0, .3, 1)", fill: "forwards" },
+      );
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [entryMode]);
+
+  async function leaveHome(event: MouseEvent<HTMLAnchorElement>, href: string) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
     event.preventDefault();
+    if (isLeaving.current) return;
+    isLeaving.current = true;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       router.push(href);
@@ -31,35 +87,46 @@ export default function HomePage() {
     const profile = document.querySelector<HTMLElement>(".home-profile");
     const menuGlyph = document.querySelector<HTMLElement>(".home-menu-glyph");
 
-    bubbles.forEach((bubble, index) => {
+    const bubbleAnimations = Array.from(bubbles).map((bubble, index) => {
       const box = bubble.getBoundingClientRect();
       const moveX = target.x - (box.left + box.width / 2);
       const moveY = target.y - (box.top + box.height / 2);
 
-      bubble.animate(
+      return bubble.animate(
         [
           { translate: "0 0", scale: "1", opacity: 1 },
-          { translate: `${moveX}px ${moveY}px`, scale: "0.16", opacity: 0.15 },
+          { offset: 0.72, translate: `${moveX * 0.9}px ${moveY * 0.9}px`, scale: "0.28", opacity: 0.7 },
+          { translate: `${moveX}px ${moveY}px`, scale: "0", opacity: 0 },
         ],
-        { duration: 620, delay: index * 22, easing: "cubic-bezier(.7, 0, .2, 1)", fill: "forwards" },
+        { duration: 700, delay: index * 24, easing: "cubic-bezier(.76, 0, .24, 1)", fill: "forwards" },
       );
     });
 
-    profile?.animate(
+    const profileAnimation = profile?.animate(
       [{ opacity: 1, scale: "1" }, { opacity: 0, scale: "0.9" }],
       { duration: 380, easing: "ease-in", fill: "forwards" },
     );
 
-    menuGlyph?.animate(
-      [{ opacity: 0, scale: "0.55" }, { opacity: 1, scale: "1" }],
-      { duration: 220, delay: 470, easing: "ease-out", fill: "forwards" },
+    const menuAnimation = menuGlyph?.animate(
+      [
+        { opacity: 0, scale: "0.2", rotate: "-35deg" },
+        { offset: 0.65, opacity: 1, scale: "1.08", rotate: "2deg" },
+        { opacity: 1, scale: "1", rotate: "0deg" },
+      ],
+      { duration: 360, delay: 570, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" },
     );
 
-    window.setTimeout(() => router.push(href), 720);
+    const animations = [...bubbleAnimations, profileAnimation, menuAnimation].filter(
+      (animation): animation is Animation => Boolean(animation),
+    );
+
+    await Promise.all(animations.map((animation) => animation.finished.catch(() => undefined)));
+    await new Promise((resolve) => window.setTimeout(resolve, 90));
+    router.push(href);
   }
 
   return (
-    <section id="top" className="home-orbit">
+    <section id="top" className={`home-orbit home-entry-${entryMode}`}>
       {/* This quiet layer is ready to be replaced by the looping photo collage. */}
       <div className="home-collage" aria-hidden="true">
         <span className="collage-frame collage-frame-one" />
