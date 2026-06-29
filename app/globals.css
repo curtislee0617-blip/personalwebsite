@@ -12,7 +12,7 @@ body {
   min-height: 100vh;
   background: #f7f5ef;
   color: #20231f;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Roboto, Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -27,7 +27,52 @@ body {
   overflow: hidden;
   padding: 1.5rem 1.25rem;
   isolation: isolate;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: Roboto, Arial, sans-serif;
+}
+
+.home-photo-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.24;
+  pointer-events: none;
+}
+
+.photo-grid-rail {
+  display: flex;
+  height: 100%;
+  width: max-content;
+  animation: photo-grid-scroll 120s linear infinite;
+  will-change: transform;
+}
+
+.photo-grid-track {
+  display: grid;
+  flex: none;
+  height: 100%;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100svh - 73px) * 0.075);
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+}
+
+.photo-grid-tile {
+  display: grid;
+  overflow: hidden;
+  place-items: end start;
+  /* Center-crop every source image evenly into the portrait 3:4 tile. */
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 0.25rem;
+  color: rgb(32 35 31 / 0.35);
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+@keyframes photo-grid-scroll {
+  to { transform: translateX(-50%); }
 }
 
 .home-orbit::after {
@@ -98,6 +143,7 @@ body {
 
 .home-orbit-stage {
   position: relative;
+  z-index: 2;
   width: min(100%, 44rem);
   height: min(40rem, calc(100svh - 3rem));
   min-height: 34rem;
@@ -352,11 +398,17 @@ body {
   .orbit-link:nth-child(5) { --burst-x: 3.5rem; --burst-y: -23rem; }
   .orbit-link:nth-child(6) { --burst-x: -3.5rem; --burst-y: -23rem; }
   .orbit-link:nth-child(n):hover { transform: translateY(-0.2rem); }
+  .home-photo-grid { opacity: 0.18; }
+  .photo-grid-track {
+    grid-auto-columns: 7.5svh;
+    grid-template-rows: repeat(10, minmax(0, 1fr));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .orbit-link, .orbit-arrow, .site-menu-button span, .site-menu-panel { transition: none; }
   .home-orbit::after,
+  .photo-grid-rail,
   .home-name,
   .home-intro,
   .home-portrait,

@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "photos:optimize": "node scripts/optimize-photos.mjs"
   },
   "dependencies": {
+    "@fontsource/roboto": "^5.2.10",
     "next": "16.2.9",
     "react": "19.2.7",
     "react-dom": "19.2.7"
