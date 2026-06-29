@@ -139,21 +139,12 @@ export default function HomePage() {
 
   return (
     <section id="top" className={`home-orbit home-entry-${entryMode}`}>
-      {/* This quiet layer is ready to be replaced by the looping photo collage. */}
-      <div className="home-collage" aria-hidden="true">
-        <span className="collage-frame collage-frame-one" />
-        <span className="collage-frame collage-frame-two" />
-        <span className="collage-frame collage-frame-three" />
-        <span className="collage-frame collage-frame-four" />
-      </div>
-
       <span className="home-menu-glyph" aria-hidden="true">
         <i /><i /><i />
       </span>
 
       <div className="home-orbit-stage">
         <div className="home-profile">
-          <p className="eyebrow">Welcome to my corner</p>
           <h1 className="home-name">Curtis Lee</h1>
 
           <div className="home-portrait" aria-label="Profile photo placeholder">
