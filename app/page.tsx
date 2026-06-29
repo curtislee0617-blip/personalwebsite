@@ -36,11 +36,17 @@ export default function HomePage() {
       const bubbles = document.querySelectorAll<HTMLElement>(".orbit-link");
       const menuGlyph = document.querySelector<HTMLElement>(".home-menu-glyph");
 
-      bubbles.forEach((bubble, index) => {
+      // Read every position before starting any animation to avoid repeated layout work.
+      const bubbleGeometry = Array.from(bubbles).map((bubble) => {
         const box = bubble.getBoundingClientRect();
-        const moveX = source.x - (box.left + box.width / 2);
-        const moveY = source.y - (box.top + box.height / 2);
+        return {
+          bubble,
+          moveX: source.x - (box.left + box.width / 2),
+          moveY: source.y - (box.top + box.height / 2),
+        };
+      });
 
+      bubbleGeometry.forEach(({ bubble, moveX, moveY }, index) => {
         bubble.animate(
           [
             { translate: `${moveX}px ${moveY}px`, scale: "0", rotate: "-180deg", opacity: 0 },
@@ -87,11 +93,17 @@ export default function HomePage() {
     const profile = document.querySelector<HTMLElement>(".home-profile");
     const menuGlyph = document.querySelector<HTMLElement>(".home-menu-glyph");
 
-    const bubbleAnimations = Array.from(bubbles).map((bubble, index) => {
+    // Batch layout reads before animation writes so the browser calculates layout once.
+    const bubbleGeometry = Array.from(bubbles).map((bubble) => {
       const box = bubble.getBoundingClientRect();
-      const moveX = target.x - (box.left + box.width / 2);
-      const moveY = target.y - (box.top + box.height / 2);
+      return {
+        bubble,
+        moveX: target.x - (box.left + box.width / 2),
+        moveY: target.y - (box.top + box.height / 2),
+      };
+    });
 
+    const bubbleAnimations = bubbleGeometry.map(({ bubble, moveX, moveY }, index) => {
       return bubble.animate(
         [
           { translate: "0 0", scale: "1", opacity: 1 },
