@@ -35,7 +35,7 @@ body {
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  opacity: 0.24;
+  opacity: 0.55;
   pointer-events: none;
 }
 
@@ -69,6 +69,15 @@ body {
   font-size: 0.48rem;
   font-weight: 700;
   letter-spacing: 0.12em;
+}
+
+.photo-grid-tile.is-logo {
+  background-color: #f7f5ef;
+  background-size: contain;
+}
+
+.photo-grid-tile.is-caltech-logo {
+  background-size: 137% auto;
 }
 
 @keyframes photo-grid-scroll {
@@ -169,6 +178,11 @@ body {
 
 .home-name {
   margin-top: 0;
+  padding: 0.28rem 0.72rem 0.36rem;
+  border-radius: 9999px;
+  background: rgb(247 245 239 / 0.16);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   font-size: clamp(2.25rem, 4vw, 3.65rem);
   font-weight: 700;
   line-height: 0.95;
@@ -204,12 +218,25 @@ body {
   color: rgb(32 35 31 / 0.55);
 }
 
+.home-portrait-inner.has-photo {
+  width: 100%;
+  border: 0;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .home-intro {
   max-width: 15rem;
   margin-top: 1rem;
+  padding: 0.42rem 0.72rem;
+  border-radius: 9999px;
+  background: rgb(247 245 239 / 0.16);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   font-size: 0.7rem;
   line-height: 1.6;
-  color: rgb(32 35 31 / 0.48);
+  color: rgb(32 35 31 / 0.84);
 }
 
 .home-orbit-nav { position: absolute; inset: 0; }
@@ -225,7 +252,9 @@ body {
   flex-direction: column;
   border: 1px solid rgb(32 35 31 / 0.14);
   border-radius: 9999px;
-  background: rgb(247 245 239 / 0.96);
+  background: rgb(247 245 239 / 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   box-shadow: 0 10px 35px rgb(32 35 31 / 0.04);
   text-align: center;
   transition: transform 300ms ease, background-color 300ms ease, color 300ms ease, box-shadow 300ms ease;
@@ -398,10 +427,11 @@ body {
   .orbit-link:nth-child(5) { --burst-x: 3.5rem; --burst-y: -23rem; }
   .orbit-link:nth-child(6) { --burst-x: -3.5rem; --burst-y: -23rem; }
   .orbit-link:nth-child(n):hover { transform: translateY(-0.2rem); }
-  .home-photo-grid { opacity: 0.18; }
+  .home-photo-grid { opacity: 0.55; }
+  .photo-grid-rail { animation-duration: 360s; }
   .photo-grid-track {
-    grid-auto-columns: 7.5svh;
-    grid-template-rows: repeat(10, minmax(0, 1fr));
+    grid-auto-columns: 15svh;
+    grid-template-rows: repeat(5, minmax(0, 1fr));
   }
 }
 

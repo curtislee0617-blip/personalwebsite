@@ -25,7 +25,17 @@ async function findBackgroundPhotos() {
   }
 }
 
+async function findProfilePhoto() {
+  try {
+    const files = await readdir(path.join(process.cwd(), "public"));
+    const profile = files.find((file) => /^profile\.(avif|jpe?g|png|webp)$/i.test(file));
+    return profile ? `/${encodeURIComponent(profile)}` : null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function HomePage() {
-  const photos = await findBackgroundPhotos();
-  return <HomeOrbit photos={photos} />;
+  const [photos, profilePhoto] = await Promise.all([findBackgroundPhotos(), findProfilePhoto()]);
+  return <HomeOrbit photos={photos} profilePhoto={profilePhoto} />;
 }

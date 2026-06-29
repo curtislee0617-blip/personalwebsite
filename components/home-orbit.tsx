@@ -18,18 +18,78 @@ const placeholderColors = [
   ["#e7dfbd", "#b7a86f"], ["#ded7e9", "#9f91b2"], ["#d7e5e8", "#7fa1a7"],
 ] as const;
 
+const logoPhotos = ["/logos/caltech.webp", "/logos/uc-davis.webp"];
+
+type LogoPlacement = { position: number; logoIndex: number };
+
+function mixNumber(value: number) {
+  let mixed = value + 0x6d2b79f5;
+  mixed = Math.imul(mixed ^ (mixed >>> 15), mixed | 1);
+  mixed ^= mixed + Math.imul(mixed ^ (mixed >>> 7), mixed | 61);
+  return (mixed ^ (mixed >>> 14)) >>> 0;
+}
+
+function blockDistance(first: number, second: number, rows: number) {
+  const firstRow = first % rows;
+  const secondRow = second % rows;
+  const firstColumn = Math.floor(first / rows);
+  const secondColumn = Math.floor(second / rows);
+  return Math.max(Math.abs(firstRow - secondRow), Math.abs(firstColumn - secondColumn));
+}
+
+function createLogoPlacements(itemCount: number) {
+  const candidates = Array.from({ length: itemCount }, (_, index) => index).sort(
+    (first, second) => mixNumber(first) - mixNumber(second),
+  );
+  const placements: LogoPlacement[] = [];
+  const originalTargetCount = Math.ceil(itemCount / 13);
+  const previouslyReducedCount = Math.ceil(originalTargetCount * (2 / 3));
+  const targetCount = Math.ceil(previouslyReducedCount * (2 / 3));
+
+  for (const position of candidates) {
+    const preferredLogo = mixNumber(position + 97) % logoPhotos.length;
+    const logoOptions = [preferredLogo, (preferredLogo + 1) % logoPhotos.length];
+
+    for (const logoIndex of logoOptions) {
+      const allowed = placements.every((existing) =>
+        [10, 5].every((rows) => {
+          const minimumDistance = existing.logoIndex === logoIndex ? 3 : 2;
+          return blockDistance(position, existing.position, rows) > minimumDistance;
+        }),
+      );
+
+      if (allowed) {
+        placements.push({ position, logoIndex });
+        break;
+      }
+    }
+
+    if (placements.length >= targetCount) break;
+  }
+
+  return placements;
+}
+
 function PhotoGridBackground({ photos }: { photos: string[] }) {
   const itemCount = Math.max(300, photos.length);
-  const items = Array.from({ length: itemCount }, (_, index) =>
-    photos.length ? photos[index % photos.length] : null,
-  );
+  const items = Array.from({ length: itemCount }, (_, index) => ({
+    photo: photos.length ? photos[index % photos.length] : null,
+    isLogo: false,
+  }));
+
+  for (const { position, logoIndex } of createLogoPlacements(itemCount)) {
+    items[position] = {
+      photo: logoPhotos[logoIndex],
+      isLogo: true,
+    };
+  }
 
   return (
     <div className="home-photo-grid" aria-hidden="true">
       <div className="photo-grid-rail">
         {[0, 1].map((copy) => (
           <div className="photo-grid-track" key={copy}>
-            {items.map((photo, index) => {
+            {items.map(({ photo, isLogo }, index) => {
               const shuffledIndex = (index * 47) % itemCount;
               const colors = placeholderColors[shuffledIndex % placeholderColors.length];
               const style = photo
@@ -37,7 +97,11 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
                 : { backgroundImage: `linear-gradient(145deg, ${colors[0]}, ${colors[1]})` };
 
               return (
-                <span className="photo-grid-tile" key={`${copy}-${index}`} style={style}>
+                <span
+                  className={`photo-grid-tile ${isLogo ? "is-logo" : ""} ${photo === logoPhotos[0] ? "is-caltech-logo" : ""}`}
+                  key={`${copy}-${index}`}
+                  style={style}
+                >
                   {!photo && String(shuffledIndex + 1).padStart(3, "0")}
                 </span>
               );
@@ -49,7 +113,7 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
   );
 }
 
-export function HomeOrbit({ photos }: { photos: string[] }) {
+export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profilePhoto: string | null }) {
   const router = useRouter();
   const isLeaving = useRef(false);
   const [entryMode, setEntryMode] = useState<"pending" | "center" | "menu">("pending");
@@ -185,10 +249,17 @@ export function HomeOrbit({ photos }: { photos: string[] }) {
         <div className="home-profile">
           <h1 className="home-name">Curtis Lee</h1>
 
-          <div className="home-portrait" aria-label="Profile photo placeholder">
-            <div className="home-portrait-inner">
-              <span className="text-3xl font-light" aria-hidden="true">+</span>
-              <span className="mt-2 text-xs font-semibold uppercase tracking-[0.18em]">Your photo</span>
+          <div className="home-portrait" aria-label={profilePhoto ? "Curtis Lee profile photo" : "Profile photo placeholder"}>
+            <div
+              className={`home-portrait-inner ${profilePhoto ? "has-photo" : ""}`}
+              style={profilePhoto ? { backgroundImage: `url("${profilePhoto}")` } : undefined}
+            >
+              {!profilePhoto && (
+                <>
+                  <span className="text-3xl font-light" aria-hidden="true">+</span>
+                  <span className="mt-2 text-xs font-semibold uppercase tracking-[0.18em]">Your photo</span>
+                </>
+              )}
             </div>
           </div>
 
