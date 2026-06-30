@@ -67,7 +67,14 @@ function createLogoPlacements(itemCount: number) {
     if (placements.length >= targetCount) break;
   }
 
-  return placements;
+  const caltechPlacements = placements
+    .filter((placement) => placement.logoIndex === 0)
+    .sort((first, second) => mixNumber(first.position + 211) - mixNumber(second.position + 211));
+  const retainedCaltechPositions = new Set(
+    caltechPlacements.slice(0, Math.ceil(caltechPlacements.length * (2 / 3))).map((placement) => placement.position),
+  );
+
+  return placements.filter((placement) => placement.logoIndex !== 0 || retainedCaltechPositions.has(placement.position));
 }
 
 function PhotoGridBackground({ photos }: { photos: string[] }) {

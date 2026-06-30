@@ -728,6 +728,8 @@ body {
 }
 
 .restaurant-result-meta .is-open { color: #52704d; font-weight: 700; }
+.restaurant-result-meta .is-temporarily-closed,
+.restaurant-map-card .is-temporarily-closed { color: #b42318; font-weight: 700; }
 .restaurant-result-meta a { text-decoration: underline; text-underline-offset: 0.15rem; }
 
 .restaurant-recommendations {

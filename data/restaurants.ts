@@ -13,6 +13,7 @@ export type Restaurant = {
   description: string;
   priceLevel: 1 | 2 | 3 | 4;
   googleMapsUrl: string | null;
+  businessStatus: "OPERATIONAL" | "CLOSED_TEMPORARILY";
   openingHours: {
     openNow: boolean;
     weekdayDescriptions: string[];
@@ -40,6 +41,7 @@ export const restaurants: Restaurant[] = [
     description: "Go for the noodles; stay for the milk tea.",
     priceLevel: 1,
     googleMapsUrl: null,
+    businessStatus: "OPERATIONAL",
     openingHours: null,
     position: { lat: 22.3307, lng: 114.1622 },
   },
@@ -56,6 +58,7 @@ export const restaurants: Restaurant[] = [
     description: "A tiny room with a very good soundtrack.",
     priceLevel: 3,
     googleMapsUrl: null,
+    businessStatus: "OPERATIONAL",
     openingHours: null,
     position: { lat: 22.2866, lng: 114.1491 },
   },
@@ -72,6 +75,7 @@ export const restaurants: Restaurant[] = [
     description: "Order whatever pasta they recommend that day.",
     priceLevel: 2,
     googleMapsUrl: null,
+    businessStatus: "OPERATIONAL",
     openingHours: null,
     position: { lat: 22.2867, lng: 114.1367 },
   },
@@ -88,6 +92,7 @@ export const restaurants: Restaurant[] = [
     description: "Bright herbs, proper heat, always lively.",
     priceLevel: 2,
     googleMapsUrl: null,
+    businessStatus: "OPERATIONAL",
     openingHours: null,
     position: { lat: 22.3282, lng: 114.1916 },
   },
@@ -104,6 +109,7 @@ export const restaurants: Restaurant[] = [
     description: "A quiet coffee and something warm from the oven.",
     priceLevel: 2,
     googleMapsUrl: null,
+    businessStatus: "OPERATIONAL",
     openingHours: null,
     position: { lat: 22.2819, lng: 114.1589 },
   },
@@ -120,6 +126,7 @@ export const restaurants: Restaurant[] = [
     description: "A counter seat, a long lunch, and no need to rush.",
     priceLevel: 4,
     googleMapsUrl: null,
+    businessStatus: "OPERATIONAL",
     openingHours: null,
     position: { lat: 22.2774, lng: 114.1722 },
   },

@@ -1,7 +1,9 @@
 import fs from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 
-const inputPath = process.argv[2] ?? "imports/google-maps/staging/enriched-restaurants.json";
+const args = process.argv.slice(2);
+const inputPath = args.find((arg) => !arg.startsWith("--")) ?? "imports/google-maps/staging/enriched-restaurants.json";
+const syncPublished = args.includes("--sync");
 const env = Object.fromEntries(
   fs.readFileSync(".env.local", "utf8").split(/\r?\n/).filter(Boolean).map((line) => {
     const separator = line.indexOf("=");
@@ -15,9 +17,9 @@ if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
 }
 
 const categoryPriority = [
-  "Bars", "Asian Fancy", "Fine Dining", "Western Nicer", "Bakeries", "Tacos", "Burgers",
-  "Chicken", "Ramen", "Sushi", "Pizza", "Cafés", "Desserts", "South Asian", "East Asian",
-  "Southeast Asian", "Middle Eastern", "African", "Casual", "Unclassified",
+  "Fine Dining", "Asian Fancy", "Bars", "Western Nicer", "Bakeries", "Tacos", "Burgers",
+  "Chicken", "Ramen", "Sushi", "Pizza", "Pasta", "Steakhouse", "Bistro", "Cafés", "Desserts", "South Asian", "East Asian",
+  "Southeast Asian", "Middle Eastern", "African", "Barbecue", "Deli", "Casual", "Unclassified",
 ];
 const source = JSON.parse(fs.readFileSync(inputPath, "utf8"));
 const confirmed = source.restaurants.filter((item) => item.status === "ready" && item.placeId && item.position);
@@ -89,6 +91,44 @@ for (let start = 0; start < rows.length; start += 100) {
   console.log(`Uploaded ${Math.min(start + batch.length, rows.length)}/${rows.length}`);
 }
 
+let unpublishedStaleRows = 0;
+if (syncPublished) {
+  const currentPlaceIds = new Set(rows.map((row) => row.place_id));
+  const publishedPlaceIds = [];
+  for (let start = 0; ; start += 1000) {
+    const { data, error } = await supabase
+      .from("restaurants")
+      .select("place_id")
+      .eq("is_published", true)
+      .range(start, start + 999);
+    if (error) throw new Error(`Unable to read existing published places: ${error.message}`);
+    publishedPlaceIds.push(...data.map((row) => row.place_id).filter(Boolean));
+    if (data.length < 1000) break;
+  }
+
+  const stalePlaceIds = publishedPlaceIds.filter((placeId) => !currentPlaceIds.has(placeId));
+  for (let start = 0; start < stalePlaceIds.length; start += 100) {
+    const batch = stalePlaceIds.slice(start, start + 100);
+    const { error } = await supabase
+      .from("restaurants")
+      .update({ is_published: false, updated_at: new Date().toISOString() })
+      .in("place_id", batch);
+    if (error) throw new Error(`Unable to unpublish stale places near row ${start + 1}: ${error.message}`);
+    unpublishedStaleRows += batch.length;
+  }
+}
+
 const { count, error: countError } = await supabase.from("restaurants").select("id", { count: "exact", head: true });
 if (countError) throw countError;
-console.log(JSON.stringify({ confirmedInputRows: confirmed.length, uniquePlacesUploaded: rows.length, remoteRestaurantCount: count }, null, 2));
+const { count: publishedCount, error: publishedCountError } = await supabase
+  .from("restaurants")
+  .select("id", { count: "exact", head: true })
+  .eq("is_published", true);
+if (publishedCountError) throw publishedCountError;
+console.log(JSON.stringify({
+  confirmedInputRows: confirmed.length,
+  uniquePlacesUploaded: rows.length,
+  unpublishedStaleRows,
+  remoteRestaurantCount: count,
+  publishedRestaurantCount: publishedCount,
+}, null, 2));

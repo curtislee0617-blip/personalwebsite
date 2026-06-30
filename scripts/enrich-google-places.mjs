@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { categoryEmojis, suggestRestaurantCategory, typeCategories } from "./restaurant-classification.mjs";
 
 const args = process.argv.slice(2);
 const inputPath = args.find((arg) => !arg.startsWith("--")) ?? "imports/google-maps/staging/restaurants.json";
@@ -30,35 +31,6 @@ const candidatePool = args.includes("--only-classified")
   ? source.restaurants.filter((item) => item.category !== "Unclassified")
   : source.restaurants;
 const candidates = requestedLimit > 0 ? candidatePool.slice(0, requestedLimit) : candidatePool;
-
-const categoryEmojis = {
-  "Bars": "🥂", "Asian Fancy": "🍵", "Fine Dining": "🍷", "Western Nicer": "🍽️",
-  "Bakeries": "🍞", "Tacos": "🌮", "Burgers": "🍔", "Chicken": "🍗", "Ramen": "🍜",
-  "Sushi": "🍣", "Pizza": "🍕", "Cafés": "☕", "Desserts": "🍰", "South Asian": "🍛",
-  "East Asian": "🥢", "Southeast Asian": "🌶️", "Middle Eastern": "🧆", "African": "🍲",
-  "Casual": "🍴", "Unclassified": "❓",
-};
-
-const typeCategories = new Map([
-  ["bar", "Bars"], ["wine_bar", "Bars"], ["cocktail_bar", "Bars"],
-  ["bakery", "Bakeries"], ["taco_restaurant", "Tacos"], ["hamburger_restaurant", "Burgers"],
-  ["chicken_restaurant", "Chicken"], ["ramen_restaurant", "Ramen"], ["sushi_restaurant", "Sushi"],
-  ["pizza_restaurant", "Pizza"], ["cafe", "Cafés"], ["coffee_shop", "Cafés"],
-  ["dessert_shop", "Desserts"], ["ice_cream_shop", "Desserts"], ["confectionery", "Desserts"],
-  ["indian_restaurant", "South Asian"], ["pakistani_restaurant", "South Asian"],
-  ["sri_lankan_restaurant", "South Asian"], ["bangladeshi_restaurant", "South Asian"],
-  ["nepalese_restaurant", "South Asian"],
-  ["chinese_restaurant", "East Asian"], ["japanese_restaurant", "East Asian"],
-  ["korean_restaurant", "East Asian"], ["taiwanese_restaurant", "East Asian"],
-  ["thai_restaurant", "Southeast Asian"], ["vietnamese_restaurant", "Southeast Asian"],
-  ["indonesian_restaurant", "Southeast Asian"], ["malaysian_restaurant", "Southeast Asian"],
-  ["filipino_restaurant", "Southeast Asian"],
-  ["middle_eastern_restaurant", "Middle Eastern"], ["lebanese_restaurant", "Middle Eastern"],
-  ["turkish_restaurant", "Middle Eastern"], ["persian_restaurant", "Middle Eastern"],
-  ["falafel_restaurant", "Middle Eastern"],
-  ["african_restaurant", "African"], ["ethiopian_restaurant", "African"],
-  ["moroccan_restaurant", "African"],
-]);
 
 const foodTypes = new Set([
   "restaurant", "bar", "wine_bar", "cocktail_bar", "bakery", "cafe", "coffee_shop",
@@ -104,18 +76,17 @@ function addressPart(components, types) {
 }
 
 function classify(place, sourceCategory) {
-  if (["Bars", "Asian Fancy", "Fine Dining", "Western Nicer"].includes(sourceCategory)) return sourceCategory;
-  const types = [place.primaryType, ...(place.types ?? [])].filter(Boolean);
-  for (const type of types) {
-    const category = typeCategories.get(type);
-    if (category) return category;
-  }
-  return sourceCategory;
+  return suggestRestaurantCategory({
+    name: place.displayName?.text,
+    primaryType: place.primaryType,
+    placeTypes: place.types,
+    sourceCategory,
+  }).category;
 }
 
 function estimatedPrice(category) {
   if (["Asian Fancy", "Fine Dining"].includes(category)) return 4;
-  if (["Western Nicer", "Bars"].includes(category)) return 3;
+  if (["Western Nicer", "Bars", "Steakhouse"].includes(category)) return 3;
   if (["Bakeries", "Cafés", "Desserts"].includes(category)) return 1;
   return 2;
 }

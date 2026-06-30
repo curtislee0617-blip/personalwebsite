@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import AdmZip from "adm-zip";
 import { parse } from "csv-parse/sync";
+import { categoryEmojis, suggestRestaurantCategory } from "./restaurant-classification.mjs";
 
 const inputPath = process.argv[2];
 const outputPath = process.argv[3] ?? "imports/google-maps/staging/restaurants.json";
@@ -12,29 +13,6 @@ if (!inputPath) {
 }
 
 const excludedLists = new Set(["Music", "Science", "Screenshots"]);
-const emojiByCategory = {
-  "Bars": "🥂",
-  "Asian Fancy": "🍵",
-  "Fine Dining": "🍷",
-  "Western Nicer": "🍽️",
-  "Bakeries": "🍞",
-  "Tacos": "🌮",
-  "Burgers": "🍔",
-  "Chicken": "🍗",
-  "Ramen": "🍜",
-  "Sushi": "🍣",
-  "Pizza": "🍕",
-  "Cafés": "☕",
-  "Desserts": "🍰",
-  "South Asian": "🍛",
-  "East Asian": "🥢",
-  "Southeast Asian": "🌶️",
-  "Middle Eastern": "🧆",
-  "African": "🍲",
-  "Casual": "🍴",
-  "Unclassified": "❓",
-};
-
 function loadCsvFiles(source) {
   if (source.toLowerCase().endsWith(".zip")) {
     const zip = new AdmZip(source);
@@ -59,23 +37,32 @@ function dedupeKey(row) {
 
 function classify(place) {
   const lists = new Set(place.sourceLists);
-  const name = place.name.toLocaleLowerCase("en");
-  const matches = (pattern) => pattern.test(name);
+
+  const broadCategory = lists.has("Bars") || lists.has("Drinks")
+    ? "Bars"
+    : lists.has("Asian fancy") || (lists.has("Asian casual") && lists.has("Fine dining"))
+      ? "Asian Fancy"
+      : lists.has("Fine dining")
+        ? "Fine Dining"
+        : lists.has("Western nicer")
+          ? "Western Nicer"
+          : lists.has("Coffee")
+            ? "Cafés"
+            : lists.has("Dessert")
+              ? "Desserts"
+              : lists.has("Asian casual")
+                ? "East Asian"
+                : lists.has("Casual")
+                  ? "Casual"
+                  : "Unclassified";
+
+  const suggestion = suggestRestaurantCategory({ name: place.name, sourceCategory: broadCategory });
+  if (suggestion.confidence > 0) return [suggestion.category, suggestion.confidence, suggestion.reason];
 
   if (lists.has("Bars") || lists.has("Drinks")) return ["Bars", 0.99, "source list"];
   if (lists.has("Asian fancy") || (lists.has("Asian casual") && lists.has("Fine dining"))) return ["Asian Fancy", 0.98, "source list"];
   if (lists.has("Fine dining")) return ["Fine Dining", 0.96, "source list"];
   if (lists.has("Western nicer")) return ["Western Nicer", 0.96, "source list"];
-
-  if (matches(/\b(bakery|bakehouse|boulangerie|bread)\b/i)) return ["Bakeries", 0.86, "name keyword"];
-  if (matches(/\b(taco|taqueria)\b/i)) return ["Tacos", 0.9, "name keyword"];
-  if (matches(/\b(burger|hamburger)\b/i)) return ["Burgers", 0.9, "name keyword"];
-  if (matches(/\b(chicken|poulet)\b/i)) return ["Chicken", 0.82, "name keyword"];
-  if (matches(/\bramen\b/i)) return ["Ramen", 0.92, "name keyword"];
-  if (matches(/\b(sushi|sushiya)\b/i)) return ["Sushi", 0.9, "name keyword"];
-  if (matches(/\b(pizza|pizzeria)\b/i)) return ["Pizza", 0.9, "name keyword"];
-  if (matches(/\b(cafe|café|coffee|espresso)\b/i)) return ["Cafés", 0.82, "name keyword"];
-  if (matches(/\b(dessert|gelato|ice cream|patisserie|cake|chocolate)\b/i)) return ["Desserts", 0.82, "name keyword"];
 
   if (lists.has("Coffee")) return ["Cafés", 0.95, "source list"];
   if (lists.has("Dessert")) return ["Desserts", 0.95, "source list"];
@@ -146,7 +133,7 @@ const imported = Array.from(places.values()).map((place, index) => {
     importId: `takeout-${String(index + 1).padStart(4, "0")}`,
     ...normalizedPlace,
     category,
-    emoji: emojiByCategory[category],
+    emoji: categoryEmojis[category],
     confidence,
     classificationReason,
     position: null,

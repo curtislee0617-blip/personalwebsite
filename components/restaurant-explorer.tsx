@@ -35,10 +35,21 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const [selectedId, setSelectedId] = useState(restaurants[0]?.id ?? "");
   const [mapStatus, setMapStatus] = useState<MapStatus>(apiKey ? "idle" : "error");
 
-  const categories = useMemo(
-    () => ["All", ...Array.from(new Set(restaurants.map((restaurant) => restaurant.category))).sort()],
-    [restaurants],
-  );
+  const categories = useMemo(() => {
+    const categoryCounts = restaurants.reduce((counts, restaurant) => {
+      counts.set(restaurant.category, (counts.get(restaurant.category) ?? 0) + 1);
+      return counts;
+    }, new Map<string, number>());
+
+    return [
+      "All",
+      ...Array.from(categoryCounts)
+        .sort(([firstCategory, firstCount], [secondCategory, secondCount]) =>
+          secondCount - firstCount || firstCategory.localeCompare(secondCategory),
+        )
+        .map(([category]) => category),
+    ];
+  }, [restaurants]);
   const locations = useMemo(
     () => ["All", ...Array.from(new Set(restaurants.map((restaurant) => restaurant.area))).sort()],
     [restaurants],
@@ -254,6 +265,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
               <div>
                 <p>{selectedRestaurant.category} · {"$".repeat(selectedRestaurant.priceLevel)} · {selectedRestaurant.area}</p>
                 <h2>{selectedRestaurant.name}</h2>
+                {selectedRestaurant.businessStatus === "CLOSED_TEMPORARILY" && <span className="is-temporarily-closed">Temporarily closed</span>}
                 {selectedRestaurant.description && <span>{selectedRestaurant.description}</span>}
               </div>
             </article>
@@ -280,8 +292,10 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
                   </span>
                 </button>
                 <div className="restaurant-result-meta">
-                  <span className={restaurant.openingHours?.openNow ? "is-open" : ""}>
-                    {restaurant.openingHours ? (restaurant.openingHours.openNow ? "Open now" : "Closed") : "Hours awaiting sync"}
+                  <span className={restaurant.businessStatus === "CLOSED_TEMPORARILY" ? "is-temporarily-closed" : restaurant.openingHours?.openNow ? "is-open" : ""}>
+                    {restaurant.businessStatus === "CLOSED_TEMPORARILY"
+                      ? "Temporarily closed"
+                      : restaurant.openingHours ? (restaurant.openingHours.openNow ? "Open now" : "Closed") : "Hours awaiting sync"}
                   </span>
                   <a href={googleMapsUrl(restaurant)} rel="noreferrer" target="_blank">Google Maps ↗</a>
                 </div>

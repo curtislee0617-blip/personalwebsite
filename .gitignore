@@ -12,3 +12,4 @@ yarn-error.log*
 imports/google-maps/*
 !imports/google-maps/README.md
 supabase/.temp/
+.vercel

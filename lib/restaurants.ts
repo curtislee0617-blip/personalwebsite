@@ -19,7 +19,7 @@ export async function getPublishedRestaurants(): Promise<Restaurant[]> {
   for (let start = 0; ; start += 1000) {
     const { data, error } = await supabase
       .from("restaurants")
-      .select("id,name,category,tags,emoji,area,city,country,address,description,price_level,latitude,longitude,google_maps_url,opening_hours,hours_updated_at")
+      .select("id,name,category,tags,emoji,area,city,country,address,description,price_level,latitude,longitude,google_maps_url,opening_hours,hours_updated_at,business_status")
       .eq("is_published", true)
       .order("country", { nullsFirst: false })
       .order("city", { nullsFirst: false })
@@ -52,6 +52,7 @@ export async function getPublishedRestaurants(): Promise<Restaurant[]> {
       description: row.description ?? "",
       priceLevel: priceLevel(row.price_level),
       googleMapsUrl: row.google_maps_url,
+      businessStatus: row.business_status === "CLOSED_TEMPORARILY" ? "CLOSED_TEMPORARILY" : "OPERATIONAL",
       openingHours: storedHours
         ? {
             openNow: Boolean(storedHours.openNow),

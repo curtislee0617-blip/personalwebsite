@@ -29,6 +29,7 @@ export type Database = {
           opening_hours: Json | null;
           hours_updated_at: string | null;
           is_published: boolean;
+          business_status: string;
           created_at: string;
           updated_at: string;
         };
@@ -57,6 +58,7 @@ export type Database = {
           opening_hours?: Json | null;
           hours_updated_at?: string | null;
           is_published?: boolean;
+          business_status?: string;
           created_at?: string;
           updated_at?: string;
         };
