@@ -15,6 +15,7 @@ type MapBounds = { north: number; south: number; east: number; west: number };
 
 let mapsConfigured = false;
 const resultListLimit = 250;
+const mobileMapMediaQuery = "(max-width: 899px)";
 
 function googleMapsUrl(restaurant: Restaurant) {
   if (restaurant.googleMapsUrl) return restaurant.googleMapsUrl;
@@ -37,6 +38,7 @@ function isWithinBounds(position: Restaurant["position"], bounds: MapBounds) {
 export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExplorerProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const mapIdleTimeoutRef = useRef<number | null>(null);
   const markerRefs = useRef(new Map<string, google.maps.marker.AdvancedMarkerElement>());
   const markerElementRefs = useRef(new Map<string, HTMLElement>());
   const [activeCategory, setActiveCategory] = useState("All");
@@ -46,6 +48,8 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const [selectedId, setSelectedId] = useState(restaurants[0]?.id ?? "");
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [mapStatus, setMapStatus] = useState<MapStatus>(apiKey ? "idle" : "error");
+  const [isMobileMap, setIsMobileMap] = useState(false);
+  const [isResultsOpen, setIsResultsOpen] = useState(false);
 
   const categories = useMemo(() => {
     const categoryCounts = restaurants.reduce((counts, restaurant) => {
@@ -90,6 +94,21 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const hasFilters = activeCategory !== "All" || activePrice !== "All" || activeLocation !== "All" || search.length > 0;
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mediaQuery = window.matchMedia(mobileMapMediaQuery);
+
+    function syncViewport() {
+      setIsMobileMap(mediaQuery.matches);
+      setIsResultsOpen((current) => (mediaQuery.matches ? current : true));
+    }
+
+    syncViewport();
+    mediaQuery.addEventListener("change", syncViewport);
+    return () => mediaQuery.removeEventListener("change", syncViewport);
+  }, []);
+
+  useEffect(() => {
     if (!apiKey || !mapElementRef.current) return;
 
     let cancelled = false;
@@ -117,7 +136,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           center: { lat: 22.3027, lng: 114.1772 },
           zoom: 12,
           mapId,
-          gestureHandling: "cooperative",
+          gestureHandling: isMobileMap ? "greedy" : "cooperative",
           isFractionalZoomEnabled: true,
           clickableIcons: false,
           mapTypeControl: false,
@@ -128,18 +147,24 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         mapRef.current = map;
         map.addListener("click", () => setSelectedId(""));
         map.addListener("idle", () => {
-          const nextBounds = map.getBounds()?.toJSON();
-          if (!nextBounds) return;
-          setMapBounds((currentBounds) => {
-            if (
-              currentBounds
-              && currentBounds.north === nextBounds.north
-              && currentBounds.south === nextBounds.south
-              && currentBounds.east === nextBounds.east
-              && currentBounds.west === nextBounds.west
-            ) return currentBounds;
-            return nextBounds;
-          });
+          if (mapIdleTimeoutRef.current) {
+            window.clearTimeout(mapIdleTimeoutRef.current);
+          }
+
+          mapIdleTimeoutRef.current = window.setTimeout(() => {
+            const nextBounds = map.getBounds()?.toJSON();
+            if (!nextBounds) return;
+            setMapBounds((currentBounds) => {
+              if (
+                currentBounds
+                && currentBounds.north === nextBounds.north
+                && currentBounds.south === nextBounds.south
+                && currentBounds.east === nextBounds.east
+                && currentBounds.west === nextBounds.west
+              ) return currentBounds;
+              return nextBounds;
+            });
+          }, isMobileMap ? 140 : 40);
         });
 
         restaurants.forEach((restaurant) => {
@@ -147,10 +172,11 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
             background: "#f7f5ef",
             borderColor: "#20231f",
             glyphText: restaurant.emoji,
-            scale: 1.12,
+            scale: isMobileMap ? 0.92 : 1.12,
           });
           const markerElement = document.createElement("div");
           markerElement.className = "restaurant-map-marker";
+          markerElement.classList.toggle("is-mobile", isMobileMap);
           markerElement.append(pin);
 
           const label = document.createElement("span");
@@ -191,13 +217,21 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
     return () => {
       cancelled = true;
+      if (mapIdleTimeoutRef.current) {
+        window.clearTimeout(mapIdleTimeoutRef.current);
+      }
       mapElement.removeEventListener("pointerdown", handlePointerDown, { capture: true });
       markers.forEach((marker) => { marker.map = null; });
       markers.clear();
       markerElements.clear();
       mapRef.current = null;
     };
-  }, [apiKey, mapId, restaurants]);
+  }, [apiKey, isMobileMap, mapId, restaurants]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+    mapRef.current.setOptions({ gestureHandling: isMobileMap ? "greedy" : "cooperative" });
+  }, [isMobileMap]);
 
   useEffect(() => {
     if (mapStatus !== "ready" || !mapRef.current) return;
@@ -215,12 +249,16 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
   useEffect(() => {
     markerElementRefs.current.forEach((element, id) => {
+      element.classList.toggle("is-mobile", isMobileMap);
       element.classList.toggle("is-selected", id === selectedId);
     });
-  }, [selectedId]);
+  }, [isMobileMap, selectedId]);
 
   function selectRestaurant(restaurant: Restaurant) {
     setSelectedId(restaurant.id);
+    if (isMobileMap) {
+      setIsResultsOpen(false);
+    }
     mapRef.current?.panTo(restaurant.position);
     if ((mapRef.current?.getZoom() ?? 0) < 14) mapRef.current?.setZoom(14);
   }
@@ -331,12 +369,19 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           )}
         </div>
 
-        <aside className="restaurant-results" aria-label="Visible restaurants">
+        <aside className={`restaurant-results ${isMobileMap ? "is-mobile" : ""} ${isResultsOpen ? "is-open" : ""}`} aria-label="Visible restaurants">
           <div className="restaurant-results-heading">
             <p>{restaurantsInView.length} places in this map area</p>
-            {hasFilters ? <button onClick={clearFilters} type="button">Clear filters</button> : <span>Saved places</span>}
+            <div className="restaurant-results-heading-actions">
+              {hasFilters ? <button onClick={clearFilters} type="button">Clear filters</button> : <span>Saved places</span>}
+              {isMobileMap ? (
+                <button onClick={() => setIsResultsOpen((current) => !current)} type="button">
+                  {isResultsOpen ? "Hide list" : "Show list"}
+                </button>
+              ) : null}
+            </div>
           </div>
-          <div className="restaurant-results-list">
+          <div className={`restaurant-results-list ${isMobileMap && !isResultsOpen ? "is-collapsed" : ""}`}>
             {listedRestaurants.map((restaurant) => (
               <article className={`restaurant-result ${restaurant.id === selectedRestaurant?.id ? "is-selected" : ""}`} key={restaurant.id}>
                 <button className="restaurant-result-main" onClick={() => selectRestaurant(restaurant)} type="button">
