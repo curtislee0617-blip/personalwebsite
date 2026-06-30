@@ -1,7 +1,6 @@
 "use client";
 
 import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Restaurant } from "@/data/restaurants";
 
@@ -12,6 +11,7 @@ type RestaurantExplorerProps = {
 };
 
 type MapStatus = "idle" | "loading" | "ready" | "error";
+type MapBounds = { north: number; south: number; east: number; west: number };
 
 let mapsConfigured = false;
 const resultListLimit = 250;
@@ -26,16 +26,25 @@ function csvCell(value: string | number) {
   return `"${String(value).replace(/"/g, '""')}"`;
 }
 
+function isWithinBounds(position: Restaurant["position"], bounds: MapBounds) {
+  const withinLatitude = position.lat >= bounds.south && position.lat <= bounds.north;
+  const withinLongitude = bounds.west <= bounds.east
+    ? position.lng >= bounds.west && position.lng <= bounds.east
+    : position.lng >= bounds.west || position.lng <= bounds.east;
+  return withinLatitude && withinLongitude;
+}
+
 export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExplorerProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markerRefs = useRef(new Map<string, google.maps.marker.AdvancedMarkerElement>());
-  const clustererRef = useRef<MarkerClusterer | null>(null);
+  const markerElementRefs = useRef(new Map<string, HTMLElement>());
   const [activeCategory, setActiveCategory] = useState("All");
   const [activePrice, setActivePrice] = useState("All");
   const [activeLocation, setActiveLocation] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(restaurants[0]?.id ?? "");
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [mapStatus, setMapStatus] = useState<MapStatus>(apiKey ? "idle" : "error");
 
   const categories = useMemo(() => {
@@ -58,7 +67,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     [restaurants],
   );
 
-  const visibleRestaurants = useMemo(() => {
+  const filteredRestaurants = useMemo(() => {
     const query = search.trim().toLocaleLowerCase("en");
     return restaurants.filter((restaurant) => {
       const matchesCategory = activeCategory === "All" || restaurant.category === activeCategory;
@@ -70,8 +79,14 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     });
   }, [activeCategory, activeLocation, activePrice, restaurants, search]);
 
-  const selectedRestaurant = visibleRestaurants.find((restaurant) => restaurant.id === selectedId) ?? visibleRestaurants[0];
-  const listedRestaurants = visibleRestaurants.slice(0, resultListLimit);
+  const restaurantsInView = useMemo(
+    () => mapBounds
+      ? filteredRestaurants.filter((restaurant) => isWithinBounds(restaurant.position, mapBounds))
+      : filteredRestaurants,
+    [filteredRestaurants, mapBounds],
+  );
+  const selectedRestaurant = filteredRestaurants.find((restaurant) => restaurant.id === selectedId);
+  const listedRestaurants = restaurantsInView.slice(0, resultListLimit);
   const hasFilters = activeCategory !== "All" || activePrice !== "All" || activeLocation !== "All" || search.length > 0;
 
   useEffect(() => {
@@ -79,6 +94,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
     let cancelled = false;
     const markers = markerRefs.current;
+    const markerElements = markerElementRefs.current;
 
     async function initialiseMap() {
       setMapStatus("loading");
@@ -109,6 +125,21 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         });
 
         mapRef.current = map;
+        map.addListener("click", () => setSelectedId(""));
+        map.addListener("idle", () => {
+          const nextBounds = map.getBounds()?.toJSON();
+          if (!nextBounds) return;
+          setMapBounds((currentBounds) => {
+            if (
+              currentBounds
+              && currentBounds.north === nextBounds.north
+              && currentBounds.south === nextBounds.south
+              && currentBounds.east === nextBounds.east
+              && currentBounds.west === nextBounds.west
+            ) return currentBounds;
+            return nextBounds;
+          });
+        });
 
         restaurants.forEach((restaurant) => {
           const pin = new PinElement({
@@ -117,20 +148,26 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
             glyphText: restaurant.emoji,
             scale: 1.12,
           });
+          const markerElement = document.createElement("div");
+          markerElement.className = "restaurant-map-marker";
+          markerElement.append(pin);
+
+          const label = document.createElement("span");
+          label.className = "restaurant-map-marker-label";
+          label.textContent = restaurant.name;
+          markerElement.append(label);
+
           const marker = new AdvancedMarkerElement({
+            map,
             position: restaurant.position,
             title: `${restaurant.name}, ${restaurant.area}`,
             gmpClickable: true,
           });
 
-          marker.append(pin);
+          marker.append(markerElement);
           marker.addEventListener("gmp-click", () => setSelectedId(restaurant.id));
           markers.set(restaurant.id, marker);
-        });
-
-        clustererRef.current = new MarkerClusterer({
-          map,
-          markers: Array.from(markers.values()),
+          markerElements.set(restaurant.id, markerElement);
         });
 
         setMapStatus("ready");
@@ -144,31 +181,32 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
     return () => {
       cancelled = true;
-      clustererRef.current?.clearMarkers();
-      clustererRef.current?.setMap(null);
-      clustererRef.current = null;
+      markers.forEach((marker) => { marker.map = null; });
       markers.clear();
+      markerElements.clear();
       mapRef.current = null;
     };
   }, [apiKey, mapId, restaurants]);
 
   useEffect(() => {
-    if (mapStatus !== "ready" || !mapRef.current || !clustererRef.current) return;
+    if (mapStatus !== "ready" || !mapRef.current) return;
 
-    const visibleIds = new Set(visibleRestaurants.map((restaurant) => restaurant.id));
-    const visibleMarkers = Array.from(markerRefs.current.entries())
-      .filter(([id]) => visibleIds.has(id))
-      .map(([, marker]) => marker);
+    const filteredIds = new Set(filteredRestaurants.map((restaurant) => restaurant.id));
+    markerRefs.current.forEach((marker, id) => {
+      marker.map = filteredIds.has(id) ? mapRef.current : null;
+    });
 
-    clustererRef.current.clearMarkers(true);
-    clustererRef.current.addMarkers(visibleMarkers, true);
-    clustererRef.current.render();
-
-    if (visibleRestaurants.length === 1) {
-      mapRef.current.panTo(visibleRestaurants[0].position);
+    if (filteredRestaurants.length === 1) {
+      mapRef.current.panTo(filteredRestaurants[0].position);
       if ((mapRef.current.getZoom() ?? 0) < 15) mapRef.current.setZoom(15);
     }
-  }, [mapStatus, visibleRestaurants]);
+  }, [filteredRestaurants, mapStatus]);
+
+  useEffect(() => {
+    markerElementRefs.current.forEach((element, id) => {
+      element.classList.toggle("is-selected", id === selectedId);
+    });
+  }, [selectedId]);
 
   function selectRestaurant(restaurant: Restaurant) {
     setSelectedId(restaurant.id);
@@ -185,7 +223,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
   function downloadFilteredList() {
     const headers = ["Name", "Latitude", "Longitude", "Address", "Category", "Price", "Description", "Google Maps URL"];
-    const rows = visibleRestaurants.map((restaurant) => [
+    const rows = restaurantsInView.map((restaurant) => [
       restaurant.name,
       restaurant.position.lat,
       restaurant.position.lng,
@@ -227,7 +265,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
             {locations.map((location) => <option key={location}>{location === "All" ? "All locations" : location}</option>)}
           </select>
         </label>
-        <button className="restaurant-export" disabled={visibleRestaurants.length === 0 || visibleRestaurants.length > 2000} onClick={downloadFilteredList} type="button">
+        <button className="restaurant-export" disabled={restaurantsInView.length === 0 || restaurantsInView.length > 2000} onClick={downloadFilteredList} type="button">
           Download filtered list ↓
         </button>
       </div>
@@ -266,7 +304,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
               <p>Check that the API key allows this domain and that Maps JavaScript API is enabled.</p>
             </div>
           )}
-          {mapStatus === "ready" && visibleRestaurants.length === 0 && (
+          {mapStatus === "ready" && filteredRestaurants.length === 0 && (
             <div className="restaurant-map-empty"><p>No places match these filters.</p><button onClick={clearFilters} type="button">Clear filters</button></div>
           )}
           {mapStatus === "ready" && selectedRestaurant && (
@@ -284,7 +322,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
         <aside className="restaurant-results" aria-label="Visible restaurants">
           <div className="restaurant-results-heading">
-            <p>{visibleRestaurants.length} places</p>
+            <p>{restaurantsInView.length} places in this map area</p>
             {hasFilters ? <button onClick={clearFilters} type="button">Clear filters</button> : <span>Saved places</span>}
           </div>
           <div className="restaurant-results-list">
@@ -311,7 +349,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
                 </div>
               </article>
             ))}
-            {visibleRestaurants.length > resultListLimit && (
+            {restaurantsInView.length > resultListLimit && (
               <p className="restaurant-results-limit">Showing the first {resultListLimit} places. Use search or filters to narrow the list.</p>
             )}
           </div>

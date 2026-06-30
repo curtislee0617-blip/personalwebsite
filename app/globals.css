@@ -551,6 +551,43 @@ body {
   min-height: 42rem;
 }
 
+.restaurant-map-marker {
+  position: relative;
+  display: grid;
+  cursor: pointer;
+  place-items: center;
+  contain: layout style;
+}
+
+.restaurant-map-marker-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.3rem);
+  z-index: 1;
+  max-width: 15rem;
+  overflow: hidden;
+  padding: 0.38rem 0.6rem;
+  border: 1px solid rgb(32 35 31 / 0.12);
+  border-radius: 0.65rem;
+  background: rgb(247 245 239 / 0.96);
+  box-shadow: 0 8px 22px rgb(32 35 31 / 0.16);
+  color: #20231f;
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  transform: translate(-50%, 0.2rem);
+  transition: opacity 120ms ease, transform 120ms ease;
+  white-space: nowrap;
+}
+
+.restaurant-map-marker:hover .restaurant-map-marker-label,
+.restaurant-map-marker.is-selected .restaurant-map-marker-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 .restaurant-map-message {
   position: absolute;
   inset: 0;
