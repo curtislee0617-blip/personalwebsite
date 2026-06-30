@@ -271,7 +271,7 @@ body {
   flex-direction: column;
   border: 1px solid rgb(32 35 31 / 0.14);
   border-radius: 9999px;
-  background: rgb(247 245 239 / 0.72);
+  background: rgb(247 245 239 / 0.68);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   box-shadow: 0 10px 35px rgb(32 35 31 / 0.04);
@@ -418,7 +418,7 @@ body {
   padding: 4.25rem 1rem 1rem;
   border: 1px solid rgb(32 35 31 / 0.1);
   border-radius: 1.75rem;
-  background: rgb(247 245 239 / 0.96);
+  background: rgb(247 245 239 / 0.45);
   box-shadow: 0 24px 70px rgb(32 35 31 / 0.16);
   opacity: 0;
   pointer-events: none;
