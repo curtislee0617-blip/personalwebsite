@@ -47,7 +47,7 @@ function ContactIcon({ icon }: { icon: (typeof contactLinks)[number]["icon"] }) 
   if (icon === "caltech") {
     return (
       <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-full border border-ink/10 bg-white" aria-hidden="true">
-        <Image alt="" className="h-full w-full scale-[1.04] object-contain object-center p-[0.18rem]" height={56} src="/logos/caltech.webp" width={56} />
+        <Image alt="" className="h-full w-full scale-[1.04] object-contain object-center p-[0.18rem]" height={56} src="/logos/caltechname.png" width={56} />
       </span>
     );
   }
