@@ -13,3 +13,5 @@ imports/google-maps/*
 !imports/google-maps/README.md
 supabase/.temp/
 .vercel
+public/logos/cal.jpg
+public/logos/towngas copy.png
