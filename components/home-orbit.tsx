@@ -20,9 +20,7 @@ const placeholderColors = [
   ["#e7dfbd", "#b7a86f"], ["#ded7e9", "#9f91b2"], ["#d7e5e8", "#7fa1a7"],
 ] as const;
 
-const logoPhotos = ["/logos/caltech.webp", "/logos/uc-davis.webp"];
-
-type LogoPlacement = { position: number; logoIndex: number };
+const logoPhoto = "/logos/caltech-collage-orange.png";
 
 function mixNumber(value: number) {
   let mixed = value + 0x6d2b79f5;
@@ -39,57 +37,74 @@ function blockDistance(first: number, second: number, rows: number) {
   return Math.max(Math.abs(firstRow - secondRow), Math.abs(firstColumn - secondColumn));
 }
 
-function createLogoPlacements(itemCount: number) {
+function createLogoPlacements(itemCount: number, rows: number) {
   const candidates = Array.from({ length: itemCount }, (_, index) => index).sort(
     (first, second) => mixNumber(first) - mixNumber(second),
   );
-  const placements: LogoPlacement[] = [];
-  const originalTargetCount = Math.ceil(itemCount / 13);
-  const previouslyReducedCount = Math.ceil(originalTargetCount * (2 / 3));
-  const targetCount = Math.ceil(previouslyReducedCount * (2 / 3));
+  const placements: number[] = [];
+  const priorTargetCount = Math.max(
+    1,
+    Math.ceil(Math.ceil(Math.ceil(itemCount / 13) * (2 / 3)) * (2 / 3) * (2 / 3)),
+  );
+  const targetCount = Math.max(1, Math.floor(priorTargetCount * 0.65));
+  const rowCounts = Array.from({ length: rows }, () => 0);
+  const basePerRow = Math.floor(targetCount / rows);
+  const extraRows = targetCount % rows;
+  const rowPriority = Array.from({ length: rows }, (_, row) => row).sort(
+    (first, second) => mixNumber(itemCount + first * 37) - mixNumber(itemCount + second * 37),
+  );
+  const rowTargets = Array.from({ length: rows }, () => basePerRow);
+
+  for (let index = 0; index < extraRows; index += 1) {
+    rowTargets[rowPriority[index]] += 1;
+  }
 
   for (const position of candidates) {
-    const preferredLogo = mixNumber(position + 97) % logoPhotos.length;
-    const logoOptions = [preferredLogo, (preferredLogo + 1) % logoPhotos.length];
+    const row = position % rows;
+    if (rowCounts[row] >= rowTargets[row]) continue;
 
-    for (const logoIndex of logoOptions) {
-      const allowed = placements.every((existing) =>
-        [10, 5].every((rows) => {
-          const minimumDistance = existing.logoIndex === logoIndex ? 3 : 2;
-          return blockDistance(position, existing.position, rows) > minimumDistance;
-        }),
-      );
+    const allowed = placements.every((existingPosition) =>
+      blockDistance(position, existingPosition, rows) > 3,
+    );
 
-      if (allowed) {
-        placements.push({ position, logoIndex });
-        break;
-      }
+    if (allowed) {
+      placements.push(position);
+      rowCounts[row] += 1;
     }
 
     if (placements.length >= targetCount) break;
   }
 
-  const caltechPlacements = placements
-    .filter((placement) => placement.logoIndex === 0)
-    .sort((first, second) => mixNumber(first.position + 211) - mixNumber(second.position + 211));
-  const retainedCaltechPositions = new Set(
-    caltechPlacements.slice(0, Math.ceil(caltechPlacements.length * (2 / 3))).map((placement) => placement.position),
-  );
+  if (placements.length < targetCount) {
+    for (const position of candidates) {
+      if (placements.includes(position)) continue;
 
-  return placements.filter((placement) => placement.logoIndex !== 0 || retainedCaltechPositions.has(placement.position));
+      const allowed = placements.every((existingPosition) =>
+        blockDistance(position, existingPosition, rows) > 3,
+      );
+
+      if (allowed) placements.push(position);
+
+      if (placements.length >= targetCount) break;
+    }
+  }
+
+  return placements.sort((first, second) => mixNumber(first + 211) - mixNumber(second + 211));
 }
 
 function PhotoGridBackground({ photos }: { photos: string[] }) {
   const [itemCount, setItemCount] = useState(220);
+  const [rowCount, setRowCount] = useState(8);
 
   useEffect(() => {
     const updateDensity = () => {
       const mobile = window.matchMedia("(max-width: 639px)").matches;
-      const rows = mobile ? 5 : 10;
+      const rows = mobile ? 5 : 8;
       const columnWidth = mobile
         ? Math.max(72, window.innerHeight * 0.15)
         : Math.max(46, (window.innerHeight - 73) * 0.075);
       const columns = Math.ceil(window.innerWidth / columnWidth) + (mobile ? 6 : 4);
+      setRowCount(rows);
       setItemCount(rows * columns);
     };
 
@@ -103,9 +118,9 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
     isLogo: false,
   }));
 
-  for (const { position, logoIndex } of createLogoPlacements(itemCount)) {
+  for (const position of createLogoPlacements(itemCount, rowCount)) {
     items[position] = {
-      photo: logoPhotos[logoIndex],
+      photo: logoPhoto,
       isLogo: true,
     };
   }
@@ -124,7 +139,7 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
 
               return (
                 <span
-                  className={`photo-grid-tile ${isLogo ? "is-logo" : ""} ${photo === logoPhotos[0] ? "is-caltech-logo" : ""}`}
+                  className={`photo-grid-tile ${isLogo ? "is-logo" : ""} ${photo === logoPhoto ? "is-caltech-logo" : ""}`}
                   key={`${copy}-${index}`}
                 >
                   {photo ? (

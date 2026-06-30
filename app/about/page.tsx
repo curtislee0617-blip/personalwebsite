@@ -71,7 +71,7 @@ function OrganisationWordmark({ src, alt, fallback }: { src?: string; alt: strin
   }
 
   return (
-    <span className="relative inline-flex h-[1.05rem] w-[4.6rem] align-middle">
+    <span className="relative mx-[0.04em] inline-flex h-[0.95em] w-[3.95em] translate-y-[0.06em] align-baseline">
       <Image alt={alt} className="object-contain object-left" fill sizes="74px" src={src} />
     </span>
   );
@@ -168,7 +168,7 @@ export default function AboutPage() {
         description={
           <>
             I am double-majoring in Chemical Engineering (process track, with electives in materials) and BEM (Business Economics and Management) at{" "}
-            <OrganisationWordmark alt="Caltech" fallback="Caltech" src="/logos/caltechname.png" />.
+            <OrganisationWordmark alt="Caltech" fallback="Caltech" src="/logos/caltechname-cropped.png" />.
             {" "}I am a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics.
           </>
         }

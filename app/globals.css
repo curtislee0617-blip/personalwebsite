@@ -89,17 +89,14 @@ body {
   background-size: cover;
 }
 
-.photo-grid-tile.is-logo {
-  background-color: #f7f5ef;
-}
-
 .photo-grid-tile.is-logo .photo-grid-image {
-  object-fit: contain;
-  padding: 0.2rem;
+  object-fit: cover;
+  object-position: center;
+  padding: 0;
 }
 
 .photo-grid-tile.is-caltech-logo .photo-grid-image {
-  transform: scale(1.18);
+  transform: scale(1.08);
 }
 
 @keyframes photo-grid-scroll {
@@ -884,7 +881,7 @@ body {
   .orbit-link:nth-child(6) { --burst-x: -3.5rem; --burst-y: -23rem; }
   .orbit-link:nth-child(n):hover { transform: translateY(-0.2rem); }
   .home-photo-grid { opacity: 0.55; }
-  .photo-grid-rail { animation-duration: 360s; }
+  .photo-grid-rail { animation-duration: 220s; }
   .photo-grid-track {
     grid-auto-columns: 15svh;
     grid-template-rows: repeat(5, minmax(0, 1fr));
