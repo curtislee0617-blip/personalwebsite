@@ -192,33 +192,48 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
           </div>
         </div>
 
-        {!isMobile && slider}
-
         <div
           className={`grid gap-4 ${isMobile ? "grid-cols-1" : "grid-cols-2"}`}
-          onPointerDown={(event) => {
+          onPointerDown={isMobile ? (event) => {
             gestureStartX.current = event.clientX;
             gestureDeltaX.current = 0;
-          }}
-          onPointerMove={(event) => {
+          } : undefined}
+          onPointerMove={isMobile ? (event) => {
             if (gestureStartX.current === null) return;
             gestureDeltaX.current = event.clientX - gestureStartX.current;
-          }}
-          onPointerUp={() => {
+          } : undefined}
+          onPointerUp={isMobile ? () => {
             if (gestureDeltaX.current <= -45) goNext();
             if (gestureDeltaX.current >= 45) goPrevious();
             gestureStartX.current = null;
             gestureDeltaX.current = 0;
-          }}
-          onPointerCancel={() => {
+          } : undefined}
+          onPointerCancel={isMobile ? () => {
             gestureStartX.current = null;
             gestureDeltaX.current = 0;
-          }}
+          } : undefined}
         >
           {visiblePages.map((page, index) => (
-            <div
-              className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-[0_20px_45px_rgba(32,35,31,0.08)] transition-all duration-300 ease-out"
+            <button
+              aria-label={
+                isMobile
+                  ? `Cookbook page ${pageIndex + index + 1}`
+                  : index === 0
+                    ? "Go to previous pages"
+                    : "Go to next pages"
+              }
+              className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-[0_20px_45px_rgba(32,35,31,0.08)] transition-all duration-300 ease-out disabled:cursor-default"
+              disabled={isMobile || (!isMobile && ((index === 0 && pageIndex === 0) || (index === 1 && pageIndex >= pages.length - step) || (index === 0 && visiblePages.length === 1)))}
               key={page}
+              onClick={() => {
+                if (isMobile) return;
+                if (index === 0) {
+                  goPrevious();
+                  return;
+                }
+                goNext();
+              }}
+              type="button"
             >
               <img
                 alt={`${title} page ${pageIndex + index + 1}`}
@@ -226,11 +241,11 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
                 loading={index === 0 ? "eager" : "lazy"}
                 src={page}
               />
-            </div>
+            </button>
           ))}
         </div>
 
-        {isMobile && slider}
+        {slider}
       </div>
     </div>
   );
