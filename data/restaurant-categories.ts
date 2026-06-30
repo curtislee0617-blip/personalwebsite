@@ -9,6 +9,7 @@ export const restaurantCategories = [
   { name: "Chicken", emoji: "🍗", description: "Restaurants primarily serving chicken." },
   { name: "Ramen", emoji: "🍜", description: "Ramen specialists." },
   { name: "Sushi", emoji: "🍣", description: "Casual and mid-range sushi specialists." },
+  { name: "Dim Sum", emoji: "🥟", description: "Dim sum, dumpling houses and xiaolongbao specialists." },
   { name: "Pizza", emoji: "🍕", description: "Pizzerias and pizza specialists." },
   { name: "Pasta", emoji: "🍝", description: "Restaurants primarily serving pasta." },
   { name: "Steakhouse", emoji: "🥩", description: "Steakhouses and restaurants primarily serving steak." },

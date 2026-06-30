@@ -41,7 +41,7 @@ const markdown = [
   "",
   "Edit this file directly in VS Code. For each place, change **Decision** to `accept` or `skip`. If accepting, copy the correct candidate Place ID and confirm or replace the suggested category.",
   "",
-  "Allowed categories: Bars, Asian Fancy, Fine Dining, Western Nicer, Bakeries, Tacos, Burgers, Chicken, Ramen, Sushi, Pizza, Pasta, Steakhouse, Bistro, Barbecue, Deli, Cafés, Desserts, South Asian, East Asian, Southeast Asian, Middle Eastern, African, Casual, Unclassified.",
+  "Allowed categories: Bars, Asian Fancy, Fine Dining, Western Nicer, Bakeries, Tacos, Burgers, Chicken, Ramen, Sushi, Dim Sum, Pizza, Pasta, Steakhouse, Bistro, Barbecue, Deli, Cafés, Desserts, South Asian, East Asian, Southeast Asian, Middle Eastern, African, Casual, Unclassified.",
   "",
   ...source.restaurants.flatMap((item, index) => [
     (() => {

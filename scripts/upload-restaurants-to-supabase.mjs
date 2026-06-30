@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { createClient } from "@supabase/supabase-js";
+import { categoryEmojis, suggestRestaurantCategory } from "./restaurant-classification.mjs";
 
 const args = process.argv.slice(2);
 const inputPath = args.find((arg) => !arg.startsWith("--")) ?? "imports/google-maps/staging/enriched-restaurants.json";
@@ -18,7 +19,7 @@ if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
 
 const categoryPriority = [
   "Fine Dining", "Asian Fancy", "Bars", "Western Nicer", "Bakeries", "Tacos", "Burgers",
-  "Chicken", "Ramen", "Sushi", "Pizza", "Pasta", "Steakhouse", "Bistro", "Cafés", "Desserts", "South Asian", "East Asian",
+  "Chicken", "Ramen", "Sushi", "Dim Sum", "Pizza", "Pasta", "Steakhouse", "Bistro", "Cafés", "Desserts", "South Asian", "East Asian",
   "Southeast Asian", "Middle Eastern", "African", "Barbecue", "Deli", "Casual", "Unclassified",
 ];
 const source = JSON.parse(fs.readFileSync(inputPath, "utf8"));
@@ -29,11 +30,26 @@ function descriptionFor(item) {
   return [item.comment, item.note].map((value) => value?.trim()).filter(Boolean).filter((value, index, all) => all.indexOf(value) === index).join(" — ") || null;
 }
 
+function normalizedCategoryFor(item) {
+  const suggestion = suggestRestaurantCategory({
+    name: item.name,
+    primaryType: item.primaryType,
+    placeTypes: item.placeTypes ?? [],
+    sourceCategory: item.category,
+  });
+
+  return suggestion.confidence > 0 ? suggestion.category : item.category;
+}
+
 for (const item of confirmed) {
+  const normalizedCategory = normalizedCategoryFor(item);
+  const normalizedEmoji = categoryEmojis[normalizedCategory] ?? item.emoji ?? "❓";
   const existing = merged.get(item.placeId);
   if (!existing) {
     merged.set(item.placeId, {
       ...item,
+      category: normalizedCategory,
+      emoji: normalizedEmoji,
       sourceLists: new Set(item.sourceLists ?? []),
       sourceTags: new Set(item.sourceTags ?? []),
       description: descriptionFor(item),
@@ -44,9 +60,9 @@ for (const item of confirmed) {
   (item.sourceLists ?? []).forEach((value) => existing.sourceLists.add(value));
   (item.sourceTags ?? []).forEach((value) => existing.sourceTags.add(value));
   if (!existing.description) existing.description = descriptionFor(item);
-  if (categoryPriority.indexOf(item.category) < categoryPriority.indexOf(existing.category)) {
-    existing.category = item.category;
-    existing.emoji = item.emoji;
+  if (categoryPriority.indexOf(normalizedCategory) < categoryPriority.indexOf(existing.category)) {
+    existing.category = normalizedCategory;
+    existing.emoji = normalizedEmoji;
     existing.priceLevel = item.priceLevel;
     existing.priceLevelSource = item.priceLevelSource;
   }

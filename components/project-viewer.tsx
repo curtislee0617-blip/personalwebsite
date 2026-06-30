@@ -106,6 +106,8 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
   }, []);
 
   const step = isMobile ? 1 : 2;
+  const spreadCount = Math.max(1, Math.ceil(pages.length / step));
+  const activeSpread = Math.floor(pageIndex / step);
   const visiblePages = useMemo(() => (
     isMobile ? [pages[pageIndex]].filter(Boolean) : [pages[pageIndex], pages[pageIndex + 1]].filter(Boolean)
   ), [isMobile, pageIndex, pages]);
@@ -168,6 +170,26 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
           </div>
         </div>
 
+        <div className="rounded-[1.5rem] border border-ink/10 bg-white/70 px-4 py-3 sm:px-5">
+          <div className="flex items-center justify-between gap-4 text-[0.72rem] uppercase tracking-[0.18em] text-ink/45">
+            <span>Flip through pages</span>
+            <span>{activeSpread + 1} / {spreadCount}</span>
+          </div>
+          <input
+            aria-label="Cookbook page slider"
+            className="mt-3 block w-full accent-[#7a6a58]"
+            max={spreadCount - 1}
+            min={0}
+            onChange={(event) => {
+              const nextSpread = Number(event.currentTarget.value);
+              setPageIndex(Math.min(Math.max(0, pages.length - step), nextSpread * step));
+            }}
+            step={1}
+            type="range"
+            value={activeSpread}
+          />
+        </div>
+
         <div
           className={`grid gap-4 ${isMobile ? "grid-cols-1" : "grid-cols-2"}`}
           onPointerDown={(event) => {
@@ -191,12 +213,12 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
         >
           {visiblePages.map((page, index) => (
             <div
-              className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-[0_20px_45px_rgba(32,35,31,0.08)]"
+              className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-[0_20px_45px_rgba(32,35,31,0.08)] transition-all duration-300 ease-out"
               key={page}
             >
               <img
                 alt={`${title} page ${pageIndex + index + 1}`}
-                className="block h-auto w-full"
+                className="block h-auto w-full transition-transform duration-300 ease-out"
                 loading={index === 0 ? "eager" : "lazy"}
                 src={page}
               />
