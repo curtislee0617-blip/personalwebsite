@@ -130,6 +130,28 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goNext, goPrevious]);
 
+  const slider = (
+    <div className="rounded-[1.5rem] border border-ink/10 bg-white/70 px-4 py-3 sm:px-5">
+      <div className="flex items-center justify-between gap-4 text-[0.72rem] uppercase tracking-[0.18em] text-ink/45">
+        <span>Flip through pages</span>
+        <span>{activeSpread + 1} / {spreadCount}</span>
+      </div>
+      <input
+        aria-label="Cookbook page slider"
+        className="mt-3 block w-full accent-[#7a6a58]"
+        max={spreadCount - 1}
+        min={0}
+        onChange={(event) => {
+          const nextSpread = Number(event.currentTarget.value);
+          setPageIndex(Math.min(Math.max(0, pages.length - step), nextSpread * step));
+        }}
+        step={1}
+        type="range"
+        value={activeSpread}
+      />
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-[#f4efe6] text-ink">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6">
@@ -170,25 +192,7 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
           </div>
         </div>
 
-        <div className="rounded-[1.5rem] border border-ink/10 bg-white/70 px-4 py-3 sm:px-5">
-          <div className="flex items-center justify-between gap-4 text-[0.72rem] uppercase tracking-[0.18em] text-ink/45">
-            <span>Flip through pages</span>
-            <span>{activeSpread + 1} / {spreadCount}</span>
-          </div>
-          <input
-            aria-label="Cookbook page slider"
-            className="mt-3 block w-full accent-[#7a6a58]"
-            max={spreadCount - 1}
-            min={0}
-            onChange={(event) => {
-              const nextSpread = Number(event.currentTarget.value);
-              setPageIndex(Math.min(Math.max(0, pages.length - step), nextSpread * step));
-            }}
-            step={1}
-            type="range"
-            value={activeSpread}
-          />
-        </div>
+        {!isMobile && slider}
 
         <div
           className={`grid gap-4 ${isMobile ? "grid-cols-1" : "grid-cols-2"}`}
@@ -225,6 +229,8 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
             </div>
           ))}
         </div>
+
+        {isMobile && slider}
       </div>
     </div>
   );

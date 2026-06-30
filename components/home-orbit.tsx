@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import Link from "next/link";
@@ -78,7 +80,24 @@ function createLogoPlacements(itemCount: number) {
 }
 
 function PhotoGridBackground({ photos }: { photos: string[] }) {
-  const itemCount = Math.max(300, photos.length);
+  const [itemCount, setItemCount] = useState(220);
+
+  useEffect(() => {
+    const updateDensity = () => {
+      const mobile = window.matchMedia("(max-width: 639px)").matches;
+      const rows = mobile ? 5 : 10;
+      const columnWidth = mobile
+        ? Math.max(72, window.innerHeight * 0.15)
+        : Math.max(46, (window.innerHeight - 73) * 0.075);
+      const columns = Math.ceil(window.innerWidth / columnWidth) + (mobile ? 6 : 4);
+      setItemCount(rows * columns);
+    };
+
+    updateDensity();
+    window.addEventListener("resize", updateDensity);
+    return () => window.removeEventListener("resize", updateDensity);
+  }, []);
+
   const items = Array.from({ length: itemCount }, (_, index) => ({
     photo: photos.length ? photos[index % photos.length] : null,
     isLogo: false,
@@ -107,9 +126,20 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
                 <span
                   className={`photo-grid-tile ${isLogo ? "is-logo" : ""} ${photo === logoPhotos[0] ? "is-caltech-logo" : ""}`}
                   key={`${copy}-${index}`}
-                  style={style}
                 >
-                  {!photo && String(shuffledIndex + 1).padStart(3, "0")}
+                  {photo ? (
+                    <img
+                      alt=""
+                      className="photo-grid-image"
+                      decoding="async"
+                      loading={copy === 0 && index < 18 ? "eager" : "lazy"}
+                      src={photo}
+                    />
+                  ) : (
+                    <span className="photo-grid-placeholder" style={style}>
+                      {String(shuffledIndex + 1).padStart(3, "0")}
+                    </span>
+                  )}
                 </span>
               );
             })}

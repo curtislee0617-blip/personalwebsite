@@ -57,13 +57,10 @@ body {
 }
 
 .photo-grid-tile {
+  position: relative;
   display: grid;
   overflow: hidden;
   place-items: end start;
-  /* Center-crop every source image evenly into the portrait 3:4 tile. */
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-  background-size: cover;
   padding: 0.25rem;
   color: rgb(32 35 31 / 0.35);
   font-size: 0.48rem;
@@ -71,13 +68,38 @@ body {
   letter-spacing: 0.12em;
 }
 
-.photo-grid-tile.is-logo {
-  background-color: #f7f5ef;
-  background-size: contain;
+.photo-grid-image,
+.photo-grid-placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.photo-grid-tile.is-caltech-logo {
-  background-size: 137% auto;
+.photo-grid-image {
+  display: block;
+  object-fit: cover;
+}
+
+.photo-grid-placeholder {
+  display: grid;
+  place-items: end start;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.photo-grid-tile.is-logo {
+  background-color: #f7f5ef;
+}
+
+.photo-grid-tile.is-logo .photo-grid-image {
+  object-fit: contain;
+  padding: 0.2rem;
+}
+
+.photo-grid-tile.is-caltech-logo .photo-grid-image {
+  transform: scale(1.18);
 }
 
 @keyframes photo-grid-scroll {
