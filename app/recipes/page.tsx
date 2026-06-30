@@ -51,6 +51,21 @@ export default function RecipesPage() {
                       ))}
                     </div>
                   ) : null}
+                  {entry.slug === "sourdough-guide" ? (
+                    <div className="mt-5 grid grid-cols-3 gap-2">
+                      {[
+                        { src: "/Screenshot 2026-07-01 at 1.38.07 AM.png", alt: "Sourdough loaf" },
+                        { src: "/Screenshot 2026-07-01 at 1.39.02 AM.png", alt: "Sourdough crumb" },
+                        { src: "/Screenshot 2026-07-01 at 1.39.43 AM.png", alt: "Sourdough boule" },
+                      ].map((image) => (
+                        <div className="relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70" key={image.src}>
+                          <div className="relative aspect-square">
+                            <Image alt={image.alt} className="object-cover" fill sizes="(max-width: 768px) 33vw, 12vw" src={image.src} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
                   <p className="mt-6 text-sm font-semibold text-moss">Open guide ↗</p>
                 </Link>
               ))}
