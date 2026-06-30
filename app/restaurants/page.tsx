@@ -15,7 +15,7 @@ export default async function RestaurantsPage() {
 
   return (
     <>
-      <PageIntro title="My saved places" description="Explore restaurants saved on my google maps list (I haven't been to most of them)" />
+      <PageIntro title="My saved places" description="Explore restaurants saved on my google maps list (I haven't been to most of them). The interactive map works best on laptop." />
       <div className="page-shell mt-5">
         <a className="beli-profile-link" href="https://beliapp.co/app/curtL" rel="noreferrer" target="_blank">
           Connect with me on Beli to see my scores and rankings <span aria-hidden="true">↗</span>

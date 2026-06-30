@@ -93,6 +93,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     if (!apiKey || !mapElementRef.current) return;
 
     let cancelled = false;
+    const mapElement = mapElementRef.current;
     const markers = markerRefs.current;
     const markerElements = markerElementRefs.current;
 
@@ -179,8 +180,18 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
     void initialiseMap();
 
+    function handlePointerDown(event: PointerEvent) {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (target.closest(".restaurant-map-marker")) return;
+      setSelectedId("");
+    }
+
+    mapElement.addEventListener("pointerdown", handlePointerDown, { capture: true });
+
     return () => {
       cancelled = true;
+      mapElement.removeEventListener("pointerdown", handlePointerDown, { capture: true });
       markers.forEach((marker) => { marker.map = null; });
       markers.clear();
       markerElements.clear();

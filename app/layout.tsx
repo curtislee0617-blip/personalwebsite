@@ -8,11 +8,15 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Curtis Lee — Notes, work & good things",
-    template: "%s — Curtis Lee",
+    default: "My personal website",
+    template: "%s — My personal website",
   },
-  description:
-    "A personal corner of the internet for work, food, useful tools, and things worth sharing.",
+  description: "School, work and life.",
+  openGraph: {
+    title: "My personal website",
+    description: "School, work and life.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

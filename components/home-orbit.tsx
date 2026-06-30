@@ -270,7 +270,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
             </div>
           </div>
 
-          <p className="home-intro">Work, food, useful things, and notes from along the way.</p>
+          <p className="home-intro">School, work and life</p>
         </div>
 
         <nav className="home-orbit-nav" aria-label="Explore the website">
