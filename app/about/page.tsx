@@ -14,6 +14,7 @@ type LogoMeta = {
   fitClassName?: string;
   alignClassName?: string;
   frameClassName?: string;
+  imageClassName?: string;
 };
 
 type TimelineItem = {
@@ -48,7 +49,7 @@ function LogoBadge({ logo }: { logo?: LogoMeta }) {
         <div className="relative flex h-full w-full items-center justify-center">
           <Image
             alt={logo.alt}
-            className={`object-contain mix-blend-multiply ${logo.alignClassName ?? "object-center"} ${logo.fitClassName ?? "h-9 w-9"}`}
+            className={`object-contain ${logo.imageClassName ?? "mix-blend-multiply"} ${logo.alignClassName ?? "object-center"} ${logo.fitClassName ?? "h-9 w-9"}`}
             height={56}
             src={logo.src}
             width={56}
@@ -74,14 +75,14 @@ const experience: TimelineItem[] = [
     role: "Teaching Assistant",
     organisation: "Caltech",
     detail: "Teaching Caltech students how to cook in Tom Mannion's cooking class.",
-    logo: { src: "/logos/cal copy.jpg", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-12 w-12" },
+    logo: { src: "/logos/cal copy.jpg", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-12 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
   },
   {
     dates: "July 2025 - August 2025",
     role: "Research Intern",
     organisation: "UC Davis Department of Viticulture and Enology",
     detail: "Working in the Integrative Center for Alternative Meat and Protein - iCAMP at UC Davis to research methods of producing sustainable and healthy meat via cell culturing. Over a five-week period, I primarily worked under Nick Johnson to develop scaffolds for cultivated meat. Using Texture Profile Analysis, I conducted many experiments with varying materials, cross-linkers, and preparation techniques to replicate textures comparable to meat.",
-    logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-top", frameClassName: "bg-[#16345f]" },
+    logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-[center_58%]", frameClassName: "bg-[#16345f]" },
   },
   {
     dates: "March 2024 - April 2024",
@@ -118,7 +119,7 @@ const education: EducationItem[] = [
     dates: "2024 - 2028",
     school: "California Institute of Technology",
     detail: "Chemical Engineering (process track, with electives in materials) and Business Economics and Management.",
-    logo: { src: "/logos/cal copy.jpg", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-12 w-12" },
+    logo: { src: "/logos/cal copy.jpg", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-12 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
   },
   {
     dates: "2019 - 2024",
