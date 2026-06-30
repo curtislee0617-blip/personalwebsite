@@ -353,7 +353,7 @@ body {
 
 .site-menu-shell {
   position: fixed;
-  left: 1.25rem;
+  right: 1.25rem;
   top: 1.25rem;
   z-index: 50;
   pointer-events: none;
@@ -389,7 +389,7 @@ body {
 
 .site-menu-panel {
   position: absolute;
-  left: 0;
+  right: 0;
   top: 0;
   width: min(22rem, calc(100vw - 2.5rem));
   padding: 4.25rem 1rem 1rem;
@@ -400,7 +400,7 @@ body {
   opacity: 0;
   pointer-events: none;
   transform: scale(0.82);
-  transform-origin: 1.5rem 1.5rem;
+  transform-origin: calc(100% - 1.5rem) 1.5rem;
   transition: opacity 220ms ease, transform 320ms cubic-bezier(.2, .8, .2, 1);
   backdrop-filter: blur(18px);
 }
