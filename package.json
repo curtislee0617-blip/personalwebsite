@@ -7,21 +7,32 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "photos:optimize": "node scripts/optimize-photos.mjs"
+    "photos:optimize": "node scripts/optimize-photos.mjs",
+    "maps:import": "node scripts/import-google-maps.mjs",
+    "maps:enrich": "node scripts/enrich-google-places.mjs",
+    "maps:upload": "node scripts/upload-restaurants-to-supabase.mjs",
+    "maps:review": "node scripts/export-restaurant-review.mjs"
   },
   "dependencies": {
     "@fontsource/roboto": "^5.2.10",
+    "@googlemaps/js-api-loader": "^2.1.1",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.108.2",
     "next": "16.2.9",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },
   "devDependencies": {
+    "@types/google.maps": "^3.65.2",
     "@types/node": "26.0.1",
     "@types/react": "19.2.17",
+    "adm-zip": "^0.5.18",
     "autoprefixer": "10.4.19",
+    "csv-parse": "^7.0.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.2.9",
     "postcss": "8.4.35",
+    "supabase": "^2.108.0",
     "tailwindcss": "3.4.4",
     "typescript": "5.6.2"
   }

@@ -7,3 +7,8 @@ yarn-debug.log*
 yarn-error.log*
 .photo-originals/
 .photo-optimization-stage/
+.env*
+!.env.example
+imports/google-maps/*
+!imports/google-maps/README.md
+supabase/.temp/

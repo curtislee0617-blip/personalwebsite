@@ -24,3 +24,7 @@ Run `npm run photos:optimize` after adding a batch. It creates 450×600 WebP cop
 Add `profile.jpg`, `profile.jpeg`, `profile.png`, `profile.webp`, or `profile.avif` directly inside `public` to use it as the center portrait. It is automatically centered and cropped into the circular frame.
 
 Caltech and UC Davis logo tiles use deterministic randomized placement. Matching logos stay more than three blocks apart, and different logos stay more than two blocks apart in both desktop and mobile grid arrangements.
+
+## Environment variables
+
+Copy `.env.example` to `.env.local` and add the Google Maps and Supabase values. Supabase clients are available from `lib/supabase/client.ts` for browser components and `lib/supabase/server.ts` for server components, route handlers, and server actions.
