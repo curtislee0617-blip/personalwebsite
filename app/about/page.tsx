@@ -23,6 +23,7 @@ type TimelineItem = {
   organisation: string;
   detail: string;
   logo?: LogoMeta;
+  organisationWordmarkSrc?: string;
 };
 
 type EducationItem = {
@@ -62,6 +63,20 @@ function LogoBadge({ logo }: { logo?: LogoMeta }) {
   );
 }
 
+function OrganisationWordmark({ src, alt, fallback }: { src?: string; alt: string; fallback: string }) {
+  const hasImage = assetExists(src);
+
+  if (!hasImage || !src) {
+    return <>{fallback}</>;
+  }
+
+  return (
+    <span className="relative inline-flex h-[1.05rem] w-[4.6rem] align-middle">
+      <Image alt={alt} className="object-contain object-left" fill sizes="74px" src={src} />
+    </span>
+  );
+}
+
 const experience: TimelineItem[] = [
   {
     dates: "June 2026 - Present",
@@ -76,6 +91,7 @@ const experience: TimelineItem[] = [
     organisation: "Caltech",
     detail: "Teaching Caltech students how to cook in Tom Mannion's cooking class.",
     logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
+    organisationWordmarkSrc: "/logos/caltechname.png",
   },
   {
     dates: "July 2025 - August 2025",
@@ -150,7 +166,7 @@ export default function AboutPage() {
       <PageIntro
         eyebrow="About"
         title="Chemical engineering, food science, and kitchens."
-        description="I am double-majoring in Chemical Engineering (process track, with electives in materials) and BEM (Business Economics and Management) at Caltech. I am a Michelin-trained chef, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics."
+        description="I am double-majoring in Chemical Engineering (process track, with electives in materials) and BEM (Business Economics and Management) at Caltech. I am a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics."
       />
 
       <section className="page-section pt-10 sm:pt-12 lg:pt-14">
@@ -190,7 +206,13 @@ export default function AboutPage() {
                     <LogoBadge logo={item.logo} />
                     <div>
                       <h3 className="text-lg font-semibold">{item.role}</h3>
-                      <p className="mt-1 text-sm font-medium text-moss">{item.organisation}</p>
+                      <p className="mt-1 text-sm font-medium text-moss">
+                        {item.organisationWordmarkSrc ? (
+                          <OrganisationWordmark alt={item.organisation} fallback={item.organisation} src={item.organisationWordmarkSrc} />
+                        ) : (
+                          item.organisation
+                        )}
+                      </p>
                       <p className="mt-4 max-w-2xl text-sm leading-7 text-ink/60">{item.detail}</p>
                     </div>
                   </div>
