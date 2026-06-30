@@ -75,7 +75,7 @@ const experience: TimelineItem[] = [
     role: "Teaching Assistant",
     organisation: "Caltech",
     detail: "Teaching Caltech students how to cook in Tom Mannion's cooking class.",
-    logo: { src: "/logos/cal copy.jpg", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-12 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
+    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
   },
   {
     dates: "July 2025 - August 2025",
@@ -119,7 +119,7 @@ const education: EducationItem[] = [
     dates: "2024 - 2028",
     school: "California Institute of Technology",
     detail: "Chemical Engineering (process track, with electives in materials) and Business Economics and Management.",
-    logo: { src: "/logos/cal copy.jpg", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-12 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
+    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
   },
   {
     dates: "2019 - 2024",
