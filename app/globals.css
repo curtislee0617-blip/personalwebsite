@@ -381,6 +381,10 @@ body {
   pointer-events: none;
 }
 
+.site-menu-shell-project-viewer {
+  top: 5.25rem;
+}
+
 .site-menu-button {
   position: relative;
   z-index: 2;

@@ -61,7 +61,7 @@ export default async function ProjectViewerPage({ params }: ProjectViewerPagePro
 
   return (
     <>
-      <div className={`fixed left-4 top-4 z-50 ${mode === "poster" ? "text-white" : "text-ink"}`}>
+      <div className={`fixed left-4 top-[5.25rem] z-50 ${mode === "poster" ? "text-white" : "text-ink"}`}>
         <Link
           className={`inline-flex rounded-full border px-4 py-2 text-sm font-semibold transition ${
             mode === "poster"

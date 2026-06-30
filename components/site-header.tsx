@@ -13,6 +13,7 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const isProjectViewer = pathname.startsWith("/projects/");
 
   useEffect(() => {
     if (pathname !== "/") window.sessionStorage.setItem("home-entry", "menu");
@@ -21,7 +22,7 @@ export function SiteHeader() {
   if (pathname === "/") return null;
 
   return (
-    <header id="top" className="site-menu-shell">
+    <header id="top" className={`site-menu-shell ${isProjectViewer ? "site-menu-shell-project-viewer" : ""}`}>
       <button
         className={`site-menu-button ${open ? "is-open" : ""}`}
         onClick={() => setOpen(!open)}
