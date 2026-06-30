@@ -6,6 +6,7 @@ import { categoryEmojis, suggestRestaurantCategory } from "./restaurant-classifi
 
 const inputPath = process.argv[2];
 const outputPath = process.argv[3] ?? "imports/google-maps/staging/restaurants.json";
+const previousOutputPath = process.argv[4] ?? outputPath;
 
 if (!inputPath) {
   console.error("Usage: npm run maps:import -- <takeout.zip> [output.json]");
@@ -21,6 +22,11 @@ function loadCsvFiles(source) {
       .map((entry) => ({ name: path.basename(entry.entryName, ".csv"), contents: entry.getData().toString("utf8") }));
   }
 
+  const savedDirectory = path.join(source, "Takeout", "Saved");
+  if (fs.existsSync(savedDirectory)) {
+    return loadCsvFiles(savedDirectory);
+  }
+
   return fs.readdirSync(source)
     .filter((name) => name.toLowerCase().endsWith(".csv"))
     .map((name) => ({ name: path.basename(name, ".csv"), contents: fs.readFileSync(path.join(source, name), "utf8") }));
@@ -33,6 +39,23 @@ function normalize(value) {
 function dedupeKey(row) {
   const url = normalize(row.URL);
   return url || `title:${normalize(row.Title).toLocaleLowerCase("en")}`;
+}
+
+function keyForPlace(place) {
+  return place.googleMapsUrl || `title:${normalize(place.name).toLocaleLowerCase("en")}`;
+}
+
+function sequenceNumber(importId = "") {
+  const match = importId.match(/takeout-(\d+)$/);
+  return match ? Number(match[1]) : 0;
+}
+
+function isFoodRelevantTag(tag = "") {
+  return /\b(food|restaurant|cafe|coffee|bakery|bread|pastry|dessert|bar|wine|cocktail|pizza|pasta|burger|taco|ramen|sushi|dim sum|dumpling|bbq|barbecue|deli|steak|bistro|omakase|asian|indian|thai|vietnamese|japanese|korean|chinese|mexican|italian|french|middle eastern|african|brunch|noodle|tea)\b/i.test(tag);
+}
+
+function cleanTags(tags) {
+  return tags.map((tag) => normalize(tag)).filter(Boolean).filter(isFoodRelevantTag);
 }
 
 function classify(place) {
@@ -76,6 +99,11 @@ const places = new Map();
 const excludedCounts = {};
 let sourceRows = 0;
 let invalidRows = 0;
+const previousRestaurants = fs.existsSync(previousOutputPath)
+  ? JSON.parse(fs.readFileSync(previousOutputPath, "utf8")).restaurants ?? []
+  : [];
+const previousIdsByKey = new Map(previousRestaurants.map((place) => [keyForPlace(place), place.importId]));
+let nextSequence = previousRestaurants.reduce((largest, place) => Math.max(largest, sequenceNumber(place.importId)), 0);
 
 for (const file of csvFiles) {
   const rows = parse(file.contents, {
@@ -100,7 +128,7 @@ for (const file of csvFiles) {
     }
     const key = dedupeKey(row);
     const existing = places.get(key);
-    const tags = normalize(row.Tags).split(/[,;]\s*/).filter(Boolean);
+    const tags = cleanTags(normalize(row.Tags).split(/[,;]\s*/).filter(Boolean));
 
     if (existing) {
       existing.sourceLists.add(file.name);
@@ -121,16 +149,19 @@ for (const file of csvFiles) {
   }
 }
 
-const imported = Array.from(places.values()).map((place, index) => {
+const imported = Array.from(places.values()).map((place) => {
   const normalizedPlace = {
     ...place,
     sourceLists: Array.from(place.sourceLists).sort(),
     sourceTags: Array.from(place.sourceTags).sort(),
   };
   const [category, confidence, classificationReason] = classify(normalizedPlace);
+  const importKey = keyForPlace(normalizedPlace);
+  const preservedImportId = previousIdsByKey.get(importKey);
+  if (!preservedImportId) nextSequence += 1;
 
   return {
-    importId: `takeout-${String(index + 1).padStart(4, "0")}`,
+    importId: preservedImportId ?? `takeout-${String(nextSequence).padStart(4, "0")}`,
     ...normalizedPlace,
     category,
     emoji: categoryEmojis[category],

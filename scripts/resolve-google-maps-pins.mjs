@@ -157,6 +157,13 @@ function classifyResolved(item, resolved) {
   return { category: suggestion.category, reason: suggestion.reason };
 }
 
+function canReuseCachedResult(item, cached) {
+  if (!cached?.resolutionMethod && !(cached?.placeId && cached?.position)) return false;
+  if (cached.status === "excluded_manual") return true;
+  if (item.googleMapsUrl && cached.googleMapsUrl) return item.googleMapsUrl === cached.googleMapsUrl;
+  return item.name === cached.name;
+}
+
 const source = JSON.parse(fs.readFileSync(inputPath, "utf8"));
 let candidates = source.restaurants;
 if (selectedIds.size) candidates = candidates.filter((item) => selectedIds.has(item.importId));
@@ -198,6 +205,26 @@ async function worker() {
     const originalCoordinates = coordinatesFromUrl(item.googleMapsUrl);
     if (excludedIds.has(item.importId)) {
       results[index] = { ...item, status: "excluded_manual", reviewReason: "Removed by user", resolutionMethod: "user_decision" };
+    } else if (canReuseCachedResult(item, cached)) {
+      const classification = classifyResolved(item, cached);
+      const updatedCategory = classification.category;
+      const updatedEmoji = categoryEmojis[updatedCategory] ?? cached.emoji ?? "❓";
+      const needsCategoryReview = cached.status === "ready" && updatedCategory === "Unclassified";
+      const retainedStatus = cached.status === "ready" && !needsCategoryReview
+        ? "ready"
+        : cached.status === "excluded_non_food"
+          ? "excluded_non_food"
+          : cached.status;
+      results[index] = {
+        ...cached,
+        ...item,
+        category: updatedCategory,
+        emoji: updatedEmoji,
+        classificationReason: classification.reason,
+        priceLevel: estimatedPrice(updatedCategory),
+        status: retainedStatus,
+        reviewReason: needsCategoryReview ? "Exact pin resolved; category is still uncertain" : cached.reviewReason,
+      };
     } else if (originalCoordinates) {
       results[index] = {
         ...item,

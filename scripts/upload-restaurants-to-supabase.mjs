@@ -30,6 +30,40 @@ function descriptionFor(item) {
   return [item.comment, item.note].map((value) => value?.trim()).filter(Boolean).filter((value, index, all) => all.indexOf(value) === index).join(" — ") || null;
 }
 
+function mappedCategoriesFromSourceLists(sourceLists = []) {
+  return sourceLists.flatMap((list) => {
+    switch (list) {
+      case "Fine dining":
+        return ["Fine Dining"];
+      case "Asian fancy":
+        return ["Asian Fancy"];
+      case "Asian casual":
+        return ["East Asian"];
+      case "Western nicer":
+        return ["Western Nicer"];
+      case "Coffee":
+        return ["Cafés", "Bakeries"];
+      case "Dessert":
+        return ["Desserts"];
+      case "Bars":
+      case "Drinks":
+        return ["Bars"];
+      case "Casual":
+        return ["Casual"];
+      default:
+        return [];
+    }
+  });
+}
+
+function cleanUserTag(tag = "") {
+  return tag?.trim().replace(/\s+/g, " ");
+}
+
+function isFoodRelevantTag(tag = "") {
+  return /\b(food|restaurant|cafe|coffee|bakery|bread|pastry|dessert|bar|wine|cocktail|pizza|pasta|burger|taco|ramen|sushi|dim sum|dumpling|bbq|barbecue|deli|steak|bistro|omakase|asian|indian|thai|vietnamese|japanese|korean|chinese|mexican|italian|french|middle eastern|african|brunch|noodle|tea)\b/i.test(tag);
+}
+
 function normalizedCategoryFor(item) {
   const suggestion = suggestRestaurantCategory({
     name: item.name,
@@ -41,9 +75,30 @@ function normalizedCategoryFor(item) {
   return suggestion.confidence > 0 ? suggestion.category : item.category;
 }
 
+function tagsFor(item, primaryCategory) {
+  const extraCategories = new Set(mappedCategoriesFromSourceLists(item.sourceLists ?? []));
+  const suggestion = suggestRestaurantCategory({
+    name: item.name,
+    primaryType: item.primaryType,
+    placeTypes: item.placeTypes ?? [],
+    sourceCategory: item.category,
+  });
+  if (suggestion.category && suggestion.category !== primaryCategory && suggestion.category !== "Unclassified") {
+    extraCategories.add(suggestion.category);
+  }
+
+  return Array.from(
+    new Set([
+      ...Array.from(extraCategories).filter((category) => category !== primaryCategory),
+      ...(item.sourceTags ?? []).map(cleanUserTag).filter(Boolean).filter(isFoodRelevantTag),
+    ]),
+  ).sort((a, b) => a.localeCompare(b));
+}
+
 for (const item of confirmed) {
   const normalizedCategory = normalizedCategoryFor(item);
   const normalizedEmoji = categoryEmojis[normalizedCategory] ?? item.emoji ?? "❓";
+  const normalizedTags = tagsFor(item, normalizedCategory);
   const existing = merged.get(item.placeId);
   if (!existing) {
     merged.set(item.placeId, {
@@ -51,14 +106,14 @@ for (const item of confirmed) {
       category: normalizedCategory,
       emoji: normalizedEmoji,
       sourceLists: new Set(item.sourceLists ?? []),
-      sourceTags: new Set(item.sourceTags ?? []),
+      sourceTags: new Set(normalizedTags),
       description: descriptionFor(item),
     });
     continue;
   }
 
   (item.sourceLists ?? []).forEach((value) => existing.sourceLists.add(value));
-  (item.sourceTags ?? []).forEach((value) => existing.sourceTags.add(value));
+  normalizedTags.forEach((value) => existing.sourceTags.add(value));
   if (!existing.description) existing.description = descriptionFor(item);
   if (categoryPriority.indexOf(normalizedCategory) < categoryPriority.indexOf(existing.category)) {
     existing.category = normalizedCategory;
