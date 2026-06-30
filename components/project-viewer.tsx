@@ -32,35 +32,35 @@ function PosterViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: str
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-white/50">Poster viewer</p>
-          <h1 className="mt-2 text-lg font-semibold sm:text-2xl">{title}</h1>
+          <h1 className="mt-1.5 text-base font-semibold sm:mt-2 sm:text-2xl">{title}</h1>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <a
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/45 hover:bg-white/10"
+            className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-white/45 hover:bg-white/10 sm:px-4 sm:py-2 sm:text-sm"
             download
             href={pdfHref}
           >
             Download PDF
           </a>
           <button
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/45 hover:bg-white/10"
+            className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-white/45 hover:bg-white/10 sm:px-4 sm:py-2 sm:text-sm"
             onClick={() => setZoom((current) => Math.max(0.7, Number((current - 0.15).toFixed(2))))}
             type="button"
           >
             Zoom out
           </button>
           <button
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/45 hover:bg-white/10"
+            className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-white/45 hover:bg-white/10 sm:px-4 sm:py-2 sm:text-sm"
             onClick={() => setZoom(1)}
             type="button"
           >
             Reset
           </button>
           <button
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/45 hover:bg-white/10"
+            className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-white/45 hover:bg-white/10 sm:px-4 sm:py-2 sm:text-sm"
             onClick={() => setZoom((current) => Math.min(3, Number((current + 0.2).toFixed(2))))}
             type="button"
           >
@@ -154,27 +154,27 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
 
   return (
     <div className="min-h-screen bg-[#f4efe6] text-ink">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:gap-5 sm:px-6 sm:py-5">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-ink/45">Book viewer</p>
-            <h1 className="mt-2 text-xl font-semibold sm:text-3xl">{title}</h1>
-            <p className="mt-2 text-sm text-ink/55">
+            <h1 className="mt-1.5 text-lg font-semibold sm:mt-2 sm:text-3xl">{title}</h1>
+            <p className="mt-1.5 text-xs text-ink/55 sm:mt-2 sm:text-sm">
               {isMobile
                 ? `Page ${pageIndex + 1} of ${pages.length}`
                 : `Pages ${pageIndex + 1}${visiblePages[1] ? ` - ${pageIndex + visiblePages.length}` : ""} of ${pages.length}`}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             <a
-              className="rounded-full border border-ink/15 bg-white/80 px-4 py-2 text-sm font-semibold transition hover:border-ink/30 hover:bg-white"
+              className="rounded-full border border-ink/15 bg-white/80 px-3 py-1.5 text-xs font-semibold transition hover:border-ink/30 hover:bg-white sm:px-4 sm:py-2 sm:text-sm"
               download
               href={pdfHref}
             >
               Download PDF
             </a>
             <button
-              className="rounded-full border border-ink/15 bg-white/80 px-4 py-2 text-sm font-semibold transition hover:border-ink/30 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full border border-ink/15 bg-white/80 px-3 py-1.5 text-xs font-semibold transition hover:border-ink/30 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40 sm:px-4 sm:py-2 sm:text-sm"
               disabled={pageIndex === 0}
               onClick={goPrevious}
               type="button"
@@ -182,7 +182,7 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
               Previous
             </button>
             <button
-              className="rounded-full border border-ink/15 bg-white/80 px-4 py-2 text-sm font-semibold transition hover:border-ink/30 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-full border border-ink/15 bg-white/80 px-3 py-1.5 text-xs font-semibold transition hover:border-ink/30 hover:bg-white disabled:cursor-not-allowed disabled:opacity-40 sm:px-4 sm:py-2 sm:text-sm"
               disabled={pageIndex >= pages.length - step}
               onClick={goNext}
               type="button"

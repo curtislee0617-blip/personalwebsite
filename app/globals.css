@@ -53,7 +53,7 @@ body {
   height: 100%;
   grid-auto-flow: column;
   grid-auto-columns: calc((100svh - 73px) * 0.075);
-  grid-template-rows: repeat(10, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
 }
 
 .photo-grid-tile {

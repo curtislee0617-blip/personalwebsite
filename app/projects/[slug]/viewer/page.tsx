@@ -61,9 +61,9 @@ export default async function ProjectViewerPage({ params }: ProjectViewerPagePro
 
   return (
     <>
-      <div className={`fixed left-4 top-[5.25rem] z-50 ${mode === "poster" ? "text-white" : "text-ink"}`}>
+      <div className={`fixed left-3 top-[4.9rem] z-50 sm:left-4 sm:top-[5.25rem] ${mode === "poster" ? "text-white" : "text-ink"}`}>
         <Link
-          className={`inline-flex rounded-full border px-4 py-2 text-sm font-semibold transition ${
+          className={`inline-flex rounded-full border px-3 py-1.5 text-xs font-semibold transition sm:px-4 sm:py-2 sm:text-sm ${
             mode === "poster"
               ? "border-white/20 bg-black/35 hover:border-white/50 hover:bg-black/55"
               : "border-ink/15 bg-white/85 hover:border-ink/30 hover:bg-white"
@@ -73,7 +73,9 @@ export default async function ProjectViewerPage({ params }: ProjectViewerPagePro
           Back to projects
         </Link>
       </div>
-      <ProjectViewer mode={mode} pages={pages} pdfHref={primaryDocument.href} title={project.title} />
+      <div className="pt-12 sm:pt-0">
+        <ProjectViewer mode={mode} pages={pages} pdfHref={primaryDocument.href} title={project.title} />
+      </div>
     </>
   );
 }
