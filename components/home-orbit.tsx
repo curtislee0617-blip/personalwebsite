@@ -125,6 +125,10 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
   const isLeaving = useRef(false);
   const [entryMode, setEntryMode] = useState<"pending" | "center" | "menu">("pending");
 
+  function menuAnchor() {
+    return { x: window.innerWidth - 44, y: 44 };
+  }
+
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
       const cameFromMenu = window.sessionStorage.getItem("home-entry") === "menu";
@@ -139,7 +143,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     if (entryMode !== "menu") return;
 
     const frame = window.requestAnimationFrame(() => {
-      const source = { x: 44, y: 44 };
+      const source = menuAnchor();
       const bubbles = document.querySelectorAll<HTMLElement>(".orbit-link");
       const menuGlyph = document.querySelector<HTMLElement>(".home-menu-glyph");
 
@@ -195,7 +199,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
       return;
     }
 
-    const target = { x: 44, y: 44 };
+    const target = menuAnchor();
     const bubbles = document.querySelectorAll<HTMLElement>(".orbit-link");
     const profile = document.querySelector<HTMLElement>(".home-profile");
     const menuGlyph = document.querySelector<HTMLElement>(".home-menu-glyph");
