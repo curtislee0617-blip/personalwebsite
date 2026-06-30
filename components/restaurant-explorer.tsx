@@ -1,6 +1,7 @@
 "use client";
 
 import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Restaurant } from "@/data/restaurants";
 
@@ -13,6 +14,7 @@ type RestaurantExplorerProps = {
 type MapStatus = "idle" | "loading" | "ready" | "error";
 
 let mapsConfigured = false;
+const resultListLimit = 250;
 
 function googleMapsUrl(restaurant: Restaurant) {
   if (restaurant.googleMapsUrl) return restaurant.googleMapsUrl;
@@ -28,6 +30,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markerRefs = useRef(new Map<string, google.maps.marker.AdvancedMarkerElement>());
+  const clustererRef = useRef<MarkerClusterer | null>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [activePrice, setActivePrice] = useState("All");
   const [activeLocation, setActiveLocation] = useState("All");
@@ -68,6 +71,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   }, [activeCategory, activeLocation, activePrice, restaurants, search]);
 
   const selectedRestaurant = visibleRestaurants.find((restaurant) => restaurant.id === selectedId) ?? visibleRestaurants[0];
+  const listedRestaurants = visibleRestaurants.slice(0, resultListLimit);
   const hasFilters = activeCategory !== "All" || activePrice !== "All" || activeLocation !== "All" || search.length > 0;
 
   useEffect(() => {
@@ -97,6 +101,8 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           zoom: 12,
           mapId,
           gestureHandling: "cooperative",
+          isFractionalZoomEnabled: true,
+          clickableIcons: false,
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: true,
@@ -112,7 +118,6 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
             scale: 1.12,
           });
           const marker = new AdvancedMarkerElement({
-            map,
             position: restaurant.position,
             title: `${restaurant.name}, ${restaurant.area}`,
             gmpClickable: true,
@@ -121,6 +126,11 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           marker.append(pin);
           marker.addEventListener("gmp-click", () => setSelectedId(restaurant.id));
           markers.set(restaurant.id, marker);
+        });
+
+        clustererRef.current = new MarkerClusterer({
+          map,
+          markers: Array.from(markers.values()),
         });
 
         setMapStatus("ready");
@@ -134,30 +144,30 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
     return () => {
       cancelled = true;
-      markers.forEach((marker) => { marker.map = null; });
+      clustererRef.current?.clearMarkers();
+      clustererRef.current?.setMap(null);
+      clustererRef.current = null;
       markers.clear();
       mapRef.current = null;
     };
   }, [apiKey, mapId, restaurants]);
 
   useEffect(() => {
-    if (mapStatus !== "ready" || !mapRef.current) return;
+    if (mapStatus !== "ready" || !mapRef.current || !clustererRef.current) return;
 
     const visibleIds = new Set(visibleRestaurants.map((restaurant) => restaurant.id));
-    markerRefs.current.forEach((marker, id) => {
-      marker.map = visibleIds.has(id) ? mapRef.current : null;
-    });
+    const visibleMarkers = Array.from(markerRefs.current.entries())
+      .filter(([id]) => visibleIds.has(id))
+      .map(([, marker]) => marker);
 
-    if (visibleRestaurants.length === 0) return;
+    clustererRef.current.clearMarkers(true);
+    clustererRef.current.addMarkers(visibleMarkers, true);
+    clustererRef.current.render();
+
     if (visibleRestaurants.length === 1) {
-      mapRef.current.setCenter(visibleRestaurants[0].position);
-      mapRef.current.setZoom(15);
-      return;
+      mapRef.current.panTo(visibleRestaurants[0].position);
+      if ((mapRef.current.getZoom() ?? 0) < 15) mapRef.current.setZoom(15);
     }
-
-    const bounds = new google.maps.LatLngBounds();
-    visibleRestaurants.forEach((restaurant) => bounds.extend(restaurant.position));
-    mapRef.current.fitBounds(bounds, 56);
   }, [mapStatus, visibleRestaurants]);
 
   function selectRestaurant(restaurant: Restaurant) {
@@ -278,7 +288,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
             {hasFilters ? <button onClick={clearFilters} type="button">Clear filters</button> : <span>Saved places</span>}
           </div>
           <div className="restaurant-results-list">
-            {visibleRestaurants.map((restaurant) => (
+            {listedRestaurants.map((restaurant) => (
               <article className={`restaurant-result ${restaurant.id === selectedRestaurant?.id ? "is-selected" : ""}`} key={restaurant.id}>
                 <button className="restaurant-result-main" onClick={() => selectRestaurant(restaurant)} type="button">
                   <span className="restaurant-result-emoji" aria-hidden="true">{restaurant.emoji}</span>
@@ -301,6 +311,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
                 </div>
               </article>
             ))}
+            {visibleRestaurants.length > resultListLimit && (
+              <p className="restaurant-results-limit">Showing the first {resultListLimit} places. Use search or filters to narrow the list.</p>
+            )}
           </div>
         </aside>
       </div>

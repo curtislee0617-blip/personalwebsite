@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 const orbitLinks = [
   { href: "/about", label: "About", detail: "The person" },
-  { href: "/cv", label: "CV", detail: "The work" },
+  { href: "/projects", label: "Projects", detail: "The work" },
   { href: "/recipes", label: "Recipes", detail: "The kitchen" },
   { href: "/restaurants", label: "Restaurants", detail: "The table" },
   { href: "/tools", label: "Tools", detail: "The kit" },

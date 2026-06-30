@@ -24,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main className="flex-1">{children}</main>
           <footer className="border-t border-ink/10">
             <div className="page-shell flex flex-col gap-4 py-8 text-sm text-ink/55 sm:flex-row sm:items-center sm:justify-between">
-              <p>© {new Date().getFullYear()} Curtis Lee. Made with care.</p>
+              <p>© {new Date().getFullYear()} Curtis Lee.</p>
               <div className="flex gap-5">
                 <Link className="hover:text-ink" href="/contact">Say hello</Link>
                 <a className="hover:text-ink" href="#top">Back to top ↑</a>

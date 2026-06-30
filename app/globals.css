@@ -732,6 +732,13 @@ body {
 .restaurant-map-card .is-temporarily-closed { color: #b42318; font-weight: 700; }
 .restaurant-result-meta a { text-decoration: underline; text-underline-offset: 0.15rem; }
 
+.restaurant-results-limit {
+  padding: 1rem;
+  color: rgb(32 35 31 / 0.5);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
 .restaurant-recommendations {
   display: grid;
   gap: clamp(2rem, 6vw, 5rem);

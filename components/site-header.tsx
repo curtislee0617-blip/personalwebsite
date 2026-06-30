@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const links = [
-  ["/", "Home"], ["/about", "About"], ["/cv", "CV"],
+  ["/", "Home"], ["/about", "About"], ["/projects", "Projects"],
   ["/recipes", "Recipes"], ["/restaurants", "Restaurants"],
   ["/tools", "Tools"], ["/contact", "Contact"],
 ] as const;

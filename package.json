@@ -19,6 +19,7 @@
   "dependencies": {
     "@fontsource/roboto": "^5.2.10",
     "@googlemaps/js-api-loader": "^2.1.1",
+    "@googlemaps/markerclusterer": "^2.6.2",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.2",
     "next": "16.2.9",
