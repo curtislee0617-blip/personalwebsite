@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 
 const STARTER_PERCENT = 0.2;
@@ -254,7 +255,9 @@ export function SourdoughGuide() {
             <p>1 part starter by mass.</p>
             <p>6 part water by mass.</p>
             <p>9 part flour by mass. You can use different flours, and rye is often added.</p>
+            <p>You do not have to use my starter feeding recipe exactly, even if it is the one I recommend here.</p>
             <p>My starter sits at a lower hydration than most, so the headline hydration numbers above will read a little differently from the true overall dough hydration.</p>
+            <p>A lower-hydration starter tends to favour yeast activity a bit more relative to LABs, which can help give a stronger rise. That can be useful if you want lift and structure, since too much acid over time can weaken the dough.</p>
             <p>Everything is kept around 27 - 28C.</p>
           </div>
         </article>
@@ -280,6 +283,56 @@ export function SourdoughGuide() {
               <p className="mt-2 text-sm leading-6 text-ink/65">{step.body}</p>
               {step.note ? <p className="mt-2 text-sm leading-6 text-ink/50">{step.note}</p> : null}
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[1.7rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+        <p className="eyebrow">Gallery</p>
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Recent loaves and crumb shots</h2>
+          <p className="text-xs leading-5 text-ink/50 sm:text-sm">A quick visual reference for crust, oven spring, and interior structure.</p>
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            {
+              src: "/Screenshot 2026-07-01 at 1.38.07 AM.png",
+              alt: "Sourdough loaf with an open ear",
+              caption: "Pronounced ear and strong oven spring.",
+            },
+            {
+              src: "/Screenshot 2026-07-01 at 1.39.02 AM.png",
+              alt: "Sourdough crumb cross section",
+              caption: "Open crumb and interior structure.",
+            },
+            {
+              src: "/Screenshot 2026-07-01 at 1.39.43 AM.png",
+              alt: "Finished round sourdough boule",
+              caption: "Round boule shape and darker crust finish.",
+            },
+            {
+              src: "/Screenshot 2026-07-01 at 1.38.07 AM copy.png",
+              alt: "Second sourdough loaf angle",
+              caption: "Another loaf angle for crust and scoring reference.",
+            },
+            {
+              src: "/Screenshot 2026-07-01 at 1.39.02 AM copy.png",
+              alt: "Second sourdough crumb shot",
+              caption: "Extra crumb view for cell size and evenness.",
+            },
+            {
+              src: "/Screenshot 2026-07-01 at 1.39.43 AM copy.png",
+              alt: "Second boule exterior shot",
+              caption: "Another exterior view for shape and colour.",
+            },
+          ].map((image) => (
+            <figure className="overflow-hidden rounded-[1.35rem] border border-ink/10 bg-paper/70" key={image.src}>
+              <div className="relative aspect-[4/5]">
+                <Image alt={image.alt} className="object-cover" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={image.src} />
+              </div>
+              <figcaption className="px-4 py-3 text-sm leading-6 text-ink/60">{image.caption}</figcaption>
+            </figure>
           ))}
         </div>
       </section>

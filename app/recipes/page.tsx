@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { recipeEntries } from "@/lib/recipes";
@@ -18,7 +19,7 @@ export default function RecipesPage() {
       />
 
       <section className="page-section pt-12 sm:pt-16">
-        <div className="space-y-14">
+        <div className="space-y-12">
           <section>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
@@ -36,6 +37,20 @@ export default function RecipesPage() {
                   </div>
                   <h3 className="mt-4 text-2xl font-semibold tracking-tight">{entry.title}</h3>
                   <p className="mt-4 text-sm leading-7 text-ink/65">{entry.description}</p>
+                  {entry.slug === "cookbook-guide" ? (
+                    <div className="mt-5 grid grid-cols-2 gap-3">
+                      {[
+                        { src: "/project-documents/cook-enterprise/book1.jpeg", alt: "Cookbook team photo" },
+                        { src: "/project-documents/cook-enterprise/book2.jpeg", alt: "Cookbook spread preview" },
+                      ].map((image) => (
+                        <div className="relative overflow-hidden rounded-[1.2rem] border border-ink/10 bg-paper/70" key={image.src}>
+                          <div className="relative aspect-[4/3]">
+                            <Image alt={image.alt} className="object-cover" fill sizes="(max-width: 768px) 50vw, 25vw" src={image.src} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
                   <p className="mt-6 text-sm font-semibold text-moss">Open guide ↗</p>
                 </Link>
               ))}

@@ -82,12 +82,14 @@ export default function Bem114ReportPage() {
           {bem114Sections.slice(0, 7).map((section) => (
             <article className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8" key={section.title}>
               <p className="eyebrow">{section.title}</p>
-              {section.subtitle ? <h2 className="mt-3 text-2xl font-semibold tracking-tight">{section.subtitle}</h2> : null}
-              <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
-                {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
+              {"subtitle" in section && section.subtitle ? <h2 className="mt-3 text-2xl font-semibold tracking-tight">{section.subtitle}</h2> : null}
+              {"paragraphs" in section && section.paragraphs ? (
+                <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
+                  {section.paragraphs.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
+              ) : null}
               {"bullets" in section && section.bullets ? (
                 <ul className="mt-5 list-disc space-y-3 pl-5 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
                   {section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
@@ -110,12 +112,14 @@ export default function Bem114ReportPage() {
           {bem114Sections.slice(7, 10).map((section) => (
             <article className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8" key={section.title}>
               <p className="eyebrow">{section.title}</p>
-              {section.subtitle ? <h2 className="mt-3 text-2xl font-semibold tracking-tight">{section.subtitle}</h2> : null}
-              <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
-                {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
+              {"subtitle" in section && section.subtitle ? <h2 className="mt-3 text-2xl font-semibold tracking-tight">{section.subtitle}</h2> : null}
+              {"paragraphs" in section && section.paragraphs ? (
+                <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
+                  {section.paragraphs.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
+              ) : null}
             </article>
           ))}
 
@@ -133,12 +137,14 @@ export default function Bem114ReportPage() {
           {bem114Sections.slice(10).map((section) => (
             <article className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8" key={section.title}>
               <p className="eyebrow">{section.title}</p>
-              {section.subtitle ? <h2 className="mt-3 text-2xl font-semibold tracking-tight">{section.subtitle}</h2> : null}
-              <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
-                {section.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
+              {"subtitle" in section && section.subtitle ? <h2 className="mt-3 text-2xl font-semibold tracking-tight">{section.subtitle}</h2> : null}
+              {"paragraphs" in section && section.paragraphs ? (
+                <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
+                  {section.paragraphs.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
+              ) : null}
               {"bullets" in section && section.bullets ? (
                 <ul className="mt-5 list-disc space-y-3 pl-5 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
                   {section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
