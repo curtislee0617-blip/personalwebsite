@@ -11,6 +11,20 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000).
 
+## Live deployment
+
+Vercel production is connected to the `main` branch.
+
+That means updates only go live after they are committed or merged into `main` and pushed to GitHub:
+
+```bash
+git add .
+git commit -m "Describe the update"
+git push origin main
+```
+
+If a change is only pushed to a different branch, Vercel creates a preview deployment instead of updating the live site.
+
 The content, contact form, external links, and CV download are placeholders. No database or backend features are included.
 
 ## Background photos
