@@ -1,4 +1,6 @@
-type PageIntroProps = { eyebrow?: string; title: string; description?: string };
+import type { ReactNode } from "react";
+
+type PageIntroProps = { eyebrow?: string; title: string; description?: ReactNode };
 
 export function PageIntro({ eyebrow, title, description }: PageIntroProps) {
   return (

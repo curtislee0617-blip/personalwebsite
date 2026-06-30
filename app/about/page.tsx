@@ -91,7 +91,6 @@ const experience: TimelineItem[] = [
     organisation: "Caltech",
     detail: "Teaching Caltech students how to cook in Tom Mannion's cooking class.",
     logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
-    organisationWordmarkSrc: "/logos/caltechname.png",
   },
   {
     dates: "July 2025 - August 2025",
@@ -166,7 +165,13 @@ export default function AboutPage() {
       <PageIntro
         eyebrow="About"
         title="Chemical engineering, food science, and kitchens."
-        description="I am double-majoring in Chemical Engineering (process track, with electives in materials) and BEM (Business Economics and Management) at Caltech. I am a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics."
+        description={
+          <>
+            I am double-majoring in Chemical Engineering (process track, with electives in materials) and BEM (Business Economics and Management) at{" "}
+            <OrganisationWordmark alt="Caltech" fallback="Caltech" src="/logos/caltechname.png" />.
+            {" "}I am a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics.
+          </>
+        }
       />
 
       <section className="page-section pt-10 sm:pt-12 lg:pt-14">
