@@ -32,12 +32,8 @@ function PosterViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: str
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-5">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-white/50">Poster viewer</p>
-          <h1 className="mt-1.5 text-base font-semibold sm:mt-2 sm:text-2xl">{title}</h1>
-        </div>
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 pb-4 pt-20 sm:px-6 sm:pb-5 sm:pt-24">
+        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
           <a
             className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-white/45 hover:bg-white/10 sm:px-4 sm:py-2 sm:text-sm"
             download
@@ -69,7 +65,7 @@ function PosterViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: str
         </div>
       </div>
 
-      <div className="h-[calc(100vh-6.5rem)] overflow-auto px-4 pb-10 sm:px-6">
+      <div className="h-[calc(100vh-7.5rem)] overflow-auto px-4 pb-10 sm:h-[calc(100vh-8.5rem)] sm:px-6">
         <div className="mx-auto flex h-full w-full items-center justify-center">
           <img
             alt={title}
@@ -154,17 +150,13 @@ function BookViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: strin
 
   return (
     <div className="min-h-screen bg-[#f4efe6] text-ink">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:gap-5 sm:px-6 sm:py-5">
-        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-ink/45">Book viewer</p>
-            <h1 className="mt-1.5 text-lg font-semibold sm:mt-2 sm:text-3xl">{title}</h1>
-            <p className="mt-1.5 text-xs text-ink/55 sm:mt-2 sm:text-sm">
-              {isMobile
-                ? `Page ${pageIndex + 1} of ${pages.length}`
-                : `Pages ${pageIndex + 1}${visiblePages[1] ? ` - ${pageIndex + visiblePages.length}` : ""} of ${pages.length}`}
-            </p>
-          </div>
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 pb-4 pt-20 sm:gap-5 sm:px-6 sm:pb-5 sm:pt-24">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <p className="text-xs uppercase tracking-[0.18em] text-ink/45 sm:text-sm">
+            {isMobile
+              ? `Page ${pageIndex + 1} of ${pages.length}`
+              : `Pages ${pageIndex + 1}${visiblePages[1] ? ` - ${pageIndex + visiblePages.length}` : ""} of ${pages.length}`}
+          </p>
           <div className="flex flex-wrap gap-1.5 sm:gap-2">
             <a
               className="rounded-full border border-ink/15 bg-white/80 px-3 py-1.5 text-xs font-semibold transition hover:border-ink/30 hover:bg-white sm:px-4 sm:py-2 sm:text-sm"

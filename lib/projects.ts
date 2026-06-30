@@ -25,9 +25,38 @@ export type ProjectEntry = {
 
 export const projects: ProjectEntry[] = [
   {
+    slug: "bem-114-report",
+    eyebrow: "BEM 114 final project",
+    title: "Earnings Call NLP-Based Long-Short Strategy",
+    shortTitle: "Hedge Fund Strategy",
+    year: "2026",
+    description:
+      "A full report on an NLP-based long-short equity strategy using earnings call language, with the web version preserving the report wording and order.",
+    detail: [
+      "This project page mirrors the report in a more readable web layout while keeping the original wording and structure intact.",
+      "Use the viewer for the original pages, or download the PDF directly.",
+    ],
+    tags: ["NLP", "Finance", "Long-short equity", "Earnings calls"],
+    previews: [
+      {
+        src: "/project-previews/bem-114-report/abstract-preview.png",
+        alt: "Title and abstract preview from the BEM 114 report",
+      },
+    ],
+    documents: [
+      {
+        href: "/BEM 114 Report - Varun, Will, Curtis.pdf",
+        label: "Open report",
+        description: "Original BEM 114 report PDF",
+        viewer: "external",
+      },
+    ],
+  },
+  {
     slug: "tonbridge-food-science",
     eyebrow: "Conference project · Tonbridge Science Conference",
     title: "The science of flavour",
+    shortTitle: "Flavour poster",
     year: "2023",
     description:
       "Researched flavour compounds, retronasal olfaction, and the chemistry behind why meat tastes good, including how plant-derived molecules might reproduce those sensory qualities.",
@@ -55,6 +84,7 @@ export const projects: ProjectEntry[] = [
     slug: "cook-enterprise",
     eyebrow: "Young Enterprise · 2022 - 2023",
     title: "cook.enterprise",
+    shortTitle: "Cookbook",
     year: "2022 - 2023",
     description:
       "Led a team of 17 students to create a student-focused cookbook. The project won the Best Company Award at the Young Enterprise Kent Finals.",

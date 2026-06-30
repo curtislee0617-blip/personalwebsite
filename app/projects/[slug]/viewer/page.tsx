@@ -19,7 +19,7 @@ function getRenderedPages(slug: string) {
 
   return fs
     .readdirSync(directory)
-    .filter((file) => file.endsWith(".jpg"))
+    .filter((file) => file.endsWith(".jpg") || file.endsWith(".png"))
     .sort((first, second) => first.localeCompare(second, undefined, { numeric: true }))
     .map((file) => `/project-pages/${slug}/${file}`);
 }
@@ -61,7 +61,7 @@ export default async function ProjectViewerPage({ params }: ProjectViewerPagePro
 
   return (
     <>
-      <div className={`fixed left-3 top-[4.9rem] z-50 sm:left-4 sm:top-[5.25rem] ${mode === "poster" ? "text-white" : "text-ink"}`}>
+      <div className={`fixed left-3 top-4 z-50 sm:left-4 sm:top-4 ${mode === "poster" ? "text-white" : "text-ink"}`}>
         <Link
           className={`inline-flex rounded-full border px-3 py-1.5 text-xs font-semibold transition sm:px-4 sm:py-2 sm:text-sm ${
             mode === "poster"
