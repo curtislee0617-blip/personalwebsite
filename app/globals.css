@@ -436,14 +436,16 @@ body {
 
 .restaurant-explorer {
   display: grid;
-  gap: 1.25rem;
+  gap: 0.9rem;
 }
+
+.restaurant-page-section { padding-top: 1rem; }
 
 .beli-profile-link {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
   padding-bottom: 0.2rem;
   border-bottom: 1px solid rgb(32 35 31 / 0.3);
   color: rgb(32 35 31 / 0.68);
@@ -472,7 +474,7 @@ body {
 .restaurant-filter-panel label,
 .restaurant-recommendations label {
   display: grid;
-  gap: 0.4rem;
+  gap: 0.3rem;
 }
 
 .restaurant-filter-panel label > span,
@@ -498,7 +500,7 @@ body {
 }
 
 .restaurant-filter-panel input,
-.restaurant-filter-panel select { height: 2.75rem; padding: 0 0.8rem; }
+.restaurant-filter-panel select { height: 2.5rem; padding: 0 0.75rem; }
 
 .restaurant-filter-panel input:focus,
 .restaurant-filter-panel select:focus,
@@ -509,7 +511,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 2.75rem;
+  height: 2.5rem;
   width: 100%;
   min-width: 11.5rem;
   padding: 0 1.1rem;
@@ -542,7 +544,7 @@ body {
 
 .restaurant-filter {
   flex: none;
-  padding: 0.6rem 0.9rem;
+  padding: 0.5rem 0.82rem;
   border: 1px solid rgb(32 35 31 / 0.15);
   border-radius: 9999px;
   background: rgb(255 255 255 / 0.3);
