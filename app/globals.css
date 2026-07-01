@@ -789,6 +789,18 @@ body {
 .restaurant-result-copy strong { display: block; font-size: 0.85rem; }
 .restaurant-result-copy > small { display: block; margin-top: 0.2rem; color: rgb(32 35 31 / 0.45); font-size: 0.65rem; }
 .restaurant-result-copy > span:not(.restaurant-tags) { display: block; margin-top: 0.35rem; color: rgb(32 35 31 / 0.62); font-size: 0.7rem; line-height: 1.4; }
+.restaurant-category-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.45rem;
+  margin-top: 0.38rem;
+}
+.restaurant-category-tags small {
+  color: rgb(32 35 31 / 0.48);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
 .restaurant-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.4rem; }
 .restaurant-tags small { padding: 0.2rem 0.42rem; border: 1px solid rgb(32 35 31 / 0.1); border-radius: 9999px; color: rgb(32 35 31 / 0.5); font-size: 0.57rem; }
 

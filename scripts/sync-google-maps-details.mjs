@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import { analyzeRestaurantCategories } from "./restaurant-classification.mjs";
+import { analyzeRestaurantCategories, categoryEmojis } from "./restaurant-classification.mjs";
 
 const args = process.argv.slice(2);
 const applyChanges = args.includes("--apply");
@@ -41,11 +41,14 @@ function toPriceLevel(value) {
 function buildOpeningHours(payload) {
   const regularHours = payload.regularOpeningHours ?? payload.currentOpeningHours ?? null;
   const weekdayDescriptions = regularHours?.weekdayDescriptions ?? [];
-  if (!weekdayDescriptions.length && typeof payload.currentOpeningHours?.openNow !== "boolean") return null;
+  const periods = regularHours?.periods ?? [];
+  if (!weekdayDescriptions.length && !periods.length && typeof payload.currentOpeningHours?.openNow !== "boolean") return null;
 
   return {
     openNow: Boolean(payload.currentOpeningHours?.openNow ?? payload.regularOpeningHours?.openNow ?? false),
     weekdayDescriptions,
+    periods,
+    utcOffsetMinutes: typeof payload.utcOffsetMinutes === "number" ? payload.utcOffsetMinutes : null,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -91,6 +94,7 @@ async function fetchPlaceDetails(restaurant) {
           "primaryType",
           "types",
           "priceLevel",
+          "utcOffsetMinutes",
           "businessStatus",
           "regularOpeningHours",
           "currentOpeningHours",

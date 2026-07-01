@@ -36,6 +36,10 @@ function isWithinBounds(position: Restaurant["position"], bounds: MapBounds) {
   return withinLatitude && withinLongitude;
 }
 
+function uniqueLabels(values: string[]) {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
 function defaultDateTimeValue() {
   const now = new Date();
   now.setMinutes(now.getMinutes() + (30 - (now.getMinutes() % 30 || 30)));
@@ -108,26 +112,86 @@ function defaultTimeValue() {
 
 function parseTimeLabel(timeLabel: string) {
   const normalized = timeLabel.replace(/\u202f/g, " ").trim();
-  const match = normalized.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);
+  const amPmMatch = normalized.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);
+  if (amPmMatch) {
+    const rawHour = Number(amPmMatch[1]);
+    const minute = Number(amPmMatch[2] ?? "0");
+    const meridiem = amPmMatch[3].toUpperCase();
+    let hour = rawHour % 12;
+    if (meridiem === "PM") hour += 12;
+    return hour * 60 + minute;
+  }
+
+  const twentyFourHourMatch = normalized.match(/^(\d{1,2})(?::(\d{2}))?$/);
+  if (twentyFourHourMatch) {
+    const hour = Number(twentyFourHourMatch[1]);
+    const minute = Number(twentyFourHourMatch[2] ?? "0");
+    if (hour >= 0 && hour <= 24 && minute >= 0 && minute < 60) {
+      return (hour % 24) * 60 + minute;
+    }
+  }
+
+  return null;
+}
+
+function parseTimeLabelWithFallback(timeLabel: string, fallbackMeridiem: "AM" | "PM" | null) {
+  const direct = parseTimeLabel(timeLabel);
+  if (direct !== null) return direct;
+
+  if (!fallbackMeridiem) return null;
+  return parseTimeLabel(`${timeLabel} ${fallbackMeridiem}`);
+}
+
+function extractMeridiem(timeLabel: string) {
+  const match = timeLabel.replace(/\u202f/g, " ").trim().match(/\b(AM|PM)\b/i);
   if (!match) return null;
-  const rawHour = Number(match[1]);
-  const minute = Number(match[2] ?? "0");
-  const meridiem = match[3].toUpperCase();
-  let hour = rawHour % 12;
-  if (meridiem === "PM") hour += 12;
-  return hour * 60 + minute;
+  return match[1].toUpperCase() as "AM" | "PM";
 }
 
 function parseTimeRange(segment: string) {
+  const normalized = segment.replace(/\u2009/g, " ").replace(/\u202f/g, " ").trim();
+  if (/open 24 hours/i.test(normalized)) return { start: 0, end: 0 };
   const parts = segment.split(/–|-/).map((part) => part.trim()).filter(Boolean);
   if (parts.length !== 2) return null;
-  const start = parseTimeLabel(parts[0]);
+  const fallbackMeridiem = extractMeridiem(parts[1]);
+  const start = parseTimeLabelWithFallback(parts[0], fallbackMeridiem);
   const end = parseTimeLabel(parts[1]);
   if (start === null || end === null) return null;
   return { start, end };
 }
 
+function isOpenFromStructuredPeriods(restaurant: Restaurant, targetDateTime: Date) {
+  const periods = restaurant.openingHours?.periods ?? [];
+  if (!periods.length) return null;
+
+  const targetDay = targetDateTime.getDay();
+  const targetMinutes = targetDateTime.getHours() * 60 + targetDateTime.getMinutes();
+  const targetAbsoluteMinutes = targetDay * 1440 + targetMinutes;
+
+  return periods.some((period) => {
+    const open = period.open;
+    const close = period.close;
+    const openAbsoluteMinutes = open.day * 1440 + open.hour * 60 + open.minute;
+
+    // Google represents an always-open venue as one opening period without a
+    // closing value. It applies to the whole week, not just the opening day.
+    if (!close) return true;
+
+    let closeAbsoluteMinutes = close.day * 1440 + close.hour * 60 + close.minute;
+    if (closeAbsoluteMinutes <= openAbsoluteMinutes) closeAbsoluteMinutes += 7 * 1440;
+
+    const normalizedTargetMinutes = targetAbsoluteMinutes < openAbsoluteMinutes
+      ? targetAbsoluteMinutes + 7 * 1440
+      : targetAbsoluteMinutes;
+
+    return normalizedTargetMinutes >= openAbsoluteMinutes && normalizedTargetMinutes < closeAbsoluteMinutes;
+  });
+}
+
 function isOpenAtDateTime(restaurant: Restaurant, targetDateTime: Date) {
+  const structuredMatch = isOpenFromStructuredPeriods(restaurant, targetDateTime);
+  if (structuredMatch !== null) return structuredMatch;
+
   const weekdayDescriptions = restaurant.openingHours?.weekdayDescriptions ?? [];
   if (!weekdayDescriptions.length) return false;
 
@@ -188,7 +252,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
   const categories = useMemo(() => {
     const categoryCounts = restaurants.reduce((counts, restaurant) => {
-      counts.set(restaurant.category, (counts.get(restaurant.category) ?? 0) + 1);
+      uniqueLabels([restaurant.category, ...restaurant.tags]).forEach((category) => {
+        counts.set(category, (counts.get(category) ?? 0) + 1);
+      });
       return counts;
     }, new Map<string, number>());
 
@@ -210,7 +276,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     const query = search.trim().toLocaleLowerCase("en");
     const targetDateTime = parseDateTimeInput(hoursDate, hoursTime);
     return restaurants.filter((restaurant) => {
-      const matchesCategory = activeCategory === "All" || restaurant.category === activeCategory;
+      const matchesCategory = activeCategory === "All"
+        || restaurant.category === activeCategory
+        || restaurant.tags.includes(activeCategory);
       const matchesPrice = activePrice === "All" || restaurant.priceLevel === Number(activePrice);
       const matchesLocation = activeLocation === "All" || restaurant.area === activeLocation;
       const matchesHours =
@@ -231,6 +299,10 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   );
   const selectedRestaurant = filteredRestaurants.find((restaurant) => restaurant.id === selectedId);
   const listedRestaurants = restaurantsInView.slice(0, resultListLimit);
+  const selectedHoursDateTime = useMemo(
+    () => parseDateTimeInput(hoursDate, hoursTime),
+    [hoursDate, hoursTime],
+  );
   const hasFilters = activeCategory !== "All" || activePrice !== "All" || activeLocation !== "All" || activeHours !== "All" || search.length > 0;
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -412,6 +484,27 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     setSearch("");
   }
 
+  function openingStatus(restaurant: Restaurant) {
+    if (restaurant.businessStatus === "CLOSED_TEMPORARILY") {
+      return { label: "Temporarily closed", className: "is-temporarily-closed" };
+    }
+    if (!restaurant.openingHours) {
+      return { label: "Hours awaiting sync", className: "" };
+    }
+
+    const checkingSelectedTime = activeHours === "OpenAtDateTime";
+    const open = checkingSelectedTime
+      ? isOpenAtDateTime(restaurant, selectedHoursDateTime)
+      : isOpenNow(restaurant);
+
+    return {
+      label: checkingSelectedTime
+        ? `${open ? "Open" : "Closed"} at ${new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(selectedHoursDateTime)}`
+        : open ? "Open now" : "Closed now",
+      className: open ? "is-open" : "",
+    };
+  }
+
   function downloadFilteredList() {
     const headers = ["Name", "Latitude", "Longitude", "Address", "Category", "Price", "Description", "Google Maps URL"];
     const rows = restaurantsInView.map((restaurant) => [
@@ -552,29 +645,28 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
             </div>
           </div>
           <div className={`restaurant-results-list ${isMobileMap && !isResultsOpen ? "is-collapsed" : ""}`}>
-            {listedRestaurants.map((restaurant) => (
+            {listedRestaurants.map((restaurant) => {
+              const status = openingStatus(restaurant);
+              return (
               <article className={`restaurant-result ${restaurant.id === selectedRestaurant?.id ? "is-selected" : ""}`} key={restaurant.id}>
                 <button className="restaurant-result-main" onClick={() => selectRestaurant(restaurant)} type="button">
                   <span className="restaurant-result-emoji" aria-hidden="true">{restaurant.emoji}</span>
                   <span className="restaurant-result-copy">
                     <strong>{restaurant.name}</strong>
                     <small>{restaurant.address} · {"$".repeat(restaurant.priceLevel)}</small>
-                    {restaurant.description && <span>{restaurant.description}</span>}
-                    <span className="restaurant-tags">
-                      {restaurant.tags.map((tag) => <small key={tag}>{tag}</small>)}
+                    <span className="restaurant-category-tags">
+                      {uniqueLabels([restaurant.category, ...restaurant.tags]).slice(0, 4).map((tag) => <small key={tag}>{tag}</small>)}
                     </span>
+                    {restaurant.description && <span>{restaurant.description}</span>}
                   </span>
                 </button>
                 <div className="restaurant-result-meta">
-                  <span className={restaurant.businessStatus === "CLOSED_TEMPORARILY" ? "is-temporarily-closed" : restaurant.openingHours && isOpenNow(restaurant) ? "is-open" : ""}>
-                    {restaurant.businessStatus === "CLOSED_TEMPORARILY"
-                      ? "Temporarily closed"
-                      : restaurant.openingHours ? (isOpenNow(restaurant) ? "Open now" : "Closed") : "Hours awaiting sync"}
-                  </span>
+                  <span className={status.className}>{status.label}</span>
                   <a href={googleMapsUrl(restaurant)} rel="noreferrer" target="_blank">Google Maps ↗</a>
                 </div>
               </article>
-            ))}
+              );
+            })}
             {restaurantsInView.length > resultListLimit && (
               <p className="restaurant-results-limit">Showing the first {resultListLimit} places. Use search or filters to narrow the list.</p>
             )}

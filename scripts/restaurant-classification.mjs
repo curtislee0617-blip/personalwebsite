@@ -14,7 +14,7 @@ export const categoryEmojis = {
   Pasta: "🍝",
   Steakhouse: "🥩",
   Bistro: "🥘",
-  Barbecue: "🌭",
+  Barbecue: "🍖",
   Deli: "🥓",
   Cafés: "☕",
   Desserts: "🍰",
@@ -43,7 +43,7 @@ const typeCategories = new Map([
   ["bar", "Bars"], ["wine_bar", "Bars"], ["cocktail_bar", "Bars"], ["pub", "Bars"], ["night_club", "Bars"],
   ["bakery", "Bakeries"], ["taco_restaurant", "Tacos"], ["hamburger_restaurant", "Burgers"],
   ["chicken_restaurant", "Chicken"], ["ramen_restaurant", "Ramen"], ["sushi_restaurant", "Sushi"],
-  ["dumpling_restaurant", "Dim Sum"], ["pizza_restaurant", "Pizza"], ["coffee_shop", "Cafés"],
+  ["dumpling_restaurant", "Dim Sum"], ["dim_sum_restaurant", "Dim Sum"], ["pizza_restaurant", "Pizza"], ["coffee_shop", "Cafés"],
   ["cafe", "Cafés"], ["steak_house", "Steakhouse"], ["barbecue_restaurant", "Barbecue"],
   ["deli", "Deli"], ["dessert_shop", "Desserts"], ["ice_cream_shop", "Desserts"],
   ["confectionery", "Desserts"], ["pastry_shop", "Desserts"],
@@ -263,8 +263,11 @@ function preferredBroadCuisine({ normalizedName, primaryType, types, sourceCateg
     return { category: typeCategories.get(primaryType), reason: `primary Google place type (${primaryType})` };
   }
 
+  // Secondary Google types can be noisy (for example, a primarily American
+  // restaurant may also carry a Turkish type). Only let secondary types set
+  // the broad cuisine when Google has supplied a generic primary type.
   const byTypes = inferredCuisineFromTypes(types);
-  if (byTypes) return byTypes;
+  if (byTypes && genericPrimaryTypes.has(primaryType)) return byTypes;
   if (currentBroad) return { category: currentBroad, reason: "retained existing cuisine category" };
   return null;
 }

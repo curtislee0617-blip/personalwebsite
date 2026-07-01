@@ -4,6 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 type StoredOpeningHours = {
   openNow?: boolean;
   weekdayDescriptions?: string[];
+  periods?: Array<{
+    open?: { day?: number; hour?: number; minute?: number };
+    close?: { day?: number; hour?: number; minute?: number } | null;
+  }>;
+  utcOffsetMinutes?: number | null;
   updatedAt?: string;
 };
 
@@ -54,9 +59,35 @@ export async function getPublishedRestaurants(): Promise<Restaurant[]> {
       googleMapsUrl: row.google_maps_url,
       businessStatus: row.business_status === "CLOSED_TEMPORARILY" ? "CLOSED_TEMPORARILY" : "OPERATIONAL",
       openingHours: storedHours
-        ? {
+          ? {
             openNow: Boolean(storedHours.openNow),
             weekdayDescriptions: storedHours.weekdayDescriptions ?? [],
+            periods: storedHours.periods?.flatMap((period) => {
+              if (
+                typeof period?.open?.day !== "number"
+                || typeof period.open.hour !== "number"
+                || typeof period.open.minute !== "number"
+              ) return [];
+
+              return [{
+                open: {
+                  day: period.open.day,
+                  hour: period.open.hour,
+                  minute: period.open.minute,
+                },
+                close: period.close
+                  && typeof period.close.day === "number"
+                  && typeof period.close.hour === "number"
+                  && typeof period.close.minute === "number"
+                  ? {
+                      day: period.close.day,
+                      hour: period.close.hour,
+                      minute: period.close.minute,
+                    }
+                  : null,
+              }];
+            }) ?? [],
+            utcOffsetMinutes: storedHours.utcOffsetMinutes ?? null,
             updatedAt: storedHours.updatedAt ?? row.hours_updated_at ?? "",
           }
         : null,

@@ -14,7 +14,7 @@ export const restaurantCategories = [
   { name: "Pasta", emoji: "🍝", description: "Restaurants primarily serving pasta." },
   { name: "Steakhouse", emoji: "🥩", description: "Steakhouses and restaurants primarily serving steak." },
   { name: "Bistro", emoji: "🥘", description: "Bistros and relaxed neighborhood dining rooms." },
-  { name: "Barbecue", emoji: "🌭", description: "Barbecue restaurants, smokehouses and grilled-meat specialists." },
+  { name: "Barbecue", emoji: "🍖", description: "Barbecue restaurants, smokehouses and grilled-meat specialists." },
   { name: "Deli", emoji: "🥓", description: "Delis, delicatessens and bodegas." },
   { name: "Cafés", emoji: "☕", description: "Coffee shops and café-led venues." },
   { name: "Desserts", emoji: "🍰", description: "Dessert shops, ice cream and non-bread-led patisseries." },

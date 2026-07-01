@@ -17,6 +17,11 @@ export type Restaurant = {
   openingHours: {
     openNow: boolean;
     weekdayDescriptions: string[];
+    periods?: Array<{
+      open: { day: number; hour: number; minute: number };
+      close?: { day: number; hour: number; minute: number } | null;
+    }>;
+    utcOffsetMinutes?: number | null;
     updatedAt: string;
   } | null;
   position: {
