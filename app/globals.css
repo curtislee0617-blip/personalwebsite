@@ -459,7 +459,14 @@ body {
   display: grid;
   align-items: end;
   gap: 0.7rem;
-  grid-template-columns: minmax(12rem, 1.5fr) minmax(7rem, 0.6fr) minmax(10rem, 1fr) auto;
+  grid-template-columns:
+    minmax(12rem, 1.45fr)
+    minmax(7rem, 0.58fr)
+    minmax(10rem, 0.9fr)
+    minmax(9rem, 0.8fr)
+    minmax(10rem, 0.95fr)
+    minmax(9rem, 0.8fr)
+    auto;
 }
 
 .restaurant-filter-panel label,
@@ -499,13 +506,20 @@ body {
 .restaurant-recommendations textarea:focus { border-color: rgb(32 35 31 / 0.5); box-shadow: 0 0 0 3px rgb(220 232 229 / 0.8); }
 
 .restaurant-export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 2.75rem;
-  padding: 0 1rem;
+  width: 100%;
+  min-width: 11.5rem;
+  padding: 0 1.1rem;
   border-radius: 0.9rem;
   background: #20231f;
   color: #f7f5ef;
   font-size: 0.72rem;
   font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .restaurant-export:disabled { cursor: not-allowed; opacity: 0.35; }
@@ -854,7 +868,7 @@ body {
 .recommendation-status.is-sent { color: #52704d; }
 
 @media (max-width: 899px) {
-  .restaurant-filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .restaurant-filter-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .restaurant-search { grid-column: 1 / -1; }
   .restaurant-map-layout { min-height: 0; grid-template-columns: 1fr; }
   .restaurant-map-shell,
@@ -881,7 +895,7 @@ body {
   .orbit-link:nth-child(6) { --burst-x: -3.5rem; --burst-y: -23rem; }
   .orbit-link:nth-child(n):hover { transform: translateY(-0.2rem); }
   .home-photo-grid { opacity: 0.55; }
-  .photo-grid-rail { animation-duration: 220s; }
+  .photo-grid-rail { animation-duration: 160s; }
   .photo-grid-track {
     grid-auto-columns: 15svh;
     grid-template-rows: repeat(5, minmax(0, 1fr));
@@ -891,8 +905,9 @@ body {
   .restaurant-map { min-height: 65svh; }
   .restaurant-map-card { left: 0.65rem; bottom: 0.65rem; width: calc(100% - 1.3rem); padding: 0.8rem; }
   .restaurant-card-emoji { width: 2.35rem; height: 2.35rem; font-size: 1.1rem; }
-  .restaurant-filter-panel { grid-template-columns: 1fr; }
+  .restaurant-filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .restaurant-search { grid-column: auto; }
+  .restaurant-export { min-width: 0; }
   .restaurant-recommendations { padding: 1.25rem; border-radius: 1.4rem; }
   .restaurant-recommendations form { grid-template-columns: 1fr; }
   .restaurant-recommendations .recommendation-message,

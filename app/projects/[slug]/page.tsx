@@ -51,6 +51,15 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       <PageIntro eyebrow={project.eyebrow} title={project.title} description={project.description} />
 
       <section className="page-section pt-12 sm:pt-16">
+        <div className="mb-6 sm:mb-8">
+          <Link
+            className="inline-flex rounded-full border border-ink/15 bg-white/75 px-4 py-2 text-sm font-semibold text-ink transition hover:border-ink/30 hover:bg-white"
+            href="/projects"
+          >
+            ← Back to projects
+          </Link>
+        </div>
+
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.95fr)] lg:gap-16">
           <div>
             <div className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8">
@@ -68,9 +77,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   <p className="eyebrow">Preview</p>
                   <h2 className="mt-3 text-xl font-semibold sm:text-2xl">Project gallery</h2>
                 </div>
-                <Link className="text-sm font-semibold text-moss hover:text-ink" href="/projects">
-                  Back to projects
-                </Link>
               </div>
 
               {availablePreviews.length > 0 ? (

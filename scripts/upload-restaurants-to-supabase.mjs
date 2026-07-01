@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { createClient } from "@supabase/supabase-js";
-import { categoryEmojis, suggestRestaurantCategory } from "./restaurant-classification.mjs";
+import { analyzeRestaurantCategories } from "./restaurant-classification.mjs";
 
 const args = process.argv.slice(2);
 const inputPath = args.find((arg) => !arg.startsWith("--")) ?? "imports/google-maps/staging/enriched-restaurants.json";
@@ -64,41 +64,37 @@ function isFoodRelevantTag(tag = "") {
   return /\b(food|restaurant|cafe|coffee|bakery|bread|pastry|dessert|bar|wine|cocktail|pizza|pasta|burger|taco|ramen|sushi|dim sum|dumpling|bbq|barbecue|deli|steak|bistro|omakase|asian|indian|thai|vietnamese|japanese|korean|chinese|mexican|italian|french|middle eastern|african|brunch|noodle|tea)\b/i.test(tag);
 }
 
-function normalizedCategoryFor(item) {
-  const suggestion = suggestRestaurantCategory({
+function analysisFor(item) {
+  return analyzeRestaurantCategories({
     name: item.name,
     primaryType: item.primaryType,
     placeTypes: item.placeTypes ?? [],
     sourceCategory: item.category,
+    sourceLists: item.sourceLists ?? [],
+    priceLevel: item.priceLevel ?? null,
+    tags: (item.sourceTags ?? []).map(cleanUserTag).filter(Boolean).filter(isFoodRelevantTag),
   });
-
-  return suggestion.confidence > 0 ? suggestion.category : item.category;
 }
 
-function tagsFor(item, primaryCategory) {
-  const extraCategories = new Set(mappedCategoriesFromSourceLists(item.sourceLists ?? []));
-  const suggestion = suggestRestaurantCategory({
-    name: item.name,
-    primaryType: item.primaryType,
-    placeTypes: item.placeTypes ?? [],
-    sourceCategory: item.category,
-  });
-  if (suggestion.category && suggestion.category !== primaryCategory && suggestion.category !== "Unclassified") {
-    extraCategories.add(suggestion.category);
-  }
-
+function tagsFor(item, analysis) {
+  const extraCategories = new Set([
+    ...mappedCategoriesFromSourceLists(item.sourceLists ?? []),
+    ...analysis.secondaryCategories,
+  ]);
   return Array.from(
     new Set([
-      ...Array.from(extraCategories).filter((category) => category !== primaryCategory),
+      ...Array.from(extraCategories).filter((category) => category !== analysis.primaryCategory),
       ...(item.sourceTags ?? []).map(cleanUserTag).filter(Boolean).filter(isFoodRelevantTag),
+      ...analysis.tags,
     ]),
   ).sort((a, b) => a.localeCompare(b));
 }
 
 for (const item of confirmed) {
-  const normalizedCategory = normalizedCategoryFor(item);
-  const normalizedEmoji = categoryEmojis[normalizedCategory] ?? item.emoji ?? "❓";
-  const normalizedTags = tagsFor(item, normalizedCategory);
+  const analysis = analysisFor(item);
+  const normalizedCategory = analysis.primaryCategory ?? item.category;
+  const normalizedEmoji = analysis.emoji ?? item.emoji ?? "❓";
+  const normalizedTags = tagsFor(item, analysis);
   const existing = merged.get(item.placeId);
   if (!existing) {
     merged.set(item.placeId, {

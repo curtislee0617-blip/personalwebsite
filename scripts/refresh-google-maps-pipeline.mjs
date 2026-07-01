@@ -43,6 +43,7 @@ const resolvedPath = "imports/google-maps/staging/resolved-pins.json";
 run("Import saved places", ["scripts/import-google-maps.mjs", sourcePath, restaurantsPath, restaurantsPath]);
 run("Resolve original Google Maps pins", ["scripts/resolve-google-maps-pins.mjs", restaurantsPath, `--output=${resolvedPath}`]);
 run("Upload published restaurants", ["scripts/upload-restaurants-to-supabase.mjs", resolvedPath, "--sync"]);
+run("Sync Google hours and status", ["scripts/sync-google-maps-details.mjs", "--apply"]);
 run("Export review list", ["scripts/export-restaurant-review.mjs", resolvedPath]);
 
 console.log("\nGoogle Maps refresh complete.");

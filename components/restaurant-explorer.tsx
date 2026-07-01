@@ -12,6 +12,7 @@ type RestaurantExplorerProps = {
 
 type MapStatus = "idle" | "loading" | "ready" | "error";
 type MapBounds = { north: number; south: number; east: number; west: number };
+type HoursFilter = "All" | "OpenNow" | "OpenAtDateTime";
 
 let mapsConfigured = false;
 const resultListLimit = 250;
@@ -35,6 +36,135 @@ function isWithinBounds(position: Restaurant["position"], bounds: MapBounds) {
   return withinLatitude && withinLongitude;
 }
 
+function defaultDateTimeValue() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + (30 - (now.getMinutes() % 30 || 30)));
+  now.setSeconds(0, 0);
+  const timezoneOffsetMs = now.getTimezoneOffset() * 60 * 1000;
+  return new Date(now.getTime() - timezoneOffsetMs).toISOString().slice(0, 16);
+}
+
+function formatDateValue(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateTimeInput(dateValue: string, timeValue: string) {
+  const [year, month, day] = dateValue.split("-").map(Number);
+  const [hours, minutes] = timeValue.split(":").map(Number);
+
+  if ([year, month, day, hours, minutes].some((value) => Number.isNaN(value))) {
+    const fallback = new Date();
+    fallback.setHours(23, 0, 0, 0);
+    return fallback;
+  }
+
+  return new Date(year, month - 1, day, hours, minutes, 0, 0);
+}
+
+function buildDateOptions() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return Array.from({ length: 14 }, (_, index) => {
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + index);
+    const prefix = index === 0 ? "Today" : index === 1 ? "Tomorrow" : "";
+
+    return {
+      value: formatDateValue(nextDate),
+      label: `${prefix ? `${prefix} · ` : ""}${new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      }).format(nextDate)}`,
+    };
+  });
+}
+
+function buildTimeOptions() {
+  return Array.from({ length: 48 }, (_, index) => {
+    const hours = Math.floor(index / 2);
+    const minutes = index % 2 === 0 ? 0 : 30;
+    const value = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+    const label = new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(2026, 0, 1, hours, minutes, 0, 0));
+
+    return { value, label };
+  });
+}
+
+function defaultDateValue() {
+  return formatDateValue(new Date());
+}
+
+function defaultTimeValue() {
+  return defaultDateTimeValue().slice(11, 16);
+}
+
+function parseTimeLabel(timeLabel: string) {
+  const normalized = timeLabel.replace(/\u202f/g, " ").trim();
+  const match = normalized.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);
+  if (!match) return null;
+  const rawHour = Number(match[1]);
+  const minute = Number(match[2] ?? "0");
+  const meridiem = match[3].toUpperCase();
+  let hour = rawHour % 12;
+  if (meridiem === "PM") hour += 12;
+  return hour * 60 + minute;
+}
+
+function parseTimeRange(segment: string) {
+  const parts = segment.split(/–|-/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length !== 2) return null;
+  const start = parseTimeLabel(parts[0]);
+  const end = parseTimeLabel(parts[1]);
+  if (start === null || end === null) return null;
+  return { start, end };
+}
+
+function isOpenAtDateTime(restaurant: Restaurant, targetDateTime: Date) {
+  const weekdayDescriptions = restaurant.openingHours?.weekdayDescriptions ?? [];
+  if (!weekdayDescriptions.length) return false;
+
+  const targetMinutes = targetDateTime.getHours() * 60 + targetDateTime.getMinutes();
+  const weekdayName = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(targetDateTime);
+  const previousDay = new Date(targetDateTime);
+  previousDay.setDate(previousDay.getDate() - 1);
+  const previousWeekdayName = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(previousDay);
+
+  function rangesForDay(dayName: string) {
+    const matchingDay = weekdayDescriptions.find((line) => line.toLocaleLowerCase("en").startsWith(dayName.toLocaleLowerCase("en")));
+    if (!matchingDay || /closed/i.test(matchingDay)) return [];
+    const schedule = matchingDay.split(":").slice(1).join(":").trim();
+    if (!schedule) return [];
+    return schedule
+      .split(",")
+      .map((segment) => parseTimeRange(segment.trim()))
+      .filter((range): range is { start: number; end: number } => Boolean(range));
+  }
+
+  const todayMatch = rangesForDay(weekdayName).some(({ start, end }) => {
+      if (start === end) return true;
+      if (start < end) return targetMinutes >= start && targetMinutes < end;
+      return targetMinutes >= start || targetMinutes < end;
+    });
+
+  if (todayMatch) return true;
+
+  return rangesForDay(previousWeekdayName).some(({ start, end }) =>
+    start > end && targetMinutes < end,
+  );
+}
+
+function isOpenNow(restaurant: Restaurant) {
+  return isOpenAtDateTime(restaurant, new Date());
+}
+
 export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExplorerProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -44,12 +174,17 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const [activeCategory, setActiveCategory] = useState("All");
   const [activePrice, setActivePrice] = useState("All");
   const [activeLocation, setActiveLocation] = useState("All");
+  const [activeHours, setActiveHours] = useState<HoursFilter>("All");
+  const [hoursDate, setHoursDate] = useState(defaultDateValue);
+  const [hoursTime, setHoursTime] = useState(defaultTimeValue);
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(restaurants[0]?.id ?? "");
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [mapStatus, setMapStatus] = useState<MapStatus>(apiKey ? "idle" : "error");
   const [isMobileMap, setIsMobileMap] = useState(false);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const dateOptions = useMemo(() => buildDateOptions(), []);
+  const timeOptions = useMemo(() => buildTimeOptions(), []);
 
   const categories = useMemo(() => {
     const categoryCounts = restaurants.reduce((counts, restaurant) => {
@@ -73,15 +208,20 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
   const filteredRestaurants = useMemo(() => {
     const query = search.trim().toLocaleLowerCase("en");
+    const targetDateTime = parseDateTimeInput(hoursDate, hoursTime);
     return restaurants.filter((restaurant) => {
       const matchesCategory = activeCategory === "All" || restaurant.category === activeCategory;
       const matchesPrice = activePrice === "All" || restaurant.priceLevel === Number(activePrice);
       const matchesLocation = activeLocation === "All" || restaurant.area === activeLocation;
+      const matchesHours =
+        activeHours === "All"
+        || (activeHours === "OpenNow" && restaurant.businessStatus !== "CLOSED_TEMPORARILY" && isOpenNow(restaurant))
+        || (activeHours === "OpenAtDateTime" && restaurant.businessStatus !== "CLOSED_TEMPORARILY" && isOpenAtDateTime(restaurant, targetDateTime));
       const matchesSearch = !query || [restaurant.name, restaurant.area, restaurant.city, restaurant.category, ...restaurant.tags]
         .some((value) => value.toLocaleLowerCase("en").includes(query));
-      return matchesCategory && matchesPrice && matchesLocation && matchesSearch;
+      return matchesCategory && matchesPrice && matchesLocation && matchesHours && matchesSearch;
     });
-  }, [activeCategory, activeLocation, activePrice, restaurants, search]);
+  }, [activeCategory, activeHours, activeLocation, activePrice, hoursDate, hoursTime, restaurants, search]);
 
   const restaurantsInView = useMemo(
     () => mapBounds
@@ -91,8 +231,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   );
   const selectedRestaurant = filteredRestaurants.find((restaurant) => restaurant.id === selectedId);
   const listedRestaurants = restaurantsInView.slice(0, resultListLimit);
-  const hasFilters = activeCategory !== "All" || activePrice !== "All" || activeLocation !== "All" || search.length > 0;
-
+  const hasFilters = activeCategory !== "All" || activePrice !== "All" || activeLocation !== "All" || activeHours !== "All" || search.length > 0;
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -267,6 +406,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     setActiveCategory("All");
     setActivePrice("All");
     setActiveLocation("All");
+    setActiveHours("All");
+    setHoursDate(defaultDateValue());
+    setHoursTime(defaultTimeValue());
     setSearch("");
   }
 
@@ -314,6 +456,34 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
             {locations.map((location) => <option key={location}>{location === "All" ? "All locations" : location}</option>)}
           </select>
         </label>
+        <label>
+          <span>Hours</span>
+          <select onChange={(event) => setActiveHours(event.target.value as HoursFilter)} value={activeHours}>
+            <option value="All">All hours</option>
+            <option value="OpenNow">Open now</option>
+            <option value="OpenAtDateTime">Open at a specific date & time</option>
+          </select>
+        </label>
+        <label>
+          <span>Choose day</span>
+          <select
+            disabled={activeHours !== "OpenAtDateTime"}
+            onChange={(event) => setHoursDate(event.target.value)}
+            value={hoursDate}
+          >
+            {dateOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+        </label>
+        <label>
+          <span>Choose time</span>
+          <select
+            disabled={activeHours !== "OpenAtDateTime"}
+            onChange={(event) => setHoursTime(event.target.value)}
+            value={hoursTime}
+          >
+            {timeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          </select>
+        </label>
         <button className="restaurant-export" disabled={restaurantsInView.length === 0 || restaurantsInView.length > 2000} onClick={downloadFilteredList} type="button">
           Download filtered list ↓
         </button>
@@ -332,7 +502,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         ))}
       </div>
 
-      <p className="restaurant-export-note">The downloaded CSV can be imported into Google My Maps. Google limits each imported layer to 2,000 rows.</p>
+      <p className="restaurant-export-note">The downloaded CSV can be imported into Google My Maps. Google limits each imported layer to 2,000 rows. Opening-hours filters use the latest Google hours synced into this site, including specific date-and-time checks.</p>
 
       <div className="restaurant-map-layout">
         <div className="restaurant-map-shell">
@@ -396,10 +566,10 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
                   </span>
                 </button>
                 <div className="restaurant-result-meta">
-                  <span className={restaurant.businessStatus === "CLOSED_TEMPORARILY" ? "is-temporarily-closed" : restaurant.openingHours?.openNow ? "is-open" : ""}>
+                  <span className={restaurant.businessStatus === "CLOSED_TEMPORARILY" ? "is-temporarily-closed" : restaurant.openingHours && isOpenNow(restaurant) ? "is-open" : ""}>
                     {restaurant.businessStatus === "CLOSED_TEMPORARILY"
                       ? "Temporarily closed"
-                      : restaurant.openingHours ? (restaurant.openingHours.openNow ? "Open now" : "Closed") : "Hours awaiting sync"}
+                      : restaurant.openingHours ? (isOpenNow(restaurant) ? "Open now" : "Closed") : "Hours awaiting sync"}
                   </span>
                   <a href={googleMapsUrl(restaurant)} rel="noreferrer" target="_blank">Google Maps ↗</a>
                 </div>
