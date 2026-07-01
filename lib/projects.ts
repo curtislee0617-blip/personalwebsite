@@ -25,11 +25,50 @@ export type ProjectEntry = {
 
 export const projects: ProjectEntry[] = [
   {
+    slug: "biodiesel-from-used-cooking-oil",
+    eyebrow: "Chemical engineering coursework",
+    title: "Biodiesel from used cooking oil",
+    shortTitle: "Biodiesel project",
+    year: "June 2026",
+    description:
+      "A two-part biodiesel project combining a plant-scale process design report with a synthesis presentation comparing greener alcohol routes.",
+    detail: [
+      "This project brings together two related pieces of work around biodiesel production from used cooking oil.",
+      "The first part is a process-design report for biodiesel production using pretreatment, esterification, transesterification, separation, and methanol recovery.",
+      "The second part is a presentation focused on the actual synthesis route, looking at biodiesel production from used cooking oil and ethanol and discussing the tradeoff between greener feedstocks and more difficult separations.",
+    ],
+    tags: ["Chemical engineering", "Process design", "Biodiesel", "Used cooking oil"],
+    previews: [
+      {
+        src: "/project-previews/biodiesel-from-used-cooking-oil/process-flow-screenshot.png",
+        alt: "Process flow diagram from the biodiesel design project",
+      },
+      {
+        src: "/project-previews/biodiesel-from-used-cooking-oil/lab-synthesis-screenshot.png",
+        alt: "Lab synthesis setup from the biodiesel project",
+      },
+    ],
+    documents: [
+      {
+        href: "/ChE62 Project (2).pdf",
+        label: "Process design report",
+        description: "Plant design report for biodiesel production from used cooking oil.",
+        viewer: "external",
+      },
+      {
+        href: "/Curtis’s Ch9 final project.pdf",
+        label: "Synthesis presentation",
+        description: "Presentation on biodiesel synthesis from used cooking oil and ethanol.",
+        viewer: "external",
+      },
+    ],
+  },
+  {
     slug: "bem-114-report",
     eyebrow: "BEM 114 final project",
     title: "Earnings Call NLP-Based Long-Short Strategy",
     shortTitle: "Hedge Fund Strategy",
-    year: "2026",
+    year: "June 2026",
     description:
       "A full report on an NLP-based long-short equity strategy using earnings call language, with the web version preserving the report wording and order.",
     detail: [
@@ -57,7 +96,7 @@ export const projects: ProjectEntry[] = [
     eyebrow: "Conference project · Tonbridge Science Conference",
     title: "The science of flavour",
     shortTitle: "Flavour poster",
-    year: "2023",
+    year: "February 2023",
     description:
       "Researched flavour compounds, retronasal olfaction, and the chemistry behind why meat tastes good, including how plant-derived molecules might reproduce those sensory qualities.",
     detail: [

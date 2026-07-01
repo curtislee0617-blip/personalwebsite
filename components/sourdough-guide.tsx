@@ -95,6 +95,10 @@ function round(value: number) {
   return Math.round(value);
 }
 
+function formatOneDecimal(value: number) {
+  return value.toFixed(1);
+}
+
 function formatClock(time: string, offsetMinutes: number) {
   const [hours, minutes] = time.split(":").map(Number);
   const total = hours * 60 + minutes + offsetMinutes;
@@ -170,6 +174,9 @@ export function SourdoughGuide() {
 
             <label className="grid gap-2">
               <span className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/45">Start time</span>
+              <p aria-hidden="true" className="text-[0.68rem] leading-4 text-transparent sm:text-[0.72rem]">
+                Common boule masses: 700g small · 900g standard · 1100g large
+              </p>
               <input
                 className="h-11 rounded-2xl border border-ink/15 bg-white/75 px-4 text-base outline-none transition focus:border-ink/35"
                 onChange={(event) => setStartTime(event.currentTarget.value)}
@@ -225,7 +232,7 @@ export function SourdoughGuide() {
               ["Dark rye flour (3.75%)", round(formula.rye)],
               ["Starter (20%)", round(formula.starter)],
               [`Water (${hydration}%)`, round(formula.water)],
-              ["Salt (2%)", round(formula.salt)],
+              ["Salt (2%)", formatOneDecimal(formula.salt)],
             ].map(([label, value]) => (
               <div className="rounded-[1.15rem] border border-ink/10 bg-white/70 px-4 py-3" key={String(label)}>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/45">{label}</p>
