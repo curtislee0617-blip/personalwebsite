@@ -655,7 +655,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
                     <strong>{restaurant.name}</strong>
                     <small>{restaurant.address} · {"$".repeat(restaurant.priceLevel)}</small>
                     <span className="restaurant-category-tags">
-                      {uniqueLabels([restaurant.category, ...restaurant.tags]).slice(0, 4).map((tag) => <small key={tag}>{tag}</small>)}
+                      <small>{uniqueLabels([restaurant.category, ...restaurant.tags]).slice(0, 4).join(", ")}</small>
                     </span>
                     {restaurant.description && <span>{restaurant.description}</span>}
                   </span>

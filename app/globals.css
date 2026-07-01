@@ -790,9 +790,7 @@ body {
 .restaurant-result-copy > small { display: block; margin-top: 0.2rem; color: rgb(32 35 31 / 0.45); font-size: 0.65rem; }
 .restaurant-result-copy > span:not(.restaurant-tags) { display: block; margin-top: 0.35rem; color: rgb(32 35 31 / 0.62); font-size: 0.7rem; line-height: 1.4; }
 .restaurant-category-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.45rem;
+  display: block;
   margin-top: 0.38rem;
 }
 .restaurant-category-tags small {
