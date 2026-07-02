@@ -14,7 +14,9 @@ imports/google-maps/*
 !imports/google-maps/README.md
 supabase/.temp/
 .vercel
-media-imports/high-resolution/*
-!media-imports/high-resolution/.gitkeep
+media-imports/photography/*
+!media-imports/photography/.gitkeep
+media-imports/recipes/*
+!media-imports/recipes/.gitkeep
 public/logos/cal.jpg
 public/logos/towngas copy.png
