@@ -93,12 +93,14 @@ function createLogoPlacements(itemCount: number, rows: number) {
 }
 
 function PhotoGridBackground({ photos }: { photos: string[] }) {
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const [itemCount, setItemCount] = useState(220);
   const [rowCount, setRowCount] = useState(8);
 
   useEffect(() => {
     const updateDensity = () => {
       const mobile = window.matchMedia("(max-width: 639px)").matches;
+      setIsMobile(mobile);
       const rows = mobile ? 5 : 8;
       const columnWidth = mobile
         ? Math.max(72, window.innerHeight * 0.15)
@@ -112,6 +114,16 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
     window.addEventListener("resize", updateDensity);
     return () => window.removeEventListener("resize", updateDensity);
   }, []);
+
+  if (isMobile === null) return <div className="home-photo-grid" aria-hidden="true" />;
+
+  if (isMobile) {
+    return (
+      <div className="home-photo-grid" aria-hidden="true">
+        <div className="mobile-photo-collage" />
+      </div>
+    );
+  }
 
   const items = Array.from({ length: itemCount }, (_, index) => ({
     photo: photos.length ? photos[index % photos.length] : null,

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "photos:optimize": "node scripts/optimize-photos.mjs",
+    "photos:mobile-collage": "node scripts/build-mobile-collage.mjs",
     "maps:import": "node scripts/import-google-maps.mjs",
     "maps:enrich": "node scripts/enrich-google-places.mjs",
     "maps:resolve-pins": "node scripts/resolve-google-maps-pins.mjs",

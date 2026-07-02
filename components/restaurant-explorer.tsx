@@ -245,7 +245,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const [selectedId, setSelectedId] = useState(restaurants[0]?.id ?? "");
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [mapStatus, setMapStatus] = useState<MapStatus>(apiKey ? "idle" : "error");
-  const [isMobileMap, setIsMobileMap] = useState(false);
+  const [isMobileMap, setIsMobileMap] = useState<boolean | null>(null);
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const dateOptions = useMemo(() => buildDateOptions(), []);
   const timeOptions = useMemo(() => buildTimeOptions(), []);
@@ -320,7 +320,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   }, []);
 
   useEffect(() => {
-    if (!apiKey || !mapElementRef.current) return;
+    if (!apiKey || !mapElementRef.current || isMobileMap === null) return;
 
     let cancelled = false;
     const mapElement = mapElementRef.current;
@@ -336,7 +336,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           mapsConfigured = true;
         }
 
-        const [{ Map }, { AdvancedMarkerElement, PinElement }] = await Promise.all([
+        const [{ Map, RenderingType }, { AdvancedMarkerElement, PinElement }] = await Promise.all([
           importLibrary("maps"),
           importLibrary("marker"),
         ]);
@@ -348,11 +348,16 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           zoom: 12,
           mapId,
           gestureHandling: isMobileMap ? "greedy" : "cooperative",
-          isFractionalZoomEnabled: true,
+          isFractionalZoomEnabled: !isMobileMap,
+          renderingType: isMobileMap ? RenderingType.RASTER : RenderingType.VECTOR,
           clickableIcons: false,
           mapTypeControl: false,
           streetViewControl: false,
-          fullscreenControl: true,
+          fullscreenControl: !isMobileMap,
+          zoomControl: !isMobileMap,
+          rotateControl: false,
+          scaleControl: false,
+          keyboardShortcuts: !isMobileMap,
         });
 
         mapRef.current = map;
@@ -387,7 +392,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           });
           const markerElement = document.createElement("div");
           markerElement.className = "restaurant-map-marker";
-          markerElement.classList.toggle("is-mobile", isMobileMap);
+          markerElement.classList.toggle("is-mobile", Boolean(isMobileMap));
           markerElement.append(pin);
 
           const label = document.createElement("span");
@@ -460,7 +465,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
   useEffect(() => {
     markerElementRefs.current.forEach((element, id) => {
-      element.classList.toggle("is-mobile", isMobileMap);
+      element.classList.toggle("is-mobile", Boolean(isMobileMap));
       element.classList.toggle("is-selected", id === selectedId);
     });
   }, [isMobileMap, selectedId]);

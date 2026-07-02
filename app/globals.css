@@ -47,6 +47,8 @@ body {
   will-change: transform;
 }
 
+.mobile-photo-collage { display: none; }
+
 .photo-grid-track {
   display: grid;
   flex: none;
@@ -101,6 +103,10 @@ body {
 
 @keyframes photo-grid-scroll {
   to { transform: translateX(-50%); }
+}
+
+@keyframes mobile-collage-scroll {
+  to { transform: translate3d(-270svh, 0, 0); }
 }
 
 .home-orbit::after {
@@ -907,10 +913,20 @@ body {
   .orbit-link:nth-child(6) { --burst-x: -3.5rem; --burst-y: -23rem; }
   .orbit-link:nth-child(n):hover { transform: translateY(-0.2rem); }
   .home-photo-grid { opacity: 0.55; }
-  .photo-grid-rail { animation-duration: 160s; }
-  .photo-grid-track {
-    grid-auto-columns: 15svh;
-    grid-template-rows: repeat(5, minmax(0, 1fr));
+  .photo-grid-rail { display: none; }
+  .mobile-photo-collage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    width: 540svh;
+    height: 100%;
+    background-image: url("/mobile-photo-collage.webp");
+    background-position: 0 50%;
+    background-repeat: repeat-x;
+    background-size: 270svh 100%;
+    animation: mobile-collage-scroll 92s linear infinite;
+    will-change: transform;
   }
   .restaurant-map-layout { border-radius: 1.4rem; }
   .restaurant-map-shell,
