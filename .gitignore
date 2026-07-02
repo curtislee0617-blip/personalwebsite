@@ -2,6 +2,7 @@ node_modules/
 .next/
 out/
 .DS_Store
+*.tsbuildinfo
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -13,5 +14,7 @@ imports/google-maps/*
 !imports/google-maps/README.md
 supabase/.temp/
 .vercel
+media-imports/high-resolution/*
+!media-imports/high-resolution/.gitkeep
 public/logos/cal.jpg
 public/logos/towngas copy.png
