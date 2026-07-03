@@ -902,6 +902,35 @@ body {
 .steam-symbols strong { font-size: 1rem; }
 .steam-symbols span { margin-top: 0.18rem; overflow: hidden; font-size: 0.68rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 .steam-symbols small { margin-top: 0.1rem; color: rgb(32 35 31 / 0.48); font-size: 0.58rem; white-space: nowrap; }
+.steam-unit-switches {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
+.steam-unit-switches > div { display: flex; min-width: 0; align-items: center; gap: 0.4rem; }
+.steam-unit-switches > div > span { color: rgb(32 35 31 / 0.5); font-size: 0.6rem; font-weight: 700; }
+.steam-unit-scroller {
+  display: flex;
+  max-width: 100%;
+  padding: 0.2rem;
+  overflow-x: auto;
+  border: 1px solid rgb(32 35 31 / 0.1);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.45);
+  scrollbar-width: none;
+}
+.steam-unit-scroller::-webkit-scrollbar { display: none; }
+.steam-unit-scroller button {
+  min-width: 2.35rem;
+  padding: 0.34rem 0.55rem;
+  border-radius: 999px;
+  color: rgb(32 35 31 / 0.52);
+  font-size: 0.62rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.steam-unit-scroller button.is-active { background: #20231f; color: #f7f5ef; }
 .steam-region-switch {
   display: grid;
   padding: 0.3rem;
@@ -1056,6 +1085,9 @@ body {
   .steam-symbols { gap: 0.4rem; }
   .steam-symbols article { padding: 0.6rem 0.65rem; }
   .steam-symbols span { font-size: 0.62rem; }
+  .steam-unit-switches { align-items: stretch; flex-direction: column; gap: 0.45rem; }
+  .steam-unit-switches > div { justify-content: space-between; }
+  .steam-unit-scroller { max-width: calc(100vw - 8rem); }
   .steam-region-switch button { padding: 0.65rem 0.7rem; }
   .steam-region-switch button span { font-size: 0.72rem; }
   .steam-region-switch button small { font-size: 0.58rem; }
