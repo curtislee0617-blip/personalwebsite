@@ -1090,6 +1090,7 @@ body {
 .compound-equation-grid article strong { overflow-wrap: anywhere; font-family: Georgia, serif; font-size: 0.69rem; font-weight: 500; line-height: 1.45; }
 .compound-equation-grid article span { color: rgb(32 35 31 / 0.48); font-size: 0.53rem; line-height: 1.45; }
 .compound-equation-grid .compound-equation-wide { grid-column: span 2; }
+.compound-equation-grid .compound-generalized-equations { border: 1px solid rgb(79 108 73 / 0.13); background: rgb(208 224 202 / 0.26); }
 .compound-equation-caption { padding: 0 1rem 0.85rem; color: rgb(32 35 31 / 0.48); font-size: 0.57rem; line-height: 1.5; }
 .compound-catalogue { overflow: hidden; }
 .compound-catalogue-heading { display: flex; padding: 1rem; align-items: end; justify-content: space-between; gap: 1rem; }

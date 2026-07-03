@@ -153,6 +153,7 @@ export function CompoundPropertiesCalculator() {
         <div className="compound-equation-grid">
           <article><p>Reduced state</p><strong>Tᵣ = T / Tᶜ</strong><strong>Pᵣ = P / Pᶜ</strong></article>
           <article className="compound-equation-wide"><p>Lee–Kesler equation of state</p><strong>Pᵣ = (Tᵣ/Vᵣ) [1 + B/Vᵣ + C/Vᵣ² + D/Vᵣ⁵ + c₄(Tᵣ⁻³Vᵣ⁻²)(β + γ/Vᵣ²) exp(−γ/Vᵣ²)]</strong><span>B = b₁ − b₂/Tᵣ − b₃/Tᵣ² − b₄/Tᵣ³ · C = c₁ − c₂/Tᵣ + c₃/Tᵣ³ · D = d₁ + d₂/Tᵣ</span></article>
+          <article className="compound-equation-wide compound-generalized-equations"><p>Generalized correlations in Z and ω</p><strong>X(Tᵣ,Pᵣ,ω) = X⁽⁰⁾(Tᵣ,Pᵣ) + ωX⁽¹⁾(Tᵣ,Pᵣ)</strong><strong>Z = Z⁽⁰⁾ + ωZ⁽¹⁾</strong><strong>ln φ = (ln φ)⁽⁰⁾ + ω(ln φ)⁽¹⁾</strong><span>Z⁽¹⁾ = (Z⁽ʳ⁾ − Z⁽⁰⁾)/ωʳ and (ln φ)⁽¹⁾ = [(ln φ)⁽ʳ⁾ − (ln φ)⁽⁰⁾]/ωʳ, with ωʳ = 0.3978.</span></article>
           <article><p>Acentric correction</p><strong>Z = Z⁽⁰⁾ + (ω/ωʳ)(Z⁽ʳ⁾ − Z⁽⁰⁾)</strong><span>ωʳ = 0.3978</span></article>
           <article><p>Fugacity</p><strong>ln φ = ∫₀ᴾ (Z − 1)dP/P</strong><strong>f = φP</strong></article>
           <article className="compound-equation-wide"><p>Departure properties</p><strong>Hᴿ/RT = −T ∫₀ᴾ (∂Z/∂T)ₚ dP/P</strong><strong>Sᴿ/R = Hᴿ/RT − ln φ</strong></article>
