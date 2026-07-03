@@ -7,9 +7,9 @@ import { VleChart } from "@/components/vle-chart";
 
 const modelLabels: Record<VleModel, string> = {
   ideal: "Ideal Raoult",
-  "van-laar": "Van Laar",
   nrtl: "NRTL",
   wilson: "Wilson",
+  "van-der-waals": "van der Waals",
   "peng-robinson": "Peng–Robinson",
 };
 const defaultParameters: VleParameters = { a12: 1, a21: 1, alpha: 0.3, lambda12: 1.25, lambda21: 0.8, kij: 0 };
@@ -26,11 +26,11 @@ type SimulatorState = {
 const presets = [
   { label: "Ethanol / water", first: "Ethanol", second: "Water", model: "nrtl" as VleModel, type: "txy" as DiagramType, value: 1.01325 },
   { label: "Benzene / toluene", first: "Benzene", second: "Toluene", model: "ideal" as VleModel, type: "txy" as DiagramType, value: 1.01325 },
-  { label: "Acetone / chloroform", first: "Acetone", second: "Chloroform", model: "van-laar" as VleModel, type: "pxy" as DiagramType, value: 323.15 },
+  { label: "Acetone / chloroform", first: "Acetone", second: "Chloroform", model: "nrtl" as VleModel, type: "pxy" as DiagramType, value: 323.15 },
   { label: "Methane / ethane", first: "Methane", second: "Ethane", model: "peng-robinson" as VleModel, type: "pxy" as DiagramType, value: 173.15 },
   { label: "CO₂ / propane", first: "Carbon dioxide", second: "Propane", model: "peng-robinson" as VleModel, type: "pxy" as DiagramType, value: 273.15 },
   { label: "Methanol / water", first: "Methanol", second: "Water", model: "nrtl" as VleModel, type: "txy" as DiagramType, value: 1.01325 },
-  { label: "Hexane / benzene", first: "n-Hexane", second: "Benzene", model: "ideal" as VleModel, type: "pxy" as DiagramType, value: 333.15 },
+  { label: "Hexane / benzene", first: "n-Hexane", second: "Benzene", model: "van-der-waals" as VleModel, type: "pxy" as DiagramType, value: 333.15 },
   { label: "Propane / butane", first: "Propane", second: "n-Butane", model: "peng-robinson" as VleModel, type: "pxy" as DiagramType, value: 298.15 },
   { label: "Nitrogen / oxygen", first: "Nitrogen", second: "Oxygen", model: "peng-robinson" as VleModel, type: "pxy" as DiagramType, value: 83.15 },
 ];
@@ -51,7 +51,8 @@ export function VleSimulator() {
   const first = compoundByName(submitted.firstName);
   const second = compoundByName(submitted.secondName);
   const result = useMemo(() => generateVleDiagram(first, second, submitted.type, submitted.fixedValue, submitted.model, submitted.parameters), [first, second, submitted]);
-  const isActivityModel = model !== "ideal" && model !== "peng-robinson";
+  const isActivityModel = model === "nrtl" || model === "wilson";
+  const isCubicEos = model === "van-der-waals" || model === "peng-robinson";
   const validFirst = compounds.some((compound) => compound.name === firstName);
   const validSecond = compounds.some((compound) => compound.name === secondName);
   const validPair = validFirst && validSecond && firstName !== secondName;
@@ -115,14 +116,13 @@ export function VleSimulator() {
 
           {isActivityModel && <div className="vle-parameters">
             <p>Model parameters <span>dimensionless</span></p>
-            {model === "van-laar" && <><label>A₁₂<input inputMode="decimal" onChange={(event) => setParameter("a12", event.target.value)} type="number" value={parameters.a12} /></label><label>A₂₁<input inputMode="decimal" onChange={(event) => setParameter("a21", event.target.value)} type="number" value={parameters.a21} /></label></>}
             {model === "nrtl" && <><label>τ₁₂<input inputMode="decimal" onChange={(event) => setParameter("a12", event.target.value)} type="number" value={parameters.a12} /></label><label>τ₂₁<input inputMode="decimal" onChange={(event) => setParameter("a21", event.target.value)} type="number" value={parameters.a21} /></label><label>α<input inputMode="decimal" onChange={(event) => setParameter("alpha", event.target.value)} type="number" value={parameters.alpha} /></label></>}
             {model === "wilson" && <><label>Λ₁₂<input inputMode="decimal" onChange={(event) => setParameter("lambda12", event.target.value)} type="number" value={parameters.lambda12} /></label><label>Λ₂₁<input inputMode="decimal" onChange={(event) => setParameter("lambda21", event.target.value)} type="number" value={parameters.lambda21} /></label></>}
           </div>}
-          {model === "peng-robinson" && <div className="vle-parameters"><p>Binary interaction</p><label>kᵢⱼ<input inputMode="decimal" onChange={(event) => setParameter("kij", event.target.value)} step="0.01" type="number" value={parameters.kij} /></label></div>}
+          {isCubicEos && <div className="vle-parameters"><p>Binary interaction</p><label>kᵢⱼ<input inputMode="decimal" onChange={(event) => setParameter("kij", event.target.value)} step="0.01" type="number" value={parameters.kij} /></label></div>}
 
           <button className="vle-calculate" disabled={!validPair || !Number.isFinite(Number(fixedInput))} onClick={calculate} type="button">Generate diagram</button>
-          <p className="vle-model-note">{model === "peng-robinson" ? "Cubic EOS calculation using critical properties and acentric factors. Suitable for light gases and non-polar mixtures; fit kᵢⱼ when data are available." : model === "ideal" ? "Ideal modified Raoult law with γ₁ = γ₂ = 1. Best for chemically similar liquids at low pressure." : "Activity-coefficient model with constant illustrative parameters. Enter fitted binary parameters for quantitative design work."}</p>
+          <p className="vle-model-note">{model === "peng-robinson" ? "Cubic EOS calculation using critical properties and acentric factors. Suitable for light gases and non-polar mixtures; fit kᵢⱼ when data are available." : model === "van-der-waals" ? "Classical two-parameter cubic EOS with one-fluid mixing rules. Useful for teaching and qualitative comparison; it is less accurate than modern cubic equations." : model === "ideal" ? "Ideal modified Raoult law with γ₁ = γ₂ = 1. Best for chemically similar liquids at low pressure." : "Activity-coefficient model with constant illustrative parameters. Enter fitted binary parameters for quantitative design work."}</p>
         </aside>
 
         <div className="vle-output">
@@ -143,7 +143,8 @@ export function VleSimulator() {
           <article className="compound-equation-wide"><p>Modified Raoult law</p><strong>P = Σ xᵢγᵢPˢᵃᵗᵢ</strong><strong>yᵢ = xᵢγᵢPˢᵃᵗᵢ / P</strong><span>Ideal Raoult law is recovered when γ₁ = γ₂ = 1.</span></article>
           <article><p>Ideal binary P–x–y</p><strong>Pᵇᵘᵇ = x₁Pˢᵃᵗ₁ + x₂Pˢᵃᵗ₂</strong><strong>1/Pᵈᵉʷ = y₁/Pˢᵃᵗ₁ + y₂/Pˢᵃᵗ₂</strong></article>
           <article><p>Antoine vapour pressure</p><strong>ln(Pˢᵃᵗ/bar) = A − B/(T + C)</strong><span>The valid temperature interval depends on the selected compound.</span></article>
-          <article><p>Activity models</p><strong>Gᴱ/RT → ln γᵢ</strong><strong>γᵢ = f(x₁, x₂, model parameters)</strong><span>Van Laar, NRTL and Wilson describe liquid-phase non-ideality.</span></article>
+          <article><p>Activity models</p><strong>Gᴱ/RT → ln γᵢ</strong><strong>γᵢ = f(x₁, x₂, model parameters)</strong><span>NRTL and Wilson describe liquid-phase non-ideality.</span></article>
+          <article><p>van der Waals EOS</p><strong>P = RT/(V − b) − a/V²</strong><strong>aᵢ = 27R²T²cᵢ/(64Pᶜᵢ)</strong><span>bᵢ = RTᶜᵢ/(8Pᶜᵢ); mixture a uses kᵢⱼ.</span></article>
           <article className="compound-equation-wide"><p>Peng–Robinson EOS</p><strong>P = RT/(V − b) − aα/[V(V + b) + b(V − b)]</strong><strong>Kᵢ = yᵢ/xᵢ = φᶫᵢ/φᵛᵢ</strong><span>aα and b use critical properties and acentric factors; mixture a includes the binary interaction parameter kᵢⱼ.</span></article>
         </div>
         <p className="compound-equation-caption">T–x–y holds pressure constant and solves the bubble temperature. P–x–y holds temperature constant and solves the bubble pressure. The plotted dew curve uses the corresponding equilibrium vapour composition y₁.</p>
@@ -154,7 +155,7 @@ export function VleSimulator() {
         <div className="vle-table-wrap"><table><thead><tr><th>x₁ liquid</th><th>y₁ vapour</th><th>{submitted.type === "txy" ? "Temperature (°C)" : "Pressure (bar)"}</th></tr></thead><tbody>{result.points.map((point) => <tr key={point.x}><td>{point.x.toFixed(3)}</td><td>{point.y.toFixed(4)}</td><td>{submitted.type === "txy" ? (point.value - 273.15).toFixed(3) : point.value.toFixed(4)}</td></tr>)}</tbody></table></div>
       </section>
 
-      <div className="vle-method-note"><strong>Model boundary</strong><p>Raoult, Van Laar, NRTL and Wilson use the Koretsky Antoine coefficients and are intended for subcritical, low-pressure liquid mixtures. Peng–Robinson calculates both phase fugacities and is the better starting point for light gases or elevated pressure. These diagrams are educational simulations; validate interaction parameters and phase stability before process-design use.</p></div>
+      <div className="vle-method-note"><strong>Model boundary</strong><p>Raoult, NRTL and Wilson use the Koretsky Antoine coefficients and are intended for subcritical, low-pressure liquid mixtures. van der Waals and Peng–Robinson calculate fugacities in both phases; Peng–Robinson is generally the better starting point for light gases or elevated pressure. These diagrams are educational simulations; validate interaction parameters and phase stability before process-design use.</p></div>
     </section>
   );
 }

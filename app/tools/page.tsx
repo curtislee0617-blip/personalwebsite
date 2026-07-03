@@ -34,7 +34,7 @@ export default function ToolsPage() {
           <div className="mt-3 flex items-end justify-between gap-5">
             <div>
               <h2 className="text-xl font-semibold">VLE simulator</h2>
-              <p className="mt-1 max-w-2xl text-sm leading-6 text-ink/55">Generate binary T–x–y and P–x–y diagrams using Raoult, Van Laar, NRTL, Wilson, or Peng–Robinson.</p>
+              <p className="mt-1 max-w-2xl text-sm leading-6 text-ink/55">Generate binary T–x–y and P–x–y diagrams using Raoult, NRTL, Wilson, van der Waals, or Peng–Robinson.</p>
             </div>
             <span className="text-xl transition group-hover:translate-x-1" aria-hidden="true">→</span>
           </div>

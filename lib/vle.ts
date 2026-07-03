@@ -1,6 +1,6 @@
 import type { Compound } from "@/lib/compound-properties";
 
-export type VleModel = "ideal" | "van-laar" | "nrtl" | "wilson" | "peng-robinson";
+export type VleModel = "ideal" | "nrtl" | "wilson" | "van-der-waals" | "peng-robinson";
 export type DiagramType = "txy" | "pxy";
 export type VleParameters = {
   a12: number;
@@ -23,13 +23,6 @@ function activityCoefficients(model: VleModel, x1: number, parameters: VleParame
   const x2 = 1 - x1;
   const tiny = 1e-12;
   if (model === "ideal") return [1, 1];
-  if (model === "van-laar") {
-    const denominator = parameters.a12 * x1 + parameters.a21 * x2 || tiny;
-    return [
-      Math.exp(parameters.a12 * (parameters.a21 * x2 / denominator) ** 2),
-      Math.exp(parameters.a21 * (parameters.a12 * x1 / denominator) ** 2),
-    ];
-  }
   if (model === "nrtl") {
     const g12 = Math.exp(-parameters.alpha * parameters.a12);
     const g21 = Math.exp(-parameters.alpha * parameters.a21);
@@ -122,17 +115,51 @@ function prPhi(
   }) as [number, number];
 }
 
+function vdwPure(compound: Compound): PrPure {
+  return {
+    a: 27 * R ** 2 * compound.criticalTemperature ** 2 / (64 * compound.criticalPressure),
+    b: R * compound.criticalTemperature / (8 * compound.criticalPressure),
+  };
+}
+
+function vdwPhi(
+  compounds: [Compound, Compound],
+  temperature: number,
+  pressure: number,
+  composition: [number, number],
+  phase: "liquid" | "vapour",
+  kij: number,
+) {
+  const pure = compounds.map(vdwPure) as [PrPure, PrPure];
+  const a12 = Math.sqrt(pure[0].a * pure[1].a) * (1 - kij);
+  const matrix = [[pure[0].a, a12], [a12, pure[1].a]];
+  const aMix = composition.reduce((sum, zi, i) => sum + composition.reduce((inner, zj, j) => inner + zi * zj * matrix[i][j], 0), 0);
+  const bMix = composition[0] * pure[0].b + composition[1] * pure[1].b;
+  const A = aMix * pressure / (R ** 2 * temperature ** 2);
+  const B = bMix * pressure / (R * temperature);
+  const roots = cubicRoots(-(1 + B), A, -A * B).filter((root) => root > B);
+  if (roots.length < 2 || !(aMix > 0) || !(bMix > 0)) return null;
+  const z = phase === "liquid" ? roots[0] : roots[roots.length - 1];
+  return compounds.map((_, i) => {
+    const sumAij = composition[0] * matrix[i][0] + composition[1] * matrix[i][1];
+    const lnPhi = pure[i].b / bMix * (z - 1) - Math.log(z - B)
+      - A / z * (2 * sumAij / aMix - pure[i].b / bMix);
+    return Math.exp(lnPhi);
+  }) as [number, number];
+}
+
 function wilsonK(compound: Compound, temperature: number, pressure: number) {
   return compound.criticalPressure / pressure
     * Math.exp(5.373 * (1 + compound.acentricFactor) * (1 - compound.criticalTemperature / temperature));
 }
 
-function prAtTemperaturePressure(
+function eosAtTemperaturePressure(
   compounds: [Compound, Compound],
   temperature: number,
   pressure: number,
   x: number,
   kij: number,
+  model: "van-der-waals" | "peng-robinson",
 ) {
   const liquid: [number, number] = [x, 1 - x];
   let k: [number, number] = [wilsonK(compounds[0], temperature, pressure), wilsonK(compounds[1], temperature, pressure)];
@@ -140,8 +167,9 @@ function prAtTemperaturePressure(
   for (let iteration = 0; iteration < 45; iteration += 1) {
     const total = liquid[0] * k[0] + liquid[1] * k[1];
     vapour = [liquid[0] * k[0] / total, liquid[1] * k[1] / total];
-    const phiLiquid = prPhi(compounds, temperature, pressure, liquid, "liquid", kij);
-    const phiVapour = prPhi(compounds, temperature, pressure, vapour, "vapour", kij);
+    const phi = model === "van-der-waals" ? vdwPhi : prPhi;
+    const phiLiquid = phi(compounds, temperature, pressure, liquid, "liquid", kij);
+    const phiVapour = phi(compounds, temperature, pressure, vapour, "vapour", kij);
     if (!phiLiquid || !phiVapour) return null;
     const next: [number, number] = [phiLiquid[0] / phiVapour[0], phiLiquid[1] / phiVapour[1]];
     if (Math.max(Math.abs(next[0] - k[0]), Math.abs(next[1] - k[1])) < 1e-8) { k = next; break; }
@@ -150,14 +178,14 @@ function prAtTemperaturePressure(
   return { sum: liquid[0] * k[0] + liquid[1] * k[1], y: vapour[0] };
 }
 
-function prBubblePressure(compounds: [Compound, Compound], temperature: number, x: number, kij: number) {
+function eosBubblePressure(compounds: [Compound, Compound], temperature: number, x: number, kij: number, model: "van-der-waals" | "peng-robinson") {
   const minimum = 0.0001;
   const maximum = Math.max(compounds[0].criticalPressure, compounds[1].criticalPressure) * 2;
   let previous: { pressure: number; residual: number } | null = null;
   let best: { pressure: number; residual: number; y: number } | null = null;
   for (let index = 0; index <= 180; index += 1) {
     const pressure = minimum * (maximum / minimum) ** (index / 180);
-    const state = prAtTemperaturePressure(compounds, temperature, pressure, x, kij);
+    const state = eosAtTemperaturePressure(compounds, temperature, pressure, x, kij, model);
     if (!state) continue;
     const residual = state.sum - 1;
     if (!best || Math.abs(residual) < Math.abs(best.residual)) best = { pressure, residual, y: state.y };
@@ -168,7 +196,7 @@ function prBubblePressure(compounds: [Compound, Compound], temperature: number, 
       let finalState = state;
       for (let iteration = 0; iteration < 55; iteration += 1) {
         const middle = Math.sqrt(low * high);
-        const middleState = prAtTemperaturePressure(compounds, temperature, middle, x, kij);
+        const middleState = eosAtTemperaturePressure(compounds, temperature, middle, x, kij, model);
         if (!middleState) { low = middle; continue; }
         const middleResidual = middleState.sum - 1;
         finalState = middleState;
@@ -217,12 +245,13 @@ export function generateVleDiagram(
   const points: VlePoint[] = [];
   let failed = 0;
   const compounds: [Compound, Compound] = [first, second];
+  const isCubicEos = model === "van-der-waals" || model === "peng-robinson";
   for (let index = 0; index <= 40; index += 1) {
     const x = index / 40;
     if (type === "pxy") {
       const temperature = fixedValue;
-      const point = model === "peng-robinson"
-        ? prBubblePressure(compounds, temperature, x, parameters.kij)
+      const point = isCubicEos
+        ? eosBubblePressure(compounds, temperature, x, parameters.kij, model)
         : modifiedRaoultPoint(first, second, temperature, x, model, parameters);
       if (point && Number.isFinite(point.pressure) && Number.isFinite(point.y)) points.push({ x, y: point.y, value: point.pressure });
       else failed += 1;
@@ -231,23 +260,23 @@ export function generateVleDiagram(
       const minimum = Math.max(25, Math.min(first.antoineMin, second.antoineMin, first.criticalTemperature * 0.35, second.criticalTemperature * 0.35));
       const maximum = Math.max(first.criticalTemperature, second.criticalTemperature) * 1.15;
       const residual = (temperature: number) => {
-        if (model === "peng-robinson") {
-          const state = prAtTemperaturePressure(compounds, temperature, pressure, x, parameters.kij);
+        if (isCubicEos) {
+          const state = eosAtTemperaturePressure(compounds, temperature, pressure, x, parameters.kij, model);
           return state ? state.sum - 1 : null;
         }
         return modifiedRaoultPoint(first, second, temperature, x, model, parameters).pressure - pressure;
       };
       const temperature = findTemperature(residual, minimum, maximum);
       if (temperature !== null) {
-        const point = model === "peng-robinson"
-          ? prAtTemperaturePressure(compounds, temperature, pressure, x, parameters.kij)
+        const point = isCubicEos
+          ? eosAtTemperaturePressure(compounds, temperature, pressure, x, parameters.kij, model)
           : modifiedRaoultPoint(first, second, temperature, x, model, parameters);
         if (point) points.push({ x, y: point.y, value: temperature });
         else failed += 1;
       } else failed += 1;
     }
   }
-  const extrapolated = model !== "peng-robinson" && points.some((point) => {
+  const extrapolated = !isCubicEos && points.some((point) => {
     const temperature = type === "txy" ? point.value : fixedValue;
     return temperature < first.antoineMin || temperature > first.antoineMax || temperature < second.antoineMin || temperature > second.antoineMax;
   });
