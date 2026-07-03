@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type PointerEvent } from "react";
-import type { NmrPoint } from "@/lib/nmr-spectrum";
+import type { NmrPeak, NmrPoint } from "@/lib/nmr-spectrum";
 
 export type NmrInteractionMode = "inspect" | "zoom" | "integrate" | "solvent" | "coupling";
 export type NmrRegion = { id: string; low: number; high: number };
@@ -15,6 +15,7 @@ type NmrSpectrumChartProps = {
   regions: NmrRegion[];
   couplingPoints: number[];
   solventPeak?: number;
+  peaks: NmrPeak[];
   onRangeSelect: (low: number, high: number) => void;
   onPeakSelect: (shift: number) => void;
 };
@@ -23,7 +24,7 @@ const width = 960;
 const height = 430;
 const margin = { left: 58, right: 22, top: 28, bottom: 58 };
 
-export function NmrSpectrumChart({ points, xMinimum, xMaximum, axis, mode, regions, couplingPoints, solventPeak, onRangeSelect, onPeakSelect }: NmrSpectrumChartProps) {
+export function NmrSpectrumChart({ points, xMinimum, xMaximum, axis, mode, regions, couplingPoints, solventPeak, peaks, onRangeSelect, onPeakSelect }: NmrSpectrumChartProps) {
   const [hover, setHover] = useState<NmrPoint | null>(null);
   const [dragStart, setDragStart] = useState<number | null>(null);
   const [dragCurrent, setDragCurrent] = useState<number | null>(null);
@@ -98,6 +99,10 @@ export function NmrSpectrumChart({ points, xMinimum, xMaximum, axis, mode, regio
       {regions.map((region, index) => <g className="nmr-region" key={region.id}><rect height={innerHeight} width={Math.abs(toX(region.low) - toX(region.high))} x={Math.min(toX(region.low), toX(region.high))} y={margin.top} /><text textAnchor="middle" x={(toX(region.low) + toX(region.high)) / 2} y={margin.top + 14}>I{index + 1}</text></g>)}
       <line className="nmr-axis" x1={margin.left} x2={width - margin.right} y1={toY(0)} y2={toY(0)} />
       <path className="nmr-spectrum-line" d={path} />
+      {peaks.filter((peak) => peak.shift >= low && peak.shift <= high).map((peak, index) => {
+        const labelY = Math.max(margin.top + 13 + index % 3 * 17, toY(peak.intensity) - 21);
+        return <g className="nmr-peak-tag" key={`${peak.shift}-${index}`}><line x1={toX(peak.shift)} x2={toX(peak.shift)} y1={toY(peak.intensity) - 3} y2={labelY + 4} /><rect height="15" rx="5" width={axis === "ppm" ? 48 : 56} x={toX(peak.shift) - (axis === "ppm" ? 24 : 28)} y={labelY - 11} /><text textAnchor="middle" x={toX(peak.shift)} y={labelY}>{peak.shift.toFixed(axis === "ppm" ? 3 : 1)}</text></g>;
+      })}
       {solventPeak !== undefined && solventPeak >= low && solventPeak <= high && <g className="nmr-solvent-marker"><line x1={toX(solventPeak)} x2={toX(solventPeak)} y1={margin.top} y2={height - margin.bottom} /><text textAnchor="middle" x={toX(solventPeak)} y={margin.top + 13}>solvent</text></g>}
       {couplingPoints.map((shift, index) => shift >= low && shift <= high && <g className="nmr-coupling-marker" key={`${shift}-${index}`}><line x1={toX(shift)} x2={toX(shift)} y1={margin.top} y2={height - margin.bottom} /><text textAnchor="middle" x={toX(shift)} y={margin.top + 13}>J{index + 1}</text></g>)}
       {selectionLow !== null && selectionHigh !== null && <rect className="nmr-drag-selection" height={innerHeight} width={Math.abs(toX(selectionLow) - toX(selectionHigh))} x={Math.min(toX(selectionLow), toX(selectionHigh))} y={margin.top} />}

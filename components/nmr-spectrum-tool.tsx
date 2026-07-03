@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { NmrSpectrumChart, type NmrInteractionMode, type NmrRegion } from "@/components/nmr-spectrum-chart";
-import { parseProcessingScript, parseSpinsolve1d, parseSpinsolveParameters, processSpinsolveFid, type ComplexFid, type SpinsolveParameters } from "@/lib/nmr-spectrum";
+import { estimateZeroOrderPhase, parseProcessingScript, parseSpinsolve1d, parseSpinsolveParameters, pickNmrPeaks, processSpinsolveFid, type ComplexFid, type SpinsolveParameters } from "@/lib/nmr-spectrum";
 
 const solvents = [
   { id: "cdcl3", label: "Chloroform-d (CDCl₃)", shift: 7.26 },
@@ -46,6 +46,9 @@ export function NmrSpectrumTool() {
   const [referenceRegionId, setReferenceRegionId] = useState("");
   const [referenceValue, setReferenceValue] = useState(1);
   const [couplingPoints, setCouplingPoints] = useState<number[]>([]);
+  const [showPeakLabels, setShowPeakLabels] = useState(true);
+  const [peakCount, setPeakCount] = useState(12);
+  const [peakProminence, setPeakProminence] = useState(0.025);
   const [message, setMessage] = useState("Select data.1d. For an accurate ppm axis, select acqu.par at the same time.");
 
   const observation = Number(observationMHz);
@@ -59,6 +62,7 @@ export function NmrSpectrumTool() {
     carrierHz: Number.isFinite(carrier) ? carrier : 0,
   }) : [], [carrier, fid, lineBroadeningHz, observation, phaseDegrees, zeroFill]);
   const points = useMemo(() => rawPoints.map((point) => ({ ...point, shift: point.shift + calibrationOffset })), [calibrationOffset, rawPoints]);
+  const peaks = useMemo(() => showPeakLabels ? pickNmrPeaks(points.filter((point) => point.shift >= Math.min(xMinimum, xMaximum) && point.shift <= Math.max(xMinimum, xMaximum)), peakProminence, 30, peakCount) : [], [peakCount, peakProminence, points, showPeakLabels, xMaximum, xMinimum]);
   const selectedSolvent = solvents.find((solvent) => solvent.id === solventId) ?? solvents[0];
   const regionAreas = useMemo(() => regions.map((region) => ({ ...region, area: integrateRegion(points, region) })), [points, regions]);
   const referenceArea = regionAreas.find((region) => region.id === referenceRegionId)?.area ?? regionAreas[0]?.area ?? 0;
@@ -74,6 +78,9 @@ export function NmrSpectrumTool() {
       const acquFile = selected.find((file) => file.name.toLowerCase() === "acqu.par");
       const scriptFile = selected.find((file) => file.name.toLowerCase().endsWith("processing.script"));
       const nextParameters = acquFile ? parseSpinsolveParameters(await acquFile.text()) : {};
+      const processing = scriptFile ? parseProcessingScript(await scriptFile.text()) : { phaseDegrees: undefined, lineBroadeningHz: undefined };
+      const nextLineBroadening = processing.lineBroadeningHz ?? 0.2;
+      const automaticPhase = estimateZeroOrderPhase(nextFid, nextLineBroadening);
       setFid(nextFid);
       setFileName(dataFile.name);
       setParameters(nextParameters);
@@ -88,8 +95,8 @@ export function NmrSpectrumTool() {
       setRegions([]);
       setReferenceRegionId("");
       setCouplingPoints([]);
-      setPhaseDegrees(0);
-      setLineBroadeningHz(0.2);
+      setPhaseDegrees(automaticPhase);
+      setLineBroadeningHz(nextLineBroadening);
       setZeroFill(2);
       if (nextParameters.observationMHz) setObservationMHz(String(nextParameters.observationMHz));
       else setObservationMHz("");
@@ -114,12 +121,7 @@ export function NmrSpectrumTool() {
         setXMaximum(sweep / 2);
         setFullRange({ low: -sweep / 2, high: sweep / 2 });
       }
-      if (scriptFile) {
-        const processing = parseProcessingScript(await scriptFile.text());
-        if (processing.phaseDegrees !== undefined) setPhaseDegrees(processing.phaseDegrees);
-        if (processing.lineBroadeningHz !== undefined) setLineBroadeningHz(processing.lineBroadeningHz);
-      }
-      setMessage(`Read ${nextFid.pointCount.toLocaleString()} complex FID points${acquFile ? " with acquisition metadata" : ""}. Processing remains in this browser.`);
+      setMessage(`Read ${nextFid.pointCount.toLocaleString()} complex FID points${acquFile ? " with acquisition metadata" : ""}. Automatic phase: ${automaticPhase.toFixed(1)}°.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "The NMR file could not be read.");
     }
@@ -166,11 +168,12 @@ export function NmrSpectrumTool() {
         <header><p>{fileName || "No file loaded"}</p><h2>Processing controls</h2></header>
         <label><span>Observation frequency <small>MHz</small></span><input inputMode="decimal" onChange={(event) => setObservationMHz(event.target.value)} placeholder="Required for ppm" type="number" value={observationMHz} /></label>
         <label><span>Carrier offset <small>Hz</small></span><input inputMode="decimal" onChange={(event) => setCarrierHz(event.target.value)} type="number" value={carrierHz} /></label>
-        <label><span>Zero-order phase <output>{phaseDegrees.toFixed(1)}°</output></span><input max="180" min="-180" onChange={(event) => setPhaseDegrees(Number(event.target.value))} step="0.1" type="range" value={phaseDegrees} /></label>
+        <div className="nmr-phase-control"><label><span>Zero-order phase <output>{phaseDegrees.toFixed(1)}°</output></span><input max="180" min="-180" onChange={(event) => setPhaseDegrees(Number(event.target.value))} step="0.1" type="range" value={phaseDegrees} /></label><button disabled={!fid} onClick={() => { if (!fid) return; const automatic = estimateZeroOrderPhase(fid, lineBroadeningHz); setPhaseDegrees(automatic); setMessage(`Automatic zero-order phase set to ${automatic.toFixed(1)}°; use the slider for manual refinement.`); }} type="button">Auto phase</button></div>
         <label><span>Line broadening <small>Hz</small></span><input min="0" onChange={(event) => setLineBroadeningHz(Number(event.target.value))} step="0.1" type="number" value={lineBroadeningHz} /></label>
         <fieldset><legend>Zero filling</legend><div className="nmr-segmented">{([1, 2, 4] as const).map((value) => <button className={zeroFill === value ? "is-active" : ""} key={value} onClick={() => setZeroFill(value)} type="button">{value}×</button>)}</div></fieldset>
+        <fieldset className="nmr-peak-settings"><legend>Peak labels <label><input checked={showPeakLabels} onChange={(event) => setShowPeakLabels(event.target.checked)} type="checkbox" /> Show</label></legend><label><span>Maximum labels <output>{peakCount}</output></span><input max="30" min="1" onChange={(event) => setPeakCount(Number(event.target.value))} type="range" value={peakCount} /></label><label><span>Minimum prominence</span><input min="0.001" onChange={(event) => setPeakProminence(Number(event.target.value))} step="0.005" type="number" value={peakProminence} /></label></fieldset>
         <fieldset><legend>Displayed {axis === "ppm" ? "chemical shift" : "frequency"}</legend><div className="nmr-range"><label><span>High</span><input onChange={(event) => setXMaximum(Number(event.target.value))} step="any" type="number" value={Number(xMaximum.toFixed(4))} /></label><label><span>Low</span><input onChange={(event) => setXMinimum(Number(event.target.value))} step="any" type="number" value={Number(xMinimum.toFixed(4))} /></label></div></fieldset>
-        <button className="nmr-reset" onClick={() => { setPhaseDegrees(0); setLineBroadeningHz(0.2); setZeroFill(2); }} type="button">Reset processing</button>
+        <button className="nmr-reset" onClick={() => { setLineBroadeningHz(0.2); setZeroFill(2); setPhaseDegrees(fid ? estimateZeroOrderPhase(fid, 0.2) : 0); }} type="button">Reset processing</button>
       </aside>
 
       <div className="nmr-output">
@@ -180,7 +183,7 @@ export function NmrSpectrumTool() {
           <button onClick={() => { setXMinimum(fullRange.low); setXMaximum(fullRange.high); }} type="button">Reset zoom</button>
         </div>
         <p className="nmr-mode-help">{mode === "zoom" ? "Drag across the spectrum to zoom into an exact range." : mode === "integrate" ? "Drag a box around a signal to add an integration region." : mode === "solvent" ? `Click the ${selectedSolvent.label} residual peak to set it to ${selectedSolvent.shift.toFixed(2)} ppm.` : mode === "coupling" ? "Click two peak maxima; the frequency separation will be reported as J." : "Hover over the spectrum to inspect precise shift and intensity values."}</p>
-        <NmrSpectrumChart axis={axis} couplingPoints={couplingPoints} mode={mode} onPeakSelect={handlePeakSelect} onRangeSelect={handleRangeSelect} points={points} regions={regions} solventPeak={solventPeak} xMaximum={xMaximum} xMinimum={xMinimum} />
+        <NmrSpectrumChart axis={axis} couplingPoints={couplingPoints} mode={mode} onPeakSelect={handlePeakSelect} onRangeSelect={handleRangeSelect} peaks={peaks} points={points} regions={regions} solventPeak={solventPeak} xMaximum={xMaximum} xMinimum={xMinimum} />
       </div>
     </div>
 
