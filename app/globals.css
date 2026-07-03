@@ -1278,6 +1278,9 @@ body {
 .nmr-message { padding: 0 0.25rem; color: rgb(32 35 31 / 0.46); font-size: 0.54rem; }
 .nmr-workspace { display: grid; align-items: start; gap: 0.8rem; grid-template-columns: minmax(14.5rem, 0.45fr) minmax(0, 1.55fr); }
 .nmr-controls { display: grid; padding: 0.85rem; gap: 0.65rem; }
+.nmr-nucleus-toggle { display: grid; padding: 0.2rem; gap: 0.2rem; border-radius: 0.72rem; background: rgb(32 35 31 / 0.055); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.nmr-nucleus-toggle button { min-height: 2.05rem; border-radius: 0.54rem; color: rgb(32 35 31 / 0.5); font-size: 0.58rem; font-weight: 700; }
+.nmr-nucleus-toggle button.is-active { background: #20231f; color: #f7f5ef; }
 .nmr-controls > label, .nmr-range label { display: grid; min-width: 0; gap: 0.22rem; }
 .nmr-controls label > span, .nmr-controls legend { display: flex; justify-content: space-between; color: rgb(32 35 31 / 0.48); font-size: 0.52rem; font-weight: 700; }
 .nmr-controls label small, .nmr-controls output { color: #4f6c49; font-size: 0.48rem; }
@@ -1335,6 +1338,8 @@ body {
 .nmr-peak-settings legend input { accent-color: #4f6c49; }
 .nmr-peak-settings > label { display: grid; gap: 0.2rem; }
 .nmr-analysis-grid { display: grid; align-items: start; gap: 0.8rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.nmr-analysis-grid.is-carbon { grid-template-columns: minmax(0, 1fr); }
+.nmr-analysis-grid.is-carbon .nmr-analysis-card { max-width: 28rem; }
 .nmr-analysis-card { display: grid; min-width: 0; padding: 0.85rem; gap: 0.6rem; border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.2rem; background: rgb(255 255 255 / 0.58); }
 .nmr-analysis-card header p { color: rgb(32 35 31 / 0.46); font-size: 0.52rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .nmr-analysis-card header h2 { margin-top: 0.08rem; font-size: 0.82rem; font-weight: 700; }
@@ -1354,6 +1359,18 @@ body {
 .nmr-j-result span { color: rgb(32 35 31 / 0.48); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.52rem; }
 .nmr-j-result strong { color: #6e5c92 !important; font-size: 1rem !important; }
 .nmr-analysis-card > button { min-height: 1.9rem; border-radius: 0.58rem; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.52); font-size: 0.52rem; font-weight: 700; }
+.nmr-equations { overflow: hidden; border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.2rem; background: rgb(255 255 255 / 0.58); }
+.nmr-equations summary { display: flex; padding: 0.78rem 0.9rem; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; }
+.nmr-equations summary::-webkit-details-marker { display: none; }
+.nmr-equations summary span { font-size: 0.66rem; font-weight: 700; }
+.nmr-equations summary small { color: #4f6c49; font-size: 0.5rem; font-weight: 700; }
+.nmr-equations[open] summary { border-bottom: 1px solid rgb(32 35 31 / 0.07); }
+.nmr-equation-grid { display: grid; padding: 0.65rem; gap: 0.45rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.nmr-equation-grid article { display: grid; min-width: 0; padding: 0.65rem; gap: 0.2rem; border-radius: 0.72rem; background: rgb(32 35 31 / 0.035); }
+.nmr-equation-grid article p { color: #4f6c49; font-size: 0.49rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+.nmr-equation-grid article strong { overflow-wrap: anywhere; font-family: Georgia, serif; font-size: 0.74rem; font-weight: 500; }
+.nmr-equation-grid article span { color: rgb(32 35 31 / 0.45); font-size: 0.5rem; line-height: 1.45; }
+.nmr-equations > p { padding: 0 0.9rem 0.8rem; color: rgb(32 35 31 / 0.48); font-size: 0.53rem; line-height: 1.55; }
 
 @media (min-width: 900px) and (max-width: 1099px) {
   .compound-output-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -1378,6 +1395,7 @@ body {
   .ir-workspace { grid-template-columns: 1fr; }
   .nmr-workspace { grid-template-columns: 1fr; }
   .nmr-analysis-grid { grid-template-columns: 1fr; }
+  .nmr-equation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 639px) {
@@ -1484,6 +1502,7 @@ body {
   .nmr-chart svg { min-width: 41rem; }
   .nmr-chart-empty { position: sticky; left: 0; width: calc(100vw - 3.5rem); min-height: 15rem; }
   .nmr-method { flex-direction: column; gap: 0.25rem; }
+  .nmr-equation-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
