@@ -16,7 +16,7 @@ const propertyKeys = Object.keys(propertyDetails) as PropertyKey[];
 type TemperatureUnit = "°C" | "K";
 type PressureUnit = "MPa" | "bar" | "atm" | "kPa" | "Pa";
 const temperatureUnits: TemperatureUnit[] = ["°C", "K"];
-const pressureUnits: PressureUnit[] = ["MPa", "bar", "atm", "kPa", "Pa"];
+const pressureUnits: PressureUnit[] = ["Pa", "kPa", "MPa", "bar", "atm"];
 const pressureToMpa: Record<PressureUnit, number> = {
   MPa: 1,
   bar: 0.1,
