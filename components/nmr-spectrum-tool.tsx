@@ -35,9 +35,9 @@ export function NmrSpectrumTool() {
   const [phaseDegrees, setPhaseDegrees] = useState(0);
   const [lineBroadeningHz, setLineBroadeningHz] = useState(0.2);
   const [zeroFill, setZeroFill] = useState<1 | 2 | 4>(2);
-  const [xMinimum, setXMinimum] = useState(-5);
+  const [xMinimum, setXMinimum] = useState(-10);
   const [xMaximum, setXMaximum] = useState(15);
-  const [fullRange, setFullRange] = useState({ low: -5, high: 15 });
+  const [fullRange, setFullRange] = useState({ low: -10, high: 15 });
   const [mode, setMode] = useState<NmrInteractionMode>("inspect");
   const [solventId, setSolventId] = useState<(typeof solvents)[number]["id"]>("dmso");
   const [calibrationOffset, setCalibrationOffset] = useState(0);
@@ -96,11 +96,17 @@ export function NmrSpectrumTool() {
       if (nextParameters.lowestFrequencyHz !== undefined && nextParameters.bandwidthHz !== undefined) {
         const nextCarrier = nextParameters.lowestFrequencyHz + nextParameters.bandwidthHz / 2;
         setCarrierHz(String(nextCarrier));
-        const centre = nextParameters.observationMHz ? nextCarrier / nextParameters.observationMHz : nextCarrier;
-        const width = nextParameters.observationMHz ? nextParameters.bandwidthHz / nextParameters.observationMHz : nextParameters.bandwidthHz;
-        setXMinimum(centre - width / 2);
-        setXMaximum(centre + width / 2);
-        setFullRange({ low: centre - width / 2, high: centre + width / 2 });
+        if (nextParameters.observationMHz) {
+          setXMinimum(-10);
+          setXMaximum(15);
+          setFullRange({ low: -10, high: 15 });
+        } else {
+          const centre = nextCarrier;
+          const width = nextParameters.bandwidthHz;
+          setXMinimum(centre - width / 2);
+          setXMaximum(centre + width / 2);
+          setFullRange({ low: centre - width / 2, high: centre + width / 2 });
+        }
       } else {
         const sweep = nextFid.dwellTime > 0 ? 1 / nextFid.dwellTime : 5000;
         setCarrierHz("0");
@@ -164,7 +170,7 @@ export function NmrSpectrumTool() {
         <label><span>Zero-order phase <output>{phaseDegrees.toFixed(1)}°</output></span><input max="180" min="-180" onChange={(event) => setPhaseDegrees(Number(event.target.value))} step="0.1" type="range" value={phaseDegrees} /></label>
         <label><span>Line broadening <small>Hz</small></span><input min="0" onChange={(event) => setLineBroadeningHz(Number(event.target.value))} step="0.1" type="number" value={lineBroadeningHz} /></label>
         <fieldset><legend>Zero filling</legend><div className="nmr-segmented">{([1, 2, 4] as const).map((value) => <button className={zeroFill === value ? "is-active" : ""} key={value} onClick={() => setZeroFill(value)} type="button">{value}×</button>)}</div></fieldset>
-        <fieldset><legend>Displayed {axis === "ppm" ? "chemical shift" : "frequency"}</legend><div className="nmr-range"><label><span>Low</span><input onChange={(event) => setXMinimum(Number(event.target.value))} step="any" type="number" value={Number(xMinimum.toFixed(4))} /></label><label><span>High</span><input onChange={(event) => setXMaximum(Number(event.target.value))} step="any" type="number" value={Number(xMaximum.toFixed(4))} /></label></div></fieldset>
+        <fieldset><legend>Displayed {axis === "ppm" ? "chemical shift" : "frequency"}</legend><div className="nmr-range"><label><span>High</span><input onChange={(event) => setXMaximum(Number(event.target.value))} step="any" type="number" value={Number(xMaximum.toFixed(4))} /></label><label><span>Low</span><input onChange={(event) => setXMinimum(Number(event.target.value))} step="any" type="number" value={Number(xMinimum.toFixed(4))} /></label></div></fieldset>
         <button className="nmr-reset" onClick={() => { setPhaseDegrees(0); setLineBroadeningHz(0.2); setZeroFill(2); }} type="button">Reset processing</button>
       </aside>
 
