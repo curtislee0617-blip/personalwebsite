@@ -86,6 +86,10 @@ export function CompoundPropertiesCalculator() {
           ["Pˢᵃᵗ", "vapour pressure"], ["Z", "compressibility"],
           ["φ, f", "fugacity"], ["Hᴿ, Sᴿ", "departure functions"],
         ].map(([symbol, label]) => <article key={symbol}><strong>{symbol}</strong><span>{label}</span></article>)}
+        <article className="compound-formation-symbol">
+          <strong>ΔH°<sub>f,298</sub> · ΔG°<sub>f,298</sub></strong>
+          <span>Enthalpy and Gibbs energy of formation at 298 K and 1 bar</span>
+        </article>
       </div>
 
       <div className="compound-workspace">

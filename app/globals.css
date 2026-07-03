@@ -1029,6 +1029,10 @@ body {
 .compound-symbols article { display: grid; min-width: 0; padding: 0.75rem; border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1rem; background: rgb(255 255 255 / 0.5); }
 .compound-symbols strong { font-size: 0.9rem; }
 .compound-symbols span { margin-top: 0.15rem; overflow: hidden; color: rgb(32 35 31 / 0.5); font-size: 0.58rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.compound-symbols .compound-formation-symbol { display: flex; padding: 0.58rem 0.75rem; align-items: baseline; gap: 0.65rem; grid-column: 1 / -1; }
+.compound-formation-symbol strong { flex: none; font-size: 0.76rem; }
+.compound-formation-symbol strong sub { font-size: 0.55rem; }
+.compound-formation-symbol span { margin: 0; font-size: 0.6rem; letter-spacing: 0.035em; text-transform: uppercase; }
 .compound-workspace { display: grid; gap: 1rem; grid-template-columns: minmax(17rem, 0.72fr) minmax(0, 1.28fr); }
 .compound-input-card, .compound-results, .compound-source-note, .compound-catalogue { border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.4rem; background: rgb(255 255 255 / 0.58); }
 .compound-input-card, .compound-results { padding: 1.15rem; }
@@ -1162,6 +1166,8 @@ body {
   .steam-result-grid article { min-height: 5.6rem; }
   .compound-symbols { gap: 0.35rem; }
   .compound-symbols article { padding: 0.6rem; }
+  .compound-symbols .compound-formation-symbol { align-items: start; flex-direction: column; gap: 0.1rem; }
+  .compound-formation-symbol span { overflow: visible; white-space: normal; }
   .compound-state-inputs { grid-template-columns: 1fr; }
   .compound-output-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compound-source-note { align-items: start; flex-direction: column; }
