@@ -1,4 +1,5 @@
 import rows from "@/data/koretsky-compounds.json";
+import formationRows from "@/data/koretsky-formations.json";
 
 export type Compound = {
   formula: string;
@@ -12,7 +13,20 @@ export type Compound = {
   antoineC: number;
   antoineMin: number;
   antoineMax: number;
+  formation: FormationProperty | null;
 };
+
+export type FormationProperty = {
+  phase: string;
+  enthalpy: number;
+  gibbsEnergy: number;
+};
+
+const formations = new Map((formationRows as (string | number)[][]).map((row) => [row[0] as string, {
+  phase: row[1] as string,
+  enthalpy: row[2] as number,
+  gibbsEnergy: row[3] as number,
+}]));
 
 export const compounds: Compound[] = (rows as (string | number)[][]).map((row) => ({
   formula: row[0] as string,
@@ -26,6 +40,7 @@ export const compounds: Compound[] = (rows as (string | number)[][]).map((row) =
   antoineC: row[8] as number,
   antoineMin: row[9] as number,
   antoineMax: row[10] as number,
+  formation: formations.get(row[1] as string) ?? null,
 }));
 
 type FluidConstants = {
