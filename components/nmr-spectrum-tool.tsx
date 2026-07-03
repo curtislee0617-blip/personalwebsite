@@ -164,7 +164,6 @@ export function NmrSpectrumTool() {
     <div className="nmr-workspace">
       <aside className="nmr-controls">
         <header><p>{fileName || "No file loaded"}</p><h2>Processing controls</h2></header>
-        <div className="nmr-metadata"><span>{parameters.nucleus || "Nucleus —"}</span><span>{parameters.solvent || "Solvent —"}</span><span>{parameters.sample || "Sample —"}</span></div>
         <label><span>Observation frequency <small>MHz</small></span><input inputMode="decimal" onChange={(event) => setObservationMHz(event.target.value)} placeholder="Required for ppm" type="number" value={observationMHz} /></label>
         <label><span>Carrier offset <small>Hz</small></span><input inputMode="decimal" onChange={(event) => setCarrierHz(event.target.value)} type="number" value={carrierHz} /></label>
         <label><span>Zero-order phase <output>{phaseDegrees.toFixed(1)}°</output></span><input max="180" min="-180" onChange={(event) => setPhaseDegrees(Number(event.target.value))} step="0.1" type="range" value={phaseDegrees} /></label>
