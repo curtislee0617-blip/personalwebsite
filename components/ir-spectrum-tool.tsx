@@ -45,7 +45,7 @@ export function IrSpectrumTool() {
   const chartSpectra = useMemo<ChartSpectrum[]>(() => spectra.map((spectrum) => {
     const points = spectrum.points.map((point) => ({ ...point, value: convertSpectrumValue(point.value, spectrum.sourceMode, mode) }));
     const visible = points.filter((point) => point.wavenumber >= Math.min(xMinimum, xMaximum) && point.wavenumber <= Math.max(xMinimum, xMaximum));
-    return { ...spectrum, points, peaks: detectSpectrumPeaks(visible, mode, prominence, peakDistance, peakCount) };
+    return { ...spectrum, title: spectrum.title.trim() || spectrum.fileName.replace(/\.[^.]+$/, ""), points, peaks: detectSpectrumPeaks(visible, mode, prominence, peakDistance, peakCount) };
   }), [mode, peakCount, peakDistance, prominence, spectra, xMaximum, xMinimum]);
 
   function switchMode(nextMode: SpectrumMode) {
@@ -96,9 +96,9 @@ export function IrSpectrumTool() {
 
       {!!spectra.length && <div className="ir-file-list">{spectra.map((spectrum) => <article key={spectrum.id}>
         <input aria-label={`Line colour for ${spectrum.title}`} onChange={(event) => updateSpectrum(spectrum.id, { color: event.target.value })} type="color" value={spectrum.color} />
-        <label><span>Legend title</span><input onChange={(event) => updateSpectrum(spectrum.id, { title: event.target.value })} value={spectrum.title} /></label>
+        <div className="ir-file-identity"><strong>{spectrum.fileName}</strong><span>{spectrum.points.length.toLocaleString()} points</span></div>
+        <label className="ir-spectrum-name"><span>Spectrum name <small>shown in legend</small></span><input onChange={(event) => updateSpectrum(spectrum.id, { title: event.target.value })} placeholder="Enter a legend name" value={spectrum.title} /></label>
         <label><span>Source values</span><select onChange={(event) => updateSpectrum(spectrum.id, { sourceMode: event.target.value as SpectrumMode })} value={spectrum.sourceMode}><option value="transmittance">Transmittance (%T)</option><option value="absorbance">Absorbance</option></select></label>
-        <span>{spectrum.points.length.toLocaleString()} points</span>
         <button aria-label={`Remove ${spectrum.title}`} onClick={() => setSpectra((current) => current.filter((item) => item.id !== spectrum.id))} type="button">×</button>
       </article>)}</div>}
 
