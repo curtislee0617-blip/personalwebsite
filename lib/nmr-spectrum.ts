@@ -8,15 +8,23 @@ export type ComplexFid = {
 
 export type SpinsolveParameters = {
   observationMHz?: number;
+  observation2MHz?: number;
   bandwidthHz?: number;
+  bandwidth2Hz?: number;
   lowestFrequencyHz?: number;
+  lowestFrequency2Hz?: number;
   nucleus?: string;
+  nucleus2?: string;
   solvent?: string;
   sample?: string;
+  experiment?: string;
 };
 
 export type NmrPoint = { shift: number; intensity: number };
 export type NmrPeak = NmrPoint & { index: number; prominence: number };
+export type ComplexFid2d = { width: number; height: number; real: Float64Array; imaginary: Float64Array };
+export type NmrSpectrum2d = { width: number; height: number; intensity: Float32Array; xLow: number; xHigh: number; yLow: number; yHigh: number; experiment: "cosy" | "hsqc" };
+export type NmrPeak2d = { x: number; y: number; intensity: number; xIndex: number; yIndex: number };
 
 const SPINSOLVE_MAGIC = "SORPATAD1.1V";
 
@@ -41,6 +49,26 @@ export function parseSpinsolve1d(buffer: ArrayBuffer): ComplexFid {
   return { time, real, imaginary, pointCount, dwellTime };
 }
 
+export function parseSpinsolve2d(buffer: ArrayBuffer): ComplexFid2d {
+  if (buffer.byteLength < 40) throw new Error("The .2d file is too small to contain Spinsolve data.");
+  const magic = String.fromCharCode(...new Uint8Array(buffer, 0, 12));
+  if (magic !== SPINSOLVE_MAGIC) throw new Error("This .2d file is not a supported Magritek Spinsolve binary file.");
+  const view = new DataView(buffer);
+  const width = view.getUint32(16, true);
+  const floatCount = (buffer.byteLength - 32) / 4;
+  const complexCount = floatCount / 2;
+  const height = complexCount / width;
+  if (!Number.isInteger(floatCount) || !Number.isInteger(height) || width < 2 || height < 2) throw new Error("The Spinsolve 2D matrix dimensions do not match the binary payload.");
+  const values = new Float32Array(buffer, 32);
+  const real = new Float64Array(complexCount);
+  const imaginary = new Float64Array(complexCount);
+  for (let index = 0; index < complexCount; index += 1) {
+    real[index] = values[index * 2];
+    imaginary[index] = values[index * 2 + 1];
+  }
+  return { width, height, real, imaginary };
+}
+
 export function parseSpinsolveParameters(text: string): SpinsolveParameters {
   const entries = new Map<string, string>();
   for (const line of text.split(/\r?\n/)) {
@@ -55,11 +83,16 @@ export function parseSpinsolveParameters(text: string): SpinsolveParameters {
   const bandwidth = numeric("bandwidth");
   return {
     observationMHz: numeric("b1Freq"),
+    observation2MHz: numeric("b1Freq2"),
     bandwidthHz: bandwidth === undefined ? undefined : bandwidth * 1000,
+    bandwidth2Hz: numeric("bandwidth2") === undefined ? undefined : numeric("bandwidth2")! * 1000,
     lowestFrequencyHz: numeric("lowestFrequency"),
+    lowestFrequency2Hz: numeric("lowestFrequency2"),
     nucleus: entries.get("rxChannel"),
+    nucleus2: entries.get("rxChannel2"),
     solvent: entries.get("Solvent"),
     sample: entries.get("Sample"),
+    experiment: entries.get("experiment"),
   };
 }
 
@@ -198,4 +231,77 @@ export function pickNmrPeaks(points: NmrPoint[], minimumProminence: number, mini
     if (selected.length >= limit) break;
   }
   return selected.sort((a, b) => b.shift - a.shift);
+}
+
+export function processSpinsolve2d(fid: ComplexFid2d, parameters: SpinsolveParameters): NmrSpectrum2d {
+  const { width, height } = fid;
+  const real = fid.real.slice();
+  const imaginary = fid.imaginary.slice();
+  for (let row = 0; row < height; row += 1) {
+    const rowReal = real.slice(row * width, (row + 1) * width);
+    const rowImaginary = imaginary.slice(row * width, (row + 1) * width);
+    fft(rowReal, rowImaginary);
+    real.set(rowReal, row * width);
+    imaginary.set(rowImaginary, row * width);
+  }
+  const columnReal = new Float64Array(height);
+  const columnImaginary = new Float64Array(height);
+  for (let column = 0; column < width; column += 1) {
+    for (let row = 0; row < height; row += 1) {
+      columnReal[row] = real[row * width + column];
+      columnImaginary[row] = imaginary[row * width + column];
+    }
+    fft(columnReal, columnImaginary);
+    for (let row = 0; row < height; row += 1) {
+      real[row * width + column] = columnReal[row];
+      imaginary[row * width + column] = columnImaginary[row];
+    }
+  }
+  const intensity = new Float32Array(width * height);
+  let maximum = 0;
+  for (let row = 0; row < height; row += 1) {
+    for (let column = 0; column < width; column += 1) {
+      const sourceRow = (row + height / 2) % height;
+      const sourceColumn = (column + width / 2) % width;
+      const source = sourceRow * width + sourceColumn;
+      const value = Math.hypot(real[source], imaginary[source]);
+      intensity[row * width + column] = value;
+      maximum = Math.max(maximum, value);
+    }
+  }
+  if (maximum > 0) for (let index = 0; index < intensity.length; index += 1) intensity[index] /= maximum;
+  const xObservation = parameters.observationMHz ?? 1;
+  const yObservation = parameters.observation2MHz ?? parameters.observationMHz ?? 1;
+  const xLow = (parameters.lowestFrequencyHz ?? -(parameters.bandwidthHz ?? 1) / 2) / xObservation;
+  const xHigh = ((parameters.lowestFrequencyHz ?? -(parameters.bandwidthHz ?? 1) / 2) + (parameters.bandwidthHz ?? 1)) / xObservation;
+  const yLow = (parameters.lowestFrequency2Hz ?? -(parameters.bandwidth2Hz ?? 1) / 2) / yObservation;
+  const yHigh = ((parameters.lowestFrequency2Hz ?? -(parameters.bandwidth2Hz ?? 1) / 2) + (parameters.bandwidth2Hz ?? 1)) / yObservation;
+  return { width, height, intensity, xLow, xHigh, yLow, yHigh, experiment: parameters.experiment?.toLowerCase().includes("hsqc") ? "hsqc" : "cosy" };
+}
+
+export function pickNmr2dPeaks(spectrum: NmrSpectrum2d, threshold: number, limit: number) {
+  const candidates: NmrPeak2d[] = [];
+  const { width, height, intensity } = spectrum;
+  for (let row = 1; row < height - 1; row += 1) {
+    for (let column = 1; column < width - 1; column += 1) {
+      const value = intensity[row * width + column];
+      if (value < threshold) continue;
+      let isMaximum = true;
+      for (let dy = -1; dy <= 1 && isMaximum; dy += 1) for (let dx = -1; dx <= 1; dx += 1) {
+        if ((dx || dy) && intensity[(row + dy) * width + column + dx] > value) { isMaximum = false; break; }
+      }
+      if (!isMaximum) continue;
+      const x = spectrum.xHigh - (spectrum.xHigh - spectrum.xLow) * column / (width - 1);
+      const y = spectrum.yLow + (spectrum.yHigh - spectrum.yLow) * row / (height - 1);
+      if (spectrum.experiment === "cosy" && Math.abs(x - y) < 0.06) continue;
+      candidates.push({ x, y, intensity: value, xIndex: column, yIndex: row });
+    }
+  }
+  candidates.sort((a, b) => b.intensity - a.intensity);
+  const selected: NmrPeak2d[] = [];
+  for (const candidate of candidates) {
+    if (selected.every((peak) => Math.abs(peak.xIndex - candidate.xIndex) > 10 || Math.abs(peak.yIndex - candidate.yIndex) > 3)) selected.push(candidate);
+    if (selected.length >= limit) break;
+  }
+  return selected;
 }
