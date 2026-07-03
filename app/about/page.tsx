@@ -80,9 +80,9 @@ function OrganisationWordmark({ src, alt, fallback }: { src?: string; alt: strin
 const experience: TimelineItem[] = [
   {
     dates: "June 2026 - Present",
-    role: "Engineering Summer Intern",
+    role: "Process Engineering Intern",
     organisation: "The Hong Kong and China Gas Company Limited (Towngas)",
-    detail: "Interning with Towngas in the Green Fuels & Chemicals Division, supporting process design, safety review, and environmental analysis for the Foshan green fuels plant currently under construction. I will also work on operations at the company's Inner Mongolia green methanol plant, gaining exposure to large-scale renewable fuels production. Across the internship, I will research and evaluate the technical and commercial feasibility of producing synthetic natural gas from biomass-derived syngas.",
+    detail: "Interning with Towngas's Green Fuels & Chemicals division across Foshan, Guangdong and Ordos, Inner Mongolia. Working on process design and safety and environmental analysis for a new $30M green-fuels plant in Foshan, while supporting daily operations at an operating green-methanol plant in Inner Mongolia. Also investigating the feasibility of producing synthetic natural gas from biomass-derived syngas.",
     logo: { src: "/logos/towngas.png", alt: "Towngas logo", fallback: "TG", fitClassName: "h-11 w-[3.25rem]", alignClassName: "object-center", frameClassName: "bg-white" },
   },
   {
@@ -94,9 +94,9 @@ const experience: TimelineItem[] = [
   },
   {
     dates: "July 2025 - August 2025",
-    role: "Research Intern",
-    organisation: "UC Davis Department of Viticulture and Enology",
-    detail: "Working in the Integrative Center for Alternative Meat and Protein - iCAMP at UC Davis to research methods of producing sustainable and healthy meat via cell culturing. Over a five-week period, I primarily worked under Nick Johnson to develop scaffolds for cultivated meat. Using Texture Profile Analysis, I conducted many experiments with varying materials, cross-linkers, and preparation techniques to replicate textures comparable to meat.",
+    role: "Cultivated Meat Research Intern",
+    organisation: "UC Davis Robert Mondavi Institute, iCAMP (Alternative Meat & Protein)",
+    detail: "Working in the Integrative Center for Alternative Meat and Protein - iCAMP at UC Davis to research methods of producing sustainable and healthy meat via cell culturing. Over a five-week period, I primarily worked under Nick Johnson to screen fetal-bovine-serum-free growth media, cutting the cost and animal dependence of cultivated-meat culture. I built and tested 32 scaffold combinations, using Texture Profile Analysis to judge how closely each reproduced real meat texture.",
     logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-[center_58%]", frameClassName: "bg-[#16345f]" },
   },
   {
@@ -117,14 +117,14 @@ const experience: TimelineItem[] = [
     dates: "November 2022 - April 2023",
     role: "General Manager",
     organisation: "cook.enterprise",
-    detail: "Managed and led a team of 17 students competing in the Young Enterprise UK competition, winning the Kent Finals Prize. We created a student-centric cookbook inspired by works such as Modernist Cuisine, researching novel ways to prepare food quickly and microwave-cooking techniques suited to a busy student.",
+    detail: "Managed and led a team of 17 students competing in the Young Enterprise UK competition, winning the Kent Finals Best Company award. We created a student-centric cookbook inspired by works such as Modernist Cuisine, researching novel ways to prepare food quickly and microwave-cooking techniques suited to a busy student, earning £5,850 in revenue.",
     logo: { src: "/logos/cook.png", alt: "cook.enterprise logo", fallback: "COOK", fitClassName: "h-10 w-10" },
   },
   {
     dates: "July 2021 - Present",
     role: "Stage and Cook",
     organisation: "Michelin-starred restaurants",
-    detail: "Worked in over a dozen Michelin-starred kitchens led by chefs holding over 42 Michelin stars combined, including The Fat Duck, Ecriture, The Clove Club, Core by Clare Smyth, Sushiyoshi, Muse by Tom Aikens, and Frog by Adam Handling.",
+    detail: "Ran full service in high-pressure, zero-error kitchens across over a dozen Michelin-starred restaurants and chefs holding over 42 Michelin stars combined, including The Fat Duck, Ecriture, The Clove Club, Core by Clare Smyth, Sushiyoshi, Muse by Tom Aikens, and Frog by Adam Handling.",
     logo: { src: "/logos/michelin.png", alt: "Michelin logo", fallback: "42★", fitClassName: "h-9 w-9" },
   },
 ];
@@ -133,7 +133,7 @@ const education: EducationItem[] = [
   {
     dates: "2024 - 2028",
     school: "California Institute of Technology",
-    detail: "Chemical Engineering (process track, with electives in materials) and Business Economics and Management.",
+    detail: "Chemical Engineering (process track, with electives in materials) and Business Economics and Management. GPA: 3.8 / 4.0. Relevant coursework: Econometrics (EC 122) and Hedge Funds (BEM 114).",
     logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
   },
   {
@@ -257,6 +257,11 @@ export default function AboutPage() {
             <section>
               <p className="eyebrow">Languages</p>
               <p className="mt-5 text-sm leading-6 text-ink/60">English, Cantonese and Mandarin (native); French (elementary).</p>
+            </section>
+
+            <section>
+              <p className="eyebrow">Technical skills</p>
+              <p className="mt-5 text-sm leading-6 text-ink/60">Python, process modelling, NMR, IR, mass spectrometry; basic DWSIM.</p>
             </section>
           </aside>
         </div>

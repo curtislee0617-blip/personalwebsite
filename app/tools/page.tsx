@@ -59,6 +59,16 @@ export default function ToolsPage() {
             <span className="text-xl transition group-hover:translate-x-1" aria-hidden="true">→</span>
           </div>
         </Link>
+        <Link className="group block rounded-[1.5rem] border border-ink/10 bg-white/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-white sm:p-6" href="/tools/course-planner">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-moss">Planning</p>
+          <div className="mt-3 flex items-end justify-between gap-5">
+            <div>
+              <h2 className="text-xl font-semibold">Course planner</h2>
+              <p className="mt-1 max-w-2xl text-sm leading-6 text-ink/55">Drag ChemE (process track), BEM, and institute-core requirements onto a four-year, three-term grid and check them off.</p>
+            </div>
+            <span className="text-xl transition group-hover:translate-x-1" aria-hidden="true">→</span>
+          </div>
+        </Link>
       </section>
     </>
   );
