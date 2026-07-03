@@ -1065,6 +1065,22 @@ body {
 .compound-source-note p { max-width: 52rem; color: rgb(32 35 31 / 0.56); font-size: 0.65rem; line-height: 1.55; }
 .compound-source-note a { flex: none; font-size: 0.65rem; font-weight: 700; }
 .compound-source-note > div { display: grid; flex: none; gap: 0.25rem; text-align: right; }
+.compound-equations { overflow: hidden; border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.4rem; background: rgb(255 255 255 / 0.58); }
+.compound-equations summary { display: flex; padding: 0.8rem 1rem; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; }
+.compound-equations summary::-webkit-details-marker { display: none; }
+.compound-equations summary span { font-size: 0.72rem; font-weight: 700; }
+.compound-equations summary small { color: rgb(32 35 31 / 0.48); font-size: 0.58rem; font-weight: 700; }
+.compound-equations[open] summary { border-bottom: 1px solid rgb(32 35 31 / 0.08); }
+.compound-equations[open] summary small::before { content: "Hide "; }
+.compound-equations[open] summary small { font-size: 0; }
+.compound-equations[open] summary small::before { font-size: 0.58rem; }
+.compound-equation-grid { display: grid; padding: 0.75rem; gap: 0.45rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.compound-equation-grid article { display: grid; min-width: 0; padding: 0.7rem; align-content: start; gap: 0.32rem; border-radius: 0.85rem; background: rgb(247 245 239 / 0.72); }
+.compound-equation-grid article p { color: rgb(32 35 31 / 0.46); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.compound-equation-grid article strong { overflow-wrap: anywhere; font-family: Georgia, serif; font-size: 0.69rem; font-weight: 500; line-height: 1.45; }
+.compound-equation-grid article span { color: rgb(32 35 31 / 0.48); font-size: 0.53rem; line-height: 1.45; }
+.compound-equation-grid .compound-equation-wide { grid-column: span 2; }
+.compound-equation-caption { padding: 0 1rem 0.85rem; color: rgb(32 35 31 / 0.48); font-size: 0.57rem; line-height: 1.5; }
 .compound-catalogue { overflow: hidden; }
 .compound-catalogue-heading { display: flex; padding: 1rem; align-items: end; justify-content: space-between; gap: 1rem; }
 .compound-catalogue-heading input { width: min(16rem, 50%); }
@@ -1172,6 +1188,8 @@ body {
   .compound-output-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compound-source-note { align-items: start; flex-direction: column; }
   .compound-source-note > div { text-align: left; }
+  .compound-equation-grid { grid-template-columns: 1fr; }
+  .compound-equation-grid .compound-equation-wide { grid-column: auto; }
   .compound-catalogue-heading { align-items: stretch; flex-direction: column; }
   .compound-catalogue-heading input { width: 100%; }
 }

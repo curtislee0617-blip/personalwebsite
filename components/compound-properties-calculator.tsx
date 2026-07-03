@@ -143,6 +143,18 @@ export function CompoundPropertiesCalculator() {
         <div><Link href="/tools/compound-properties/lee-kesler-reference">Clear Lee–Kesler guide →</Link><a download href="/documents/koretsky-physical-properties.pdf">Appendix A PDF ↓</a></div>
       </div>
 
+      <details className="compound-equations">
+        <summary><span>Lee–Kesler equations at a glance</span><small>Show equations</small></summary>
+        <div className="compound-equation-grid">
+          <article><p>Reduced state</p><strong>Tᵣ = T / Tᶜ</strong><strong>Pᵣ = P / Pᶜ</strong></article>
+          <article className="compound-equation-wide"><p>Lee–Kesler equation of state</p><strong>Pᵣ = (Tᵣ/Vᵣ) [1 + B/Vᵣ + C/Vᵣ² + D/Vᵣ⁵ + c₄(Tᵣ⁻³Vᵣ⁻²)(β + γ/Vᵣ²) exp(−γ/Vᵣ²)]</strong><span>B = b₁ − b₂/Tᵣ − b₃/Tᵣ² − b₄/Tᵣ³ · C = c₁ − c₂/Tᵣ + c₃/Tᵣ³ · D = d₁ + d₂/Tᵣ</span></article>
+          <article><p>Acentric correction</p><strong>Z = Z⁽⁰⁾ + (ω/ωʳ)(Z⁽ʳ⁾ − Z⁽⁰⁾)</strong><span>ωʳ = 0.3978</span></article>
+          <article><p>Fugacity</p><strong>ln φ = ∫₀ᴾ (Z − 1)dP/P</strong><strong>f = φP</strong></article>
+          <article className="compound-equation-wide"><p>Departure properties</p><strong>Hᴿ/RT = −T ∫₀ᴾ (∂Z/∂T)ₚ dP/P</strong><strong>Sᴿ/R = Hᴿ/RT − ln φ</strong></article>
+        </div>
+        <p className="compound-equation-caption">Superscript (0) denotes the simple fluid and (r) the Lee–Kesler reference fluid. The calculator solves both continuously and applies the compound’s acentric factor.</p>
+      </details>
+
       <section className="compound-catalogue">
         <div className="compound-catalogue-heading"><div><p>Source catalogue</p><h2>All physical-property values</h2></div><input aria-label="Filter compound catalogue" onChange={(event) => setCatalogueQuery(event.target.value)} placeholder="Filter by name or formula" value={catalogueQuery} /></div>
         <div className="compound-table-wrap"><table><thead><tr><th>Compound</th><th>Formula</th><th>MW<br /><small>g/mol</small></th><th>Tᶜ<br /><small>K</small></th><th>Pᶜ<br /><small>bar</small></th><th>ω</th><th>A</th><th>B</th><th>C</th><th>Antoine range<br /><small>K</small></th></tr></thead><tbody>
