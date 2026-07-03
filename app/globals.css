@@ -1066,8 +1066,10 @@ body {
 .compound-formation-results > div p { color: #4f6c49; font-size: 0.52rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .compound-formation-results > div h3 { margin-top: 0.12rem; font-size: 0.76rem; font-weight: 700; }
 .compound-formation-results > div span { margin-top: 0.14rem; color: rgb(32 35 31 / 0.46); font-size: 0.52rem; }
-.compound-formation-results article p { display: grid; color: rgb(32 35 31 / 0.72); font-size: 0.66rem; font-weight: 700; }
-.compound-formation-results article p span { color: rgb(32 35 31 / 0.4); font-size: 0.49rem; }
+.compound-formation-results article p { display: flex; align-items: baseline; flex-wrap: wrap; color: rgb(32 35 31 / 0.72); font-size: 0.66rem; font-weight: 700; }
+.compound-formation-results article p b { font-weight: 700; white-space: nowrap; }
+.compound-formation-results article p sub { font-size: 0.48rem; }
+.compound-formation-results article p span { width: 100%; color: rgb(32 35 31 / 0.4); font-size: 0.49rem; }
 .compound-formation-results article strong { margin-top: auto; font-size: 0.88rem; }
 .compound-formation-results article small { color: rgb(32 35 31 / 0.42); font-size: 0.5rem; }
 .compound-warning { margin-top: 0.65rem; color: #865d26; font-size: 0.62rem; line-height: 1.5; }
@@ -1087,7 +1089,7 @@ body {
 .compound-equation-grid { display: grid; padding: 0.75rem; gap: 0.45rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .compound-equation-grid article { display: grid; min-width: 0; padding: 0.7rem; align-content: start; gap: 0.32rem; border-radius: 0.85rem; background: rgb(247 245 239 / 0.72); }
 .compound-equation-grid article p { color: rgb(32 35 31 / 0.46); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.compound-equation-grid article strong { overflow-wrap: anywhere; font-family: Georgia, serif; font-size: 0.69rem; font-weight: 500; line-height: 1.45; }
+.compound-equation-grid article strong { overflow-wrap: break-word; font-family: Georgia, serif; font-size: 0.69rem; font-weight: 500; line-height: 1.45; }
 .compound-equation-grid article span { color: rgb(32 35 31 / 0.48); font-size: 0.53rem; line-height: 1.45; }
 .compound-equation-grid .compound-equation-wide { grid-column: span 2; }
 .compound-equation-grid .compound-generalized-equations { border: 1px solid rgb(79 108 73 / 0.13); background: rgb(208 224 202 / 0.26); }
@@ -1095,11 +1097,14 @@ body {
 .compound-catalogue { overflow: hidden; }
 .compound-catalogue-heading { display: flex; padding: 1rem; align-items: end; justify-content: space-between; gap: 1rem; }
 .compound-catalogue-heading input { width: min(16rem, 50%); }
-.compound-table-wrap { overflow: auto; border-top: 1px solid rgb(32 35 31 / 0.08); }
+.compound-table-wrap { max-width: 100%; overflow: auto; border-top: 1px solid rgb(32 35 31 / 0.08); outline: none; overscroll-behavior-inline: contain; }
+.compound-table-wrap:focus-visible { box-shadow: inset 0 0 0 2px rgb(79 108 73 / 0.28); }
 .compound-table-wrap table { width: 100%; min-width: 72rem; border-collapse: collapse; font-size: 0.62rem; }
 .compound-table-wrap th, .compound-table-wrap td { padding: 0.52rem 0.62rem; border-bottom: 1px solid rgb(32 35 31 / 0.065); text-align: right; white-space: nowrap; }
 .compound-table-wrap th:first-child, .compound-table-wrap td:first-child, .compound-table-wrap th:nth-child(2), .compound-table-wrap td:nth-child(2) { text-align: left; }
-.compound-table-wrap th { position: sticky; top: 0; background: #f4f2ec; color: rgb(32 35 31 / 0.55); font-weight: 700; }
+.compound-table-wrap th { position: sticky; z-index: 2; top: 0; height: 2.5rem; background: #f4f2ec; color: rgb(32 35 31 / 0.55); font-weight: 700; }
+.compound-table-wrap thead tr:nth-child(2) th { z-index: 3; top: 2.5rem; border-top: 1px solid rgb(32 35 31 / 0.07); }
+.compound-table-wrap thead tr:first-child th[rowspan="2"] { vertical-align: middle; }
 .compound-table-wrap th small { font-size: 0.48rem; font-weight: 500; }
 .compound-table-wrap th.compound-formation-heading { border-left: 1px solid rgb(32 35 31 / 0.09); color: #4f6c49; letter-spacing: 0.05em; text-align: center; text-transform: uppercase; }
 .compound-table-wrap td button { font-weight: 700; text-align: left; }
@@ -1191,6 +1196,11 @@ body {
 .vle-equations .compound-equation-grid article:nth-child(2),
 .vle-equations .compound-equation-grid article:last-child { border: 1px solid rgb(79 108 73 / 0.12); background: rgb(208 224 202 / 0.22); }
 
+@media (min-width: 900px) and (max-width: 1099px) {
+  .compound-output-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .compound-output-grid p span { overflow: visible; line-height: 1.25; text-overflow: clip; white-space: normal; }
+}
+
 @media (max-width: 899px) {
   .restaurant-filter-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .restaurant-search { grid-column: 1 / -1; }
@@ -1270,10 +1280,15 @@ body {
   .steam-result-grid article { min-height: 5.6rem; }
   .compound-symbols { gap: 0.35rem; }
   .compound-symbols article { padding: 0.6rem; }
+  .compound-symbols span { overflow: visible; line-height: 1.35; text-overflow: clip; white-space: normal; }
   .compound-symbols .compound-formation-symbol { align-items: start; flex-direction: column; gap: 0.1rem; }
   .compound-formation-symbol span { overflow: visible; white-space: normal; }
   .compound-state-inputs { grid-template-columns: 1fr; }
+  .compound-result-heading { align-items: flex-start; flex-direction: column; gap: 0.45rem; }
+  .compound-result-heading > span { white-space: normal; }
   .compound-output-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .compound-output-grid article { min-height: 4.6rem; padding: 0.58rem; }
+  .compound-output-grid p span { overflow: visible; line-height: 1.25; text-overflow: clip; white-space: normal; }
   .compound-formation-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compound-formation-results > div { grid-column: 1 / -1; min-height: auto; }
   .compound-source-note { align-items: start; flex-direction: column; }
@@ -1282,6 +1297,7 @@ body {
   .compound-equation-grid .compound-equation-wide { grid-column: auto; }
   .compound-catalogue-heading { align-items: stretch; flex-direction: column; }
   .compound-catalogue-heading input { width: 100%; }
+  .compound-table-wrap table { min-width: 68rem; }
   .vle-presets { align-items: start; flex-direction: column; }
   .vle-presets > div { width: 100%; }
   .vle-compound-inputs { align-items: stretch; grid-template-columns: 1fr; }
