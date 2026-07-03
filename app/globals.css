@@ -885,6 +885,116 @@ body {
 .recommendation-status.is-error { color: #8a3a31; }
 .recommendation-status.is-sent { color: #52704d; }
 
+.steam-tool { display: grid; gap: 1rem; }
+.steam-symbols {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+.steam-symbols article {
+  display: grid;
+  min-width: 0;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid rgb(32 35 31 / 0.1);
+  border-radius: 1rem;
+  background: rgb(255 255 255 / 0.48);
+}
+.steam-symbols strong { font-size: 1rem; }
+.steam-symbols span { margin-top: 0.18rem; overflow: hidden; font-size: 0.68rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.steam-symbols small { margin-top: 0.1rem; color: rgb(32 35 31 / 0.48); font-size: 0.58rem; white-space: nowrap; }
+.steam-region-switch {
+  display: grid;
+  padding: 0.3rem;
+  border: 1px solid rgb(32 35 31 / 0.1);
+  border-radius: 1.15rem;
+  background: rgb(255 255 255 / 0.42);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.steam-region-switch button {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.85rem;
+  text-align: left;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+.steam-region-switch button span { font-size: 0.8rem; font-weight: 700; }
+.steam-region-switch button small { color: rgb(32 35 31 / 0.48); font-size: 0.64rem; }
+.steam-region-switch button.is-active { background: #20231f; box-shadow: 0 8px 24px rgb(32 35 31 / 0.12); color: #f7f5ef; }
+.steam-region-switch button.is-active small { color: rgb(247 245 239 / 0.62); }
+.steam-workspace { display: grid; gap: 1rem; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
+.steam-input-card,
+.steam-results,
+.steam-method-note {
+  border: 1px solid rgb(32 35 31 / 0.1);
+  border-radius: 1.5rem;
+  background: rgb(255 255 255 / 0.58);
+}
+.steam-input-card,
+.steam-results { padding: 1.2rem; }
+.steam-card-heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.steam-card-heading p { color: rgb(32 35 31 / 0.48); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.steam-card-heading h2 { margin-top: 0.18rem; font-size: 1rem; font-weight: 700; }
+.steam-card-heading > span {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  background: rgb(32 35 31 / 0.06);
+  color: rgb(32 35 31 / 0.55);
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+.steam-input-group { display: grid; margin-top: 0.9rem; gap: 0.55rem; grid-template-columns: minmax(0, 1.35fr) minmax(7rem, 0.65fr); }
+.steam-input-group label { display: grid; gap: 0.28rem; }
+.steam-input-group label > span { color: rgb(32 35 31 / 0.52); font-size: 0.62rem; font-weight: 700; }
+.steam-input-group select,
+.steam-input-group input {
+  width: 100%;
+  height: 2.7rem;
+  padding: 0 0.75rem;
+  border: 1px solid rgb(32 35 31 / 0.13);
+  border-radius: 0.8rem;
+  outline: none;
+  background: rgb(247 245 239 / 0.72);
+  color: #20231f;
+  font-size: 0.75rem;
+}
+.steam-input-group select:focus,
+.steam-input-group input:focus { border-color: rgb(32 35 31 / 0.45); box-shadow: 0 0 0 3px rgb(32 35 31 / 0.06); }
+.steam-calculate {
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 1rem;
+  border-radius: 0.85rem;
+  background: #20231f;
+  color: #f7f5ef;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: transform 150ms ease, background 150ms ease;
+}
+.steam-calculate:hover { background: #445b40; transform: translateY(-1px); }
+.steam-error,
+.steam-notice { margin-top: 0.65rem; font-size: 0.67rem; line-height: 1.5; }
+.steam-error { color: #9b342c; }
+.steam-notice { color: #6d5931; }
+.steam-result-grid { display: grid; margin-top: 1rem; gap: 0.55rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.steam-result-grid article {
+  display: grid;
+  min-width: 0;
+  min-height: 6.2rem;
+  align-content: space-between;
+  padding: 0.8rem;
+  border: 1px solid rgb(32 35 31 / 0.08);
+  border-radius: 1rem;
+  background: rgb(247 245 239 / 0.7);
+}
+.steam-result-grid article.is-input { border-color: rgb(79 108 73 / 0.23); background: rgb(208 224 202 / 0.45); }
+.steam-result-grid p { color: rgb(32 35 31 / 0.52); font-size: 0.72rem; font-weight: 700; }
+.steam-result-grid strong { overflow: hidden; margin: 0.55rem 0 0.1rem; font-size: clamp(1rem, 2vw, 1.35rem); letter-spacing: -0.025em; text-overflow: ellipsis; }
+.steam-result-grid small { color: rgb(32 35 31 / 0.45); font-size: 0.58rem; }
+.steam-method-note { display: grid; padding: 1rem 1.1rem; gap: 0.55rem; }
+.steam-method-note p { color: rgb(32 35 31 / 0.56); font-size: 0.68rem; line-height: 1.65; }
+.steam-method-note strong { color: #20231f; }
+
 @media (max-width: 899px) {
   .restaurant-filter-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .restaurant-search { grid-column: 1 / -1; }
@@ -894,6 +1004,8 @@ body {
   .restaurant-map-shell { border-right: 0; border-bottom: 1px solid rgb(32 35 31 / 0.1); }
   .restaurant-results { max-height: 28rem; }
   .restaurant-recommendations { grid-template-columns: 1fr; }
+  .steam-symbols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .steam-workspace { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 639px) {
@@ -941,6 +1053,18 @@ body {
   .restaurant-recommendations .recommendation-message,
   .restaurant-recommendations form > button,
   .recommendation-status { grid-column: auto; }
+  .steam-symbols { gap: 0.4rem; }
+  .steam-symbols article { padding: 0.6rem 0.65rem; }
+  .steam-symbols span { font-size: 0.62rem; }
+  .steam-region-switch button { padding: 0.65rem 0.7rem; }
+  .steam-region-switch button span { font-size: 0.72rem; }
+  .steam-region-switch button small { font-size: 0.58rem; }
+  .steam-input-card,
+  .steam-results { padding: 1rem; border-radius: 1.2rem; }
+  .steam-card-heading { align-items: start; flex-direction: column; gap: 0.45rem; }
+  .steam-input-group { grid-template-columns: minmax(0, 1.2fr) minmax(6.5rem, 0.8fr); }
+  .steam-result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steam-result-grid article { min-height: 5.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
