@@ -1310,6 +1310,41 @@ body {
 .nmr-method strong { flex: none; color: #4f6c49; font-size: 0.58rem; }
 .nmr-method p { color: rgb(32 35 31 / 0.48); font-size: 0.56rem; line-height: 1.55; }
 .nmr-method code { padding: 0.05rem 0.2rem; border-radius: 0.25rem; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.65); font-size: 0.52rem; }
+.nmr-analysis-toolbar { display: flex; padding: 0.5rem 0.75rem; overflow-x: auto; gap: 0.28rem; border-top: 1px solid rgb(32 35 31 / 0.06); scrollbar-width: none; }
+.nmr-analysis-toolbar::-webkit-scrollbar { display: none; }
+.nmr-analysis-toolbar button { flex: none; min-height: 1.9rem; padding: 0 0.58rem; border-radius: 99px; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.5); font-size: 0.52rem; font-weight: 700; }
+.nmr-analysis-toolbar button.is-active { background: #4f6c49; color: white; }
+.nmr-analysis-toolbar button:disabled { cursor: not-allowed; opacity: 0.35; }
+.nmr-mode-help { padding: 0 0.85rem 0.2rem; color: rgb(32 35 31 / 0.44); font-size: 0.5rem; }
+.nmr-chart.is-zoom svg, .nmr-chart.is-integrate svg { cursor: crosshair; }
+.nmr-chart.is-solvent svg, .nmr-chart.is-coupling svg { cursor: pointer; }
+.nmr-region rect { fill: rgb(79 108 73 / 0.09); stroke: rgb(79 108 73 / 0.28); stroke-width: 1; }
+.nmr-region text { fill: #4f6c49; font-size: 9px; font-weight: 700; }
+.nmr-solvent-marker line { stroke: #b56d3d; stroke-dasharray: 4 3; }
+.nmr-solvent-marker text { fill: #9a572c; font-size: 9px; font-weight: 700; }
+.nmr-coupling-marker line { stroke: #6e5c92; stroke-dasharray: 3 3; }
+.nmr-coupling-marker text { fill: #6e5c92; font-size: 9px; font-weight: 700; }
+.nmr-drag-selection { fill: rgb(76 110 130 / 0.14); stroke: rgb(76 110 130 / 0.5); stroke-width: 1; }
+.nmr-analysis-grid { display: grid; align-items: start; gap: 0.8rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.nmr-analysis-card { display: grid; min-width: 0; padding: 0.85rem; gap: 0.6rem; border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.2rem; background: rgb(255 255 255 / 0.58); }
+.nmr-analysis-card header p { color: rgb(32 35 31 / 0.46); font-size: 0.52rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.nmr-analysis-card header h2 { margin-top: 0.08rem; font-size: 0.82rem; font-weight: 700; }
+.nmr-analysis-card > p { color: rgb(32 35 31 / 0.46); font-size: 0.54rem; line-height: 1.5; }
+.nmr-analysis-card > label { display: grid; gap: 0.22rem; }
+.nmr-analysis-card > label > span { color: rgb(32 35 31 / 0.48); font-size: 0.51rem; font-weight: 700; }
+.nmr-analysis-card select, .nmr-analysis-card input[type="number"] { width: 100%; min-width: 0; height: 2.1rem; padding: 0 0.55rem; border: 1px solid rgb(32 35 31 / 0.12); border-radius: 0.58rem; background: rgb(255 255 255 / 0.72); font-size: 0.58rem; }
+.nmr-analysis-card > div:not(.nmr-integral-list):not(.nmr-j-result) { display: flex; padding: 0.5rem 0.6rem; align-items: center; justify-content: space-between; border-radius: 0.65rem; background: rgb(32 35 31 / 0.04); color: rgb(32 35 31 / 0.48); font-size: 0.53rem; }
+.nmr-analysis-card > div strong { color: #4f6c49; font-size: 0.6rem; }
+.nmr-integral-list { display: grid; max-height: 9.5rem; overflow: auto; gap: 0.25rem; }
+.nmr-integral-list article { display: grid; padding: 0.42rem 0.48rem; align-items: center; gap: 0.4rem; border-radius: 0.58rem; background: rgb(32 35 31 / 0.04); grid-template-columns: auto minmax(0, 1fr) auto auto; }
+.nmr-integral-list article > span { display: grid; font-size: 0.54rem; font-weight: 700; }
+.nmr-integral-list small { color: rgb(32 35 31 / 0.4); font-size: 0.45rem; font-weight: 500; }
+.nmr-integral-list article > strong { color: #4f6c49; font-size: 0.62rem; }
+.nmr-integral-list button { width: 1.3rem; height: 1.3rem; border-radius: 99px; background: rgb(32 35 31 / 0.06); color: rgb(32 35 31 / 0.45); }
+.nmr-j-result { display: grid; padding: 0.7rem; gap: 0.12rem; border-radius: 0.7rem; background: rgb(110 92 146 / 0.08); }
+.nmr-j-result span { color: rgb(32 35 31 / 0.48); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.52rem; }
+.nmr-j-result strong { color: #6e5c92 !important; font-size: 1rem !important; }
+.nmr-analysis-card > button { min-height: 1.9rem; border-radius: 0.58rem; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.52); font-size: 0.52rem; font-weight: 700; }
 
 @media (min-width: 900px) and (max-width: 1099px) {
   .compound-output-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -1333,6 +1368,7 @@ body {
   .vle-layout { grid-template-columns: 1fr; }
   .ir-workspace { grid-template-columns: 1fr; }
   .nmr-workspace { grid-template-columns: 1fr; }
+  .nmr-analysis-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 639px) {

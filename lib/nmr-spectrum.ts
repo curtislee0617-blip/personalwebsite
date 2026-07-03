@@ -131,9 +131,9 @@ export function processSpinsolveFid(
     const phased = real[shifted] * phaseCos - imaginary[shifted] * phaseSin;
     const frequency = carrier - sweepWidth / 2 + sweepWidth * (size - 1 - index) / size;
     const shift = options.observationMHz ? frequency / options.observationMHz : frequency;
-    scale = Math.max(scale, Math.abs(phased));
+    scale = Math.max(scale, phased);
     points[index] = { shift, intensity: phased };
   }
-  if (scale > 0) for (const point of points) point.intensity /= scale;
+  if (scale > 0) for (const point of points) point.intensity = Math.max(0, point.intensity / scale);
   return points;
 }
