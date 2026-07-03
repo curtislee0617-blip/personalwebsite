@@ -39,6 +39,16 @@ export default function ToolsPage() {
             <span className="text-xl transition group-hover:translate-x-1" aria-hidden="true">→</span>
           </div>
         </Link>
+        <Link className="group block rounded-[1.5rem] border border-ink/10 bg-white/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-white sm:p-6" href="/tools/ir-spectrum">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-moss">Spectroscopy</p>
+          <div className="mt-3 flex items-end justify-between gap-5">
+            <div>
+              <h2 className="text-xl font-semibold">IR spectrum plotter</h2>
+              <p className="mt-1 max-w-2xl text-sm leading-6 text-ink/55">Upload, compare, convert, and automatically label peaks in up to ten infrared spectra.</p>
+            </div>
+            <span className="text-xl transition group-hover:translate-x-1" aria-hidden="true">→</span>
+          </div>
+        </Link>
       </section>
     </>
   );

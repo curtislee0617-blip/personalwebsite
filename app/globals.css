@@ -1196,6 +1196,74 @@ body {
 .vle-equations .compound-equation-grid article:nth-child(2),
 .vle-equations .compound-equation-grid article:last-child { border: 1px solid rgb(79 108 73 / 0.12); background: rgb(208 224 202 / 0.22); }
 
+.ir-tool { display: grid; gap: 0.8rem; }
+.ir-upload-row, .ir-file-list, .ir-controls, .ir-output, .ir-peak-table, .ir-method-note { border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.35rem; background: rgb(255 255 255 / 0.58); }
+.ir-upload-row { display: flex; padding: 0.9rem 1rem; align-items: center; justify-content: space-between; gap: 1rem; }
+.ir-upload-row p, .ir-output header p, .ir-peak-table > div:first-child p { color: rgb(32 35 31 / 0.46); font-size: 0.56rem; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; }
+.ir-upload-row h2, .ir-output header h2, .ir-peak-table h2 { margin-top: 0.08rem; font-size: 0.9rem; font-weight: 700; }
+.ir-upload-row div > span, .ir-peak-table > div:first-child span { display: block; margin-top: 0.2rem; color: rgb(32 35 31 / 0.45); font-size: 0.56rem; }
+.ir-upload-row > button { display: flex; min-height: 2.4rem; padding: 0 0.75rem; align-items: center; gap: 0.45rem; border-radius: 0.75rem; background: #4f6c49; color: white; font-size: 0.65rem; font-weight: 700; }
+.ir-upload-row > button small { color: rgb(255 255 255 / 0.65); font-size: 0.52rem; }
+.ir-upload-row > button:disabled { cursor: not-allowed; opacity: 0.4; }
+.ir-file-message { padding: 0 0.25rem; color: rgb(32 35 31 / 0.43); font-size: 0.54rem; }
+.ir-file-list { display: grid; overflow: hidden; }
+.ir-file-list article { display: grid; min-width: 0; padding: 0.55rem 0.7rem; align-items: end; gap: 0.55rem; border-bottom: 1px solid rgb(32 35 31 / 0.07); grid-template-columns: auto minmax(8rem, 1fr) minmax(9rem, 0.65fr) auto auto; }
+.ir-file-list article:last-child { border-bottom: 0; }
+.ir-file-list article > input[type="color"] { width: 1.8rem; height: 1.8rem; padding: 0.1rem; border: 0; border-radius: 99px; background: transparent; }
+.ir-file-list label { display: grid; min-width: 0; gap: 0.18rem; }
+.ir-file-list label span { color: rgb(32 35 31 / 0.43); font-size: 0.5rem; font-weight: 700; }
+.ir-file-list label input, .ir-file-list label select { width: 100%; min-width: 0; height: 2rem; padding: 0 0.55rem; border: 1px solid rgb(32 35 31 / 0.12); border-radius: 0.58rem; background: rgb(255 255 255 / 0.7); font-size: 0.6rem; }
+.ir-file-list article > span { padding-bottom: 0.6rem; color: rgb(32 35 31 / 0.42); font-size: 0.52rem; white-space: nowrap; }
+.ir-file-list article > button { width: 1.8rem; height: 1.8rem; margin-bottom: 0.1rem; border-radius: 99px; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.45); font-size: 0.9rem; }
+.ir-workspace { display: grid; align-items: start; gap: 0.8rem; grid-template-columns: minmax(14.5rem, 0.48fr) minmax(0, 1.52fr); }
+.ir-controls { display: grid; padding: 0.85rem; gap: 0.7rem; }
+.ir-toggle { display: grid; padding: 0.22rem; gap: 0.22rem; border-radius: 0.75rem; background: rgb(32 35 31 / 0.055); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ir-toggle button { min-height: 2.15rem; padding: 0.35rem; border-radius: 0.57rem; color: rgb(32 35 31 / 0.5); font-size: 0.58rem; font-weight: 700; }
+.ir-toggle button.is-active { background: #20231f; color: #f7f5ef; }
+.ir-controls fieldset { display: grid; padding: 0.65rem; gap: 0.5rem; border-radius: 0.8rem; background: rgb(32 35 31 / 0.035); }
+.ir-controls legend { width: 100%; color: rgb(32 35 31 / 0.57); font-size: 0.58rem; font-weight: 700; }
+.ir-controls legend small { float: right; color: rgb(32 35 31 / 0.35); font-size: 0.48rem; font-weight: 500; }
+.ir-paired-inputs { display: grid; gap: 0.4rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ir-controls label { display: grid; min-width: 0; gap: 0.22rem; }
+.ir-controls label span { color: rgb(32 35 31 / 0.43); font-size: 0.5rem; font-weight: 700; }
+.ir-controls input[type="number"] { width: 100%; min-width: 0; height: 2rem; padding: 0 0.5rem; border: 1px solid rgb(32 35 31 / 0.12); border-radius: 0.58rem; background: rgb(255 255 255 / 0.72); font-size: 0.6rem; }
+.ir-peak-controls label:first-of-type { display: grid; align-items: center; grid-template-columns: minmax(0, 1fr) auto; }
+.ir-peak-controls label:first-of-type input { grid-column: 1 / -1; accent-color: #4f6c49; }
+.ir-peak-controls output { color: #4f6c49; font-size: 0.58rem; font-weight: 700; }
+.ir-peak-controls label:last-child > div { display: grid; grid-template-columns: minmax(0, 1fr) 3.2rem; }
+.ir-peak-controls label:last-child input { border-radius: 0.58rem 0 0 0.58rem; }
+.ir-peak-controls label:last-child b { display: grid; place-items: center; border: 1px solid rgb(32 35 31 / 0.12); border-left: 0; border-radius: 0 0.58rem 0.58rem 0; color: rgb(32 35 31 / 0.42); font-size: 0.5rem; }
+.ir-reset { min-height: 2.1rem; border-radius: 0.65rem; background: rgb(79 108 73 / 0.1); color: #4f6c49; font-size: 0.58rem; font-weight: 700; }
+.ir-output { min-width: 0; overflow: hidden; }
+.ir-output header { display: flex; padding: 0.8rem 0.9rem 0.2rem; align-items: start; justify-content: space-between; gap: 1rem; }
+.ir-output header > span { padding: 0.3rem 0.48rem; border-radius: 99px; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.44); font-size: 0.5rem; white-space: nowrap; }
+.ir-chart { position: relative; min-height: 20rem; padding: 0 0.35rem; }
+.ir-chart svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+.ir-chart-background { fill: rgb(255 255 255 / 0.32); }
+.ir-gridline { stroke: rgb(32 35 31 / 0.07); stroke-width: 1; }
+.ir-axis { stroke: rgb(32 35 31 / 0.5); stroke-width: 1.2; }
+.ir-tick { fill: rgb(32 35 31 / 0.48); font-size: 10px; }
+.ir-axis-title { fill: rgb(32 35 31 / 0.62); font-size: 11px; font-weight: 700; }
+.ir-peak-stem { stroke: rgb(32 35 31 / 0.2); stroke-width: 0.8; }
+.ir-peak-label { font-size: 8px; font-weight: 700; }
+.ir-hover line { stroke: rgb(32 35 31 / 0.2); stroke-dasharray: 3 3; }
+.ir-tooltip { position: absolute; z-index: 3; display: grid; min-width: 8.5rem; padding: 0.5rem 0.6rem; gap: 0.1rem; border: 1px solid rgb(32 35 31 / 0.12); border-radius: 0.65rem; background: rgb(248 247 242 / 0.95); box-shadow: 0 0.6rem 1.8rem rgb(32 35 31 / 0.12); color: rgb(32 35 31 / 0.58); font-size: 0.52rem; pointer-events: none; transform: translate(-50%, -100%); }
+.ir-tooltip strong { color: #20231f; font-size: 0.58rem; }
+.ir-chart-empty { position: absolute; inset: 0; display: grid; padding: 2rem; place-content: center; gap: 0.25rem; color: rgb(32 35 31 / 0.45); font-size: 0.6rem; text-align: center; }
+.ir-chart-empty strong { color: rgb(32 35 31 / 0.62); font-size: 0.72rem; }
+.ir-legend { display: flex; padding: 0.5rem 0.8rem 0.75rem; justify-content: center; flex-wrap: wrap; gap: 0.35rem 0.8rem; border-top: 1px solid rgb(32 35 31 / 0.06); color: rgb(32 35 31 / 0.5); font-size: 0.52rem; }
+.ir-legend span, .ir-peak-table h3 { display: flex; align-items: center; gap: 0.3rem; }
+.ir-legend i, .ir-peak-table h3 i { width: 1rem; height: 0.14rem; border-radius: 99px; }
+.ir-peak-table { display: grid; overflow: hidden; grid-template-columns: minmax(10rem, 0.34fr) minmax(0, 1.66fr); }
+.ir-peak-table > div:first-child { padding: 0.85rem; }
+.ir-peak-table > div:last-child { max-height: 13rem; overflow: auto; border-left: 1px solid rgb(32 35 31 / 0.07); }
+.ir-peak-table article { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgb(32 35 31 / 0.06); }
+.ir-peak-table h3 { font-size: 0.57rem; }
+.ir-peak-table article p { margin-top: 0.25rem; color: rgb(32 35 31 / 0.47); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.52rem; line-height: 1.55; }
+.ir-method-note { display: flex; padding: 0.75rem 0.9rem; align-items: start; gap: 0.7rem; }
+.ir-method-note strong { flex: none; color: #4f6c49; font-size: 0.58rem; }
+.ir-method-note p { color: rgb(32 35 31 / 0.48); font-size: 0.56rem; line-height: 1.55; }
+
 @media (min-width: 900px) and (max-width: 1099px) {
   .compound-output-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .compound-output-grid p span { overflow: visible; line-height: 1.25; text-overflow: clip; white-space: normal; }
@@ -1216,6 +1284,7 @@ body {
   .compound-workspace { grid-template-columns: 1fr; }
   .compound-output-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .vle-layout { grid-template-columns: 1fr; }
+  .ir-workspace { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 639px) {
@@ -1305,6 +1374,18 @@ body {
   .vle-data { grid-template-columns: 1fr; }
   .vle-table-wrap { border-top: 1px solid rgb(32 35 31 / 0.08); border-left: 0; }
   .vle-method-note { flex-direction: column; gap: 0.3rem; }
+  .ir-upload-row { align-items: stretch; flex-direction: column; }
+  .ir-upload-row > button { justify-content: center; }
+  .ir-file-list article { align-items: center; grid-template-columns: auto minmax(0, 1fr) auto; }
+  .ir-file-list article label:nth-of-type(2) { grid-column: 2 / -1; }
+  .ir-file-list article > span { padding: 0; grid-column: 2; }
+  .ir-file-list article > button { margin: 0; grid-column: 3; grid-row: 1; }
+  .ir-chart { min-height: 15rem; overflow-x: auto; }
+  .ir-chart svg { min-width: 41rem; }
+  .ir-chart-empty { position: sticky; left: 0; width: calc(100vw - 3.5rem); min-height: 15rem; }
+  .ir-peak-table { grid-template-columns: 1fr; }
+  .ir-peak-table > div:last-child { border-top: 1px solid rgb(32 35 31 / 0.07); border-left: 0; }
+  .ir-method-note { flex-direction: column; gap: 0.25rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
