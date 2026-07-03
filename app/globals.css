@@ -1268,6 +1268,49 @@ body {
 .ir-method-note strong { flex: none; color: #4f6c49; font-size: 0.58rem; }
 .ir-method-note p { color: rgb(32 35 31 / 0.48); font-size: 0.56rem; line-height: 1.55; }
 
+.nmr-tool { display: grid; gap: 0.8rem; }
+.nmr-upload, .nmr-controls, .nmr-output, .nmr-method { border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.35rem; background: rgb(255 255 255 / 0.58); }
+.nmr-upload { display: flex; padding: 0.9rem 1rem; align-items: center; justify-content: space-between; gap: 1rem; }
+.nmr-upload p, .nmr-controls header p, .nmr-output header p { color: rgb(32 35 31 / 0.46); font-size: 0.56rem; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; }
+.nmr-upload h2, .nmr-controls header h2, .nmr-output header h2 { margin-top: 0.08rem; font-size: 0.9rem; font-weight: 700; }
+.nmr-upload div > span { display: block; margin-top: 0.2rem; color: rgb(32 35 31 / 0.45); font-size: 0.56rem; }
+.nmr-upload > button { min-height: 2.4rem; padding: 0 0.75rem; border-radius: 0.75rem; background: #4f6c49; color: white; font-size: 0.64rem; font-weight: 700; white-space: nowrap; }
+.nmr-message { padding: 0 0.25rem; color: rgb(32 35 31 / 0.46); font-size: 0.54rem; }
+.nmr-workspace { display: grid; align-items: start; gap: 0.8rem; grid-template-columns: minmax(14.5rem, 0.45fr) minmax(0, 1.55fr); }
+.nmr-controls { display: grid; padding: 0.85rem; gap: 0.65rem; }
+.nmr-metadata { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.nmr-metadata span { padding: 0.3rem 0.45rem; border-radius: 99px; background: rgb(32 35 31 / 0.05); color: rgb(32 35 31 / 0.48); font-size: 0.49rem; }
+.nmr-controls > label, .nmr-range label { display: grid; min-width: 0; gap: 0.22rem; }
+.nmr-controls label > span, .nmr-controls legend { display: flex; justify-content: space-between; color: rgb(32 35 31 / 0.48); font-size: 0.52rem; font-weight: 700; }
+.nmr-controls label small, .nmr-controls output { color: #4f6c49; font-size: 0.48rem; }
+.nmr-controls input[type="number"] { width: 100%; min-width: 0; height: 2.05rem; padding: 0 0.55rem; border: 1px solid rgb(32 35 31 / 0.12); border-radius: 0.58rem; background: rgb(255 255 255 / 0.72); font-size: 0.6rem; }
+.nmr-controls input[type="range"] { width: 100%; accent-color: #4f6c49; }
+.nmr-controls fieldset { display: grid; padding: 0.62rem; gap: 0.4rem; border-radius: 0.75rem; background: rgb(32 35 31 / 0.035); }
+.nmr-segmented { display: grid; padding: 0.18rem; gap: 0.18rem; border-radius: 0.62rem; background: rgb(32 35 31 / 0.055); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.nmr-segmented button { min-height: 1.85rem; border-radius: 0.48rem; color: rgb(32 35 31 / 0.48); font-size: 0.56rem; font-weight: 700; }
+.nmr-segmented button.is-active { background: #20231f; color: #f7f5ef; }
+.nmr-range { display: grid; gap: 0.35rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.nmr-reset { min-height: 2.1rem; border-radius: 0.65rem; background: rgb(79 108 73 / 0.1); color: #4f6c49; font-size: 0.58rem; font-weight: 700; }
+.nmr-output { min-width: 0; overflow: hidden; }
+.nmr-output > header { display: flex; padding: 0.8rem 0.9rem 0.2rem; align-items: start; justify-content: space-between; gap: 1rem; }
+.nmr-output > header > span { padding: 0.3rem 0.48rem; border-radius: 99px; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.44); font-size: 0.5rem; white-space: nowrap; }
+.nmr-chart { position: relative; min-height: 20rem; padding: 0 0.35rem; }
+.nmr-chart svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+.nmr-gridline { stroke: rgb(32 35 31 / 0.07); stroke-width: 1; }
+.nmr-axis { stroke: rgb(32 35 31 / 0.45); stroke-width: 1.1; }
+.nmr-tick { fill: rgb(32 35 31 / 0.48); font-size: 10px; }
+.nmr-axis-title { fill: rgb(32 35 31 / 0.62); font-size: 11px; font-weight: 700; }
+.nmr-spectrum-line { fill: none; stroke: #4f6c49; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
+.nmr-hover line { stroke: rgb(32 35 31 / 0.2); stroke-dasharray: 3 3; }
+.nmr-hover circle { fill: #4f6c49; }
+.nmr-tooltip { position: absolute; z-index: 2; top: 0.5rem; display: grid; padding: 0.42rem 0.55rem; border: 1px solid rgb(32 35 31 / 0.12); border-radius: 0.6rem; background: rgb(248 247 242 / 0.95); box-shadow: 0 0.5rem 1.5rem rgb(32 35 31 / 0.1); color: rgb(32 35 31 / 0.5); font-size: 0.5rem; pointer-events: none; transform: translateX(-50%); }
+.nmr-tooltip strong { color: #20231f; font-size: 0.56rem; }
+.nmr-chart-empty { position: absolute; inset: 0; display: grid; place-content: center; color: rgb(32 35 31 / 0.46); font-size: 0.62rem; text-align: center; }
+.nmr-method { display: flex; padding: 0.75rem 0.9rem; align-items: start; gap: 0.7rem; }
+.nmr-method strong { flex: none; color: #4f6c49; font-size: 0.58rem; }
+.nmr-method p { color: rgb(32 35 31 / 0.48); font-size: 0.56rem; line-height: 1.55; }
+.nmr-method code { padding: 0.05rem 0.2rem; border-radius: 0.25rem; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.65); font-size: 0.52rem; }
+
 @media (min-width: 900px) and (max-width: 1099px) {
   .compound-output-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .compound-output-grid p span { overflow: visible; line-height: 1.25; text-overflow: clip; white-space: normal; }
@@ -1289,6 +1332,7 @@ body {
   .compound-output-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .vle-layout { grid-template-columns: 1fr; }
   .ir-workspace { grid-template-columns: 1fr; }
+  .nmr-workspace { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 639px) {
@@ -1390,6 +1434,11 @@ body {
   .ir-peak-table { grid-template-columns: 1fr; }
   .ir-peak-table > div:last-child { border-top: 1px solid rgb(32 35 31 / 0.07); border-left: 0; }
   .ir-method-note { flex-direction: column; gap: 0.25rem; }
+  .nmr-upload { align-items: stretch; flex-direction: column; }
+  .nmr-chart { min-height: 15rem; overflow-x: auto; }
+  .nmr-chart svg { min-width: 41rem; }
+  .nmr-chart-empty { position: sticky; left: 0; width: calc(100vw - 3.5rem); min-height: 15rem; }
+  .nmr-method { flex-direction: column; gap: 0.25rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
