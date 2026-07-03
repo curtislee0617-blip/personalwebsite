@@ -1267,6 +1267,39 @@ body {
 .ir-method-note { display: flex; padding: 0.75rem 0.9rem; align-items: start; gap: 0.7rem; }
 .ir-method-note strong { flex: none; color: #4f6c49; font-size: 0.58rem; }
 .ir-method-note p { color: rgb(32 35 31 / 0.48); font-size: 0.56rem; line-height: 1.55; }
+.ir-assignment-table, .ir-interpretation-guide { overflow: hidden; border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.35rem; background: rgb(255 255 255 / 0.58); }
+.ir-assignment-table > header, .ir-interpretation-guide > header { display: flex; padding: 0.85rem 0.95rem; align-items: start; justify-content: space-between; gap: 1rem; }
+.ir-assignment-table header p, .ir-interpretation-guide header p { color: rgb(32 35 31 / 0.46); font-size: 0.54rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.ir-assignment-table header h2, .ir-interpretation-guide header h2 { margin-top: 0.08rem; font-size: 0.88rem; font-weight: 700; }
+.ir-assignment-table header > span { padding: 0.28rem 0.45rem; border-radius: 99px; background: rgb(32 35 31 / 0.055); color: rgb(32 35 31 / 0.45); font-size: 0.5rem; white-space: nowrap; }
+.ir-assignment-table > div { max-height: 26rem; overflow: auto; border-top: 1px solid rgb(32 35 31 / 0.07); }
+.ir-assignment-table table { width: 100%; min-width: 58rem; border-collapse: collapse; font-size: 0.55rem; }
+.ir-assignment-table th, .ir-assignment-table td { padding: 0.55rem 0.65rem; border-bottom: 1px solid rgb(32 35 31 / 0.06); text-align: left; vertical-align: top; }
+.ir-assignment-table th { position: sticky; z-index: 1; top: 0; background: #f4f2ec; color: rgb(32 35 31 / 0.5); font-weight: 700; }
+.ir-assignment-table td:nth-child(2) { display: grid; gap: 0.08rem; white-space: nowrap; }
+.ir-assignment-table td:nth-child(2) small, .ir-assignment-options small { color: rgb(32 35 31 / 0.42); font-size: 0.46rem; font-weight: 500; }
+.ir-assignment-table td:last-child { max-width: 18rem; color: rgb(32 35 31 / 0.5); line-height: 1.45; }
+.ir-assignment-spectrum { display: flex; max-width: 10rem; align-items: center; gap: 0.3rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ir-assignment-spectrum i { width: 0.85rem; height: 0.13rem; flex: none; border-radius: 99px; }
+.ir-assignment-options { display: flex; max-width: 19rem; flex-wrap: wrap; gap: 0.2rem; }
+.ir-assignment-options > span { display: inline-flex; padding: 0.24rem 0.38rem; align-items: center; gap: 0.2rem; border-radius: 99px; background: rgb(32 35 31 / 0.055); white-space: nowrap; }
+.ir-assignment-options > span.is-higher { background: rgb(79 108 73 / 0.11); color: #4f6c49; }
+.ir-assignment-options > span.is-tentative { color: rgb(32 35 31 / 0.42); }
+.ir-assignment-table > p { padding: 0.65rem 0.9rem; color: rgb(32 35 31 / 0.46); font-size: 0.51rem; line-height: 1.5; }
+.ir-interpretation-guide > header { align-items: end; }
+.ir-interpretation-guide > header > span { max-width: 20rem; color: rgb(32 35 31 / 0.44); font-size: 0.51rem; text-align: right; }
+.ir-region-grid { display: grid; padding: 0.65rem; gap: 0.45rem; border-top: 1px solid rgb(32 35 31 / 0.07); grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ir-region-grid article { padding: 0.7rem; border-radius: 0.78rem; background: rgb(79 108 73 / 0.06); }
+.ir-region-grid strong { color: #4f6c49; font-size: 0.54rem; }
+.ir-region-grid h3 { margin-top: 0.15rem; font-size: 0.68rem; }
+.ir-region-grid p { margin-top: 0.35rem; color: rgb(32 35 31 / 0.48); font-size: 0.51rem; line-height: 1.5; }
+.ir-equation-grid { display: grid; padding: 0 0.65rem 0.65rem; gap: 0.45rem; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ir-equation-grid article { display: grid; min-width: 0; padding: 0.68rem; align-content: start; gap: 0.2rem; border-radius: 0.78rem; background: rgb(32 35 31 / 0.035); }
+.ir-equation-grid article p { color: rgb(32 35 31 / 0.48); font-size: 0.48rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.ir-equation-grid article strong { overflow-wrap: anywhere; font-family: Georgia, serif; font-size: 0.72rem; font-weight: 500; }
+.ir-equation-grid article span { color: rgb(32 35 31 / 0.45); font-size: 0.5rem; line-height: 1.45; }
+.ir-guide-note { margin: 0 0.65rem 0.65rem; padding: 0.68rem 0.75rem; border-radius: 0.75rem; background: rgb(178 106 75 / 0.07); color: rgb(32 35 31 / 0.51); font-size: 0.53rem; line-height: 1.55; }
+.ir-guide-note strong { color: #9a5b40; }
 
 .nmr-tool { display: grid; gap: 0.8rem; }
 .nmr-upload, .nmr-controls, .nmr-output, .nmr-method, .nmr-signal-table { border: 1px solid rgb(32 35 31 / 0.09); border-radius: 1.35rem; background: rgb(255 255 255 / 0.58); }
@@ -1415,6 +1448,7 @@ body {
   .compound-output-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .vle-layout { grid-template-columns: 1fr; }
   .ir-workspace { grid-template-columns: 1fr; }
+  .ir-region-grid, .ir-equation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .nmr-workspace { grid-template-columns: 1fr; }
   .nmr-analysis-grid { grid-template-columns: 1fr; }
   .nmr-equation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1519,6 +1553,9 @@ body {
   .ir-peak-table { grid-template-columns: 1fr; }
   .ir-peak-table > div:last-child { border-top: 1px solid rgb(32 35 31 / 0.07); border-left: 0; }
   .ir-method-note { flex-direction: column; gap: 0.25rem; }
+  .ir-assignment-table > header, .ir-interpretation-guide > header { align-items: start; flex-direction: column; }
+  .ir-interpretation-guide > header > span { text-align: left; }
+  .ir-region-grid, .ir-equation-grid { grid-template-columns: 1fr; }
   .nmr-upload { align-items: stretch; flex-direction: column; }
   .nmr-chart { min-height: 15rem; overflow-x: auto; }
   .nmr-chart svg { min-width: 41rem; }

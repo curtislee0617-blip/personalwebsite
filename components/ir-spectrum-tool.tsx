@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { IrSpectrumChart, type ChartSpectrum } from "@/components/ir-spectrum-chart";
 import { convertSpectrumValue, detectSpectrumPeaks, guessSpectrumMode, normaliseSpectrumRows, parseDelimitedSpectrum, type SpectrumMode, type SpectrumPoint } from "@/lib/ir-spectrum";
+import { suggestIrAssignments } from "@/lib/ir-assignments";
 
 type UploadedSpectrum = {
   id: string;
@@ -47,6 +48,7 @@ export function IrSpectrumTool() {
     const visible = points.filter((point) => point.wavenumber >= Math.min(xMinimum, xMaximum) && point.wavenumber <= Math.max(xMinimum, xMaximum));
     return { ...spectrum, title: spectrum.title.trim() || spectrum.fileName.replace(/\.[^.]+$/, ""), points, peaks: detectSpectrumPeaks(visible, mode, prominence, peakDistance, peakCount) };
   }), [mode, peakCount, peakDistance, prominence, spectra, xMaximum, xMinimum]);
+  const assignmentRows = useMemo(() => chartSpectra.flatMap((spectrum) => spectrum.peaks.map((peak) => ({ spectrum: spectrum.title, color: spectrum.color, peak, suggestions: suggestIrAssignments(peak.wavenumber) }))), [chartSpectra]);
 
   function switchMode(nextMode: SpectrumMode) {
     setMode(nextMode);
@@ -122,7 +124,34 @@ export function IrSpectrumTool() {
 
       {!!chartSpectra.length && <section className="ir-peak-table"><div><p>Detected peaks</p><h2>Strongest features</h2><span>Prominence is calculated in the displayed unit. Distance is measured in recorded data points.</span></div><div>{chartSpectra.map((spectrum) => <article key={spectrum.id}><h3><i style={{ background: spectrum.color }} />{spectrum.title}</h3><p>{spectrum.peaks.length ? spectrum.peaks.map((peak) => `${peak.wavenumber.toFixed(1)} (${peak.prominence.toFixed(mode === "absorbance" ? 3 : 1)})`).join(" · ") : "No peaks meet the current settings."}</p></article>)}</div></section>}
 
+      {!!assignmentRows.length && <section className="ir-assignment-table">
+        <header><div><p>Automated interpretation</p><h2>Possible peak assignments</h2></div><span>{assignmentRows.length} detected peaks</span></header>
+        <div><table><thead><tr><th>Spectrum</th><th>Peak</th><th>Region</th><th>Possible assignment</th><th>Interpretation</th></tr></thead><tbody>{assignmentRows.map((row, index) => <tr key={`${row.spectrum}-${row.peak.index}-${index}`}><td><span className="ir-assignment-spectrum"><i style={{ background: row.color }} />{row.spectrum}</span></td><td><strong>{row.peak.wavenumber.toFixed(1)} cm⁻¹</strong><small>prom. {row.peak.prominence.toFixed(mode === "absorbance" ? 3 : 1)}</small></td><td>{row.suggestions[0]?.region ?? "Unassigned"}</td><td>{row.suggestions.length ? <div className="ir-assignment-options">{row.suggestions.map((suggestion) => <span className={`is-${suggestion.reliability}`} key={`${suggestion.assignment}-${suggestion.vibration}-${suggestion.low}`}>{suggestion.assignment} <small>{suggestion.vibration}</small></span>)}</div> : "No listed reference range"}</td><td>{row.suggestions[0]?.note ?? "This peak may require comparison with a broader reference library or a known spectrum."}</td></tr>)}</tbody></table></div>
+        <p>These are range-based suggestions from the supplied IR reference, not structural proof. Band shape, intensity, companion bands, sample state and the rest of the spectrum must agree before accepting an assignment.</p>
+      </section>}
+
       <div className="ir-method-note"><strong>How it works</strong><p>The browser reproduces the plotting and peak-selection workflow from the supplied Python notebook: spectra are ordered by wavenumber, %T minima or absorbance maxima are detected, and the strongest peaks are selected by prominence and point spacing. Absorbance conversion uses A = −log₁₀(T/100). Hover inspection is available with a mouse or trackpad.</p></div>
+
+      <section className="ir-interpretation-guide">
+        <header><p>Reference guide</p><h2>How to read the IR regions</h2><span>Based on pages 1–2 of the supplied IR ranges document.</span></header>
+        <div className="ir-region-grid">
+          <article><strong>4000–2500 cm⁻¹</strong><h3>3 μ / X-H region</h3><p>Best for O-H, N-H and C-H stretching. Shape matters: free O-H and N-H tend to be sharper, while hydrogen bonding broadens and lowers them. Very weak bands can be overtones.</p></article>
+          <article><strong>2500–1800 cm⁻¹</strong><h3>Triple-bond region</h3><p>Use for C≡N, C≡C, cumulative double bonds and some overtones. Nitriles and isocyanates are often diagnostic; symmetrical alkynes may be weak or absent.</p></article>
+          <article><strong>1800–1500 cm⁻¹</strong><h3>6 μ / double-bond region</h3><p>Usually the most useful area for C=O, C=C and C=N stretching. Carbonyl position shifts predictably with conjugation, ring strain and nearby electronegative atoms.</p></article>
+          <article><strong>1500–650 cm⁻¹</strong><h3>Fingerprint region</h3><p>Contains single-bond stretches, bends and complex coupled vibrations. Assign only stronger diagnostic bands; use the overall pattern to compare identity with a known spectrum.</p></article>
+        </div>
+        <div className="ir-equation-grid">
+          <article><p>Wavenumber</p><strong>ν̄ = 1/λ = ν/c</strong><span>Higher wavenumber means higher vibrational frequency and energy.</span></article>
+          <article><p>Transmittance</p><strong>T = I/I₀</strong><strong>%T = 100T</strong><span>Compares transmitted intensity with the incident beam.</span></article>
+          <article><p>Absorbance</p><strong>A = −log₁₀(T)</strong><span>Converts transmission dips into upward peaks and is proportional to concentration in the linear regime.</span></article>
+          <article><p>Beer–Lambert law</p><strong>A = εbc</strong><span>Relates absorbance to molar absorptivity ε, path length b and concentration c.</span></article>
+          <article><p>Harmonic oscillator</p><strong>ν̄ = [1/(2πc)]√(k/μ)</strong><span>Stronger bonds have larger force constants k and absorb at higher wavenumber.</span></article>
+          <article><p>Reduced mass</p><strong>μ = m₁m₂/(m₁ + m₂)</strong><span>Heavier bonded atoms lower the vibrational frequency; isotopic substitution therefore shifts bands.</span></article>
+          <article><p>Vibrational levels</p><strong>Eᵥ = (v + ½)hν</strong><span>IR absorption promotes a molecule between quantized vibrational states.</span></article>
+          <article><p>Selection rule</p><strong>Δv = ±1</strong><strong>∂μdipole/∂Q ≠ 0</strong><span>A fundamental vibration must change molecular dipole moment to be IR-active.</span></article>
+        </div>
+        <p className="ir-guide-note"><strong>Practical rule:</strong> assign the interpretable high-wavenumber, triple-bond and double-bond regions first. Then use only selected medium or strong fingerprint peaks and confirm them through companion bands or comparison with a known spectrum. Complete assignment of every band is rarely justified.</p>
+      </section>
     </section>
   );
 }
