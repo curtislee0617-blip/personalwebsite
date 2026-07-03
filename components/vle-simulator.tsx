@@ -136,6 +136,19 @@ export function VleSimulator() {
         </div>
       </div>
 
+      <details className="compound-equations vle-equations">
+        <summary><span>VLE equations at a glance</span><small>Show equations</small></summary>
+        <div className="compound-equation-grid">
+          <article><p>Phase equilibrium</p><strong>fᶫᵢ = fᵛᵢ</strong><strong>yᵢφᵛᵢP = xᵢγᵢPˢᵃᵗᵢ</strong><span>At low pressure, φᵛᵢ ≈ 1 and the Poynting correction is neglected.</span></article>
+          <article className="compound-equation-wide"><p>Modified Raoult law</p><strong>P = Σ xᵢγᵢPˢᵃᵗᵢ</strong><strong>yᵢ = xᵢγᵢPˢᵃᵗᵢ / P</strong><span>Ideal Raoult law is recovered when γ₁ = γ₂ = 1.</span></article>
+          <article><p>Ideal binary P–x–y</p><strong>Pᵇᵘᵇ = x₁Pˢᵃᵗ₁ + x₂Pˢᵃᵗ₂</strong><strong>1/Pᵈᵉʷ = y₁/Pˢᵃᵗ₁ + y₂/Pˢᵃᵗ₂</strong></article>
+          <article><p>Antoine vapour pressure</p><strong>ln(Pˢᵃᵗ/bar) = A − B/(T + C)</strong><span>The valid temperature interval depends on the selected compound.</span></article>
+          <article><p>Activity models</p><strong>Gᴱ/RT → ln γᵢ</strong><strong>γᵢ = f(x₁, x₂, model parameters)</strong><span>Van Laar, NRTL and Wilson describe liquid-phase non-ideality.</span></article>
+          <article className="compound-equation-wide"><p>Peng–Robinson EOS</p><strong>P = RT/(V − b) − aα/[V(V + b) + b(V − b)]</strong><strong>Kᵢ = yᵢ/xᵢ = φᶫᵢ/φᵛᵢ</strong><span>aα and b use critical properties and acentric factors; mixture a includes the binary interaction parameter kᵢⱼ.</span></article>
+        </div>
+        <p className="compound-equation-caption">T–x–y holds pressure constant and solves the bubble temperature. P–x–y holds temperature constant and solves the bubble pressure. The plotted dew curve uses the corresponding equilibrium vapour composition y₁.</p>
+      </details>
+
       <section className="vle-data">
         <div><p>Equilibrium data</p><h2>Calculated x–y points</h2><span>x₁ and y₁ are mole fractions of {first.name}.</span></div>
         <div className="vle-table-wrap"><table><thead><tr><th>x₁ liquid</th><th>y₁ vapour</th><th>{submitted.type === "txy" ? "Temperature (°C)" : "Pressure (bar)"}</th></tr></thead><tbody>{result.points.map((point) => <tr key={point.x}><td>{point.x.toFixed(3)}</td><td>{point.y.toFixed(4)}</td><td>{submitted.type === "txy" ? (point.value - 273.15).toFixed(3) : point.value.toFixed(4)}</td></tr>)}</tbody></table></div>
