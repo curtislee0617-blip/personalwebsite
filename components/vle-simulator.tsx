@@ -29,6 +29,10 @@ const presets = [
   { label: "Acetone / chloroform", first: "Acetone", second: "Chloroform", model: "van-laar" as VleModel, type: "pxy" as DiagramType, value: 323.15 },
   { label: "Methane / ethane", first: "Methane", second: "Ethane", model: "peng-robinson" as VleModel, type: "pxy" as DiagramType, value: 173.15 },
   { label: "CO₂ / propane", first: "Carbon dioxide", second: "Propane", model: "peng-robinson" as VleModel, type: "pxy" as DiagramType, value: 273.15 },
+  { label: "Methanol / water", first: "Methanol", second: "Water", model: "nrtl" as VleModel, type: "txy" as DiagramType, value: 1.01325 },
+  { label: "Hexane / benzene", first: "n-Hexane", second: "Benzene", model: "ideal" as VleModel, type: "pxy" as DiagramType, value: 333.15 },
+  { label: "Propane / butane", first: "Propane", second: "n-Butane", model: "peng-robinson" as VleModel, type: "pxy" as DiagramType, value: 298.15 },
+  { label: "Nitrogen / oxygen", first: "Nitrogen", second: "Oxygen", model: "peng-robinson" as VleModel, type: "pxy" as DiagramType, value: 83.15 },
 ];
 
 function compoundByName(name: string) {
@@ -48,6 +52,9 @@ export function VleSimulator() {
   const second = compoundByName(submitted.secondName);
   const result = useMemo(() => generateVleDiagram(first, second, submitted.type, submitted.fixedValue, submitted.model, submitted.parameters), [first, second, submitted]);
   const isActivityModel = model !== "ideal" && model !== "peng-robinson";
+  const validFirst = compounds.some((compound) => compound.name === firstName);
+  const validSecond = compounds.some((compound) => compound.name === secondName);
+  const validPair = validFirst && validSecond && firstName !== secondName;
 
   function switchDiagram(nextType: DiagramType) {
     setType(nextType);
@@ -59,7 +66,7 @@ export function VleSimulator() {
   }
 
   function calculate() {
-    if (firstName === secondName) return;
+    if (!validPair) return;
     const value = Number(fixedInput);
     setSubmitted({
       firstName,
@@ -89,12 +96,13 @@ export function VleSimulator() {
 
       <div className="vle-layout">
         <aside className="vle-controls">
-          <div className="vle-control-heading"><p>Binary mixture</p><h2>Define the system</h2></div>
+          <div className="vle-control-heading"><p>Binary mixture · {compounds.length} compounds available</p><h2>Choose two compounds</h2></div>
           <div className="vle-compound-inputs">
-            <label><span>Component 1</span><select onChange={(event) => setFirstName(event.target.value)} value={firstName}>{compounds.map((compound) => <option disabled={compound.name === secondName} key={compound.name} value={compound.name}>{compound.name} · {compound.formula}</option>)}</select></label>
+            <label><span>Compound 1</span><input aria-invalid={!validFirst} list="vle-first-compounds" onChange={(event) => setFirstName(event.target.value)} placeholder="Type a name or formula" value={firstName} /><datalist id="vle-first-compounds">{compounds.filter((compound) => compound.name !== secondName).map((compound) => <option key={compound.name} value={compound.name}>{compound.formula}</option>)}</datalist></label>
             <button aria-label="Swap components" onClick={() => { setFirstName(secondName); setSecondName(firstName); }} type="button">⇄</button>
-            <label><span>Component 2</span><select onChange={(event) => setSecondName(event.target.value)} value={secondName}>{compounds.map((compound) => <option disabled={compound.name === firstName} key={compound.name} value={compound.name}>{compound.name} · {compound.formula}</option>)}</select></label>
+            <label><span>Compound 2</span><input aria-invalid={!validSecond} list="vle-second-compounds" onChange={(event) => setSecondName(event.target.value)} placeholder="Type a name or formula" value={secondName} /><datalist id="vle-second-compounds">{compounds.filter((compound) => compound.name !== firstName).map((compound) => <option key={compound.name} value={compound.name}>{compound.formula}</option>)}</datalist></label>
           </div>
+          {!validPair && <p className="vle-selection-error">Choose two different compounds from the suggestions.</p>}
 
           <div className="vle-toggle" aria-label="Diagram type">
             <button className={type === "txy" ? "is-active" : ""} onClick={() => switchDiagram("txy")} type="button"><strong>T–x–y</strong><span>fixed pressure</span></button>
@@ -113,7 +121,7 @@ export function VleSimulator() {
           </div>}
           {model === "peng-robinson" && <div className="vle-parameters"><p>Binary interaction</p><label>kᵢⱼ<input inputMode="decimal" onChange={(event) => setParameter("kij", event.target.value)} step="0.01" type="number" value={parameters.kij} /></label></div>}
 
-          <button className="vle-calculate" disabled={firstName === secondName || !Number.isFinite(Number(fixedInput))} onClick={calculate} type="button">Generate diagram</button>
+          <button className="vle-calculate" disabled={!validPair || !Number.isFinite(Number(fixedInput))} onClick={calculate} type="button">Generate diagram</button>
           <p className="vle-model-note">{model === "peng-robinson" ? "Cubic EOS calculation using critical properties and acentric factors. Suitable for light gases and non-polar mixtures; fit kᵢⱼ when data are available." : model === "ideal" ? "Ideal modified Raoult law with γ₁ = γ₂ = 1. Best for chemically similar liquids at low pressure." : "Activity-coefficient model with constant illustrative parameters. Enter fitted binary parameters for quantitative design work."}</p>
         </aside>
 

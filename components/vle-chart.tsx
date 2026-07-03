@@ -44,6 +44,9 @@ export function VleChart({ points, type, firstLabel }: VleChartProps) {
         <line className="vle-axis" x1={left} x2={left} y1={top} y2={height - bottom} />
         <line className="vle-axis" x1={left} x2={width - right} y1={height - bottom} y2={height - bottom} />
         <path className="vle-two-phase-region" d={phaseEnvelope(points, xScale, yScale)} />
+        <text className="vle-region-label" textAnchor="middle" x={xScale(0.5)} y={top + 18}>{type === "txy" ? "Vapour / gas" : "Liquid"}</text>
+        <text className="vle-region-label is-two-phase" textAnchor="middle" x={xScale(0.5)} y={yScale((rawMin + rawMax) / 2)}>Liquid + vapour</text>
+        <text className="vle-region-label" textAnchor="middle" x={xScale(0.5)} y={height - bottom - 10}>{type === "txy" ? "Liquid" : "Vapour / gas"}</text>
         <path className="vle-liquid-curve" d={pathFor(points, "x", xScale, yScale)} />
         <path className="vle-vapour-curve" d={pathFor(points, "y", xScale, yScale)} />
         {points.filter((_, index) => index % 4 === 0).map((point) => <circle className="vle-liquid-point" cx={xScale(point.x)} cy={yScale(point.value)} key={`x-${point.x}`} r="2.3" />)}
@@ -51,7 +54,7 @@ export function VleChart({ points, type, firstLabel }: VleChartProps) {
         <text className="vle-axis-title" textAnchor="middle" x={(left + width - right) / 2} y={height - 10}>Mole fraction of {firstLabel}</text>
         <text className="vle-axis-title" textAnchor="middle" transform={`rotate(-90 16 ${(top + height - bottom) / 2})`} x="16" y={(top + height - bottom) / 2}>{type === "txy" ? "Temperature (°C)" : "Pressure (bar)"}</text>
       </svg>
-      <div className="vle-legend"><span><i className="is-liquid" />Liquid composition, x₁</span><span><i className="is-vapour" />Vapour composition, y₁</span></div>
+      <div className="vle-legend"><span><i className="is-liquid" />Bubble line · liquid composition x₁</span><span><i className="is-vapour" />Dew line · vapour composition y₁</span></div>
     </div>
   );
 }
