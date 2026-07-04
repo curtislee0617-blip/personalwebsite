@@ -115,6 +115,26 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["course_plans"]["Insert"]>;
         Relationships: [];
       };
+      recipe_drafts: {
+        Row: {
+          id: string;
+          description: string;
+          image_urls: string[];
+          thumbnail_url: string;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          description: string;
+          image_urls: string[];
+          thumbnail_url: string;
+          status?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["recipe_drafts"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
