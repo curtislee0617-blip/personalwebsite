@@ -3,12 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { recipeEntries } from "@/lib/recipes";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const metadata: Metadata = { title: "Recipes" };
 
-export default function RecipesPage() {
+export default async function RecipesPage() {
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
   const recipes = recipeEntries.filter((entry) => entry.kind === "recipe");
+  const authenticated = await isRecipeAdminAuthenticated();
 
   return (
     <>
@@ -73,9 +75,16 @@ export default function RecipesPage() {
           </section>
 
           <section>
-            <div>
-              <p className="eyebrow">Recipes</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Scaffold for future recipe posts</h2>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="eyebrow">Recipes</p>
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipes</h2>
+              </div>
+              {authenticated && (
+                <Link className="self-start rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss sm:self-auto" href="/recipes/admin">
+                  + Upload recipe
+                </Link>
+              )}
             </div>
 
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">

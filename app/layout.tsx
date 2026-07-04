@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { FooterAdminLogin } from "@/components/footer-admin-login";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
@@ -19,7 +21,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const authenticated = await isRecipeAdminAuthenticated();
+
   return (
     <html lang="en">
       <body>
@@ -28,7 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main className="flex-1">{children}</main>
           <footer className="border-t border-ink/10">
             <div className="page-shell flex flex-col gap-4 py-8 text-sm text-ink/55 sm:flex-row sm:items-center sm:justify-between">
-              <p>© {new Date().getFullYear()} Curtis Lee.</p>
+              <FooterAdminLogin authenticated={authenticated} />
               <div className="flex gap-5">
                 <Link className="hover:text-ink" href="/contact">Say hello</Link>
                 <a className="hover:text-ink" href="#top">Back to top ↑</a>

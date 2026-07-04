@@ -1,102 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 
-import crypto from "node:crypto";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { uploadToR2 } from "@/lib/r2";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { RecipePhotoPicker } from "@/components/recipe-photo-picker";
+import { markProcessed, submitRecipe } from "./actions";
 
 export const metadata: Metadata = { title: "Recipe admin", robots: { index: false, follow: false } };
-
-const COOKIE_NAME = "recipe_admin_session";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
-
-function sessionToken(password: string) {
-  return crypto.createHash("sha256").update(`${password}:recipe-admin-session`).digest("hex");
-}
-
-async function isAuthenticated() {
-  const adminPassword = process.env.RECIPE_ADMIN_PASSWORD;
-  if (!adminPassword) return false;
-  const cookieStore = await cookies();
-  const cookieValue = cookieStore.get(COOKIE_NAME)?.value;
-  if (!cookieValue) return false;
-  const expected = sessionToken(adminPassword);
-  const a = Buffer.from(cookieValue);
-  const b = Buffer.from(expected);
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
-
-async function login(formData: FormData) {
-  "use server";
-  const adminPassword = process.env.RECIPE_ADMIN_PASSWORD;
-  const submitted = String(formData.get("password") ?? "");
-  if (!adminPassword || submitted !== adminPassword) {
-    redirect("/recipes/admin?error=wrong-password");
-  }
-  const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, sessionToken(adminPassword), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/recipes/admin",
-    maxAge: COOKIE_MAX_AGE,
-  });
-  redirect("/recipes/admin");
-}
-
-async function logout() {
-  "use server";
-  const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
-  redirect("/recipes/admin");
-}
-
-async function submitRecipe(formData: FormData) {
-  "use server";
-  if (!(await isAuthenticated())) redirect("/recipes/admin");
-
-  const description = String(formData.get("description") ?? "").trim();
-  const photos = formData.getAll("photos").filter((entry): entry is File => entry instanceof File && entry.size > 0);
-
-  if (!description || photos.length === 0) {
-    redirect("/recipes/admin?error=missing");
-  }
-
-  const draftId = crypto.randomUUID();
-  const imageUrls: string[] = [];
-  for (const [index, photo] of photos.entries()) {
-    const buffer = Buffer.from(await photo.arrayBuffer());
-    const safeName = photo.name.replace(/[^a-zA-Z0-9.-]+/g, "-").toLowerCase() || "photo.jpg";
-    const key = `recipes/${draftId}/${String(index).padStart(2, "0")}-${safeName}`;
-    const url = await uploadToR2(key, buffer, photo.type || "application/octet-stream");
-    imageUrls.push(url);
-  }
-
-  const supabase = createAdminClient();
-  const { error } = await supabase.from("recipe_drafts").insert({
-    description,
-    image_urls: imageUrls,
-    thumbnail_url: imageUrls[0],
-  });
-  if (error) {
-    console.error("Failed to save recipe draft", error);
-    redirect("/recipes/admin?error=save-failed");
-  }
-  redirect("/recipes/admin?submitted=1");
-}
-
-async function markProcessed(formData: FormData) {
-  "use server";
-  if (!(await isAuthenticated())) redirect("/recipes/admin");
-  const id = String(formData.get("id") ?? "");
-  if (!id) return;
-  const supabase = createAdminClient();
-  await supabase.from("recipe_drafts").update({ status: "processed" }).eq("id", id);
-  redirect("/recipes/admin");
-}
 
 function truncate(text: string, max: number) {
   return text.length > max ? `${text.slice(0, max).trimEnd()}…` : text;
@@ -104,18 +15,16 @@ function truncate(text: string, max: number) {
 
 export default async function RecipeAdminPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
-  const authenticated = await isAuthenticated();
+  const authenticated = await isRecipeAdminAuthenticated();
 
   if (!authenticated) {
     return (
       <div className="page-shell py-16 sm:py-20">
         <h1 className="section-title">Recipe admin</h1>
-        <p className="mt-3 max-w-md text-sm text-ink/60">Enter the admin password to add a new recipe.</p>
-        {params.error === "wrong-password" && <p className="mt-3 text-sm text-clay">Wrong password.</p>}
-        <form action={login} className="mt-6 flex max-w-sm flex-col gap-3">
-          <input autoFocus className="rounded-full border border-ink/20 bg-white px-4 py-2.5 text-sm" name="password" placeholder="Password" required type="password" />
-          <button className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-paper transition hover:bg-moss" type="submit">Sign in</button>
-        </form>
+        <p className="mt-3 max-w-md text-sm text-ink/60">
+          Log in from the footer — click “Curtis Lee” at the bottom of any page — then come back here.
+        </p>
+        <Link className="mt-6 inline-block text-sm font-semibold text-moss hover:text-ink" href="/recipes">← Back to recipes</Link>
       </div>
     );
   }
@@ -127,9 +36,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
     <div className="page-shell py-16 sm:py-20">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="section-title">Add a recipe</h1>
-        <form action={logout}>
-          <button className="text-xs font-semibold text-ink/50 hover:text-ink" type="submit">Sign out</button>
-        </form>
+        <Link className="text-xs font-semibold text-ink/50 hover:text-ink" href="/recipes">← Back to recipes</Link>
       </div>
 
       {params.submitted === "1" && <p className="mt-4 rounded-2xl bg-lime/40 px-4 py-3 text-sm text-ink">Saved — the first photo is the thumbnail.</p>}
