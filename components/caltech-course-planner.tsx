@@ -531,7 +531,7 @@ export function CaltechCoursePlanner() {
           <div>
             <p className="eyebrow">Cloud save</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">
-              Save your plan online so you can pick it up on another device. This is a simple name + major lookup, not a password — anyone who enters the same name and majors can view or overwrite that plan, so don&rsquo;t put anything sensitive in it. Only Chemical Engineering (process track) and BEM have real requirement sets so far; more majors are coming.
+              Save your plan online so you can pick it up on another device. This is a simple name + major/minor lookup, not a password — anyone who enters the same name and combination can view or overwrite that plan, so don&rsquo;t put anything sensitive in it. Chemical Engineering (process track), BEM, Computer Science (major and minor), and Mathematics have real requirement sets so far; more are coming.
             </p>
             <div className="mt-4 flex flex-wrap items-end gap-4">
               <label className="text-xs font-medium text-ink/55">
@@ -539,7 +539,7 @@ export function CaltechCoursePlanner() {
                 <input className="mt-1 block w-48 rounded-full border border-ink/20 bg-white px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginName(event.target.value)} placeholder="Your name" value={loginName} />
               </label>
               <div className="text-xs font-medium text-ink/55">
-                Major(s)
+                Major(s) / minor(s)
                 <div className="mt-1 flex flex-wrap gap-2">
                   {majors.map((major) => (
                     <label className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white px-3 py-1.5 text-xs text-ink/70" key={major.id}>
