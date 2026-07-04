@@ -1,3 +1,18 @@
+export type MajorId = "cheme-process" | "bem";
+
+export type Major = {
+  id: MajorId;
+  label: string;
+};
+
+// The only majors with a real, catalog-sourced requirement set so far. Add more here —
+// and the matching categories/templates below — as they get transcribed; nothing else
+// in the app needs to change to support a new major.
+export const majors: Major[] = [
+  { id: "cheme-process", label: "Chemical Engineering (process track)" },
+  { id: "bem", label: "Business, Economics & Management" },
+];
+
 export type RequirementCategoryId = "cheme" | "bem" | "core-science" | "humanities" | "social-science" | "pe" | "elective";
 
 export type RequirementCategory = {
@@ -6,6 +21,8 @@ export type RequirementCategory = {
   shortLabel: string;
   color: string;
   note: string;
+  /** Which major this category belongs to; omitted for categories shared by every major (institute core, humanities, etc.). */
+  majorId?: MajorId;
 };
 
 // Colors chosen as a fixed-order categorical palette (validated for CVD-safe
@@ -17,6 +34,7 @@ export const requirementCategories: RequirementCategory[] = [
     shortLabel: "ChemE",
     color: "#3f7d3a",
     note: "Core option requirements plus the process-systems track, per the Caltech catalog.",
+    majorId: "cheme-process",
   },
   {
     id: "bem",
@@ -24,6 +42,7 @@ export const requirementCategories: RequirementCategory[] = [
     shortLabel: "BEM",
     color: "#d77a55",
     note: "BEM option requirements, including its elective menus.",
+    majorId: "bem",
   },
   {
     id: "core-science",
@@ -37,7 +56,7 @@ export const requirementCategories: RequirementCategory[] = [
     label: "Humanities",
     shortLabel: "Humanities",
     color: "#b98b2a",
-    note: "36 units minimum, including two first-year courses in different disciplines and 18 units of advanced humanities.",
+    note: "36 units minimum, including two first-year courses in different disciplines, 18 units of advanced humanities, and 3 writing-intensive courses on grades (sophomore–senior) — usually the same courses as the advanced humanities and flex-elective tags, not extra ones.",
   },
   {
     id: "social-science",
@@ -142,6 +161,12 @@ export const requirementTemplates: RequirementTemplate[] = [
   { id: "hum-adv-2", categoryId: "humanities", label: "Advanced humanities" },
   { id: "hum-flex-1", categoryId: "humanities", label: "Humanities/social science elective" },
   { id: "hum-flex-2", categoryId: "humanities", label: "Humanities/social science elective" },
+  // Writing intensive: 3 courses on grades, sophomore through senior year. Usually the same
+  // physical courses as 2x advanced humanities + 1x flex elective above — tick both tags on
+  // that one class rather than scheduling a 4th/5th/6th course for these.
+  { id: "hum-wi-1", categoryId: "humanities", label: "Writing intensive course (on grades)" },
+  { id: "hum-wi-2", categoryId: "humanities", label: "Writing intensive course (on grades)" },
+  { id: "hum-wi-3", categoryId: "humanities", label: "Writing intensive course (on grades)" },
 
   // Social sciences
   { id: "ss-intro-1", categoryId: "social-science", label: "Social science intro (Ec 11/PS 12/Psy 13)" },
@@ -162,3 +187,14 @@ export const requirementTemplates: RequirementTemplate[] = [
   { id: "elective-5", categoryId: "elective", label: "Free elective" },
   { id: "elective-6", categoryId: "elective", label: "Free elective" },
 ];
+
+/** Categories visible to someone in the given majors: every shared/universal category, plus each selected major's own. */
+export function categoriesForMajors(selectedMajorIds: MajorId[]): RequirementCategory[] {
+  return requirementCategories.filter((category) => !category.majorId || selectedMajorIds.includes(category.majorId));
+}
+
+/** Requirement templates visible to someone in the given majors. */
+export function templatesForMajors(selectedMajorIds: MajorId[]): RequirementTemplate[] {
+  const visibleCategoryIds = new Set(categoriesForMajors(selectedMajorIds).map((category) => category.id));
+  return requirementTemplates.filter((template) => visibleCategoryIds.has(template.categoryId));
+}

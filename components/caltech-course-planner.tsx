@@ -1,37 +1,54 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent, type MouseEvent } from "react";
-import { requirementCategories, requirementTemplates, type RequirementCategoryId, type RequirementTemplate } from "@/data/caltech-requirements";
+import { categoriesForMajors, majors, requirementCategories, requirementTemplates, templatesForMajors, type MajorId, type RequirementCategory, type RequirementTemplate } from "@/data/caltech-requirements";
+import { buildLoginKey, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
+import type { Json } from "@/lib/supabase/database.types";
 
 const YEARS = [1, 2, 3, 4] as const;
 const TERMS = ["Fall", "Winter", "Spring"] as const;
 type Term = (typeof TERMS)[number];
 
-type ChipState = { label: string; done: boolean; cell: string | null };
-type PlannerState = Record<string, ChipState>;
+// A "class" is one real course, placed in one term, that can satisfy several requirement
+// tags at once (a lot of Caltech courses double- or triple-count). Requirements themselves
+// are never placed — a requirement is "satisfied" once some class's requirementIds includes it.
+type PlacedClass = { id: string; label: string; done: boolean; cell: string; requirementIds: string[] };
+type SavedPlan = { classes: Record<string, PlacedClass>; customTemplates: RequirementTemplate[] };
+type Selection = { type: "requirement" | "class"; id: string } | null;
+type RequirementOwner = { classId: string; className: string };
 
-const STORAGE_KEY = "caltech-course-planner-v1";
+const STORAGE_KEY = "caltech-course-planner-v2";
 
 function cellId(year: number, term: Term) {
   return `${year}-${term}`;
 }
 
-function defaultChips(templates: RequirementTemplate[]): PlannerState {
-  const state: PlannerState = {};
-  for (const template of templates) state[template.id] = { label: template.label, done: false, cell: null };
-  return state;
-}
-
-function categoryOf(id: RequirementCategoryId) {
-  return requirementCategories.find((category) => category.id === id)!;
+function categoryOf(id: string) {
+  return requirementCategories.find((category) => category.id === id) ?? requirementCategories[requirementCategories.length - 1];
 }
 
 function tint(hex: string, alpha: string) {
   return `${hex}${alpha}`;
 }
 
+function newId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+/** Drops any requirementIds that no longer resolve to a real template (stale major/catalog data). */
+function sanitizePlan(templates: RequirementTemplate[], saved: Partial<SavedPlan> | null | undefined): SavedPlan {
+  const customTemplates = saved?.customTemplates ?? [];
+  const validIds = new Set([...templates, ...customTemplates].map((template) => template.id));
+  const classes: Record<string, PlacedClass> = {};
+  for (const [id, cls] of Object.entries(saved?.classes ?? {})) {
+    if (!cls || typeof cls !== "object") continue;
+    classes[id] = { id, label: cls.label ?? "New class", done: !!cls.done, cell: cls.cell, requirementIds: (cls.requirementIds ?? []).filter((rid) => validIds.has(rid)) };
+  }
+  return { classes, customTemplates };
+}
+
 // A single-field label editor that wraps onto multiple lines and grows to fit,
-// so long default requirement names never get silently clipped like a fixed-width <input> would.
+// so long default names never get silently clipped like a fixed-width <input> would.
 function AutoGrowLabel({ value, done, onChange, onClick }: { value: string; done: boolean; onChange: (value: string) => void; onClick: (event: MouseEvent) => void }) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -54,136 +71,260 @@ function AutoGrowLabel({ value, done, onChange, onClick }: { value: string; done
   );
 }
 
-type ChipProps = {
-  id: string;
-  chip: ChipState;
+type RequirementRowProps = {
   template: RequirementTemplate;
+  category: RequirementCategory;
+  owner: RequirementOwner | undefined;
   isSelected: boolean;
+  isCustom: boolean;
   onSelect: (id: string) => void;
-  onToggleDone: (id: string) => void;
-  onRename: (id: string, label: string) => void;
-  onResetLabel: (id: string) => void;
-  onRemoveCustom: (id: string) => void;
-  onSendBack: (id: string) => void;
   onDragStart: (id: string) => void;
   onDragEnd: () => void;
+  onDeleteCustom: (id: string) => void;
 };
 
-function Chip({ id, chip, template, isSelected, onSelect, onToggleDone, onRename, onResetLabel, onRemoveCustom, onSendBack, onDragStart, onDragEnd }: ChipProps) {
-  const category = categoryOf(template.categoryId);
-  const isCustom = id.startsWith("custom-");
-  const isRenamed = chip.label !== template.label;
+function RequirementRow({ template, category, owner, isSelected, isCustom, onSelect, onDragStart, onDragEnd, onDeleteCustom }: RequirementRowProps) {
+  const satisfied = !!owner;
 
   return (
     <div
-      className={`group flex items-start gap-2 rounded-xl border px-2.5 py-2 text-left text-xs shadow-sm transition ${isSelected ? "ring-2 ring-offset-1 ring-offset-paper" : ""}`}
-      draggable
-      onClick={() => onSelect(id)}
+      className={`flex items-start gap-2 rounded-xl border px-2.5 py-2 text-left text-xs transition ${satisfied ? "" : "cursor-grab"} ${isSelected ? "ring-2 ring-offset-1 ring-offset-paper" : ""}`}
+      draggable={!satisfied}
+      onClick={() => !satisfied && onSelect(template.id)}
       onDragEnd={onDragEnd}
       onDragStart={(event) => {
-        event.dataTransfer.setData("text/plain", id);
-        onDragStart(id);
+        if (satisfied) return;
+        event.dataTransfer.setData("text/plain", `requirement:${template.id}`);
+        onDragStart(template.id);
       }}
-      role="button"
+      role={satisfied ? undefined : "button"}
       style={{
         borderColor: tint(category.color, "55"),
-        backgroundColor: tint(category.color, "14"),
+        backgroundColor: tint(category.color, satisfied ? "0c" : "14"),
         ...(isSelected ? ({ "--tw-ring-color": category.color } as CSSProperties) : {}),
       }}
-      tabIndex={0}
+      tabIndex={satisfied ? undefined : 0}
     >
-      <input
-        checked={chip.done}
-        className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-[var(--chip-accent)]"
-        onChange={() => onToggleDone(id)}
-        onClick={(event) => event.stopPropagation()}
-        style={{ "--chip-accent": category.color } as CSSProperties}
-        type="checkbox"
-      />
+      <span
+        aria-hidden="true"
+        className="mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border text-[0.55rem] font-bold text-white"
+        style={{ borderColor: category.color, backgroundColor: satisfied ? category.color : "transparent" }}
+      >
+        {satisfied ? "✓" : ""}
+      </span>
       <div className="min-w-0 flex-1">
-        <AutoGrowLabel done={chip.done} onChange={(label) => onRename(id, label)} onClick={(event) => event.stopPropagation()} value={chip.label} />
-        <p className="mt-0.5 text-[0.6rem] uppercase tracking-[0.1em] text-ink/40">{category.shortLabel}</p>
+        <p className={`text-xs font-medium leading-4 ${satisfied ? "text-ink/45 line-through" : "text-ink/85"}`}>{template.label}</p>
+        <p className="mt-0.5 truncate text-[0.6rem] uppercase tracking-[0.1em] text-ink/40">{satisfied ? `via ${owner.className}` : category.shortLabel}</p>
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-1">
-        {isRenamed && (
-          <button
-            aria-label="Reset label"
-            className="text-[0.65rem] leading-none text-ink/35 hover:text-ink"
-            onClick={(event) => {
-              event.stopPropagation();
-              onResetLabel(id);
-            }}
-            title="Reset to catalog label"
-            type="button"
-          >
-            ↺
-          </button>
-        )}
-        {isCustom && (
-          <button
-            aria-label="Delete custom requirement"
-            className="text-[0.65rem] leading-none text-ink/35 hover:text-clay"
-            onClick={(event) => {
-              event.stopPropagation();
-              onRemoveCustom(id);
-            }}
-            title="Delete custom requirement"
-            type="button"
-          >
-            ✕
-          </button>
-        )}
-        {chip.cell && (
-          <button
-            aria-label="Send back to unplaced"
-            className="text-[0.65rem] leading-none text-ink/35 hover:text-ink"
-            onClick={(event) => {
-              event.stopPropagation();
-              onSendBack(id);
-            }}
-            title="Send back to unplaced"
-            type="button"
-          >
-            ⤺
-          </button>
-        )}
-      </div>
+      {isCustom && (
+        <button
+          aria-label="Delete custom requirement"
+          className="shrink-0 text-[0.65rem] leading-none text-ink/35 hover:text-clay"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDeleteCustom(template.id);
+          }}
+          title="Delete custom requirement"
+          type="button"
+        >
+          ✕
+        </button>
+      )}
     </div>
   );
 }
 
-type SavedPlan = { chips: PlannerState; customTemplates: RequirementTemplate[] };
+type RequirementPickerProps = {
+  classId: string;
+  categories: RequirementCategory[];
+  templates: RequirementTemplate[];
+  currentIds: string[];
+  owners: Map<string, RequirementOwner>;
+  onToggle: (classId: string, requirementId: string) => void;
+};
+
+function RequirementPicker({ classId, categories, templates, currentIds, owners, onToggle }: RequirementPickerProps) {
+  return (
+    <div className="mt-2 max-h-56 space-y-2.5 overflow-y-auto rounded-lg border border-ink/10 bg-paper/70 p-2" onClick={(event) => event.stopPropagation()}>
+      {categories.map((category) => {
+        const items = templates.filter((template) => template.categoryId === category.id);
+        if (items.length === 0) return null;
+        return (
+          <div key={category.id}>
+            <p className="flex items-center gap-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-ink/45">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: category.color }} />
+              {category.shortLabel}
+            </p>
+            <div className="mt-1 space-y-0.5">
+              {items.map((template) => {
+                const owner = owners.get(template.id);
+                const checked = currentIds.includes(template.id);
+                const disabled = !!owner && owner.classId !== classId;
+                return (
+                  <label className={`flex items-center gap-1.5 rounded px-1 py-0.5 text-[0.68rem] ${disabled ? "text-ink/30" : "text-ink/75 hover:bg-ink/5"}`} key={template.id}>
+                    <input checked={checked} className="h-3 w-3 shrink-0" disabled={disabled} onChange={() => onToggle(classId, template.id)} type="checkbox" />
+                    <span className="min-w-0 flex-1 truncate">{template.label}</span>
+                    {disabled && <span className="shrink-0 text-[0.55rem] italic text-ink/35">via {owner!.className}</span>}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+type ClassCardProps = {
+  cls: PlacedClass;
+  templateById: Map<string, RequirementTemplate>;
+  categories: RequirementCategory[];
+  allTemplates: RequirementTemplate[];
+  owners: Map<string, RequirementOwner>;
+  isPickerOpen: boolean;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+  onToggleDone: (id: string) => void;
+  onRename: (id: string, label: string) => void;
+  onDelete: (id: string) => void;
+  onDragStart: (id: string) => void;
+  onDragEnd: () => void;
+  onTogglePicker: (id: string) => void;
+  onToggleRequirement: (classId: string, requirementId: string) => void;
+};
+
+function ClassCard({ cls, templateById, categories, allTemplates, owners, isPickerOpen, isSelected, onSelect, onToggleDone, onRename, onDelete, onDragStart, onDragEnd, onTogglePicker, onToggleRequirement }: ClassCardProps) {
+  return (
+    <div
+      className={`rounded-xl border border-ink/15 bg-white/70 px-2.5 py-2 text-left text-xs shadow-sm transition ${isSelected ? "ring-2 ring-moss ring-offset-1 ring-offset-paper" : ""}`}
+      draggable
+      onClick={() => onSelect(cls.id)}
+      onDragEnd={onDragEnd}
+      onDragStart={(event) => {
+        event.dataTransfer.setData("text/plain", `class:${cls.id}`);
+        onDragStart(cls.id);
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <div className="flex items-start gap-2">
+        <input checked={cls.done} className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-moss" onChange={() => onToggleDone(cls.id)} onClick={(event) => event.stopPropagation()} type="checkbox" />
+        <div className="min-w-0 flex-1">
+          <AutoGrowLabel done={cls.done} onChange={(label) => onRename(cls.id, label)} onClick={(event) => event.stopPropagation()} value={cls.label} />
+        </div>
+        <button
+          aria-label="Delete class"
+          className="shrink-0 text-[0.65rem] leading-none text-ink/35 hover:text-clay"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete(cls.id);
+          }}
+          title="Delete class"
+          type="button"
+        >
+          ✕
+        </button>
+      </div>
+
+      {cls.requirementIds.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1 pl-[1.375rem]">
+          {cls.requirementIds.map((rid) => {
+            const template = templateById.get(rid);
+            if (!template) return null;
+            const category = categoryOf(template.categoryId);
+            return (
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[0.55rem] font-semibold"
+                key={rid}
+                style={{ backgroundColor: tint(category.color, "22"), color: category.color }}
+                title={template.label}
+              >
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: category.color }} />
+                {category.shortLabel}
+              </span>
+            );
+          })}
+        </div>
+      )}
+
+      <button
+        className="mt-1.5 ml-[1.375rem] text-[0.62rem] font-semibold text-moss hover:text-ink"
+        onClick={(event) => {
+          event.stopPropagation();
+          onTogglePicker(cls.id);
+        }}
+        type="button"
+      >
+        {isPickerOpen ? "Done tagging ▴" : cls.requirementIds.length ? "Edit requirements ▾" : "+ Tag requirements ▾"}
+      </button>
+
+      {isPickerOpen && <RequirementPicker categories={categories} classId={cls.id} currentIds={cls.requirementIds} onToggle={onToggleRequirement} owners={owners} templates={allTemplates} />}
+    </div>
+  );
+}
 
 export function CaltechCoursePlanner() {
-  const [plan, setPlan] = useState<SavedPlan>(() => ({ chips: defaultChips(requirementTemplates), customTemplates: [] }));
-  const [selectedChip, setSelectedChip] = useState<string | null>(null);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [plan, setPlan] = useState<SavedPlan>({ classes: {}, customTemplates: [] });
+  const [selection, setSelection] = useState<Selection>(null);
+  const [draggingKey, setDraggingKey] = useState<string | null>(null);
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
-  const [addCategory, setAddCategory] = useState<RequirementCategoryId>("elective");
+  const [openPickerClassId, setOpenPickerClassId] = useState<string | null>(null);
+  const [addCategory, setAddCategory] = useState(requirementCategories[requirementCategories.length - 1].id);
   const [addLabel, setAddLabel] = useState("");
-  const { chips, customTemplates } = plan;
+  const [identity, setIdentity] = useState<StoredIdentity | null>(null);
+  const [syncStatus, setSyncStatus] = useState<"idle" | "loading" | "saving" | "saved" | "error">("idle");
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [loginName, setLoginName] = useState("");
+  const [loginMajors, setLoginMajors] = useState<MajorId[]>([]);
+  const { classes, customTemplates } = plan;
   const hasLoadedRef = useRef(false);
 
-  const allTemplates = useMemo(() => [...requirementTemplates, ...customTemplates], [customTemplates]);
+  // Everyone signed in sees only their major(s)' requirements (plus the shared institute core);
+  // signed-out visitors see the full default ChemE + BEM double-major catalog, same as before this feature existed.
+  const baseTemplates = useMemo(() => (identity ? templatesForMajors(identity.majors) : requirementTemplates), [identity]);
+  const baseCategories = useMemo(() => (identity ? categoriesForMajors(identity.majors) : requirementCategories), [identity]);
+  const allTemplates = useMemo(() => [...baseTemplates, ...customTemplates], [baseTemplates, customTemplates]);
   const templateById = useMemo(() => new Map(allTemplates.map((template) => [template.id, template])), [allTemplates]);
 
-  // Hydrate any saved plan from localStorage after mount, once, so the server-rendered
-  // (all-unplaced) markup matches on hydration; a client-only external store, not derived render state.
+  // Which class (if any) currently satisfies each requirement id. First class wins on
+  // conflicting saved data; toggleClassRequirement prevents new conflicts going forward.
+  const requirementOwners = useMemo(() => {
+    const map = new Map<string, RequirementOwner>();
+    for (const cls of Object.values(classes)) {
+      for (const requirementId of cls.requirementIds) {
+        if (!map.has(requirementId)) map.set(requirementId, { classId: cls.id, className: cls.label || "Untitled class" });
+      }
+    }
+    return map;
+  }, [classes]);
+
+  // Hydrate any saved plan (and identity) from localStorage after mount, once, so the server-rendered
+  // (all-unplaced) markup matches on hydration; a client-only external read, not derived render state.
   useEffect(() => {
+    const storedIdentity = loadStoredIdentity();
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<SavedPlan>;
-        const restoredCustom = parsed.customTemplates ?? [];
-        const merged = defaultChips([...requirementTemplates, ...restoredCustom]);
-        for (const [id, value] of Object.entries(parsed.chips ?? {})) {
-          if (merged[id]) merged[id] = value;
-        }
+        const templates = storedIdentity ? templatesForMajors(storedIdentity.majors) : requirementTemplates;
         // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage, not a render-time derivation
-        setPlan({ chips: merged, customTemplates: restoredCustom });
+        setPlan(sanitizePlan(templates, parsed));
       }
     } catch {
       // ignore malformed local storage
+    }
+    if (storedIdentity) {
+      setIdentity(storedIdentity);
+      fetchCoursePlan(storedIdentity.loginKey)
+        .then((row) => {
+          if (row) setPlan(sanitizePlan(templatesForMajors(storedIdentity.majors), row.plan as Partial<SavedPlan> | null));
+        })
+        .catch((error: unknown) => {
+          console.error("Failed to load saved course plan", error);
+          setSyncStatus("error");
+          setSyncError("Couldn't reach your saved plan (offline, or cloud save isn't set up yet) — showing your local copy.");
+        });
     }
     hasLoadedRef.current = true;
   }, []);
@@ -193,84 +334,168 @@ export function CaltechCoursePlanner() {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
   }, [plan]);
 
-  const updateChip = useCallback((id: string, update: (chip: ChipState) => ChipState) => {
-    setPlan((prev) => (prev.chips[id] ? { ...prev, chips: { ...prev.chips, [id]: update(prev.chips[id]) } } : prev));
+  // Debounce cloud saves so rapid edits (typing a rename, checking several boxes) coalesce into one write.
+  useEffect(() => {
+    if (!hasLoadedRef.current || !identity) return;
+    const timeout = window.setTimeout(() => {
+      setSyncStatus("saving");
+      saveCoursePlan(identity, plan as unknown as Json)
+        .then(() => setSyncStatus("saved"))
+        .catch((error: unknown) => {
+          console.error("Failed to save course plan", error);
+          setSyncStatus("error");
+          setSyncError("Couldn't save to the cloud (offline, or cloud save isn't set up yet) — your changes are still saved locally on this device.");
+        });
+    }, 1200);
+    return () => window.clearTimeout(timeout);
+  }, [plan, identity]);
+
+  const signIn = useCallback(async () => {
+    const name = loginName.trim();
+    if (!name || loginMajors.length === 0) return;
+    const loginKey = buildLoginKey(name, loginMajors);
+    setSyncStatus("loading");
+    setSyncError(null);
+    try {
+      const row = await fetchCoursePlan(loginKey);
+      const templates = templatesForMajors(loginMajors);
+      setPlan(row ? sanitizePlan(templates, row.plan as Partial<SavedPlan> | null) : { classes: {}, customTemplates: [] });
+      const nextIdentity: StoredIdentity = { loginKey, displayName: name, majors: loginMajors };
+      setIdentity(nextIdentity);
+      saveStoredIdentity(nextIdentity);
+      setSyncStatus("idle");
+    } catch (error) {
+      console.error("Sign-in failed", error);
+      setSyncStatus("error");
+      setSyncError("Couldn't reach the database (offline, or cloud save isn't set up yet). Your plan will stay local-only on this device for now.");
+    }
+  }, [loginMajors, loginName]);
+
+  const signOut = useCallback(() => {
+    saveStoredIdentity(null);
+    setIdentity(null);
+    setSyncStatus("idle");
+    setSyncError(null);
+    setLoginName("");
+    setLoginMajors([]);
+    setPlan({ classes: {}, customTemplates: [] });
   }, []);
 
-  const moveChip = useCallback(
-    (id: string, cell: string | null) => {
-      updateChip(id, (chip) => ({ ...chip, cell }));
-      setSelectedChip(null);
-    },
-    [updateChip],
-  );
+  const toggleLoginMajor = useCallback((majorId: MajorId) => {
+    setLoginMajors((prev) => (prev.includes(majorId) ? prev.filter((id) => id !== majorId) : [...prev, majorId]));
+  }, []);
 
-  const toggleDone = useCallback((id: string) => updateChip(id, (chip) => ({ ...chip, done: !chip.done })), [updateChip]);
+  const updateClass = useCallback((id: string, update: (cls: PlacedClass) => PlacedClass) => {
+    setPlan((prev) => (prev.classes[id] ? { ...prev, classes: { ...prev.classes, [id]: update(prev.classes[id]) } } : prev));
+  }, []);
 
-  const renameChip = useCallback((id: string, label: string) => updateChip(id, (chip) => ({ ...chip, label })), [updateChip]);
+  const toggleClassDone = useCallback((id: string) => updateClass(id, (cls) => ({ ...cls, done: !cls.done })), [updateClass]);
 
-  const resetLabel = useCallback(
-    (id: string) => {
-      const template = templateById.get(id);
+  const renameClass = useCallback((id: string, label: string) => updateClass(id, (cls) => ({ ...cls, label })), [updateClass]);
+
+  const moveClass = useCallback((id: string, cell: string) => {
+    updateClass(id, (cls) => ({ ...cls, cell }));
+    setSelection(null);
+  }, [updateClass]);
+
+  const deleteClass = useCallback((id: string) => {
+    setPlan((prev) => {
+      const next = { ...prev.classes };
+      delete next[id];
+      return { ...prev, classes: next };
+    });
+    setOpenPickerClassId((prev) => (prev === id ? null : prev));
+    setSelection((prev) => (prev?.type === "class" && prev.id === id ? null : prev));
+  }, []);
+
+  const toggleClassRequirement = useCallback((classId: string, requirementId: string) => {
+    setPlan((prev) => {
+      const cls = prev.classes[classId];
+      if (!cls) return prev;
+      const ownedByOther = Object.values(prev.classes).some((other) => other.id !== classId && other.requirementIds.includes(requirementId));
+      if (ownedByOther) return prev;
+      const has = cls.requirementIds.includes(requirementId);
+      const requirementIds = has ? cls.requirementIds.filter((id) => id !== requirementId) : [...cls.requirementIds, requirementId];
+      return { ...prev, classes: { ...prev.classes, [classId]: { ...cls, requirementIds } } };
+    });
+  }, []);
+
+  const createClassFromRequirement = useCallback(
+    (requirementId: string, cell: string) => {
+      if (requirementOwners.has(requirementId)) return;
+      const template = templateById.get(requirementId);
       if (!template) return;
-      updateChip(id, (chip) => ({ ...chip, label: template.label }));
+      const id = newId("class");
+      setPlan((prev) => ({ ...prev, classes: { ...prev.classes, [id]: { id, label: template.label, done: false, cell, requirementIds: [requirementId] } } }));
+      setSelection(null);
     },
-    [templateById, updateChip],
+    [requirementOwners, templateById],
   );
+
+  const addBlankClass = useCallback((cell: string) => {
+    const id = newId("class");
+    setPlan((prev) => ({ ...prev, classes: { ...prev.classes, [id]: { id, label: "New class", done: false, cell, requirementIds: [] } } }));
+  }, []);
 
   const addCustomRequirement = useCallback(() => {
     const label = addLabel.trim();
     if (!label) return;
-    const id = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    setPlan((prev) => ({
-      customTemplates: [...prev.customTemplates, { id, categoryId: addCategory, label }],
-      chips: { ...prev.chips, [id]: { label, done: false, cell: null } },
-    }));
+    const id = newId("custom");
+    setPlan((prev) => ({ ...prev, customTemplates: [...prev.customTemplates, { id, categoryId: addCategory, label }] }));
     setAddLabel("");
   }, [addCategory, addLabel]);
 
   const removeCustomRequirement = useCallback((id: string) => {
     setPlan((prev) => {
-      const chips = { ...prev.chips };
-      delete chips[id];
-      return { chips, customTemplates: prev.customTemplates.filter((template) => template.id !== id) };
+      const classes: Record<string, PlacedClass> = {};
+      for (const [classId, cls] of Object.entries(prev.classes)) classes[classId] = { ...cls, requirementIds: cls.requirementIds.filter((rid) => rid !== id) };
+      return { classes, customTemplates: prev.customTemplates.filter((template) => template.id !== id) };
     });
   }, []);
 
   const resetAll = useCallback(() => {
-    if (!window.confirm("Reset the planner? This clears every placement, checkbox, renamed label, and custom requirement.")) return;
-    setPlan({ chips: defaultChips(requirementTemplates), customTemplates: [] });
-    setSelectedChip(null);
+    if (!window.confirm("Reset the planner? This clears every class, checkbox, and custom requirement.")) return;
+    setPlan({ classes: {}, customTemplates: [] });
+    setSelection(null);
+    setOpenPickerClassId(null);
   }, []);
 
   const handleDrop = useCallback(
-    (targetCell: string | null, event: DragEvent) => {
+    (targetCell: string, event: DragEvent) => {
       event.preventDefault();
-      const id = event.dataTransfer.getData("text/plain") || draggingId;
-      if (id) moveChip(id, targetCell);
-      setDraggingId(null);
+      const payload = event.dataTransfer.getData("text/plain") || draggingKey || "";
+      const [kind, id] = payload.split(":");
+      if (kind === "requirement" && id) createClassFromRequirement(id, targetCell);
+      else if (kind === "class" && id) moveClass(id, targetCell);
+      setDraggingKey(null);
     },
-    [draggingId, moveChip],
+    [draggingKey, createClassFromRequirement, moveClass],
   );
 
   const handleZoneClick = useCallback(
-    (targetCell: string | null) => {
-      if (!selectedChip) return;
-      moveChip(selectedChip, targetCell);
+    (targetCell: string) => {
+      if (!selection) return;
+      if (selection.type === "requirement") createClassFromRequirement(selection.id, targetCell);
+      else moveClass(selection.id, targetCell);
     },
-    [selectedChip, moveChip],
+    [selection, createClassFromRequirement, moveClass],
   );
 
-  const selectChip = useCallback((id: string) => setSelectedChip((current) => (current === id ? null : id)), []);
+  const selectRequirement = useCallback((id: string) => setSelection((current) => (current?.type === "requirement" && current.id === id ? null : { type: "requirement", id })), []);
+  const selectClass = useCallback((id: string) => setSelection((current) => (current?.type === "class" && current.id === id ? null : { type: "class", id })), []);
+  const togglePicker = useCallback((id: string) => setOpenPickerClassId((current) => (current === id ? null : id)), []);
 
   const categoryStats = useMemo(() => {
-    return requirementCategories.map((category) => {
+    return baseCategories.map((category) => {
       const ids = allTemplates.filter((template) => template.categoryId === category.id).map((template) => template.id);
-      const placed = ids.filter((id) => chips[id]?.cell).length;
-      const done = ids.filter((id) => chips[id]?.done).length;
+      const placed = ids.filter((id) => requirementOwners.has(id)).length;
+      const done = ids.filter((id) => {
+        const owner = requirementOwners.get(id);
+        return owner ? classes[owner.classId]?.done : false;
+      }).length;
       return { category, total: ids.length, placed, done };
     });
-  }, [allTemplates, chips]);
+  }, [baseCategories, allTemplates, requirementOwners, classes]);
 
   const totals = useMemo(
     () => categoryStats.reduce(
@@ -280,37 +505,70 @@ export function CaltechCoursePlanner() {
     [categoryStats],
   );
 
-  function renderChip(id: string) {
-    const chip = chips[id];
-    const template = templateById.get(id);
-    if (!chip || !template) return null;
-    return (
-      <Chip
-        chip={chip}
-        id={id}
-        isSelected={selectedChip === id}
-        key={id}
-        onDragEnd={() => setDraggingId(null)}
-        onDragStart={setDraggingId}
-        onRemoveCustom={removeCustomRequirement}
-        onRename={renameChip}
-        onResetLabel={resetLabel}
-        onSelect={selectChip}
-        onSendBack={(chipId) => moveChip(chipId, null)}
-        onToggleDone={toggleDone}
-        template={template}
-      />
-    );
-  }
-
   return (
     <div className="space-y-10">
+      <section className="rounded-[1.5rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+        {identity ? (
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="eyebrow">Cloud save</p>
+              <p className="mt-2 text-sm text-ink/60">
+                Signed in as <span className="font-semibold text-ink">{identity.displayName}</span> · {identity.majors.map((id) => majors.find((major) => major.id === id)?.label ?? id).join(", ")}
+              </p>
+              <p className="mt-1 text-xs text-ink/45">
+                {syncStatus === "saving" && "Saving…"}
+                {syncStatus === "saved" && "Saved to the cloud."}
+                {syncStatus === "loading" && "Loading your saved plan…"}
+                {syncStatus === "error" && syncError}
+                {syncStatus === "idle" && "Synced with the cloud."}
+              </p>
+            </div>
+            <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-white" onClick={signOut} type="button">
+              Switch profile
+            </button>
+          </div>
+        ) : (
+          <div>
+            <p className="eyebrow">Cloud save</p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">
+              Save your plan online so you can pick it up on another device. This is a simple name + major lookup, not a password — anyone who enters the same name and majors can view or overwrite that plan, so don&rsquo;t put anything sensitive in it. Only Chemical Engineering (process track) and BEM have real requirement sets so far; more majors are coming.
+            </p>
+            <div className="mt-4 flex flex-wrap items-end gap-4">
+              <label className="text-xs font-medium text-ink/55">
+                Name
+                <input className="mt-1 block w-48 rounded-full border border-ink/20 bg-white px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginName(event.target.value)} placeholder="Your name" value={loginName} />
+              </label>
+              <div className="text-xs font-medium text-ink/55">
+                Major(s)
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {majors.map((major) => (
+                    <label className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white px-3 py-1.5 text-xs text-ink/70" key={major.id}>
+                      <input checked={loginMajors.includes(major.id)} onChange={() => toggleLoginMajor(major.id)} type="checkbox" />
+                      {major.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <button
+                className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={!loginName.trim() || loginMajors.length === 0 || syncStatus === "loading"}
+                onClick={signIn}
+                type="button"
+              >
+                {syncStatus === "loading" ? "Loading…" : "Save online"}
+              </button>
+            </div>
+            {syncStatus === "error" && <p className="mt-3 text-xs text-clay">{syncError}</p>}
+          </div>
+        )}
+      </section>
+
       <section className="rounded-[1.5rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="eyebrow">Progress</p>
             <p className="mt-2 text-sm text-ink/60">
-              {totals.placed} / {totals.total} requirements placed on the grid · {totals.done} / {totals.total} checked off
+              {totals.placed} / {totals.total} requirements satisfied by a class · {totals.done} / {totals.total} checked off as done
             </p>
           </div>
           <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-white" onClick={resetAll} type="button">
@@ -342,22 +600,21 @@ export function CaltechCoursePlanner() {
       <div className="grid gap-8 lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-start">
         <section aria-labelledby="unplaced-title" className="min-w-0 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto lg:pr-1">
           <h2 className="section-title" id="unplaced-title">Requirements</h2>
-          <p className="mt-2 text-xs text-ink/50">{selectedChip ? "Tap a term (or “Unplaced”) to place the selected tag." : "Tap a menu to open it, drag a tag onto the plan, or tap a tag then tap a term."}</p>
+          <p className="mt-2 text-xs text-ink/50">
+            {selection ? "Tap a term on the plan to place it there." : "Drag a requirement onto a term to create a class for it, or tap it then tap a term. One class can satisfy several requirements — tag the rest from its card."}
+          </p>
 
           <div className="mt-4 space-y-2">
-            {requirementCategories.map((category) => {
-              const ids = allTemplates.filter((template) => template.categoryId === category.id && !chips[template.id]?.cell).map((template) => template.id);
-              const totalInCategory = allTemplates.filter((template) => template.categoryId === category.id).length;
+            {baseCategories.map((category) => {
+              const items = allTemplates.filter((template) => template.categoryId === category.id);
+              const satisfiedCount = items.filter((template) => requirementOwners.has(template.id)).length;
               const isOpen = !!openCategories[category.id];
               return (
-                <div className="rounded-2xl border border-ink/10 bg-white/40" key={category.id} onClick={() => handleZoneClick(null)} onDragOver={(event) => event.preventDefault()} onDrop={(event) => handleDrop(null, event)}>
+                <div className="rounded-2xl border border-ink/10 bg-white/40" key={category.id}>
                   <button
                     aria-expanded={isOpen}
                     className="flex w-full items-center justify-between gap-3 px-3.5 py-3 text-left"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setOpenCategories((prev) => ({ ...prev, [category.id]: !prev[category.id] }));
-                    }}
+                    onClick={() => setOpenCategories((prev) => ({ ...prev, [category.id]: !prev[category.id] }))}
                     type="button"
                   >
                     <span className="flex items-center gap-2 text-sm font-semibold">
@@ -365,13 +622,26 @@ export function CaltechCoursePlanner() {
                       {category.label}
                     </span>
                     <span className="flex shrink-0 items-center gap-1.5 text-xs text-ink/45">
-                      {ids.length}/{totalInCategory}
+                      {satisfiedCount}/{items.length}
                       <span className={`transition-transform ${isOpen ? "rotate-180" : ""}`}>▾</span>
                     </span>
                   </button>
                   {isOpen && (
                     <div className="max-h-72 space-y-2 overflow-y-auto border-t border-ink/10 px-3.5 py-3.5">
-                      {ids.length === 0 ? <p className="text-xs italic text-ink/40">All placed on the plan.</p> : ids.map((id) => renderChip(id))}
+                      {items.map((template) => (
+                        <RequirementRow
+                          category={category}
+                          isCustom={template.id.startsWith("custom-")}
+                          isSelected={selection?.type === "requirement" && selection.id === template.id}
+                          key={template.id}
+                          onDeleteCustom={removeCustomRequirement}
+                          onDragEnd={() => setDraggingKey(null)}
+                          onDragStart={(id) => setDraggingKey(`requirement:${id}`)}
+                          onSelect={selectRequirement}
+                          owner={requirementOwners.get(template.id)}
+                          template={template}
+                        />
+                      ))}
                     </div>
                   )}
                 </div>
@@ -382,8 +652,8 @@ export function CaltechCoursePlanner() {
           <div className="mt-4 space-y-2 rounded-2xl border border-dashed border-ink/20 px-3.5 py-3.5">
             <label className="block text-xs font-medium text-ink/55" htmlFor="add-category">Add a requirement</label>
             <div className="flex flex-wrap gap-2">
-              <select className="rounded-full border border-ink/20 bg-white px-3 py-1.5 text-xs" id="add-category" onChange={(event) => setAddCategory(event.target.value as RequirementCategoryId)} value={addCategory}>
-                {requirementCategories.map((category) => (
+              <select className="rounded-full border border-ink/20 bg-white px-3 py-1.5 text-xs" id="add-category" onChange={(event) => setAddCategory(event.target.value as typeof addCategory)} value={addCategory}>
+                {baseCategories.map((category) => (
                   <option key={category.id} value={category.id}>{category.shortLabel}</option>
                 ))}
               </select>
@@ -414,18 +684,46 @@ export function CaltechCoursePlanner() {
                   <div className="flex items-center justify-end pr-2 text-sm font-semibold text-ink/60">Year {year}</div>
                   {TERMS.map((term) => {
                     const id = cellId(year, term);
-                    const ids = allTemplates.filter((template) => chips[template.id]?.cell === id).map((template) => template.id);
+                    const classesInCell = Object.values(classes).filter((cls) => cls.cell === id);
                     return (
                       <div
-                        className={`min-h-[6rem] rounded-2xl border p-2 transition ${selectedChip ? "border-moss/50 bg-lime/20" : "border-ink/10 bg-white/40"}`}
+                        className={`min-h-[6rem] rounded-2xl border p-2 transition ${selection ? "border-moss/50 bg-lime/20" : "border-ink/10 bg-white/40"}`}
                         key={id}
                         onClick={() => handleZoneClick(id)}
                         onDragOver={(event) => event.preventDefault()}
                         onDrop={(event) => handleDrop(id, event)}
                       >
                         <div className="flex flex-col gap-1.5">
-                          {ids.map((chipId) => renderChip(chipId))}
-                          {ids.length === 0 && <p className="p-1 text-[0.65rem] italic text-ink/30">Drop here</p>}
+                          {classesInCell.map((cls) => (
+                            <ClassCard
+                              allTemplates={allTemplates}
+                              categories={baseCategories}
+                              cls={cls}
+                              isPickerOpen={openPickerClassId === cls.id}
+                              isSelected={selection?.type === "class" && selection.id === cls.id}
+                              key={cls.id}
+                              onDelete={deleteClass}
+                              onDragEnd={() => setDraggingKey(null)}
+                              onDragStart={(clsId) => setDraggingKey(`class:${clsId}`)}
+                              onRename={renameClass}
+                              onSelect={selectClass}
+                              onToggleDone={toggleClassDone}
+                              onTogglePicker={togglePicker}
+                              onToggleRequirement={toggleClassRequirement}
+                              owners={requirementOwners}
+                              templateById={templateById}
+                            />
+                          ))}
+                          <button
+                            className="w-full rounded-lg border border-dashed border-ink/20 py-1 text-[0.65rem] text-ink/40 transition hover:border-ink/40 hover:text-ink/70"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              addBlankClass(id);
+                            }}
+                            type="button"
+                          >
+                            + Add class
+                          </button>
                         </div>
                       </div>
                     );

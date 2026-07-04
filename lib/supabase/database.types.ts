@@ -93,9 +93,40 @@ export type Database = {
         };
         Relationships: [];
       };
+      course_plans: {
+        Row: {
+          id: string;
+          login_key: string;
+          display_name: string;
+          majors: string[];
+          plan: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          login_key: string;
+          display_name: string;
+          majors: string[];
+          plan: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["course_plans"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      get_course_plan: {
+        Args: { p_login_key: string };
+        Returns: Database["public"]["Tables"]["course_plans"]["Row"];
+      };
+      upsert_course_plan: {
+        Args: { p_login_key: string; p_display_name: string; p_majors: string[]; p_plan: Json };
+        Returns: Database["public"]["Tables"]["course_plans"]["Row"];
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
