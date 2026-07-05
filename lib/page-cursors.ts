@@ -15,6 +15,10 @@ function icon(inner: string, size: number) {
   return `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'>${inner}</svg>`;
 }
 
+function iconRect(inner: string, width: number, height: number) {
+  return `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' viewBox='0 0 ${width} ${height}'>${inner}</svg>`;
+}
+
 function magnifier(ring: string, handle: string, glass: string) {
   return icon(
     `
@@ -64,19 +68,24 @@ export const pageCursors: PageCursorConfig[] = [
     hotspot: [4, 7],
   },
   {
-    // Knife — guides and recipes (gray blade, navy handle, matching the reference image; tip at top-left)
+    // Knife — guides and recipes, matching the attached reference exactly (light gray/white
+    // two-tone blade, dark brown outline, orange handle with tan stripe and rivet), tilted a
+    // little further anticlockwise from the reference's own angle so the tip sits top-left.
     match: (path) => path.startsWith("/recipes"),
-    svg: icon(
+    svg: iconRect(
       `
-      <g transform='rotate(${ANGLE} 15 16)'>
-        <path d='M15 2 C19 3 20.5 8 18.8 12.2 C17.6 15 16.2 16.3 15 17 C13.8 16.3 12.4 15 11.2 12.2 C9.5 8 11 3 15 2 Z' fill='#a7afb9' stroke='#565f6a' stroke-width='1'/>
-        <path d='M13 6 C13.5 8.5 14 11 15.2 14' stroke='#e9edf1' stroke-width='1.3' stroke-linecap='round' fill='none' opacity='0.85'/>
-        <rect x='12' y='17' width='6' height='11' rx='2' fill='#1d2a49' stroke='#10182c' stroke-width='0.8'/>
+      <g transform='rotate(-35 16 19)'>
+        <path d='M16 2 C19.5 8 21.5 14 21 21 C19 22.7 14.7 22.7 12 21 C11.5 14 13 7 16 2 Z' fill='#c9c5cf' stroke='#3d2817' stroke-width='1.1' stroke-linejoin='round'/>
+        <path d='M15.6 3 C13.4 8 12.3 13.3 12.4 19.3 C13.3 19.9 14.4 20 15.1 19.6 C15.5 13.2 15.7 7 15.6 3 Z' fill='#eef0f2'/>
+        <path d='M13 21 C12.2 24.2 12.4 28 13.5 31.2 C14.3 33 16.8 33 17.4 31.2 C18.3 28 18.1 24.2 17.5 21 Z' fill='#c8631c' stroke='#3d2817' stroke-width='1.1' stroke-linejoin='round'/>
+        <path d='M14 21.3 C13.4 24.3 13.5 27.8 14.4 30.8 C14.9 31.9 15.7 31.9 16 31 C15.3 27.8 15 24.2 15.2 21.2 Z' fill='#eda23f'/>
+        <circle cx='16.3' cy='29.3' r='0.85' fill='#1c0f06'/>
       </g>
     `,
-      30,
+      32,
+      36,
     ),
-    hotspot: [8, 4],
+    hotspot: [6, 5],
   },
   {
     // Screwdriver — tools (orange handle, silver shaft, flat tip at top-left)
