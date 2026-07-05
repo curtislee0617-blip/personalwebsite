@@ -90,14 +90,14 @@ const experience: TimelineItem[] = [
     role: "Teaching Assistant",
     organisation: "Caltech",
     detail: "Teaching Caltech students how to cook in Tom Mannion's cooking class.",
-    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-surface", imageClassName: "mix-blend-normal" },
+    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white/90", imageClassName: "mix-blend-normal" },
   },
   {
     dates: "July 2025 - August 2025",
     role: "Cultivated Meat Research Intern",
     organisation: "UC Davis Robert Mondavi Institute, iCAMP (Alternative Meat & Protein)",
     detail: "Working in the Integrative Center for Alternative Meat and Protein - iCAMP at UC Davis to research methods of producing sustainable and healthy meat via cell culturing. Over a five-week period, I primarily worked under Nick Johnson. I built and tested 32 scaffold combinations, using Texture Profile Analysis to judge how closely each reproduced real meat texture.",
-    logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-[center_58%]", frameClassName: "bg-[#16345f]" },
+    logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-[center_58%]", frameClassName: "bg-white/90" },
   },
   {
     dates: "March 2024 - April 2024",
@@ -134,7 +134,7 @@ const education: EducationItem[] = [
     dates: "2024 - 2028",
     school: "California Institute of Technology",
     detail: "Chemical Engineering (process track, with electives in materials) and Business Economics and Management. GPA: 3.8 / 4.0.",
-    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-surface", imageClassName: "mix-blend-normal" },
+    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white/90", imageClassName: "mix-blend-normal" },
   },
   {
     dates: "2019 - 2024",

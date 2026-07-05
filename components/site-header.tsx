@@ -1,9 +1,12 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { navIconForPath } from "@/lib/page-cursors";
 
 const links = [
   ["/", "Home"], ["/about", "About"], ["/projects", "Projects"],
@@ -40,17 +43,21 @@ export function SiteHeader() {
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-ink/40">Explore</span>
         </div>
         <nav className="grid grid-cols-2 gap-2" aria-label="Primary navigation">
-          {links.map(([href, label]) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setOpen(false)}
-              tabIndex={open ? 0 : -1}
-              className={`rounded-2xl px-4 py-3 text-sm transition ${pathname === href ? "bg-ink text-paper" : "bg-ink/[0.04] text-ink/65 hover:bg-ink/[0.08] hover:text-ink"}`}
-            >
-              {label}
-            </Link>
-          ))}
+          {links.map(([href, label]) => {
+            const icon = navIconForPath(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setOpen(false)}
+                tabIndex={open ? 0 : -1}
+                className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm transition ${pathname === href ? "bg-ink text-paper" : "bg-ink/[0.04] text-ink/65 hover:bg-ink/[0.08] hover:text-ink"}`}
+              >
+                {icon && <img alt="" aria-hidden="true" className="h-4 w-4 shrink-0" src={icon} />}
+                {label}
+              </Link>
+            );
+          })}
           <ThemeToggle variant="menu-row" />
         </nav>
       </div>

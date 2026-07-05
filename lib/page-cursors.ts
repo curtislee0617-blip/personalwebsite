@@ -64,19 +64,19 @@ export const pageCursors: PageCursorConfig[] = [
     hotspot: [4, 7],
   },
   {
-    // Knife — guides and recipes (blade tip at top-left, black handle, lightened blade)
+    // Knife — guides and recipes (gray blade, navy handle, matching the reference image; tip at top-left)
     match: (path) => path.startsWith("/recipes"),
     svg: icon(
       `
-      <g transform='rotate(${ANGLE} 15 15)'>
-        <path d='M15 2 L20 15 Q15 17.5 10 15 Z' fill='#cdd2d7' stroke='#3a3d42' stroke-width='1.4' stroke-linejoin='round'/>
-        <line x1='13' y1='6' x2='17' y2='13' stroke='#f2f4f6' stroke-width='1.5' stroke-linecap='round' opacity='0.9'/>
-        <rect x='11.5' y='15' width='7' height='11' rx='2.2' fill='#000000'/>
+      <g transform='rotate(${ANGLE} 15 16)'>
+        <path d='M15 2 C19 3 20.5 8 18.8 12.2 C17.6 15 16.2 16.3 15 17 C13.8 16.3 12.4 15 11.2 12.2 C9.5 8 11 3 15 2 Z' fill='#a7afb9' stroke='#565f6a' stroke-width='1'/>
+        <path d='M13 6 C13.5 8.5 14 11 15.2 14' stroke='#e9edf1' stroke-width='1.3' stroke-linecap='round' fill='none' opacity='0.85'/>
+        <rect x='12' y='17' width='6' height='11' rx='2' fill='#1d2a49' stroke='#10182c' stroke-width='0.8'/>
       </g>
     `,
       30,
     ),
-    hotspot: [9, 3],
+    hotspot: [8, 4],
   },
   {
     // Screwdriver — tools (orange handle, silver shaft, flat tip at top-left)
@@ -110,8 +110,17 @@ export const pageCursors: PageCursorConfig[] = [
   },
 ];
 
+export function svgDataUrl(svg: string) {
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
 export function cursorCss(config: PageCursorConfig, isDark = false) {
   const svg = isDark && config.svgDark ? config.svgDark : config.svg;
-  const encoded = encodeURIComponent(svg);
-  return `url("data:image/svg+xml,${encoded}") ${config.hotspot[0]} ${config.hotspot[1]}, auto`;
+  return `url("${svgDataUrl(svg)}") ${config.hotspot[0]} ${config.hotspot[1]}, auto`;
+}
+
+// The same icon used for the cursor, sized for an inline nav-menu glyph rather than a cursor.
+export function navIconForPath(pathname: string): string | null {
+  const match = pageCursors.find((entry) => entry.match(pathname));
+  return match ? svgDataUrl(match.svg) : null;
 }
