@@ -53,7 +53,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       <section className="page-section pt-12 sm:pt-16">
         <div className="mb-6 sm:mb-8">
           <Link
-            className="inline-flex rounded-full border border-ink/15 bg-white/75 px-4 py-2 text-sm font-semibold text-ink transition hover:border-ink/30 hover:bg-white"
+            className="inline-flex rounded-full border border-ink/15 bg-surface/75 px-4 py-2 text-sm font-semibold text-ink transition hover:border-ink/30 hover:bg-surface"
             href="/projects"
           >
             ← Back to projects
@@ -62,7 +62,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.95fr)] lg:gap-16">
           <div>
-            <div className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8">
+            <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Overview</p>
               <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
                 {project.detail.map((paragraph) => (
@@ -71,7 +71,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </div>
             </div>
 
-            <div className="mt-8 rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8">
+            <div className="mt-8 rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="eyebrow">Preview</p>
@@ -101,7 +101,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           </div>
 
           <aside className="space-y-8">
-            <div className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8">
+            <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Details</p>
               <dl className="mt-5 space-y-5 text-sm leading-6 text-ink/60">
                 <div>
@@ -121,7 +121,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </dl>
             </div>
 
-            <div className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8">
+            <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Document</p>
               {primaryDocument ? (
                 <div className="mt-5">
@@ -135,13 +135,13 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   </p>
                   <div className="mt-5 flex flex-wrap gap-3">
                     <Link
-                      className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-white"
+                      className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-surface"
                       href={`/projects/${project.slug}/viewer`}
                     >
                       Open viewer ↗
                     </Link>
                     <a
-                      className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-white"
+                      className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-surface"
                       download
                       href={primaryDocument.href}
                     >

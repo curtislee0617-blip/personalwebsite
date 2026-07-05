@@ -50,14 +50,14 @@ export function RecipePhotoPicker({ name }: { name: string }) {
     <div>
       <input accept="image/*" className="hidden" multiple onChange={(event) => addFiles(event.target.files)} ref={pickerInputRef} type="file" />
       <input className="hidden" multiple name={name} ref={hiddenInputRef} type="file" />
-      <button className="rounded-full border border-ink/20 bg-white px-4 py-2 text-xs font-semibold transition hover:border-ink" onClick={() => pickerInputRef.current?.click()} type="button">
+      <button className="rounded-full border border-ink/20 bg-surface px-4 py-2 text-xs font-semibold transition hover:border-ink" onClick={() => pickerInputRef.current?.click()} type="button">
         + Add photos
       </button>
 
       {files.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-3">
           {files.map((file, index) => (
-            <div className="relative w-28 rounded-xl border border-ink/10 bg-white p-1.5" key={`${file.name}-${file.size}-${index}`}>
+            <div className="relative w-28 rounded-xl border border-ink/10 bg-surface p-1.5" key={`${file.name}-${file.size}-${index}`}>
               <img alt="" className="h-24 w-full rounded-lg object-cover" src={URL.createObjectURL(file)} />
               {index === 0 && <span className="absolute left-2 top-2 rounded-full bg-ink px-2 py-0.5 text-[0.6rem] font-semibold text-paper">Thumbnail</span>}
               <div className="mt-1.5 flex items-center justify-between gap-1">

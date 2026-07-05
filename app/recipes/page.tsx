@@ -32,7 +32,7 @@ export default async function RecipesPage() {
 
             <div className="mt-6 grid gap-5 md:grid-cols-2">
               {guides.map((entry) => (
-                <Link className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href={entry.href} key={entry.slug}>
+                <Link className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href={entry.href} key={entry.slug}>
                   <div className="flex items-center justify-between gap-4">
                     <p className="eyebrow">Guide</p>
                     <span className="rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">Published</span>
@@ -89,7 +89,7 @@ export default async function RecipesPage() {
 
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {recipes.map((entry) => (
-                <article className="rounded-[2rem] border border-dashed border-ink/15 bg-white/40 p-6 sm:p-8" key={entry.slug}>
+                <article className="rounded-[2rem] border border-dashed border-ink/15 bg-surface/40 p-6 sm:p-8" key={entry.slug}>
                   <div className="flex items-center justify-between gap-4">
                     <p className="eyebrow">Recipe</p>
                     <span className="rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">Coming later</span>

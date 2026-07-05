@@ -66,7 +66,7 @@ export default async function ProjectViewerPage({ params }: ProjectViewerPagePro
           className={`inline-flex rounded-full border px-3 py-1.5 text-xs font-semibold transition sm:px-4 sm:py-2 sm:text-sm ${
             mode === "poster"
               ? "border-white/20 bg-black/35 hover:border-white/50 hover:bg-black/55"
-              : "border-ink/15 bg-white/85 hover:border-ink/30 hover:bg-white"
+              : "border-ink/15 bg-surface/85 hover:border-ink/30 hover:bg-surface"
           }`}
           href={`/projects#${slug}`}
         >

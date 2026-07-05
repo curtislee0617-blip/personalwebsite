@@ -147,7 +147,7 @@ export function SourdoughGuide() {
   return (
     <div className="grid gap-7 sm:gap-8">
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
-        <article className="rounded-[1.7rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+        <article className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="eyebrow">Calculator</p>
@@ -163,7 +163,7 @@ export function SourdoughGuide() {
                 Common boule masses: 700g small · 900g standard · 1100g large
               </p>
               <input
-                className="h-11 rounded-2xl border border-ink/15 bg-white/75 px-4 text-base outline-none transition focus:border-ink/35"
+                className="h-11 rounded-2xl border border-ink/15 bg-surface/75 px-4 text-base outline-none transition focus:border-ink/35"
                 min={300}
                 onChange={(event) => setTargetWeight(Number(event.currentTarget.value) || 0)}
                 step={10}
@@ -178,7 +178,7 @@ export function SourdoughGuide() {
                 Common boule masses: 700g small · 900g standard · 1100g large
               </p>
               <input
-                className="h-11 rounded-2xl border border-ink/15 bg-white/75 px-4 text-base outline-none transition focus:border-ink/35"
+                className="h-11 rounded-2xl border border-ink/15 bg-surface/75 px-4 text-base outline-none transition focus:border-ink/35"
                 onChange={(event) => setStartTime(event.currentTarget.value)}
                 type="time"
                 value={startTime}
@@ -234,7 +234,7 @@ export function SourdoughGuide() {
               [`Water (${hydration}%)`, round(formula.water)],
               ["Salt (2%)", formatOneDecimal(formula.salt)],
             ].map(([label, value]) => (
-              <div className="rounded-[1.15rem] border border-ink/10 bg-white/70 px-4 py-3" key={String(label)}>
+              <div className="rounded-[1.15rem] border border-ink/10 bg-surface/70 px-4 py-3" key={String(label)}>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/45">{label}</p>
                 <p className="mt-1.5 text-base font-semibold sm:text-lg">{value}g</p>
               </div>
@@ -248,13 +248,13 @@ export function SourdoughGuide() {
             </div>
           </div>
 
-          <div className="mt-5 rounded-[1.3rem] border border-ink/10 bg-white/60 p-4 text-xs leading-6 text-ink/60 sm:text-sm">
+          <div className="mt-5 rounded-[1.3rem] border border-ink/10 bg-surface/60 p-4 text-xs leading-6 text-ink/60 sm:text-sm">
             Dusting flour stays fixed at a <span className="font-semibold text-ink">1:2 mass ratio</span> of bread flour to rice flour.
           </div>
         </article>
 
         <div className="grid gap-5">
-        <article className="rounded-[1.7rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+        <article className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
           <p className="eyebrow">Starter feed</p>
           <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Daily feeding notes</h2>
           <div className="mt-4 space-y-3 text-sm leading-6 text-ink/65">
@@ -271,7 +271,7 @@ export function SourdoughGuide() {
         </div>
       </section>
 
-      <section className="rounded-[1.7rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+      <section className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
         <p className="eyebrow">Timeline</p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Example schedule with time labels</h2>
@@ -294,7 +294,7 @@ export function SourdoughGuide() {
         </div>
       </section>
 
-      <section className="rounded-[1.7rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+      <section className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
         <p className="eyebrow">Gallery</p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Recent loaves and crumb shots</h2>
@@ -345,7 +345,7 @@ export function SourdoughGuide() {
       </section>
 
       <section className="grid gap-5 lg:grid-cols-2">
-        <article className="rounded-[1.7rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+        <article className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
           <p className="eyebrow">Flours</p>
           <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Ingredient notes</h2>
           <div className="mt-4 space-y-4 text-sm leading-6 text-ink/65">
@@ -367,7 +367,7 @@ export function SourdoughGuide() {
           </div>
         </article>
 
-        <article className="rounded-[1.7rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+        <article className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
           <p className="eyebrow">Additions</p>
           <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Optional extras</h2>
           <ul className="mt-4 space-y-3 text-sm leading-6 text-ink/65">

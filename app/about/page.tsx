@@ -45,7 +45,7 @@ function LogoBadge({ logo }: { logo?: LogoMeta }) {
   const hasImage = assetExists(logo.src);
 
   return (
-    <div className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-ink/10 bg-white/80 shadow-[0_12px_24px_rgba(32,35,31,0.06)] ${logo.frameClassName ?? ""}`}>
+    <div className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-ink/10 bg-white/90 shadow-[0_12px_24px_rgba(32,35,31,0.06)] ${logo.frameClassName ?? ""}`}>
       {hasImage && logo.src ? (
         <div className="relative flex h-full w-full items-center justify-center">
           <Image
@@ -191,7 +191,7 @@ export default function AboutPage() {
           <a className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" download href="/curtis-lee-resume.pdf">
             Download résumé ↓
           </a>
-          <a className="rounded-full border border-ink/20 px-5 py-3 text-sm font-semibold transition hover:border-ink hover:bg-white" href="https://www.linkedin.com/in/curtislee0617" rel="noreferrer" target="_blank">
+          <a className="rounded-full border border-ink/20 px-5 py-3 text-sm font-semibold transition hover:border-ink hover:bg-surface" href="https://www.linkedin.com/in/curtislee0617" rel="noreferrer" target="_blank">
             LinkedIn ↗
           </a>
         </div>
@@ -276,7 +276,7 @@ export default function AboutPage() {
           </div>
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
             {featuredWork.map((item) => (
-              <Link className="group rounded-3xl border border-ink/10 bg-white/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/25 hover:bg-white" href={item.href} key={item.href}>
+              <Link className="group rounded-3xl border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/25 hover:bg-surface" href={item.href} key={item.href}>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-moss">{item.type}</p>
                 <h3 className="mt-3 text-lg font-semibold group-hover:text-moss">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-ink/60">{item.summary}</p>

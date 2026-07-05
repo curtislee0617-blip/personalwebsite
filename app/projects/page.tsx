@@ -28,7 +28,7 @@ export default function ProjectsPage() {
             <div className="flex gap-2 overflow-x-auto pb-1 lg:grid lg:gap-2 lg:overflow-visible">
               {projects.map((project, index) => (
                 <a
-                  className="shrink-0 rounded-full border border-ink/10 bg-white/55 px-3 py-2 text-xs font-semibold text-ink/60 transition hover:border-ink/20 hover:bg-white hover:text-ink lg:rounded-2xl lg:px-3 lg:py-2.5"
+                  className="shrink-0 rounded-full border border-ink/10 bg-surface/55 px-3 py-2 text-xs font-semibold text-ink/60 transition hover:border-ink/20 hover:bg-surface hover:text-ink lg:rounded-2xl lg:px-3 lg:py-2.5"
                   href={`#${project.slug}`}
                   key={project.slug}
                 >
@@ -60,7 +60,7 @@ export default function ProjectsPage() {
 
                           return (
                             <Link
-                              className="group overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white/55 transition hover:-translate-y-0.5 hover:border-ink/20"
+                              className="group overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20"
                               href={`/projects/${project.slug}/viewer`}
                               key={preview.src}
                             >
@@ -93,7 +93,7 @@ export default function ProjectsPage() {
                     )}
                     <ul className="mt-4 flex flex-wrap gap-2" aria-label={`${project.title} topics`}>
                       {project.tags.map((tag) => (
-                        <li className="rounded-full border border-ink/10 bg-white/45 px-3 py-1.5 text-xs text-ink/55" key={tag}>{tag}</li>
+                        <li className="rounded-full border border-ink/10 bg-surface/45 px-3 py-1.5 text-xs text-ink/55" key={tag}>{tag}</li>
                       ))}
                     </ul>
                     {project.documents?.some((document) => assetExists(document.href)) ? (
@@ -102,7 +102,7 @@ export default function ProjectsPage() {
                           .filter((document) => assetExists(document.href))
                           .map((document) => (
                             <a
-                              className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-white"
+                              className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-surface"
                               href={`/projects/${project.slug}/viewer`}
                               key={document.href}
                             >

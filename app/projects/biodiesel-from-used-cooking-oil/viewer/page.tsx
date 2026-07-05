@@ -56,7 +56,7 @@ export default function BiodieselProjectViewerPage() {
             </p>
           </div>
           <Link
-            className="inline-flex self-start rounded-full border border-ink/15 bg-white/85 px-4 py-2 text-sm font-semibold transition hover:border-ink/30 hover:bg-white"
+            className="inline-flex self-start rounded-full border border-ink/15 bg-surface/85 px-4 py-2 text-sm font-semibold transition hover:border-ink/30 hover:bg-surface"
             href="/projects#biodiesel-from-used-cooking-oil"
           >
             Back to projects
@@ -66,7 +66,7 @@ export default function BiodieselProjectViewerPage() {
         <div className="mt-6 flex flex-wrap gap-3">
           {renderedDocuments.map((document) => (
             <a
-              className="inline-flex rounded-full border border-ink/15 bg-white/85 px-4 py-2 text-sm font-semibold transition hover:border-ink/30 hover:bg-white"
+              className="inline-flex rounded-full border border-ink/15 bg-surface/85 px-4 py-2 text-sm font-semibold transition hover:border-ink/30 hover:bg-surface"
               href={`#${document.id}`}
               key={document.id}
             >
@@ -77,7 +77,7 @@ export default function BiodieselProjectViewerPage() {
 
         <div className="mt-8 grid gap-8">
           {renderedDocuments.map((document) => (
-            <section className="scroll-mt-24 rounded-[2rem] border border-ink/10 bg-white/60 p-5 sm:p-6" id={document.id} key={document.id}>
+            <section className="scroll-mt-24 rounded-[2rem] border border-ink/10 bg-surface/60 p-5 sm:p-6" id={document.id} key={document.id}>
               <div>
                 <p className="eyebrow">Document</p>
                 <h2 className="mt-3 text-xl font-semibold tracking-tight sm:text-2xl">{document.title}</h2>
@@ -87,7 +87,7 @@ export default function BiodieselProjectViewerPage() {
               {document.pages.length > 0 ? (
                 <div className="mt-6 space-y-4">
                   {document.pages.map((page, index) => (
-                    <figure className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-[0_20px_45px_rgba(32,35,31,0.06)]" key={page}>
+                    <figure className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface shadow-[0_20px_45px_rgba(32,35,31,0.06)]" key={page}>
                       <div className="relative aspect-[1/1.414]">
                         <Image
                           alt={`${document.title} page ${index + 1}`}

@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const orbitLinks = [
   { href: "/about", label: "About", detail: "The person" },
@@ -344,6 +345,8 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
           ))}
         </nav>
       </div>
+
+      <ThemeToggle />
     </section>
   );
 }

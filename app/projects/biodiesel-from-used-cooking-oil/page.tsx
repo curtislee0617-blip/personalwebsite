@@ -43,7 +43,7 @@ export default function BiodieselProjectPage() {
       <section className="page-section pt-12 sm:pt-16">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.6fr)_minmax(18rem,0.9fr)] lg:gap-16">
           <div className="space-y-8">
-            <article className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8">
+            <article className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Overview</p>
               <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
                 <p>This project is split into two connected parts around biodiesel production from waste cooking oil.</p>
@@ -54,14 +54,14 @@ export default function BiodieselProjectPage() {
 
             <div className="grid gap-6">
               {sections.map((section) => (
-                <article className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8" key={section.title}>
+                <article className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8" key={section.title}>
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <p className="eyebrow">Part</p>
                       <h2 className="mt-3 text-xl font-semibold tracking-tight sm:text-2xl">{section.title}</h2>
                     </div>
                     <Link
-                      className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-white"
+                      className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-surface"
                       href={section.href}
                     >
                       {section.cta}
@@ -74,7 +74,7 @@ export default function BiodieselProjectPage() {
                     <div className="relative aspect-[4/3]">
                       <Image
                         alt={section.previewAlt}
-                        className={section.title === "Synthesis presentation" ? "object-cover" : "object-contain bg-white"}
+                        className={section.title === "Synthesis presentation" ? "object-cover" : "object-contain bg-surface"}
                         fill
                         sizes="(max-width: 1024px) 100vw, 60vw"
                         src={section.preview}
@@ -87,7 +87,7 @@ export default function BiodieselProjectPage() {
           </div>
 
           <aside className="space-y-8">
-            <div className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8">
+            <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Details</p>
               <dl className="mt-5 space-y-5 text-sm leading-6 text-ink/60">
                 <div>
@@ -107,7 +107,7 @@ export default function BiodieselProjectPage() {
               </dl>
             </div>
 
-            <div className="rounded-[2rem] border border-ink/10 bg-white/55 p-6 sm:p-8">
+            <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Documents</p>
               <h3 className="mt-3 text-lg font-semibold text-ink">Open the built-in viewer</h3>
               <p className="mt-3 text-sm leading-7 text-ink/60">
@@ -115,7 +115,7 @@ export default function BiodieselProjectPage() {
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link
-                  className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-white"
+                  className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-surface"
                   href="/projects/biodiesel-from-used-cooking-oil/viewer"
                 >
                   Open viewer ↗

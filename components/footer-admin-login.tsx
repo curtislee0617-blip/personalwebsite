@@ -39,7 +39,7 @@ export function FooterAdminLogin({ authenticated }: { authenticated: boolean }) 
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-0 z-20 mb-2 w-56 rounded-2xl border border-ink/10 bg-white p-3 shadow-lg">
+        <div className="absolute bottom-full left-0 z-20 mb-2 w-56 rounded-2xl border border-ink/10 bg-surface p-3 shadow-lg">
           {authenticated ? (
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs font-semibold text-ink/60">Signed in</p>
@@ -50,7 +50,7 @@ export function FooterAdminLogin({ authenticated }: { authenticated: boolean }) 
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink/40">Admin login</p>
               <input
                 autoFocus
-                className="rounded-full border border-ink/20 bg-white px-3 py-1.5 text-sm"
+                className="rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm"
                 onChange={(event) => {
                   setPassword(event.target.value);
                   setError(false);

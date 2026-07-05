@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
   ["/", "Home"], ["/about", "About"], ["/projects", "Projects"],
@@ -50,6 +51,7 @@ export function SiteHeader() {
               {label}
             </Link>
           ))}
+          <ThemeToggle variant="menu-row" />
         </nav>
       </div>
     </header>

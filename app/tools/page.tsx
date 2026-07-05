@@ -33,7 +33,7 @@ const toolSections: ToolSection[] = [
 
 function ToolCard({ tool }: { tool: Tool }) {
   return (
-    <Link className="group block w-[19rem] shrink-0 snap-start rounded-[1.5rem] border border-ink/10 bg-white/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-white sm:w-[22rem] sm:p-6" href={tool.href}>
+    <Link className="group block w-[19rem] shrink-0 snap-start rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem] sm:p-6" href={tool.href}>
       <div className="flex items-end justify-between gap-5">
         <div>
           <h3 className="text-xl font-semibold">{tool.title}</h3>

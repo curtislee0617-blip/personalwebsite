@@ -100,7 +100,7 @@ export default function ContactPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {contactLinks.map((contact) => (
             <a
-              className="group flex min-h-56 flex-col justify-between rounded-[1.75rem] border border-ink/10 bg-white/45 p-6 transition duration-300 hover:-translate-y-1 hover:border-ink/25 hover:bg-white hover:shadow-soft sm:p-8"
+              className="group flex min-h-56 flex-col justify-between rounded-[1.75rem] border border-ink/10 bg-surface/45 p-6 transition duration-300 hover:-translate-y-1 hover:border-ink/25 hover:bg-surface hover:shadow-soft sm:p-8"
               href={contact.href}
               key={contact.title}
               rel={contact.external ? "noreferrer" : undefined}

@@ -53,7 +53,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
         <div>
           <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="description">Description</label>
           <textarea
-            className="mt-2 w-full rounded-2xl border border-ink/15 bg-white px-4 py-3 text-sm leading-6"
+            className="mt-2 w-full rounded-2xl border border-ink/15 bg-surface px-4 py-3 text-sm leading-6"
             id="description"
             name="description"
             placeholder="Write whatever you want — ingredients, steps, notes, story. I'll format it into a real recipe page later."
@@ -67,7 +67,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
       <h2 className="section-title mt-14 text-2xl">Submitted ({drafts?.length ?? 0})</h2>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {drafts?.map((draft) => (
-          <div className="rounded-2xl border border-ink/10 bg-white/60 p-4" key={draft.id}>
+          <div className="rounded-2xl border border-ink/10 bg-surface/60 p-4" key={draft.id}>
             <img alt="" className="h-40 w-full rounded-xl object-cover" src={draft.thumbnail_url} />
             <p className="mt-3 text-xs uppercase tracking-[0.1em] text-ink/40">
               {new Date(draft.created_at).toLocaleDateString()} · {draft.status} · {draft.image_urls.length} photo{draft.image_urls.length === 1 ? "" : "s"}

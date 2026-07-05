@@ -197,7 +197,7 @@ type ClassCardProps = {
 function ClassCard({ cls, templateById, categories, allTemplates, owners, isPickerOpen, isSelected, onSelect, onToggleDone, onRename, onDelete, onDragStart, onDragEnd, onTogglePicker, onToggleRequirement }: ClassCardProps) {
   return (
     <div
-      className={`rounded-xl border border-ink/15 bg-white/70 px-2.5 py-2 text-left text-xs shadow-sm transition ${isSelected ? "ring-2 ring-moss ring-offset-1 ring-offset-paper" : ""}`}
+      className={`rounded-xl border border-ink/15 bg-surface/70 px-2.5 py-2 text-left text-xs shadow-sm transition ${isSelected ? "ring-2 ring-moss ring-offset-1 ring-offset-paper" : ""}`}
       draggable
       onClick={() => onSelect(cls.id)}
       onDragEnd={onDragEnd}
@@ -507,7 +507,7 @@ export function CaltechCoursePlanner() {
 
   return (
     <div className="space-y-10">
-      <section className="rounded-[1.5rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+      <section className="rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
         {identity ? (
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -523,7 +523,7 @@ export function CaltechCoursePlanner() {
                 {syncStatus === "idle" && "Synced with the cloud."}
               </p>
             </div>
-            <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-white" onClick={signOut} type="button">
+            <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-surface" onClick={signOut} type="button">
               Switch profile
             </button>
           </div>
@@ -536,13 +536,13 @@ export function CaltechCoursePlanner() {
             <div className="mt-4 flex flex-wrap items-end gap-4">
               <label className="text-xs font-medium text-ink/55">
                 Name
-                <input className="mt-1 block w-48 rounded-full border border-ink/20 bg-white px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginName(event.target.value)} placeholder="Your name" value={loginName} />
+                <input className="mt-1 block w-48 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginName(event.target.value)} placeholder="Your name" value={loginName} />
               </label>
               <div className="text-xs font-medium text-ink/55">
                 Major(s) / minor(s)
                 <div className="mt-1 flex flex-wrap gap-2">
                   {majors.map((major) => (
-                    <label className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white px-3 py-1.5 text-xs text-ink/70" key={major.id}>
+                    <label className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-xs text-ink/70" key={major.id}>
                       <input checked={loginMajors.includes(major.id)} onChange={() => toggleLoginMajor(major.id)} type="checkbox" />
                       {major.label}
                     </label>
@@ -563,7 +563,7 @@ export function CaltechCoursePlanner() {
         )}
       </section>
 
-      <section className="rounded-[1.5rem] border border-ink/10 bg-white/55 p-5 sm:p-6">
+      <section className="rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="eyebrow">Progress</p>
@@ -571,7 +571,7 @@ export function CaltechCoursePlanner() {
               {totals.placed} / {totals.total} requirements satisfied by a class · {totals.done} / {totals.total} checked off as done
             </p>
           </div>
-          <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-white" onClick={resetAll} type="button">
+          <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-surface" onClick={resetAll} type="button">
             Reset planner
           </button>
         </div>
@@ -610,7 +610,7 @@ export function CaltechCoursePlanner() {
               const satisfiedCount = items.filter((template) => requirementOwners.has(template.id)).length;
               const isOpen = !!openCategories[category.id];
               return (
-                <div className="rounded-2xl border border-ink/10 bg-white/40" key={category.id}>
+                <div className="rounded-2xl border border-ink/10 bg-surface/40" key={category.id}>
                   <button
                     aria-expanded={isOpen}
                     className="flex w-full items-center justify-between gap-3 px-3.5 py-3 text-left"
@@ -652,13 +652,13 @@ export function CaltechCoursePlanner() {
           <div className="mt-4 space-y-2 rounded-2xl border border-dashed border-ink/20 px-3.5 py-3.5">
             <label className="block text-xs font-medium text-ink/55" htmlFor="add-category">Add a requirement</label>
             <div className="flex flex-wrap gap-2">
-              <select className="rounded-full border border-ink/20 bg-white px-3 py-1.5 text-xs" id="add-category" onChange={(event) => setAddCategory(event.target.value as typeof addCategory)} value={addCategory}>
+              <select className="rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-xs" id="add-category" onChange={(event) => setAddCategory(event.target.value as typeof addCategory)} value={addCategory}>
                 {baseCategories.map((category) => (
                   <option key={category.id} value={category.id}>{category.shortLabel}</option>
                 ))}
               </select>
               <input
-                className="min-w-[9rem] flex-1 rounded-full border border-ink/20 bg-white px-3 py-1.5 text-xs"
+                className="min-w-[9rem] flex-1 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-xs"
                 onChange={(event) => setAddLabel(event.target.value)}
                 onKeyDown={(event) => event.key === "Enter" && addCustomRequirement()}
                 placeholder="e.g. Ma 108"
@@ -687,7 +687,7 @@ export function CaltechCoursePlanner() {
                     const classesInCell = Object.values(classes).filter((cls) => cls.cell === id);
                     return (
                       <div
-                        className={`min-h-[6rem] rounded-2xl border p-2 transition ${selection ? "border-moss/50 bg-lime/20" : "border-ink/10 bg-white/40"}`}
+                        className={`min-h-[6rem] rounded-2xl border p-2 transition ${selection ? "border-moss/50 bg-lime/20" : "border-ink/10 bg-surface/40"}`}
                         key={id}
                         onClick={() => handleZoneClick(id)}
                         onDragOver={(event) => event.preventDefault()}
