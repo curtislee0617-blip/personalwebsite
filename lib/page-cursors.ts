@@ -10,12 +10,13 @@ export type PageCursorConfig = {
 };
 
 // Each SVG icon is drawn "tip up" then rotated about its own center so the tip lands at the
-// top-left — the same contact-point convention a normal arrow cursor uses.
-const ANGLE = -30;
+// top-left. The fork, knife and screwdriver all share the magnifier's handle angle (-42) for a
+// consistent lean. `px` renders the icon smaller than its coordinate space; hotspots are in px.
+const ANGLE = -42;
 const MAGNIFIER_ANGLE = -42;
 
-function icon(inner: string, size: number) {
-  return `<svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'>${inner}</svg>`;
+function icon(inner: string, unit: number, px: number = unit) {
+  return `<svg xmlns='http://www.w3.org/2000/svg' width='${px}' height='${px}' viewBox='0 0 ${unit} ${unit}'>${inner}</svg>`;
 }
 
 function magnifier(ring: string, handle: string, glass: string) {
@@ -27,6 +28,7 @@ function magnifier(ring: string, handle: string, glass: string) {
     </g>
   `,
     26,
+    22,
   );
 }
 
@@ -46,8 +48,9 @@ export const pageCursors: PageCursorConfig[] = [
       <circle cx='14' cy='14' r='1.5' fill='#5b636c' stroke='#3a3f45' stroke-width='0.4'/>
     `,
       28,
+      24,
     ),
-    hotspot: [8, 8],
+    hotspot: [7, 7],
   },
   {
     // Fork — restaurants
@@ -63,33 +66,34 @@ export const pageCursors: PageCursorConfig[] = [
       </g>
     `,
       26,
+      22,
     ),
-    hotspot: [4, 7],
+    hotspot: [2, 6],
   },
   {
     // Knife — guides and recipes. The exact attached artwork, background removed and downscaled.
     match: (path) => path.startsWith("/recipes"),
     img: "/cursors/knife-cursor.png",
-    hotspot: [2, 0],
+    hotspot: [1, 0],
   },
   {
     // Screwdriver — tools. The exact attached artwork, background removed and downscaled.
     match: (path) => path.startsWith("/tools"),
     img: "/cursors/screwdriver-cursor.png",
-    hotspot: [2, 1],
+    hotspot: [0, 1],
   },
   {
     // Yellow wave emoji — contact (hotspot on a raised fingertip)
     match: (path) => path.startsWith("/contact"),
-    svg: icon(`<text x='16' y='25' font-size='26' text-anchor='middle'>\u{1F44B}</text>`, 32),
-    hotspot: [18, 3],
+    svg: icon(`<text x='16' y='25' font-size='26' text-anchor='middle'>\u{1F44B}</text>`, 32, 26),
+    hotspot: [15, 2],
   },
   {
     // Magnifying glass — projects and about (transparent lens; brighter ring/handle in dark mode)
     match: (path) => path.startsWith("/projects") || path.startsWith("/about"),
     svg: magnifier("#9ba1a8", "#000000", "none"),
     svgDark: magnifier("#eaf1f6", "#cfd6dd", "rgba(255,255,255,0.08)"),
-    hotspot: [6, 5],
+    hotspot: [5, 3],
   },
 ];
 
