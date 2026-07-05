@@ -53,7 +53,7 @@ export function SiteHeader() {
                 tabIndex={open ? 0 : -1}
                 className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm transition ${pathname === href ? "bg-ink text-paper" : "bg-ink/[0.04] text-ink/65 hover:bg-ink/[0.08] hover:text-ink"}`}
               >
-                {icon && <img alt="" aria-hidden="true" className="h-4 w-4 shrink-0" src={icon} />}
+                {icon && <img alt="" aria-hidden="true" className="h-4 w-4 shrink-0 object-contain" src={icon} />}
                 {label}
               </Link>
             );
