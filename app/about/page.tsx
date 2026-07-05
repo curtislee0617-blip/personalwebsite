@@ -45,7 +45,7 @@ function LogoBadge({ logo }: { logo?: LogoMeta }) {
   const hasImage = assetExists(logo.src);
 
   return (
-    <div className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-ink/10 bg-white/90 shadow-[0_12px_24px_rgba(32,35,31,0.06)] ${logo.frameClassName ?? ""}`}>
+    <div className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-ink/10 shadow-[0_12px_24px_rgba(32,35,31,0.06)] ${logo.frameClassName ?? "bg-white/90"}`}>
       {hasImage && logo.src ? (
         <div className="relative flex h-full w-full items-center justify-center">
           <Image
@@ -82,7 +82,7 @@ const experience: TimelineItem[] = [
     dates: "June 2026 - Present",
     role: "Process Engineering Intern",
     organisation: "The Hong Kong and China Gas Company Limited (Towngas)",
-    detail: "Interning with Towngas's Green Fuels & Chemicals division across Foshan, Guangdong and Ordos, Inner Mongolia. Working on process design and safety and environmental analysis for a new $30M green-fuels plant in Foshan, while supporting daily operations at an operating green-methanol plant in Inner Mongolia. Also investigating the feasibility of producing synthetic natural gas from biomass-derived syngas.",
+    detail: "Interning with Towngas's Green Fuels & Chemicals division across Foshan, Guangdong and Ordos, Inner Mongolia. Working on process design and safety and environmental analysis for a new green-fuels plant in Foshan, while supporting daily operations at an operating green-methanol plant in Inner Mongolia. Also investigating the feasibility of producing synthetic natural gas from biomass-derived syngas.",
     logo: { src: "/logos/towngas.png", alt: "Towngas logo", fallback: "TG", fitClassName: "h-11 w-[3.25rem]", alignClassName: "object-center", frameClassName: "bg-white" },
   },
   {
@@ -90,13 +90,13 @@ const experience: TimelineItem[] = [
     role: "Teaching Assistant",
     organisation: "Caltech",
     detail: "Teaching Caltech students how to cook in Tom Mannion's cooking class.",
-    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
+    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-surface", imageClassName: "mix-blend-normal" },
   },
   {
     dates: "July 2025 - August 2025",
     role: "Cultivated Meat Research Intern",
     organisation: "UC Davis Robert Mondavi Institute, iCAMP (Alternative Meat & Protein)",
-    detail: "Working in the Integrative Center for Alternative Meat and Protein - iCAMP at UC Davis to research methods of producing sustainable and healthy meat via cell culturing. Over a five-week period, I primarily worked under Nick Johnson to screen fetal-bovine-serum-free growth media, cutting the cost and animal dependence of cultivated-meat culture. I built and tested 32 scaffold combinations, using Texture Profile Analysis to judge how closely each reproduced real meat texture.",
+    detail: "Working in the Integrative Center for Alternative Meat and Protein - iCAMP at UC Davis to research methods of producing sustainable and healthy meat via cell culturing. Over a five-week period, I primarily worked under Nick Johnson. I built and tested 32 scaffold combinations, using Texture Profile Analysis to judge how closely each reproduced real meat texture.",
     logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-[center_58%]", frameClassName: "bg-[#16345f]" },
   },
   {
@@ -133,8 +133,8 @@ const education: EducationItem[] = [
   {
     dates: "2024 - 2028",
     school: "California Institute of Technology",
-    detail: "Chemical Engineering (process track, with electives in materials) and Business Economics and Management. GPA: 3.8 / 4.0. Relevant coursework: Econometrics (EC 122) and Hedge Funds (BEM 114).",
-    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white", imageClassName: "mix-blend-normal bg-white" },
+    detail: "Chemical Engineering (process track, with electives in materials) and Business Economics and Management. GPA: 3.8 / 4.0.",
+    logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-surface", imageClassName: "mix-blend-normal" },
   },
   {
     dates: "2019 - 2024",

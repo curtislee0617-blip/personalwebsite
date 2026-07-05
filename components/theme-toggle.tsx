@@ -59,19 +59,11 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     transition.ready
       .then(() => {
         const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
-        // Ease-out (fast start, gentle settle) over a longer duration reads much smoother than a
-        // symmetric ease-in-out, and a small opacity fade softens the leading edge of the reveal.
-        const options: KeyframeAnimationOptions = {
-          duration: 760,
-          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-          pseudoElement: "::view-transition-new(root)",
-        };
+        // A clean, fully-opaque clip reveal — no opacity fade, which otherwise lets the old theme
+        // ghost through the new layer and reads as a tear. Ease-out keeps it smooth.
         document.documentElement.animate(
-          {
-            clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`],
-            opacity: [0.35, 1],
-          },
-          options,
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+          { duration: 650, easing: "cubic-bezier(0.33, 1, 0.68, 1)", pseudoElement: "::view-transition-new(root)" },
         );
       })
       .catch(() => undefined);
