@@ -29,6 +29,24 @@ function magnifier(ring: string, handle: string, glass: string) {
 
 export const pageCursors: PageCursorConfig[] = [
   {
+    // Compass — home (needle points at the top-left contact point; light face + halo so it
+    // stays visible over the bright/dark photo wall). Exact match so it never shadows a section.
+    match: (path) => path === "/",
+    svg: icon(
+      `
+      <circle cx='14' cy='14' r='10.7' fill='#f2f3f4' stroke='#f2f3f4' stroke-width='2.2'/>
+      <circle cx='14' cy='14' r='10' fill='#eef1f4' stroke='#c9962f' stroke-width='2'/>
+      <g transform='rotate(-45 14 14)'>
+        <polygon points='14,5 12.1,14 15.9,14' fill='#dc3c2c'/>
+        <polygon points='14,23 12.1,14 15.9,14' fill='#b9c0c8'/>
+      </g>
+      <circle cx='14' cy='14' r='1.5' fill='#5b636c' stroke='#3a3f45' stroke-width='0.4'/>
+    `,
+      28,
+    ),
+    hotspot: [8, 8],
+  },
+  {
     // Fork — restaurants
     match: (path) => path.startsWith("/restaurants"),
     svg: icon(

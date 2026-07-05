@@ -5,6 +5,8 @@ export type RecipeEntry = {
   description: string;
   status?: "published" | "coming-soon";
   href: string;
+  // ISO "YYYY-MM-DD" — the recipes section is ordered newest first by this.
+  date?: string;
 };
 
 export const recipeEntries: RecipeEntry[] = [
@@ -33,6 +35,7 @@ export const recipeEntries: RecipeEntry[] = [
     description: "Future recipe card scaffold for when you upload the first recipe post.",
     status: "coming-soon",
     href: "/recipes",
+    date: "2026-07-01",
   },
   {
     slug: "future-recipe-2",
@@ -41,5 +44,32 @@ export const recipeEntries: RecipeEntry[] = [
     description: "Another placeholder slot so the recipes section already has the intended structure.",
     status: "coming-soon",
     href: "/recipes",
+    date: "2026-06-15",
   },
 ];
+
+// Newest first; entries without a date fall to the end.
+export function recipesByDate(entries: RecipeEntry[]) {
+  return [...entries]
+    .filter((entry) => entry.kind === "recipe")
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
+// "Recipes I would like to make" — a to-cook list. Add entries here as the list grows.
+export type WishlistEntry = {
+  slug: string;
+  title: string;
+  note?: string;
+};
+
+export const wishlistEntries: WishlistEntry[] = [];
+
+// Recipe books I've purchased. Cover photos get added later.
+export type RecipeBook = {
+  slug: string;
+  title: string;
+  author?: string;
+  cover?: string;
+};
+
+export const recipeBooks: RecipeBook[] = [];

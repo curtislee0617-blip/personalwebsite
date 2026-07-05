@@ -122,6 +122,7 @@ export type Database = {
           image_urls: string[];
           thumbnail_url: string;
           status: string;
+          recipe_date: string | null;
           created_at: string;
         };
         Insert: {
@@ -130,6 +131,7 @@ export type Database = {
           image_urls: string[];
           thumbnail_url: string;
           status?: string;
+          recipe_date?: string | null;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["recipe_drafts"]["Insert"]>;

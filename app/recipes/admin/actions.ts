@@ -22,6 +22,9 @@ export async function submitRecipe(formData: FormData) {
 
   const description = String(formData.get("description") ?? "").trim();
   const photos = formData.getAll("photos").filter((entry): entry is File => entry instanceof File && entry.size > 0);
+  // A YYYY-MM-DD date so old photos can be backdated; null if left blank.
+  const rawDate = String(formData.get("recipe_date") ?? "").trim();
+  const recipeDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : null;
 
   if (!description || photos.length === 0) {
     redirect("/recipes/admin?error=missing");
@@ -42,6 +45,7 @@ export async function submitRecipe(formData: FormData) {
     description,
     image_urls: imageUrls,
     thumbnail_url: imageUrls[0],
+    recipe_date: recipeDate,
   });
   if (error) {
     console.error("Failed to save recipe draft", error);

@@ -30,7 +30,13 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
   }
 
   const supabase = createAdminClient();
-  const { data: drafts } = await supabase.from("recipe_drafts").select("*").order("created_at", { ascending: false });
+  const { data: drafts } = await supabase
+    .from("recipe_drafts")
+    .select("*")
+    .order("recipe_date", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false });
+
+  const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="page-shell py-16 sm:py-20">
@@ -49,6 +55,18 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
           <div className="mt-2">
             <RecipePhotoPicker name="photos" />
           </div>
+        </div>
+        <div>
+          <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="recipe_date">Date made</label>
+          <p className="mt-1 text-xs text-ink/45">Backdate old recipes here — the recipes list is ordered newest first.</p>
+          <input
+            className="mt-2 block rounded-2xl border border-ink/15 bg-surface px-4 py-2.5 text-sm"
+            defaultValue={today}
+            id="recipe_date"
+            max={today}
+            name="recipe_date"
+            type="date"
+          />
         </div>
         <div>
           <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="description">Description</label>
@@ -70,7 +88,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
           <div className="rounded-2xl border border-ink/10 bg-surface/60 p-4" key={draft.id}>
             <img alt="" className="h-40 w-full rounded-xl object-cover" src={draft.thumbnail_url} />
             <p className="mt-3 text-xs uppercase tracking-[0.1em] text-ink/40">
-              {new Date(draft.created_at).toLocaleDateString()} · {draft.status} · {draft.image_urls.length} photo{draft.image_urls.length === 1 ? "" : "s"}
+              {new Date(`${draft.recipe_date ?? draft.created_at.slice(0, 10)}T00:00:00`).toLocaleDateString()} · {draft.status} · {draft.image_urls.length} photo{draft.image_urls.length === 1 ? "" : "s"}
             </p>
             <p className="mt-1 text-sm text-ink/70">{truncate(draft.description, 220)}</p>
             {draft.status !== "processed" && (
