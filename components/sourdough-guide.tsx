@@ -318,21 +318,6 @@ export function SourdoughGuide() {
               alt: "Finished round sourdough boule",
               caption: "Round boule shape and darker crust finish.",
             },
-            {
-              src: "/Screenshot 2026-07-01 at 1.38.07 AM copy.png",
-              alt: "Second sourdough loaf angle",
-              caption: "Another loaf angle for crust and scoring reference.",
-            },
-            {
-              src: "/Screenshot 2026-07-01 at 1.39.02 AM copy.png",
-              alt: "Second sourdough crumb shot",
-              caption: "Extra crumb view for cell size and evenness.",
-            },
-            {
-              src: "/Screenshot 2026-07-01 at 1.39.43 AM copy.png",
-              alt: "Second boule exterior shot",
-              caption: "Another exterior view for shape and colour.",
-            },
           ].map((image) => (
             <figure className="overflow-hidden rounded-[1.35rem] border border-ink/10 bg-paper/70" key={image.src}>
               <div className="relative aspect-[4/5]">
