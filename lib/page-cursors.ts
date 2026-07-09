@@ -80,7 +80,7 @@ export const pageCursors: PageCursorConfig[] = [
     // Screwdriver — tools. The exact attached artwork, background removed and downscaled.
     match: (path) => path.startsWith("/tools"),
     img: "/cursors/screwdriver-cursor.png",
-    hotspot: [0, 1],
+    hotspot: [0, 0],
   },
   {
     // Yellow wave emoji — contact (hotspot on a raised fingertip)

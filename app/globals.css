@@ -704,6 +704,22 @@ body.has-page-cursor * { cursor: inherit !important; }
   min-height: 42rem;
 }
 
+.restaurant-load-area {
+  position: absolute;
+  z-index: 4;
+  top: 0.9rem;
+  left: 50%;
+  padding: 0.58rem 0.85rem;
+  border: 1px solid rgb(var(--color-ink) / 0.16);
+  border-radius: 999px;
+  background: rgb(var(--color-surface) / 0.94);
+  box-shadow: 0 12px 30px rgb(var(--color-ink) / 0.16);
+  color: rgb(var(--color-ink));
+  font-size: 0.7rem;
+  font-weight: 800;
+  transform: translateX(-50%);
+}
+
 .restaurant-map-marker {
   position: relative;
   display: grid;
@@ -1287,6 +1303,13 @@ body.has-page-cursor * { cursor: inherit !important; }
 .vle-vapour-curve { stroke: #bf6a4b; }
 .vle-liquid-point { fill: rgb(var(--color-moss)); }
 .vle-vapour-point { fill: #bf6a4b; }
+.vle-hover { pointer-events: none; }
+.vle-hover line { stroke: rgb(var(--color-ink) / 0.2); stroke-dasharray: 3 3; }
+.vle-hover circle { fill: rgb(var(--color-ink) / 0.72); stroke: rgb(var(--color-surface)); stroke-width: 1.5; }
+.vle-hover circle.is-liquid { fill: rgb(var(--color-moss)); }
+.vle-hover circle.is-vapour { fill: #bf6a4b; }
+.vle-hover-label rect { fill: rgb(var(--color-surface) / 0.96); stroke: rgb(var(--color-ink) / 0.12); }
+.vle-hover-label text { fill: rgb(var(--color-ink) / 0.62); font-size: 9px; font-weight: 700; }
 .vle-legend { display: flex; padding: 0 0.7rem; justify-content: center; flex-wrap: wrap; gap: 0.75rem; color: rgb(var(--color-ink) / 0.52); font-size: 0.54rem; }
 .vle-legend span { display: flex; align-items: center; gap: 0.3rem; }
 .vle-legend i { width: 1.15rem; height: 0.14rem; border-radius: 99px; }
@@ -1684,6 +1707,13 @@ body.has-page-cursor * { cursor: inherit !important; }
   .home-intro,
   .home-portrait,
   .orbit-link { animation: none; }
+}
+
+/* Lifted cards/tabs need to paint above nearby borders and scroll-container edges. */
+.hover\:-translate-y-0\.5:hover,
+.hover\:-translate-y-1:hover {
+  position: relative;
+  z-index: 5;
 }
 
 @layer components {

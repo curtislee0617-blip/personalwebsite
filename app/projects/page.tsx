@@ -25,7 +25,7 @@ export default function ProjectsPage() {
       <section className="page-section pt-6 sm:pt-7">
         <div className="grid gap-5 lg:grid-cols-[9rem_minmax(0,1fr)] lg:gap-7">
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="flex gap-2 overflow-x-auto pb-1 lg:grid lg:gap-2 lg:overflow-visible">
+            <div className="-mt-1 flex gap-2 overflow-x-auto pb-2 pt-1 lg:grid lg:gap-2 lg:overflow-visible">
               {projects.map((project, index) => (
                 <a
                   className="shrink-0 rounded-full border border-ink/10 bg-surface/55 px-3 py-2 text-xs font-semibold text-ink/60 transition hover:border-ink/20 hover:bg-surface hover:text-ink lg:rounded-2xl lg:px-3 lg:py-2.5"

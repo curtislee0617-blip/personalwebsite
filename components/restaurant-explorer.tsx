@@ -23,6 +23,7 @@ type GeocodeSuggestion = {
 
 let mapsConfigured = false;
 const resultListLimit = 250;
+const mobileMarkerLimit = 350;
 const mobileMapMediaQuery = "(max-width: 899px)";
 const defaultMapCenter = { lat: 22.3027, lng: 114.1772 };
 
@@ -275,6 +276,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const mapIdleTimeoutRef = useRef<number | null>(null);
+  const mobileMarkerPauseTimeoutRef = useRef<number | null>(null);
   const geocoderRef = useRef<google.maps.Geocoder | null>(null);
   const locationSearchTimeoutRef = useRef<number | null>(null);
   const didRequestUserLocationRef = useRef(false);
@@ -299,6 +301,8 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [mapStatus, setMapStatus] = useState<MapStatus>(apiKey ? "idle" : "error");
   const [isMobileMap, setIsMobileMap] = useState<boolean | null>(null);
+  const [isMobileMapMoving, setIsMobileMapMoving] = useState(false);
+  const [loadedMobileRestaurantIds, setLoadedMobileRestaurantIds] = useState<Set<string>>(() => new Set());
   const [isResultsOpen, setIsResultsOpen] = useState(false);
   const dateOptions = useMemo(() => buildDateOptions(), []);
   const timeOptions = useMemo(() => buildTimeOptions(), []);
@@ -341,6 +345,16 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       : filteredRestaurants,
     [filteredRestaurants, mapBounds],
   );
+  const mobileRestaurantsInView = useMemo(
+    () => isMobileMap && mapBounds && !isMobileMapMoving
+      ? filteredRestaurants.filter((restaurant) => isWithinBounds(restaurant.position, mapBounds)).slice(0, mobileMarkerLimit)
+      : [],
+    [filteredRestaurants, isMobileMap, isMobileMapMoving, mapBounds],
+  );
+  const unloadedMobileRestaurants = useMemo(
+    () => mobileRestaurantsInView.filter((restaurant) => !loadedMobileRestaurantIds.has(restaurant.id)),
+    [loadedMobileRestaurantIds, mobileRestaurantsInView],
+  );
   const selectedRestaurant = filteredRestaurants.find((restaurant) => restaurant.id === selectedId);
   const listedRestaurants = restaurantsInView.slice(0, resultListLimit);
   const selectedHoursDateTime = useMemo(
@@ -348,6 +362,10 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     [hoursDate, hoursTime],
   );
   const hasFilters = activeCategories.length > 0 || activePrice !== "All" || activeHours !== "All" || search.length > 0;
+  const shouldShowMobileLoadPinsButton = Boolean(isMobileMap && mapStatus === "ready" && !isMobileMapMoving && unloadedMobileRestaurants.length > 0);
+  const detachMarkers = useCallback(() => {
+    markerRefs.current.forEach((marker) => { marker.map = null; });
+  }, []);
   const ensureRestaurantMarker = useCallback((restaurant: Restaurant) => {
     if (markerRefs.current.has(restaurant.id)) return;
     const markerLibrary = markerLibraryRef.current;
@@ -452,6 +470,16 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
         mapRef.current = map;
         map.addListener("click", () => setSelectedId(""));
+        const pauseMobileMarkers = () => {
+          if (!isMobileMap) return;
+          if (mobileMarkerPauseTimeoutRef.current) {
+            window.clearTimeout(mobileMarkerPauseTimeoutRef.current);
+          }
+          detachMarkers();
+          setIsMobileMapMoving(true);
+        };
+        map.addListener("dragstart", pauseMobileMarkers);
+        map.addListener("zoom_changed", pauseMobileMarkers);
         map.addListener("idle", () => {
           if (mapIdleTimeoutRef.current) {
             window.clearTimeout(mapIdleTimeoutRef.current);
@@ -459,17 +487,26 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
           mapIdleTimeoutRef.current = window.setTimeout(() => {
             const nextBounds = map.getBounds()?.toJSON();
-            if (!nextBounds) return;
-            setMapBounds((currentBounds) => {
-              if (
-                currentBounds
-                && currentBounds.north === nextBounds.north
-                && currentBounds.south === nextBounds.south
-                && currentBounds.east === nextBounds.east
-                && currentBounds.west === nextBounds.west
-              ) return currentBounds;
-              return nextBounds;
-            });
+            if (nextBounds) {
+              setMapBounds((currentBounds) => {
+                if (
+                  currentBounds
+                  && currentBounds.north === nextBounds.north
+                  && currentBounds.south === nextBounds.south
+                  && currentBounds.east === nextBounds.east
+                  && currentBounds.west === nextBounds.west
+                ) return currentBounds;
+                return nextBounds;
+              });
+            }
+            if (isMobileMap) {
+              if (mobileMarkerPauseTimeoutRef.current) {
+                window.clearTimeout(mobileMarkerPauseTimeoutRef.current);
+              }
+              mobileMarkerPauseTimeoutRef.current = window.setTimeout(() => {
+                setIsMobileMapMoving(false);
+              }, 90);
+            }
           }, isMobileMap ? 140 : 40);
         });
 
@@ -496,6 +533,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       if (mapIdleTimeoutRef.current) {
         window.clearTimeout(mapIdleTimeoutRef.current);
       }
+      if (mobileMarkerPauseTimeoutRef.current) {
+        window.clearTimeout(mobileMarkerPauseTimeoutRef.current);
+      }
       if (locationSearchTimeoutRef.current) {
         window.clearTimeout(locationSearchTimeoutRef.current);
       }
@@ -506,7 +546,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       markerLibraryRef.current = null;
       mapRef.current = null;
     };
-  }, [apiKey, isMobileMap, mapId, restaurants]);
+  }, [apiKey, detachMarkers, isMobileMap, mapId, restaurants]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -553,11 +593,13 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
   useEffect(() => {
     if (mapStatus !== "ready" || !mapRef.current) return;
+    if (isMobileMap && isMobileMapMoving) {
+      detachMarkers();
+      return;
+    }
 
     const visibleRestaurants = isMobileMap
-      ? isShowingPlaceSearch && mapBounds
-        ? filteredRestaurants.filter((restaurant) => isWithinBounds(restaurant.position, mapBounds))
-        : []
+      ? mobileRestaurantsInView.filter((restaurant) => loadedMobileRestaurantIds.has(restaurant.id))
       : filteredRestaurants;
     visibleRestaurants.forEach((restaurant) => ensureRestaurantMarker(restaurant));
 
@@ -569,7 +611,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     if (!isShowingPlaceSearch && filteredRestaurants.length === 1) {
       fitRestaurantBounds(mapRef.current, filteredRestaurants, 15);
     }
-  }, [ensureRestaurantMarker, filteredRestaurants, isMobileMap, isShowingPlaceSearch, mapBounds, mapStatus]);
+  }, [detachMarkers, ensureRestaurantMarker, filteredRestaurants, isMobileMap, isMobileMapMoving, isShowingPlaceSearch, loadedMobileRestaurantIds, mapStatus, mobileRestaurantsInView]);
 
   useEffect(() => {
     markerElementRefs.current.forEach((element, id) => {
@@ -582,9 +624,19 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     setSelectedId(restaurant.id);
     if (isMobileMap) {
       setIsResultsOpen(false);
+      setLoadedMobileRestaurantIds((currentIds) => new Set(currentIds).add(restaurant.id));
     }
     mapRef.current?.panTo(restaurant.position);
     if ((mapRef.current?.getZoom() ?? 0) < 14) mapRef.current?.setZoom(14);
+  }
+
+  function loadMobileRestaurantsInArea() {
+    if (!mobileRestaurantsInView.length) return;
+    setLoadedMobileRestaurantIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+      mobileRestaurantsInView.forEach((restaurant) => nextIds.add(restaurant.id));
+      return nextIds;
+    });
   }
 
   function applyGeocodeResult(result: google.maps.GeocoderResult) {
@@ -817,6 +869,12 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       <div className="restaurant-map-layout">
         <div className="restaurant-map-shell">
           <div className="restaurant-map" ref={mapElementRef} />
+
+          {shouldShowMobileLoadPinsButton && (
+            <button className="restaurant-load-area" onClick={loadMobileRestaurantsInArea} type="button">
+              Restaurants in this area
+            </button>
+          )}
 
           {!apiKey && (
             <div className="restaurant-map-message">
