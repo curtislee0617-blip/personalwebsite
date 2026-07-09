@@ -2,6 +2,7 @@
 
 import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import type { Restaurant } from "@/data/restaurants";
 
 type RestaurantExplorerProps = {
@@ -13,10 +14,17 @@ type RestaurantExplorerProps = {
 type MapStatus = "idle" | "loading" | "ready" | "error";
 type MapBounds = { north: number; south: number; east: number; west: number };
 type HoursFilter = "All" | "OpenNow" | "OpenAtDateTime";
+type Position = { lat: number; lng: number };
+type GeocodeSuggestion = {
+  id: string;
+  label: string;
+  result: google.maps.GeocoderResult;
+};
 
 let mapsConfigured = false;
 const resultListLimit = 250;
 const mobileMapMediaQuery = "(max-width: 899px)";
+const defaultMapCenter = { lat: 22.3027, lng: 114.1772 };
 
 function googleMapsUrl(restaurant: Restaurant) {
   if (restaurant.googleMapsUrl) return restaurant.googleMapsUrl;
@@ -38,6 +46,40 @@ function isWithinBounds(position: Restaurant["position"], bounds: MapBounds) {
 
 function uniqueLabels(values: string[]) {
   return Array.from(new Set(values.filter(Boolean)));
+}
+
+function fitRestaurantBounds(map: google.maps.Map, matchingRestaurants: Restaurant[], fallbackZoom = 12) {
+  if (matchingRestaurants.length === 0) return false;
+  if (matchingRestaurants.length === 1) {
+    map.panTo(matchingRestaurants[0].position);
+    if ((map.getZoom() ?? 0) < fallbackZoom) map.setZoom(fallbackZoom);
+    return true;
+  }
+
+  const bounds = new google.maps.LatLngBounds();
+  matchingRestaurants.forEach((restaurant) => bounds.extend(restaurant.position));
+  map.fitBounds(bounds, 56);
+  return true;
+}
+
+function requestBrowserPosition() {
+  return new Promise<Position | null>((resolve) => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      resolve(null);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      () => resolve(null),
+      { enableHighAccuracy: false, maximumAge: 1000 * 60 * 30, timeout: 5000 },
+    );
+  });
 }
 
 function defaultDateTimeValue() {
@@ -233,15 +275,22 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const mapElementRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const mapIdleTimeoutRef = useRef<number | null>(null);
+  const geocoderRef = useRef<google.maps.Geocoder | null>(null);
+  const locationSearchTimeoutRef = useRef<number | null>(null);
+  const didRequestUserLocationRef = useRef(false);
+  const userPositionRef = useRef<Position | null>(null);
   const markerRefs = useRef(new Map<string, google.maps.marker.AdvancedMarkerElement>());
   const markerElementRefs = useRef(new Map<string, HTMLElement>());
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategories, setActiveCategories] = useState<string[]>([]);
   const [activePrice, setActivePrice] = useState("All");
-  const [activeLocation, setActiveLocation] = useState("All");
   const [activeHours, setActiveHours] = useState<HoursFilter>("All");
   const [hoursDate, setHoursDate] = useState(defaultDateValue);
   const [hoursTime, setHoursTime] = useState(defaultTimeValue);
   const [search, setSearch] = useState("");
+  const [searchStatus, setSearchStatus] = useState("");
+  const [geocodeSuggestions, setGeocodeSuggestions] = useState<GeocodeSuggestion[]>([]);
+  const [selectedGeocodeSuggestion, setSelectedGeocodeSuggestion] = useState<GeocodeSuggestion | null>(null);
+  const [isShowingPlaceSearch, setIsShowingPlaceSearch] = useState(false);
   const [selectedId, setSelectedId] = useState(restaurants[0]?.id ?? "");
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [mapStatus, setMapStatus] = useState<MapStatus>(apiKey ? "idle" : "error");
@@ -267,29 +316,20 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         .map(([category]) => category),
     ];
   }, [restaurants]);
-  const locations = useMemo(
-    () => ["All", ...Array.from(new Set(restaurants.map((restaurant) => restaurant.area))).sort()],
-    [restaurants],
-  );
-
   const filteredRestaurants = useMemo(() => {
-    const query = search.trim().toLocaleLowerCase("en");
     const targetDateTime = parseDateTimeInput(hoursDate, hoursTime);
     return restaurants.filter((restaurant) => {
-      const matchesCategory = activeCategory === "All"
-        || restaurant.category === activeCategory
-        || restaurant.tags.includes(activeCategory);
+      const labels = uniqueLabels([restaurant.category, ...restaurant.tags]);
+      const matchesCategory = activeCategories.length === 0
+        || activeCategories.some((category) => labels.includes(category));
       const matchesPrice = activePrice === "All" || restaurant.priceLevel === Number(activePrice);
-      const matchesLocation = activeLocation === "All" || restaurant.area === activeLocation;
       const matchesHours =
         activeHours === "All"
         || (activeHours === "OpenNow" && restaurant.businessStatus !== "CLOSED_TEMPORARILY" && isOpenNow(restaurant))
         || (activeHours === "OpenAtDateTime" && restaurant.businessStatus !== "CLOSED_TEMPORARILY" && isOpenAtDateTime(restaurant, targetDateTime));
-      const matchesSearch = !query || [restaurant.name, restaurant.area, restaurant.city, restaurant.category, ...restaurant.tags]
-        .some((value) => value.toLocaleLowerCase("en").includes(query));
-      return matchesCategory && matchesPrice && matchesLocation && matchesHours && matchesSearch;
+      return matchesCategory && matchesPrice && matchesHours;
     });
-  }, [activeCategory, activeHours, activeLocation, activePrice, hoursDate, hoursTime, restaurants, search]);
+  }, [activeCategories, activeHours, activePrice, hoursDate, hoursTime, restaurants]);
 
   const restaurantsInView = useMemo(
     () => mapBounds
@@ -303,7 +343,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     () => parseDateTimeInput(hoursDate, hoursTime),
     [hoursDate, hoursTime],
   );
-  const hasFilters = activeCategory !== "All" || activePrice !== "All" || activeLocation !== "All" || activeHours !== "All" || search.length > 0;
+  const hasFilters = activeCategories.length > 0 || activePrice !== "All" || activeHours !== "All" || search.length > 0;
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -336,15 +376,26 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           mapsConfigured = true;
         }
 
-        const [{ Map, RenderingType }, { AdvancedMarkerElement, PinElement }] = await Promise.all([
-          importLibrary("maps"),
-          importLibrary("marker"),
+        const userPositionPromise = didRequestUserLocationRef.current
+          ? Promise.resolve(userPositionRef.current)
+          : requestBrowserPosition();
+        didRequestUserLocationRef.current = true;
+
+        const [[{ Map, RenderingType }, { AdvancedMarkerElement, PinElement }], initialUserPosition] = await Promise.all([
+          Promise.all([
+            importLibrary("maps"),
+            importLibrary("marker"),
+          ]),
+          userPositionPromise,
         ]);
 
         if (cancelled || !mapElementRef.current) return;
+        if (initialUserPosition) {
+          userPositionRef.current = initialUserPosition;
+        }
 
         const map = new Map(mapElementRef.current, {
-          center: { lat: 22.3027, lng: 114.1772 },
+          center: initialUserPosition ?? defaultMapCenter,
           zoom: 12,
           mapId,
           gestureHandling: isMobileMap ? "greedy" : "cooperative",
@@ -436,6 +487,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       if (mapIdleTimeoutRef.current) {
         window.clearTimeout(mapIdleTimeoutRef.current);
       }
+      if (locationSearchTimeoutRef.current) {
+        window.clearTimeout(locationSearchTimeoutRef.current);
+      }
       mapElement.removeEventListener("pointerdown", handlePointerDown, { capture: true });
       markers.forEach((marker) => { marker.map = null; });
       markers.clear();
@@ -450,6 +504,44 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   }, [isMobileMap]);
 
   useEffect(() => {
+    if (mapStatus !== "ready") return;
+    const query = search.trim();
+
+    if (locationSearchTimeoutRef.current) {
+      window.clearTimeout(locationSearchTimeoutRef.current);
+    }
+
+    if (query.length < 2 || selectedGeocodeSuggestion?.label === query) return;
+
+    locationSearchTimeoutRef.current = window.setTimeout(() => {
+      if (!geocoderRef.current) {
+        geocoderRef.current = new google.maps.Geocoder();
+      }
+
+      void geocoderRef.current.geocode({ address: query }, (results, status) => {
+        if (status !== "OK" || !results?.length) {
+          setGeocodeSuggestions([]);
+          setSearchStatus("No map location found.");
+          return;
+        }
+
+        setGeocodeSuggestions(results.slice(0, 6).map((result, index) => ({
+          id: `${result.place_id ?? result.formatted_address}-${index}`,
+          label: result.formatted_address,
+          result,
+        })));
+        setSearchStatus(results.length > 1 ? "Choose a matching place." : "");
+      });
+    }, 250);
+
+    return () => {
+      if (locationSearchTimeoutRef.current) {
+        window.clearTimeout(locationSearchTimeoutRef.current);
+      }
+    };
+  }, [mapStatus, search, selectedGeocodeSuggestion?.label]);
+
+  useEffect(() => {
     if (mapStatus !== "ready" || !mapRef.current) return;
 
     const filteredIds = new Set(filteredRestaurants.map((restaurant) => restaurant.id));
@@ -457,11 +549,10 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       marker.map = filteredIds.has(id) ? mapRef.current : null;
     });
 
-    if (filteredRestaurants.length === 1) {
-      mapRef.current.panTo(filteredRestaurants[0].position);
-      if ((mapRef.current.getZoom() ?? 0) < 15) mapRef.current.setZoom(15);
+    if (!isShowingPlaceSearch && filteredRestaurants.length === 1) {
+      fitRestaurantBounds(mapRef.current, filteredRestaurants, 15);
     }
-  }, [filteredRestaurants, mapStatus]);
+  }, [filteredRestaurants, isShowingPlaceSearch, mapStatus]);
 
   useEffect(() => {
     markerElementRefs.current.forEach((element, id) => {
@@ -479,14 +570,93 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     if ((mapRef.current?.getZoom() ?? 0) < 14) mapRef.current?.setZoom(14);
   }
 
+  function applyGeocodeResult(result: google.maps.GeocoderResult) {
+    const map = mapRef.current;
+    if (!map) return;
+
+    setSearch(result.formatted_address);
+    setSearchStatus("");
+    setGeocodeSuggestions([]);
+    setSelectedId("");
+    setIsShowingPlaceSearch(true);
+
+    if (result.geometry.viewport) {
+      map.fitBounds(result.geometry.viewport);
+    } else {
+      map.panTo(result.geometry.location);
+      map.setZoom(13);
+    }
+    if (isMobileMap) setIsResultsOpen(false);
+  }
+
+  function applyGeocodeSuggestion(suggestion: GeocodeSuggestion) {
+    setSearch(suggestion.label);
+    setSelectedGeocodeSuggestion(suggestion);
+    setGeocodeSuggestions([]);
+    setSearchStatus("");
+  }
+
+  function runSearch(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
+    const query = search.trim();
+    const map = mapRef.current;
+    if (!query || !map) return;
+
+    if (selectedGeocodeSuggestion?.label === query) {
+      applyGeocodeResult(selectedGeocodeSuggestion.result);
+      return;
+    }
+
+    if (!geocoderRef.current) {
+      geocoderRef.current = new google.maps.Geocoder();
+    }
+
+    setSearchStatus("Searching map...");
+    void geocoderRef.current.geocode({ address: query }, (results, status) => {
+      if (status !== "OK" || !results?.length) {
+        setGeocodeSuggestions([]);
+        setSearchStatus("No map location found.");
+        return;
+      }
+
+      if (results.length > 1) {
+        setGeocodeSuggestions(results.slice(0, 6).map((result, index) => ({
+          id: `${result.place_id ?? result.formatted_address}-${index}`,
+          label: result.formatted_address,
+          result,
+        })));
+        setSearchStatus("Choose a matching place.");
+        return;
+      }
+
+      applyGeocodeResult(results[0]);
+    });
+  }
+
   function clearFilters() {
-    setActiveCategory("All");
+    setActiveCategories([]);
     setActivePrice("All");
-    setActiveLocation("All");
     setActiveHours("All");
     setHoursDate(defaultDateValue());
     setHoursTime(defaultTimeValue());
     setSearch("");
+    setSearchStatus("");
+    setGeocodeSuggestions([]);
+    setSelectedGeocodeSuggestion(null);
+    setIsShowingPlaceSearch(false);
+  }
+
+  function toggleCategory(category: string) {
+    if (category === "All") {
+      setActiveCategories([]);
+      return;
+    }
+
+    setActiveCategories((currentCategories) =>
+      currentCategories.includes(category)
+        ? currentCategories.filter((currentCategory) => currentCategory !== category)
+        : [...currentCategories, category],
+    );
   }
 
   function openingStatus(restaurant: Restaurant) {
@@ -534,10 +704,41 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   return (
     <section className="restaurant-explorer" aria-label="Restaurant map and saved places">
       <div className="restaurant-filter-panel">
-        <label className="restaurant-search">
-          <span>Search</span>
-          <input onChange={(event) => setSearch(event.target.value)} placeholder="Name, cuisine or area" type="search" value={search} />
-        </label>
+        <form className="restaurant-search" onSubmit={runSearch}>
+          <label>
+            <span>Search</span>
+            <div className="restaurant-search-control">
+              <input
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setSearchStatus("");
+                  setGeocodeSuggestions([]);
+                  setSelectedGeocodeSuggestion(null);
+                  setIsShowingPlaceSearch(false);
+                }}
+                placeholder="City, town or address"
+                type="search"
+                value={search}
+              />
+              <button disabled={!search.trim() || mapStatus !== "ready"} type="submit">Go</button>
+            </div>
+          </label>
+          {searchStatus && <span className="restaurant-search-status" role="status">{searchStatus}</span>}
+          {geocodeSuggestions.length > 0 && (
+            <div className="restaurant-search-suggestions" aria-label="Search suggestions">
+              {geocodeSuggestions.map((suggestion) => (
+                <button
+                  className={selectedGeocodeSuggestion?.id === suggestion.id ? "is-selected" : ""}
+                  key={suggestion.id}
+                  onClick={() => applyGeocodeSuggestion(suggestion)}
+                  type="button"
+                >
+                  {suggestion.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </form>
         <label>
           <span>Price</span>
           <select onChange={(event) => setActivePrice(event.target.value)} value={activePrice}>
@@ -546,12 +747,6 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
             <option value="2">$$</option>
             <option value="3">$$$</option>
             <option value="4">$$$$</option>
-          </select>
-        </label>
-        <label>
-          <span>Location</span>
-          <select onChange={(event) => setActiveLocation(event.target.value)} value={activeLocation}>
-            {locations.map((location) => <option key={location}>{location === "All" ? "All locations" : location}</option>)}
           </select>
         </label>
         <label>
@@ -590,9 +785,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       <div className="restaurant-filter-row" aria-label="Filter restaurants by category">
         {categories.map((category) => (
           <button
-            className={`restaurant-filter ${category === activeCategory ? "is-active" : ""}`}
+            className={`restaurant-filter ${(category === "All" ? activeCategories.length === 0 : activeCategories.includes(category)) ? "is-active" : ""}`}
             key={category}
-            onClick={() => setActiveCategory(category)}
+            onClick={() => toggleCategory(category)}
             type="button"
           >
             {category}

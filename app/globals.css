@@ -521,7 +521,6 @@ body.has-page-cursor * { cursor: inherit !important; }
   grid-template-columns:
     minmax(12rem, 1.45fr)
     minmax(7rem, 0.58fr)
-    minmax(10rem, 0.9fr)
     minmax(9rem, 0.8fr)
     minmax(10rem, 0.95fr)
     minmax(9rem, 0.8fr)
@@ -529,6 +528,7 @@ body.has-page-cursor * { cursor: inherit !important; }
 }
 
 .restaurant-filter-panel label,
+.restaurant-search,
 .restaurant-recommendations label {
   display: grid;
   gap: 0.3rem;
@@ -558,6 +558,63 @@ body.has-page-cursor * { cursor: inherit !important; }
 
 .restaurant-filter-panel input,
 .restaurant-filter-panel select { height: 2.5rem; padding: 0 0.75rem; }
+
+.restaurant-search-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem;
+}
+
+.restaurant-search-control button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  min-width: 3rem;
+  padding: 0 0.85rem;
+  border-radius: 0.9rem;
+  background: rgb(var(--color-ink));
+  color: rgb(var(--color-paper));
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.restaurant-search-control button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.restaurant-search-status {
+  min-height: 0.85rem;
+  color: rgb(var(--color-ink) / 0.55);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.restaurant-search-suggestions {
+  display: grid;
+  max-height: 10.5rem;
+  overflow-y: auto;
+  gap: 0.25rem;
+}
+
+.restaurant-search-suggestions button {
+  min-width: 0;
+  padding: 0.45rem 0.58rem;
+  border-radius: 0.72rem;
+  background: rgb(var(--color-ink) / 0.055);
+  color: rgb(var(--color-ink) / 0.68);
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.restaurant-search-suggestions button:hover,
+.restaurant-search-suggestions button.is-selected {
+  background: rgb(var(--color-ink) / 0.09);
+  color: rgb(var(--color-ink));
+}
 
 .restaurant-filter-panel input:focus,
 .restaurant-filter-panel select:focus,
