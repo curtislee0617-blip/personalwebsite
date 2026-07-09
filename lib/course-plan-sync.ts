@@ -2,21 +2,48 @@ import { createClient } from "@/lib/supabase/client";
 import type { MajorId } from "@/data/caltech-requirements";
 import type { Json } from "@/lib/supabase/database.types";
 
-export type StoredIdentity = { loginKey: string; displayName: string; majors: MajorId[] };
+export type StoredIdentity = {
+  loginKey: string;
+  displayName: string;
+  firstName: string;
+  lastName: string;
+  majors: MajorId[];
+};
 
 const IDENTITY_STORAGE_KEY = "caltech-course-planner-identity-v1";
 
-/** The whole "login" model: same name + same majors always resolves to the same saved row. No password. */
-export function buildLoginKey(name: string, majorIds: MajorId[]) {
+/** Legacy profile key kept so existing saved plans can be found and migrated without deleting them. */
+export function buildLegacyLoginKey(name: string, majorIds: MajorId[]) {
   const normalizedName = name.trim().toLowerCase().replace(/\s+/g, " ");
   const normalizedMajors = [...majorIds].sort().join(",");
   return `${normalizedName}::${normalizedMajors}`;
 }
 
+/** New account key: majors are editable, while first name + last name + password identify the saved row. */
+export function buildAccountLoginKey(firstName: string, lastName: string, password: string) {
+  const normalizedFirst = firstName.trim().toLowerCase().replace(/\s+/g, " ");
+  const normalizedLast = lastName.trim().toLowerCase().replace(/\s+/g, " ");
+  const normalizedPassword = password.trim();
+  return `account::${normalizedFirst}::${normalizedLast}::${normalizedPassword}`;
+}
+
+export function displayNameFor(firstName: string, lastName: string) {
+  return [firstName.trim(), lastName.trim()].filter(Boolean).join(" ");
+}
+
 export function loadStoredIdentity(): StoredIdentity | null {
   try {
     const raw = window.localStorage.getItem(IDENTITY_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as StoredIdentity) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<StoredIdentity>;
+    const displayName = parsed.displayName ?? "";
+    return {
+      loginKey: parsed.loginKey ?? "",
+      displayName,
+      firstName: parsed.firstName ?? displayName.split(/\s+/)[0] ?? "",
+      lastName: parsed.lastName ?? displayName.split(/\s+/).slice(1).join(" "),
+      majors: parsed.majors ?? [],
+    };
   } catch {
     return null;
   }

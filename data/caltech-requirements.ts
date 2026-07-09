@@ -1,4 +1,16 @@
-export type MajorId = "cheme-process" | "bem" | "cs" | "cs-minor" | "math";
+export type MajorId =
+  | "cheme-biomolecular"
+  | "cheme-sustainability"
+  | "cheme-process"
+  | "cheme-materials"
+  | "cheme-computational"
+  | "cheme-minor"
+  | "bem"
+  | "bem-minor"
+  | "cs"
+  | "cs-minor"
+  | "math"
+  | "math-minor";
 
 export type Major = {
   id: MajorId;
@@ -9,14 +21,39 @@ export type Major = {
 // and the matching categories/templates below — as they get transcribed; nothing else
 // in the app needs to change to support a new one.
 export const majors: Major[] = [
-  { id: "cheme-process", label: "Chemical Engineering (process track)" },
+  { id: "cheme-biomolecular", label: "Chemical Engineering (biomolecular track)" },
+  { id: "cheme-sustainability", label: "Chemical Engineering (sustainability track)" },
+  { id: "cheme-process", label: "Chemical Engineering (process systems track)" },
+  { id: "cheme-materials", label: "Chemical Engineering (materials track)" },
+  { id: "cheme-computational", label: "Chemical Engineering (computational track)" },
+  { id: "cheme-minor", label: "Chemical Engineering (minor)" },
   { id: "bem", label: "Business, Economics & Management" },
+  { id: "bem-minor", label: "Business, Economics & Management (minor)" },
   { id: "cs", label: "Computer Science" },
   { id: "cs-minor", label: "Computer Science (minor)" },
   { id: "math", label: "Mathematics" },
+  { id: "math-minor", label: "Mathematics (minor)" },
 ];
 
-export type RequirementCategoryId = "cheme" | "bem" | "cs" | "cs-minor" | "math" | "core-science" | "humanities" | "social-science" | "pe" | "elective";
+export type RequirementCategoryId =
+  | "cheme"
+  | "cheme-biomolecular"
+  | "cheme-sustainability"
+  | "cheme-process"
+  | "cheme-materials"
+  | "cheme-computational"
+  | "cheme-minor"
+  | "bem"
+  | "bem-minor"
+  | "cs"
+  | "cs-minor"
+  | "math"
+  | "math-minor"
+  | "core-science"
+  | "humanities"
+  | "social-science"
+  | "pe"
+  | "elective";
 
 export type RequirementCategory = {
   id: RequirementCategoryId;
@@ -26,6 +63,8 @@ export type RequirementCategory = {
   note: string;
   /** Which major this category belongs to; omitted for categories shared by every major (institute core, humanities, etc.). */
   majorId?: MajorId;
+  /** Use this when one category is shared by multiple selectable tracks of the same option. */
+  majorIds?: MajorId[];
 };
 
 // A fixed-order categorical palette, validated with the six-checks method (lightness band,
@@ -38,11 +77,59 @@ export type RequirementCategory = {
 export const requirementCategories: RequirementCategory[] = [
   {
     id: "cheme",
-    label: "Chemical Engineering (process track)",
-    shortLabel: "ChemE",
+    label: "Chemical Engineering core",
+    shortLabel: "ChemE core",
     color: "#008300",
-    note: "Core option requirements plus the process-systems track, per the Caltech catalog.",
+    note: "Core option requirements shared by every Chemical Engineering track, per the Caltech catalog.",
+    majorIds: ["cheme-biomolecular", "cheme-sustainability", "cheme-process", "cheme-materials", "cheme-computational"],
+  },
+  {
+    id: "cheme-biomolecular",
+    label: "Chemical Engineering — biomolecular track",
+    shortLabel: "ChemE bio",
+    color: "#42a727",
+    note: "Biomolecular track requirements: BE/ChE 163, Ch/Bi 110, ChE 130 or ChE 90 c, and approved bio/biochemical engineering electives.",
+    majorId: "cheme-biomolecular",
+  },
+  {
+    id: "cheme-sustainability",
+    label: "Chemical Engineering — sustainability track",
+    shortLabel: "ChemE sust.",
+    color: "#0c9b70",
+    note: "Sustainability track requirements: two sustainability foundations, one design/earth-science choice, and approved ESE/EST electives.",
+    majorId: "cheme-sustainability",
+  },
+  {
+    id: "cheme-process",
+    label: "Chemical Engineering — process systems track",
+    shortLabel: "ChemE proc.",
+    color: "#00756c",
+    note: "Process systems track requirements: ChE 118, ChE 120, ChE 128 or ChE 90 c, and approved engineering electives.",
     majorId: "cheme-process",
+  },
+  {
+    id: "cheme-materials",
+    label: "Chemical Engineering — materials track",
+    shortLabel: "ChemE mat.",
+    color: "#4d8f24",
+    note: "Materials track requirements: design, materials synthesis/processing, structure/properties, and approved ChE/MS/APh electives.",
+    majorId: "cheme-materials",
+  },
+  {
+    id: "cheme-computational",
+    label: "Chemical Engineering — computational track",
+    shortLabel: "ChemE comp.",
+    color: "#249f9a",
+    note: "Computational track requirements: ACM/IDS 104, ChE/Ch 137, a computational sequence, and approved computational electives.",
+    majorId: "cheme-computational",
+  },
+  {
+    id: "cheme-minor",
+    label: "Chemical Engineering minor",
+    shortLabel: "ChE minor",
+    color: "#008300",
+    note: "Chemical Engineering minor requirements: ChE 63 a, ChE 103 ab, ChE 101; ACM 95 ab or two additional ChE courses; and 18 units of ChE electives.",
+    majorId: "cheme-minor",
   },
   {
     id: "bem",
@@ -51,6 +138,14 @@ export const requirementCategories: RequirementCategory[] = [
     color: "#eb6834",
     note: "BEM option requirements, including its elective menus.",
     majorId: "bem",
+  },
+  {
+    id: "bem-minor",
+    label: "Business, Economics & Management minor",
+    shortLabel: "BEM minor",
+    color: "#eb6834",
+    note: "Compact BEM minor-style checklist. The current Caltech catalog lists BEM as an option, not an official minor; adjust this if an official minor is added.",
+    majorId: "bem-minor",
   },
   {
     id: "cs",
@@ -75,6 +170,14 @@ export const requirementCategories: RequirementCategory[] = [
     color: "#4a3aa7",
     note: "Ma option (major) requirements, including the full Ma 5/10/108/109 sequence and advanced Ma/ACM electives.",
     majorId: "math",
+  },
+  {
+    id: "math-minor",
+    label: "Mathematics minor",
+    shortLabel: "Math minor",
+    color: "#4a3aa7",
+    note: "Mathematics minor requirements: Ma 2, Ma 3 or Ma 140 a, two three-term Ma sequences from Ma 5/108/109, and 18 units of approved Ma courses.",
+    majorId: "math-minor",
   },
   {
     id: "core-science",
@@ -141,14 +244,63 @@ export const requirementTemplates: RequirementTemplate[] = [
   { id: "cheme-che103c", categoryId: "cheme", label: "ChE 103 c" },
   { id: "cheme-che105", categoryId: "cheme", label: "ChE 105" },
   { id: "cheme-che126", categoryId: "cheme", label: "ChE 126" },
-  { id: "cheme-econ-req", categoryId: "cheme", label: "Econ requirement (Ec 111, BEM 102, or BEM 103)" },
+  { id: "cheme-core-menu", categoryId: "cheme", label: "Core menu: ACM/EE/IDS 116, BE/Bi 103 a, or ChE/Ch 137" },
+  { id: "cheme-econ-req", categoryId: "cheme", label: "Econ requirement (Ec 111/117, BEM 102/103/104/119)" },
+
+  // Chemical Engineering — biomolecular track
+  { id: "cheme-bio-163", categoryId: "cheme-biomolecular", label: "BE/ChE 163" },
+  { id: "cheme-bio-110", categoryId: "cheme-biomolecular", label: "Ch/Bi 110 a or Ch/Bi 110 b" },
+  { id: "cheme-bio-design", categoryId: "cheme-biomolecular", label: "ChE 130 or ChE 90 c" },
+  { id: "cheme-bio-elective-1", categoryId: "cheme-biomolecular", label: "Bio/biochemical engineering elective" },
+  { id: "cheme-bio-elective-2", categoryId: "cheme-biomolecular", label: "Bio/biochemical engineering elective" },
+  { id: "cheme-bio-elective-3", categoryId: "cheme-biomolecular", label: "Bio/biochemical engineering elective" },
+  { id: "cheme-bio-elective-4", categoryId: "cheme-biomolecular", label: "Bio/biochemical engineering elective" },
+
+  // Chemical Engineering — sustainability track
+  { id: "cheme-sust-foundation-1", categoryId: "cheme-sustainability", label: "Sustainability foundation: ChE/ESE/ME/MS 111, ESE 101, ESE 102, or ESE 103" },
+  { id: "cheme-sust-foundation-2", categoryId: "cheme-sustainability", label: "Sustainability foundation: ChE/ESE/ME/MS 111, ESE 101, ESE 102, or ESE 103" },
+  { id: "cheme-sust-design", categoryId: "cheme-sustainability", label: "ChE 128, ChE 90 c, or Ge 114 a" },
+  { id: "cheme-sust-elective-1", categoryId: "cheme-sustainability", label: "100-level ESE/EST or approved sustainability elective" },
+  { id: "cheme-sust-elective-2", categoryId: "cheme-sustainability", label: "100-level ESE/EST or approved sustainability elective" },
+  { id: "cheme-sust-elective-3", categoryId: "cheme-sustainability", label: "100-level ESE/EST or approved sustainability elective" },
+  { id: "cheme-sust-elective-4", categoryId: "cheme-sustainability", label: "100-level ESE/EST or approved sustainability elective" },
+
   // Chemical Engineering — process systems track
-  { id: "cheme-che118", categoryId: "cheme", label: "ChE 118" },
-  { id: "cheme-che120", categoryId: "cheme", label: "ChE 120" },
-  { id: "cheme-che128", categoryId: "cheme", label: "ChE 128 (or ChE 90 c)" },
-  { id: "cheme-track-1", categoryId: "cheme", label: "Process track elective" },
-  { id: "cheme-track-2", categoryId: "cheme", label: "Process track elective" },
-  { id: "cheme-track-3", categoryId: "cheme", label: "Process track elective" },
+  { id: "cheme-che118", categoryId: "cheme-process", label: "ChE 118" },
+  { id: "cheme-che120", categoryId: "cheme-process", label: "ChE 120" },
+  { id: "cheme-che128", categoryId: "cheme-process", label: "ChE 128 (or ChE 90 c)" },
+  { id: "cheme-track-1", categoryId: "cheme-process", label: "Process systems track elective" },
+  { id: "cheme-track-2", categoryId: "cheme-process", label: "Process systems track elective" },
+  { id: "cheme-track-3", categoryId: "cheme-process", label: "Process systems track elective" },
+  { id: "cheme-track-4", categoryId: "cheme-process", label: "Process systems track elective" },
+
+  // Chemical Engineering — materials track
+  { id: "cheme-mat-design", categoryId: "cheme-materials", label: "ChE 128 or ChE 90 c" },
+  { id: "cheme-mat-synthesis", categoryId: "cheme-materials", label: "Materials synthesis/processing: Ch 102, Ch 117, Ch/ChE 147, ChE/Ch/MS 113, ChE 115, MS 133, or substitute" },
+  { id: "cheme-mat-properties", categoryId: "cheme-materials", label: "Structure/properties: Ch 120 ab, ChE/Ch 148, MS 115, MS/APh 122, MS 131, MS 132, or substitute" },
+  { id: "cheme-mat-elective-1", categoryId: "cheme-materials", label: "100-level ChE/MS/APh or approved materials elective" },
+  { id: "cheme-mat-elective-2", categoryId: "cheme-materials", label: "100-level ChE/MS/APh or approved materials elective" },
+  { id: "cheme-mat-elective-3", categoryId: "cheme-materials", label: "100-level ChE/MS/APh or approved materials elective" },
+  { id: "cheme-mat-elective-4", categoryId: "cheme-materials", label: "100-level ChE/MS/APh or approved materials elective" },
+
+  // Chemical Engineering — computational track
+  { id: "cheme-comp-acm-ids-104", categoryId: "cheme-computational", label: "ACM/IDS 104" },
+  { id: "cheme-comp-che-ch-137", categoryId: "cheme-computational", label: "ChE/Ch 137" },
+  { id: "cheme-comp-sequence-1", categoryId: "cheme-computational", label: "Computational sequence course (Ch 121 ab, BE/ChE 163 + BE/CS/CNS/Bi 191 a, ESE 101 + ESE 136, Ae 232 ab, or ChE 90 abc)" },
+  { id: "cheme-comp-sequence-2", categoryId: "cheme-computational", label: "Computational sequence course (same sequence)" },
+  { id: "cheme-comp-elective-1", categoryId: "cheme-computational", label: "ChE/Ch 139 or approved IDS/ACM/CS/related elective" },
+  { id: "cheme-comp-elective-2", categoryId: "cheme-computational", label: "ChE/Ch 139 or approved IDS/ACM/CS/related elective" },
+  { id: "cheme-comp-elective-3", categoryId: "cheme-computational", label: "ChE/Ch 139 or approved IDS/ACM/CS/related elective" },
+
+  // Chemical Engineering — minor
+  { id: "cheme-minor-che63a", categoryId: "cheme-minor", label: "ChE 63 a" },
+  { id: "cheme-minor-che103a", categoryId: "cheme-minor", label: "ChE 103 a" },
+  { id: "cheme-minor-che103b", categoryId: "cheme-minor", label: "ChE 103 b" },
+  { id: "cheme-minor-che101", categoryId: "cheme-minor", label: "ChE 101" },
+  { id: "cheme-minor-acm95a", categoryId: "cheme-minor", label: "ACM 95 a (or additional ChE course if ACM 95 ab is required by your major)" },
+  { id: "cheme-minor-acm95b", categoryId: "cheme-minor", label: "ACM 95 b (or additional ChE course if ACM 95 ab is required by your major)" },
+  { id: "cheme-minor-elective-1", categoryId: "cheme-minor", label: "ChE minor elective" },
+  { id: "cheme-minor-elective-2", categoryId: "cheme-minor", label: "ChE minor elective" },
 
   // BEM — required courses
   { id: "bem-ec11", categoryId: "bem", label: "Ec 11" },
@@ -170,6 +322,14 @@ export const requirementTemplates: RequirementTemplate[] = [
   { id: "bem-additional-2", categoryId: "bem", label: "Science/math/eng elective (BEM)" },
   { id: "bem-additional-3", categoryId: "bem", label: "Science/math/eng elective (BEM)" },
   { id: "bem-additional-4", categoryId: "bem", label: "Science/math/eng elective (BEM)" },
+
+  // BEM — minor-style checklist
+  { id: "bem-minor-ec11", categoryId: "bem-minor", label: "Ec 11" },
+  { id: "bem-minor-102", categoryId: "bem-minor", label: "BEM 102" },
+  { id: "bem-minor-103", categoryId: "bem-minor", label: "BEM 103" },
+  { id: "bem-minor-advanced", categoryId: "bem-minor", label: "BEM course numbered 104+" },
+  { id: "bem-minor-elective-1", categoryId: "bem-minor", label: "BEM/Ec/PS/SS elective" },
+  { id: "bem-minor-elective-2", categoryId: "bem-minor", label: "BEM/Ec/PS/SS elective" },
 
   // Computer Science — option (major) requirements
   { id: "cs-fund-1", categoryId: "cs", label: "CS 1 (or CS 1 x)" },
@@ -248,6 +408,18 @@ export const requirementTemplates: RequirementTemplate[] = [
   { id: "math-elective-4", categoryId: "math", label: "Advanced Ma/ACM elective (Ma 110–190 or ACM 95+)" },
   { id: "math-elective-5", categoryId: "math", label: "Advanced Ma/ACM elective (Ma 110–190 or ACM 95+)" },
 
+  // Mathematics — minor
+  { id: "math-minor-ma2", categoryId: "math-minor", label: "Ma 2" },
+  { id: "math-minor-ma3", categoryId: "math-minor", label: "Ma 3 (or Ma 140 a)" },
+  { id: "math-minor-sequence-1a", categoryId: "math-minor", label: "Three-term Ma sequence 1 (Ma 5/108/109), part a" },
+  { id: "math-minor-sequence-1b", categoryId: "math-minor", label: "Three-term Ma sequence 1 (Ma 5/108/109), part b" },
+  { id: "math-minor-sequence-1c", categoryId: "math-minor", label: "Three-term Ma sequence 1 (Ma 5/108/109), part c" },
+  { id: "math-minor-sequence-2a", categoryId: "math-minor", label: "Three-term Ma sequence 2 (Ma 5/108/109), part a" },
+  { id: "math-minor-sequence-2b", categoryId: "math-minor", label: "Three-term Ma sequence 2 (Ma 5/108/109), part b" },
+  { id: "math-minor-sequence-2c", categoryId: "math-minor", label: "Three-term Ma sequence 2 (Ma 5/108/109), part c" },
+  { id: "math-minor-elective-1", categoryId: "math-minor", label: "Approved Ma elective" },
+  { id: "math-minor-elective-2", categoryId: "math-minor", label: "Approved Ma elective" },
+
   // Institute core — math & science
   { id: "core-ma1a", categoryId: "core-science", label: "Ma 1 a" },
   { id: "core-ma1b", categoryId: "core-science", label: "Ma 1 b" },
@@ -299,7 +471,11 @@ export const requirementTemplates: RequirementTemplate[] = [
 
 /** Categories visible to someone in the given majors: every shared/universal category, plus each selected major's own. */
 export function categoriesForMajors(selectedMajorIds: MajorId[]): RequirementCategory[] {
-  return requirementCategories.filter((category) => !category.majorId || selectedMajorIds.includes(category.majorId));
+  return requirementCategories.filter((category) =>
+    (!category.majorId && !category.majorIds)
+    || (category.majorId ? selectedMajorIds.includes(category.majorId) : false)
+    || (category.majorIds ? category.majorIds.some((majorId) => selectedMajorIds.includes(majorId)) : false),
+  );
 }
 
 /** Requirement templates visible to someone in the given majors. */

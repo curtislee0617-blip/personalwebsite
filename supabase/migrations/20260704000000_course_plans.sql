@@ -2,10 +2,9 @@ create extension if not exists pgcrypto;
 
 create table if not exists public.course_plans (
   id uuid primary key default gen_random_uuid(),
-  -- Normalized "name::sorted,major,ids" — the whole identity model. There is no
-  -- password: anyone who supplies the same name + majors can load and overwrite
-  -- this row. That's an accepted tradeoff for a low-stakes course checklist, not
-  -- an oversight — see the course planner page copy.
+  -- Opaque client-generated profile key. Legacy rows used "name::sorted,major,ids";
+  -- newer rows use first name + last name + a small password, while majors are
+  -- editable profile metadata.
   login_key text not null unique check (char_length(login_key) between 1 and 160),
   display_name text not null check (char_length(display_name) between 1 and 100),
   majors text[] not null check (cardinality(majors) between 1 and 6),

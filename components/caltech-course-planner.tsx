@@ -2,7 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent, type MouseEvent } from "react";
 import { categoriesForMajors, majors, requirementCategories, requirementTemplates, templatesForMajors, type MajorId, type RequirementCategory, type RequirementTemplate } from "@/data/caltech-requirements";
-import { buildLoginKey, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
+import { buildAccountLoginKey, buildLegacyLoginKey, displayNameFor, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
 import type { Json } from "@/lib/supabase/database.types";
 
 const YEARS = [1, 2, 3, 4] as const;
@@ -18,6 +18,27 @@ type Selection = { type: "requirement" | "class"; id: string } | null;
 type RequirementOwner = { classId: string; className: string };
 
 const STORAGE_KEY = "caltech-course-planner-v2";
+const CHEME_TRACK_IDS: MajorId[] = ["cheme-biomolecular", "cheme-sustainability", "cheme-process", "cheme-materials", "cheme-computational"];
+const CHEME_TRACK_ID_SET = new Set<MajorId>(CHEME_TRACK_IDS);
+const MAJOR_IDS = new Set<MajorId>([...CHEME_TRACK_IDS, "bem", "cs", "math"]);
+const MINOR_IDS = new Set<MajorId>(["cheme-minor", "bem-minor", "cs-minor", "math-minor"]);
+const SUBJECT_GROUPS: Array<{
+  title: string;
+  ids: MajorId[];
+  sections: Array<{ title?: string; ids: MajorId[] }>;
+}> = [
+  {
+    title: "Chemical Engineering",
+    ids: [...CHEME_TRACK_IDS, "cheme-minor"],
+    sections: [
+      { title: "Tracks", ids: CHEME_TRACK_IDS },
+      { title: "Minor", ids: ["cheme-minor"] },
+    ],
+  },
+  { title: "BEM", ids: ["bem", "bem-minor"], sections: [{ ids: ["bem", "bem-minor"] }] },
+  { title: "Computer Science", ids: ["cs", "cs-minor"], sections: [{ ids: ["cs", "cs-minor"] }] },
+  { title: "Mathematics", ids: ["math", "math-minor"], sections: [{ ids: ["math", "math-minor"] }] },
+];
 
 function cellId(year: number, term: Term) {
   return `${year}-${term}`;
@@ -47,6 +68,63 @@ function sanitizePlan(templates: RequirementTemplate[], saved: Partial<SavedPlan
   return { classes, customTemplates };
 }
 
+function normalizedTemplateLabel(value: string) {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function chemETrackLabel(label: string) {
+  return label.replace(/^Chemical Engineering \(/, "").replace(/\)$/, "");
+}
+
+function formatMajorSummary(majorIds: MajorId[]) {
+  const chemeTracks = majorIds
+    .filter((id) => CHEME_TRACK_ID_SET.has(id))
+    .map((id) => majors.find((major) => major.id === id)?.label)
+    .filter((label): label is string => Boolean(label))
+    .map(chemETrackLabel);
+  const otherLabels = majorIds
+    .filter((id) => !CHEME_TRACK_ID_SET.has(id) && MAJOR_IDS.has(id))
+    .map((id) => majors.find((major) => major.id === id)?.label ?? id);
+  const minorLabels = majorIds
+    .filter((id) => MINOR_IDS.has(id))
+    .map((id) => majors.find((major) => major.id === id)?.label ?? id);
+
+  return [
+    chemeTracks.length ? `Chemical Engineering (${chemeTracks.join(", ")})` : null,
+    ...otherLabels,
+    ...minorLabels,
+  ].filter(Boolean).join(", ");
+}
+
+function reconcileTakenClassesForMajors(plan: SavedPlan, nextTemplates: RequirementTemplate[]): SavedPlan {
+  const validIds = new Set([...nextTemplates, ...plan.customTemplates].map((template) => template.id));
+  const knownTemplates = new Map([...requirementTemplates, ...plan.customTemplates].map((template) => [template.id, template]));
+  const targetByLabel = new Map([...nextTemplates, ...plan.customTemplates].map((template) => [normalizedTemplateLabel(template.label), template.id]));
+  const classes: Record<string, PlacedClass> = {};
+
+  for (const [id, cls] of Object.entries(plan.classes)) {
+    if (!cls.done) continue;
+    const mappedIds = new Set<string>();
+    for (const requirementId of cls.requirementIds) {
+      if (validIds.has(requirementId)) {
+        mappedIds.add(requirementId);
+        continue;
+      }
+
+      const previousTemplate = knownTemplates.get(requirementId);
+      const mappedId = previousTemplate ? targetByLabel.get(normalizedTemplateLabel(previousTemplate.label)) : null;
+      if (mappedId) mappedIds.add(mappedId);
+    }
+
+    const classLabelMatch = targetByLabel.get(normalizedTemplateLabel(cls.label));
+    if (classLabelMatch) mappedIds.add(classLabelMatch);
+
+    classes[id] = { ...cls, requirementIds: Array.from(mappedIds) };
+  }
+
+  return { classes, customTemplates: plan.customTemplates };
+}
+
 // A single-field label editor that wraps onto multiple lines and grows to fit,
 // so long default names never get silently clipped like a fixed-width <input> would.
 function AutoGrowLabel({ value, done, onChange, onClick }: { value: string; done: boolean; onChange: (value: string) => void; onClick: (event: MouseEvent) => void }) {
@@ -68,6 +146,62 @@ function AutoGrowLabel({ value, done, onChange, onClick }: { value: string; done
       rows={1}
       value={value}
     />
+  );
+}
+
+type MajorSelectorProps = {
+  selectedMajors: MajorId[];
+  onToggleMajor: (majorId: MajorId) => void;
+};
+
+type SubjectSelectorGroup = (typeof SUBJECT_GROUPS)[number];
+
+function SubjectDropdown({ group, selectedMajors, onToggleMajor }: MajorSelectorProps & { group: SubjectSelectorGroup }) {
+  const selectedCount = group.ids.filter((id) => selectedMajors.includes(id)).length;
+  const [open, setOpen] = useState(selectedCount > 0);
+
+  const countLabel = (count: number, singular: string, empty: string) => (
+    count ? `${count} ${singular}${count === 1 ? "" : "s"}` : empty
+  );
+
+  return (
+    <details className="min-w-64 rounded-2xl border border-ink/20 bg-surface text-xs text-ink/70" onToggle={(event) => setOpen(event.currentTarget.open)} open={open}>
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-1.5 font-medium marker:hidden">
+        <span>{group.title}</span>
+        <span className="text-[0.62rem] font-semibold text-ink/40">{countLabel(selectedCount, "selected", "choose")}</span>
+      </summary>
+      <div className="grid gap-2 border-t border-ink/10 px-3 py-2">
+        {group.sections.map((section, sectionIndex) => (
+          <div className="grid gap-1.5" key={section.title ?? sectionIndex}>
+            {section.title && <p className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-ink/35">{section.title}</p>}
+            {section.ids.map((id) => {
+              const major = majors.find((item) => item.id === id);
+              if (!major) return null;
+              const label = CHEME_TRACK_ID_SET.has(id)
+                ? chemETrackLabel(major.label)
+                : major.label.replace(/^Business, Economics & Management$/, "Major").replace(/^Business, Economics & Management \(minor\)$/, "Minor").replace(/^Computer Science$/, "Major").replace(/^Computer Science \(minor\)$/, "Minor").replace(/^Mathematics$/, "Major").replace(/^Mathematics \(minor\)$/, "Minor").replace(/^Chemical Engineering \(minor\)$/, "Minor");
+
+              return (
+                <label className="flex items-center gap-1.5 text-xs text-ink/70" key={id}>
+                  <input checked={selectedMajors.includes(id)} onChange={() => onToggleMajor(id)} type="checkbox" />
+                  {label}
+                </label>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
+
+function MajorSelector({ selectedMajors, onToggleMajor }: MajorSelectorProps) {
+  return (
+    <div className="mt-1 flex flex-wrap items-start gap-2">
+      {SUBJECT_GROUPS.map((group) => (
+        <SubjectDropdown group={group} key={group.title} onToggleMajor={onToggleMajor} selectedMajors={selectedMajors} />
+      ))}
+    </div>
   );
 }
 
@@ -195,9 +329,11 @@ type ClassCardProps = {
 };
 
 function ClassCard({ cls, templateById, categories, allTemplates, owners, isPickerOpen, isSelected, onSelect, onToggleDone, onRename, onDelete, onDragStart, onDragEnd, onTogglePicker, onToggleRequirement }: ClassCardProps) {
+  const needsReassignment = cls.done && cls.requirementIds.length === 0;
+
   return (
     <div
-      className={`rounded-xl border border-ink/15 bg-surface/70 px-2.5 py-2 text-left text-xs shadow-sm transition ${isSelected ? "ring-2 ring-moss ring-offset-1 ring-offset-paper" : ""}`}
+      className={`rounded-xl border px-2.5 py-2 text-left text-xs shadow-sm transition ${needsReassignment ? "border-clay/70 bg-clay/10" : "border-ink/15 bg-surface/70"} ${isSelected ? "ring-2 ring-moss ring-offset-1 ring-offset-paper" : ""}`}
       draggable
       onClick={() => onSelect(cls.id)}
       onDragEnd={onDragEnd}
@@ -248,6 +384,12 @@ function ClassCard({ cls, templateById, categories, allTemplates, owners, isPick
         </div>
       )}
 
+      {needsReassignment && (
+        <p className="mt-1.5 pl-[1.375rem] text-[0.62rem] font-semibold leading-4 text-clay">
+          Reassign this completed class to a current requirement.
+        </p>
+      )}
+
       <button
         className="mt-1.5 ml-[1.375rem] text-[0.62rem] font-semibold text-moss hover:text-ink"
         onClick={(event) => {
@@ -275,13 +417,15 @@ export function CaltechCoursePlanner() {
   const [identity, setIdentity] = useState<StoredIdentity | null>(null);
   const [syncStatus, setSyncStatus] = useState<"idle" | "loading" | "saving" | "saved" | "error">("idle");
   const [syncError, setSyncError] = useState<string | null>(null);
-  const [loginName, setLoginName] = useState("");
+  const [loginFirstName, setLoginFirstName] = useState("");
+  const [loginLastName, setLoginLastName] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [loginMajors, setLoginMajors] = useState<MajorId[]>([]);
   const { classes, customTemplates } = plan;
   const hasLoadedRef = useRef(false);
 
   // Everyone signed in sees only their major(s)' requirements (plus the shared institute core);
-  // signed-out visitors see the full default ChemE + BEM double-major catalog, same as before this feature existed.
+  // Signed-out visitors see the full default catalog, including every ChemE track.
   const baseTemplates = useMemo(() => (identity ? templatesForMajors(identity.majors) : requirementTemplates), [identity]);
   const baseCategories = useMemo(() => (identity ? categoriesForMajors(identity.majors) : requirementCategories), [identity]);
   const allTemplates = useMemo(() => [...baseTemplates, ...customTemplates], [baseTemplates, customTemplates]);
@@ -316,6 +460,9 @@ export function CaltechCoursePlanner() {
     }
     if (storedIdentity) {
       setIdentity(storedIdentity);
+      setLoginFirstName(storedIdentity.firstName);
+      setLoginLastName(storedIdentity.lastName);
+      setLoginMajors(storedIdentity.majors);
       fetchCoursePlan(storedIdentity.loginKey)
         .then((row) => {
           if (row) setPlan(sanitizePlan(templatesForMajors(storedIdentity.majors), row.plan as Partial<SavedPlan> | null));
@@ -351,35 +498,62 @@ export function CaltechCoursePlanner() {
   }, [plan, identity]);
 
   const signIn = useCallback(async () => {
-    const name = loginName.trim();
-    if (!name || loginMajors.length === 0) return;
-    const loginKey = buildLoginKey(name, loginMajors);
+    const firstName = loginFirstName.trim();
+    const lastName = loginLastName.trim();
+    const password = loginPassword.trim();
+    if (!firstName || !lastName || !password || loginMajors.length === 0) return;
+    const loginKey = buildAccountLoginKey(firstName, lastName, password);
+    const displayName = displayNameFor(firstName, lastName);
     setSyncStatus("loading");
     setSyncError(null);
     try {
       const row = await fetchCoursePlan(loginKey);
       const templates = templatesForMajors(loginMajors);
-      setPlan(row ? sanitizePlan(templates, row.plan as Partial<SavedPlan> | null) : { classes: {}, customTemplates: [] });
-      const nextIdentity: StoredIdentity = { loginKey, displayName: name, majors: loginMajors };
+      let nextPlan: SavedPlan;
+      if (row) {
+        const storedMajors = row.majors.filter((majorId): majorId is MajorId => majors.some((major) => major.id === majorId));
+        const storedPlan = sanitizePlan(templatesForMajors(storedMajors.length ? storedMajors : loginMajors), row.plan as Partial<SavedPlan> | null);
+        nextPlan = JSON.stringify(storedMajors.sort()) === JSON.stringify([...loginMajors].sort())
+          ? sanitizePlan(templates, row.plan as Partial<SavedPlan> | null)
+          : reconcileTakenClassesForMajors(storedPlan, templates);
+      } else {
+        const legacyRow = await fetchCoursePlan(buildLegacyLoginKey(firstName, loginMajors));
+        nextPlan = legacyRow ? sanitizePlan(templates, legacyRow.plan as Partial<SavedPlan> | null) : { classes: {}, customTemplates: [] };
+      }
+      setPlan(nextPlan);
+      const nextIdentity: StoredIdentity = { loginKey, displayName, firstName, lastName, majors: loginMajors };
       setIdentity(nextIdentity);
       saveStoredIdentity(nextIdentity);
+      await saveCoursePlan(nextIdentity, nextPlan as unknown as Json);
       setSyncStatus("idle");
     } catch (error) {
       console.error("Sign-in failed", error);
       setSyncStatus("error");
       setSyncError("Couldn't reach the database (offline, or cloud save isn't set up yet). Your plan will stay local-only on this device for now.");
     }
-  }, [loginMajors, loginName]);
+  }, [loginFirstName, loginLastName, loginMajors, loginPassword]);
 
   const signOut = useCallback(() => {
     saveStoredIdentity(null);
     setIdentity(null);
     setSyncStatus("idle");
     setSyncError(null);
-    setLoginName("");
+    setLoginFirstName("");
+    setLoginLastName("");
+    setLoginPassword("");
     setLoginMajors([]);
     setPlan({ classes: {}, customTemplates: [] });
   }, []);
+
+  const updateProfileMajors = useCallback(() => {
+    if (!identity || loginMajors.length === 0) return;
+    const nextTemplates = templatesForMajors(loginMajors);
+    const nextIdentity = { ...identity, majors: loginMajors };
+    setPlan((currentPlan) => reconcileTakenClassesForMajors(currentPlan, nextTemplates));
+    setIdentity(nextIdentity);
+    saveStoredIdentity(nextIdentity);
+    setSyncStatus("saving");
+  }, [identity, loginMajors]);
 
   const toggleLoginMajor = useCallback((majorId: MajorId) => {
     setLoginMajors((prev) => (prev.includes(majorId) ? prev.filter((id) => id !== majorId) : [...prev, majorId]));
@@ -513,7 +687,7 @@ export function CaltechCoursePlanner() {
             <div>
               <p className="eyebrow">Cloud save</p>
               <p className="mt-2 text-sm text-ink/60">
-                Signed in as <span className="font-semibold text-ink">{identity.displayName}</span> · {identity.majors.map((id) => majors.find((major) => major.id === id)?.label ?? id).join(", ")}
+                Signed in as <span className="font-semibold text-ink">{identity.displayName}</span> · {formatMajorSummary(identity.majors)}
               </p>
               <p className="mt-1 text-xs text-ink/45">
                 {syncStatus === "saving" && "Saving…"}
@@ -526,32 +700,48 @@ export function CaltechCoursePlanner() {
             <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-surface" onClick={signOut} type="button">
               Switch profile
             </button>
+            <div className="basis-full rounded-2xl border border-ink/10 bg-paper/45 p-3">
+              <p className="text-xs font-semibold text-ink/55">Update majors / minors</p>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-ink/45">
+                Changing these keeps checked-off classes, removes unchecked classes, and tries to retag completed classes against the new requirements.
+              </p>
+              <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
+              <button
+                className="mt-3 rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={loginMajors.length === 0 || JSON.stringify([...loginMajors].sort()) === JSON.stringify([...identity.majors].sort())}
+                onClick={updateProfileMajors}
+                type="button"
+              >
+                Update requirements
+              </button>
+            </div>
           </div>
         ) : (
           <div>
             <p className="eyebrow">Cloud save</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">
-              Save your plan online so you can pick it up on another device. This is a simple name + major/minor lookup, not a password — anyone who enters the same name and combination can view or overwrite that plan, so don&rsquo;t put anything sensitive in it. Chemical Engineering (process track), BEM, Computer Science (major and minor), and Mathematics have real requirement sets so far; more are coming.
+              Save your plan online so you can pick it up on another device. Use your first name, last name, and a small password to reopen the same profile later. Chemical Engineering tracks, BEM, Computer Science (major and minor), and Mathematics have real requirement sets so far; more are coming.
             </p>
             <div className="mt-4 flex flex-wrap items-end gap-4">
               <label className="text-xs font-medium text-ink/55">
-                Name
-                <input className="mt-1 block w-48 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginName(event.target.value)} placeholder="Your name" value={loginName} />
+                First name
+                <input className="mt-1 block w-40 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginFirstName(event.target.value)} placeholder="First name" value={loginFirstName} />
+              </label>
+              <label className="text-xs font-medium text-ink/55">
+                Last name
+                <input className="mt-1 block w-40 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginLastName(event.target.value)} placeholder="Last name" value={loginLastName} />
+              </label>
+              <label className="text-xs font-medium text-ink/55">
+                Password
+                <input className="mt-1 block w-36 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginPassword(event.target.value)} placeholder="Password" type="password" value={loginPassword} />
               </label>
               <div className="text-xs font-medium text-ink/55">
                 Major(s) / minor(s)
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {majors.map((major) => (
-                    <label className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-xs text-ink/70" key={major.id}>
-                      <input checked={loginMajors.includes(major.id)} onChange={() => toggleLoginMajor(major.id)} type="checkbox" />
-                      {major.label}
-                    </label>
-                  ))}
-                </div>
+                <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
               </div>
               <button
                 className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
-                disabled={!loginName.trim() || loginMajors.length === 0 || syncStatus === "loading"}
+                disabled={!loginFirstName.trim() || !loginLastName.trim() || !loginPassword.trim() || loginMajors.length === 0 || syncStatus === "loading"}
                 onClick={signIn}
                 type="button"
               >

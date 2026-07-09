@@ -1,7 +1,7 @@
 "use client";
 
 import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import type { Restaurant } from "@/data/restaurants";
 
@@ -279,6 +279,10 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const locationSearchTimeoutRef = useRef<number | null>(null);
   const didRequestUserLocationRef = useRef(false);
   const userPositionRef = useRef<Position | null>(null);
+  const markerLibraryRef = useRef<{
+    AdvancedMarkerElement: typeof google.maps.marker.AdvancedMarkerElement;
+    PinElement: typeof google.maps.marker.PinElement;
+  } | null>(null);
   const markerRefs = useRef(new Map<string, google.maps.marker.AdvancedMarkerElement>());
   const markerElementRefs = useRef(new Map<string, HTMLElement>());
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
@@ -291,7 +295,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const [geocodeSuggestions, setGeocodeSuggestions] = useState<GeocodeSuggestion[]>([]);
   const [selectedGeocodeSuggestion, setSelectedGeocodeSuggestion] = useState<GeocodeSuggestion | null>(null);
   const [isShowingPlaceSearch, setIsShowingPlaceSearch] = useState(false);
-  const [selectedId, setSelectedId] = useState(restaurants[0]?.id ?? "");
+  const [selectedId, setSelectedId] = useState("");
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [mapStatus, setMapStatus] = useState<MapStatus>(apiKey ? "idle" : "error");
   const [isMobileMap, setIsMobileMap] = useState<boolean | null>(null);
@@ -344,6 +348,40 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     [hoursDate, hoursTime],
   );
   const hasFilters = activeCategories.length > 0 || activePrice !== "All" || activeHours !== "All" || search.length > 0;
+  const ensureRestaurantMarker = useCallback((restaurant: Restaurant) => {
+    if (markerRefs.current.has(restaurant.id)) return;
+    const markerLibrary = markerLibraryRef.current;
+    if (!markerLibrary) return;
+
+    const pin = new markerLibrary.PinElement({
+      background: "#f7f5ef",
+      borderColor: "#20231f",
+      glyphText: restaurant.emoji,
+      scale: isMobileMap ? 0.92 : 1.12,
+    });
+    const markerElement = document.createElement("div");
+    markerElement.className = "restaurant-map-marker";
+    markerElement.classList.toggle("is-mobile", Boolean(isMobileMap));
+    markerElement.append(pin);
+
+    const label = document.createElement("span");
+    label.className = "restaurant-map-marker-label";
+    label.textContent = restaurant.name;
+    markerElement.append(label);
+
+    const marker = new markerLibrary.AdvancedMarkerElement({
+      map: null,
+      position: restaurant.position,
+      title: `${restaurant.name}, ${restaurant.area}`,
+      gmpClickable: true,
+    });
+
+    marker.append(markerElement);
+    marker.addEventListener("gmp-click", () => setSelectedId(restaurant.id));
+    markerRefs.current.set(restaurant.id, marker);
+    markerElementRefs.current.set(restaurant.id, markerElement);
+  }, [isMobileMap]);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -390,6 +428,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         ]);
 
         if (cancelled || !mapElementRef.current) return;
+        markerLibraryRef.current = { AdvancedMarkerElement, PinElement };
         if (initialUserPosition) {
           userPositionRef.current = initialUserPosition;
         }
@@ -434,36 +473,6 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           }, isMobileMap ? 140 : 40);
         });
 
-        restaurants.forEach((restaurant) => {
-          const pin = new PinElement({
-            background: "#f7f5ef",
-            borderColor: "#20231f",
-            glyphText: restaurant.emoji,
-            scale: isMobileMap ? 0.92 : 1.12,
-          });
-          const markerElement = document.createElement("div");
-          markerElement.className = "restaurant-map-marker";
-          markerElement.classList.toggle("is-mobile", Boolean(isMobileMap));
-          markerElement.append(pin);
-
-          const label = document.createElement("span");
-          label.className = "restaurant-map-marker-label";
-          label.textContent = restaurant.name;
-          markerElement.append(label);
-
-          const marker = new AdvancedMarkerElement({
-            map,
-            position: restaurant.position,
-            title: `${restaurant.name}, ${restaurant.area}`,
-            gmpClickable: true,
-          });
-
-          marker.append(markerElement);
-          marker.addEventListener("gmp-click", () => setSelectedId(restaurant.id));
-          markers.set(restaurant.id, marker);
-          markerElements.set(restaurant.id, markerElement);
-        });
-
         setMapStatus("ready");
       } catch (error) {
         console.error("Google Maps failed to load", error);
@@ -494,6 +503,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       markers.forEach((marker) => { marker.map = null; });
       markers.clear();
       markerElements.clear();
+      markerLibraryRef.current = null;
       mapRef.current = null;
     };
   }, [apiKey, isMobileMap, mapId, restaurants]);
@@ -544,15 +554,22 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   useEffect(() => {
     if (mapStatus !== "ready" || !mapRef.current) return;
 
-    const filteredIds = new Set(filteredRestaurants.map((restaurant) => restaurant.id));
+    const visibleRestaurants = isMobileMap
+      ? isShowingPlaceSearch && mapBounds
+        ? filteredRestaurants.filter((restaurant) => isWithinBounds(restaurant.position, mapBounds))
+        : []
+      : filteredRestaurants;
+    visibleRestaurants.forEach((restaurant) => ensureRestaurantMarker(restaurant));
+
+    const visibleIds = new Set(visibleRestaurants.map((restaurant) => restaurant.id));
     markerRefs.current.forEach((marker, id) => {
-      marker.map = filteredIds.has(id) ? mapRef.current : null;
+      marker.map = visibleIds.has(id) ? mapRef.current : null;
     });
 
     if (!isShowingPlaceSearch && filteredRestaurants.length === 1) {
       fitRestaurantBounds(mapRef.current, filteredRestaurants, 15);
     }
-  }, [filteredRestaurants, isShowingPlaceSearch, mapStatus]);
+  }, [ensureRestaurantMarker, filteredRestaurants, isMobileMap, isShowingPlaceSearch, mapBounds, mapStatus]);
 
   useEffect(() => {
     markerElementRefs.current.forEach((element, id) => {

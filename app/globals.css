@@ -735,10 +735,14 @@ body.has-page-cursor * { cursor: inherit !important; }
   white-space: nowrap;
 }
 
-.restaurant-map-marker:hover .restaurant-map-marker-label,
-.restaurant-map-marker.is-selected .restaurant-map-marker-label {
+.restaurant-map-marker:not(.is-mobile):hover .restaurant-map-marker-label,
+.restaurant-map-marker:not(.is-mobile).is-selected .restaurant-map-marker-label {
   opacity: 1;
   transform: translate(-50%, 0);
+}
+
+.restaurant-map-marker.is-mobile .restaurant-map-marker-label {
+  display: none;
 }
 
 .restaurant-map-message {
