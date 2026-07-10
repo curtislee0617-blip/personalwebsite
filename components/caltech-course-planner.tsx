@@ -2,7 +2,7 @@
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent, type MouseEvent } from "react";
 import { categoriesForMajors, majors, requirementCategories, requirementTemplates, templatesForMajors, type MajorId, type RequirementCategory, type RequirementTemplate } from "@/data/caltech-requirements";
-import { buildAccountLoginKey, buildLegacyLoginKey, displayNameFor, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
+import { buildAccountLoginKey, displayNameFor, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
 import type { Json } from "@/lib/supabase/database.types";
 
 const YEARS = [1, 2, 3, 4] as const;
@@ -542,10 +542,6 @@ export function CaltechCoursePlanner() {
   // Signed-out selections are only pending profile choices; keep the live planner on
   // shared Institute requirements so progress does not explode into every option.
   const selectedMajorIds = identity?.majors ?? SHARED_REQUIREMENT_MAJOR_IDS;
-  const pendingMajorLabels = useMemo(
-    () => (!identity ? loginMajors.map((id) => majors.find((major) => major.id === id)?.label ?? id) : []),
-    [identity, loginMajors],
-  );
   const baseTemplates = useMemo(() => templatesForMajors(selectedMajorIds), [selectedMajorIds]);
   const baseCategories = useMemo(() => categoriesForMajors(selectedMajorIds), [selectedMajorIds]);
   const allTemplates = useMemo(() => [...baseTemplates, ...customTemplates], [baseTemplates, customTemplates]);
@@ -621,28 +617,28 @@ export function CaltechCoursePlanner() {
     const firstName = loginFirstName.trim();
     const lastName = loginLastName.trim();
     const password = loginPassword.trim();
-    if (!firstName || !lastName || !password || loginMajors.length === 0) return;
+    if (!firstName || !lastName || !password) return;
     const loginKey = buildAccountLoginKey(firstName, lastName, password);
     const displayName = displayNameFor(firstName, lastName);
     setSyncStatus("loading");
     setSyncError(null);
     try {
       const row = await fetchCoursePlan(loginKey);
-      const templates = templatesForMajors(loginMajors);
+      // Majors/minors are stored with the account, so a returning profile restores
+      // its saved selection. A brand-new account starts with none and picks them
+      // afterwards via "Update majors / minors".
+      let nextMajors: MajorId[] = [];
       let nextPlan: SavedPlan;
       if (row) {
-        const storedMajors = row.majors.filter((majorId): majorId is MajorId => majors.some((major) => major.id === majorId));
-        const storedPlan = sanitizePlan(templatesForMajors(storedMajors.length ? storedMajors : loginMajors), row.plan as Partial<SavedPlan> | null);
-        nextPlan = JSON.stringify(storedMajors.sort()) === JSON.stringify([...loginMajors].sort())
-          ? sanitizePlan(templates, row.plan as Partial<SavedPlan> | null)
-          : reconcileTakenClassesForMajors(storedPlan, templates);
+        nextMajors = row.majors.filter((majorId): majorId is MajorId => majors.some((major) => major.id === majorId));
+        nextPlan = sanitizePlan(templatesForMajors(nextMajors), row.plan as Partial<SavedPlan> | null);
       } else {
-        const legacyRow = await fetchCoursePlan(buildLegacyLoginKey(firstName, loginMajors));
-        nextPlan = legacyRow ? sanitizePlan(templates, legacyRow.plan as Partial<SavedPlan> | null) : { classes: {}, customTemplates: [] };
+        nextPlan = { classes: {}, customTemplates: [] };
       }
       setPlan(nextPlan);
-      const nextIdentity: StoredIdentity = { loginKey, displayName, firstName, lastName, majors: loginMajors };
+      const nextIdentity: StoredIdentity = { loginKey, displayName, firstName, lastName, majors: nextMajors };
       setIdentity(nextIdentity);
+      setLoginMajors(nextMajors);
       saveStoredIdentity(nextIdentity);
       await saveCoursePlan(nextIdentity, nextPlan as unknown as Json);
       setSyncStatus("idle");
@@ -651,7 +647,7 @@ export function CaltechCoursePlanner() {
       setSyncStatus("error");
       setSyncError("Couldn't reach the database (offline, or cloud save isn't set up yet). Your plan will stay local-only on this device for now.");
     }
-  }, [loginFirstName, loginLastName, loginMajors, loginPassword]);
+  }, [loginFirstName, loginLastName, loginPassword]);
 
   const signOut = useCallback(() => {
     saveStoredIdentity(null);
@@ -832,7 +828,7 @@ export function CaltechCoursePlanner() {
           <div>
             <p className="eyebrow">Cloud save</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">
-              You can use the planner without signing in; it will still save locally in this browser. Sign in only if you want cloud save and access from another device. Use your first name, last name, and a small password to reopen the same profile later.
+              You can use the planner without signing in; it will still save locally in this browser. Sign in only if you want cloud save and access from another device. Just enter your first name, last name, and a small password — your saved major and minor selections come back automatically. New profiles pick their majors/minors after signing in.
             </p>
             <p className="mt-2 text-xs leading-5 text-ink/45">
               Names and schedules are only used for this course scheduler. <a className="font-semibold text-moss hover:text-ink" href="/privacy">Privacy policy</a>
@@ -841,39 +837,25 @@ export function CaltechCoursePlanner() {
               <div className="grid gap-3 md:grid-cols-[minmax(0,10rem)_minmax(0,10rem)_minmax(0,13rem)]">
                 <label className="text-xs font-medium text-ink/55">
                   First name
-                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginFirstName(event.target.value)} placeholder="First name" value={loginFirstName} />
+                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginFirstName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="First name" value={loginFirstName} />
                 </label>
                 <label className="text-xs font-medium text-ink/55">
                   Last name
-                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginLastName(event.target.value)} placeholder="Last name" value={loginLastName} />
+                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginLastName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="Last name" value={loginLastName} />
                 </label>
                 <label className="text-xs font-medium text-ink/55">
                   Password
-                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginPassword(event.target.value)} placeholder="Password" type="password" value={loginPassword} />
+                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginPassword(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="Password" type="password" value={loginPassword} />
                   <span className="mt-1 block text-[0.62rem] leading-4 text-ink/40">
                     Just separates profiles with the same name.
                   </span>
                 </label>
               </div>
 
-              <div className="rounded-2xl border border-ink/10 bg-paper/45 p-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-ink/55">Major(s) / minor(s)</p>
-                  <p className="text-[0.62rem] font-medium text-ink/35">{loginMajors.length ? `${loginMajors.length} selected` : "Choose one or more"}</p>
-                </div>
-                <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
-                {pendingMajorLabels.length > 0 && (
-                  <div className="mt-3 rounded-2xl border border-ink/10 bg-surface/55 px-3 py-2 text-[0.68rem] leading-5 text-ink/45">
-                    <span className="font-semibold text-ink/55">Pending profile choices:</span>{" "}
-                    {pendingMajorLabels.join(", ")}. Sign in to load these option requirements into the planner.
-                  </div>
-                )}
-              </div>
-
               <div className="flex justify-end">
                 <button
                   className="h-10 rounded-full bg-ink px-5 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
-                  disabled={!loginFirstName.trim() || !loginLastName.trim() || !loginPassword.trim() || loginMajors.length === 0 || syncStatus === "loading"}
+                  disabled={!loginFirstName.trim() || !loginLastName.trim() || !loginPassword.trim() || syncStatus === "loading"}
                   onClick={signIn}
                   type="button"
                 >

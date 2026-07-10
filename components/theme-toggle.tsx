@@ -80,6 +80,10 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
           {
             duration: THEME_TRANSITION_MS,
             easing: THEME_TRANSITION_EASING,
+            // Hold the final clip so the old (light) snapshot stays hidden until the
+            // view transition tears down — without this it snaps back to unclipped for
+            // a frame and flashes light-over-dark at the end.
+            fill: "forwards",
             pseudoElement: isLightToDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
           },
         );
