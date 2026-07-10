@@ -11,7 +11,10 @@ export const revalidate = 300;
 export default async function RestaurantsPage() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
   const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "DEMO_MAP_ID";
-  const savedRestaurants = await getPublishedRestaurants();
+  const savedRestaurants = await getPublishedRestaurants().catch(() => {
+    console.warn("Using bundled restaurant data because Supabase is unavailable.");
+    return [];
+  });
 
   return (
     <>
