@@ -1,15 +1,30 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loginAction, logoutAction } from "@/app/recipes/admin/actions";
 
 export function FooterAdminLogin({ authenticated }: { authenticated: boolean }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [pending, setPending] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!open) return;
+
+    function closeOnOutsideClick(event: PointerEvent) {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (wrapperRef.current?.contains(target)) return;
+      setOpen(false);
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    return () => document.removeEventListener("pointerdown", closeOnOutsideClick);
+  }, [open]);
 
   async function handleLogin(event: React.FormEvent) {
     event.preventDefault();
@@ -33,7 +48,7 @@ export function FooterAdminLogin({ authenticated }: { authenticated: boolean }) 
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <button className="text-left hover:text-ink" onClick={() => setOpen((v) => !v)} type="button">
         © {new Date().getFullYear()} Curtis Lee.
       </button>

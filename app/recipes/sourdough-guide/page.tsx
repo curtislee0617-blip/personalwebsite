@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { SourdoughGuide } from "@/components/sourdough-guide";
 
@@ -10,10 +11,11 @@ export default function SourdoughGuidePage() {
       <PageIntro
         eyebrow="Guide"
         title="Sourdough guide"
-        description="A clearer web version of the sourdough steps PDF, with scaling, hydration adjustment, time labels for each stage, and a reminder that flour combinations can change from loaf to loaf."
+        description="A practical guide for making and adjusting sourdough: how to read the dough formula, scale the loaf, change hydration, plan the timing, follow the folds and proofing stages, and bake with clearer cues instead of relying only on a fixed recipe."
       />
 
       <section className="page-section pt-12 sm:pt-16">
+        <Link className="mb-6 inline-block text-sm font-semibold text-moss hover:text-ink" href="/recipes">← Back to recipes</Link>
         <SourdoughGuide />
       </section>
     </>

@@ -39,8 +39,8 @@ body {
 ::selection { background: #c9dfbd; color: rgb(var(--color-ink)); }
 .dark ::selection { background: #47593c; color: rgb(var(--color-ink)); }
 
-/* Keep the page's themed cursor over buttons/links/images too, instead of Preflight's cursor: pointer. */
-body.has-page-cursor * { cursor: inherit !important; }
+/* Keep the page's themed cursor over buttons/links/images too, while allowing explicit previews. */
+body.has-page-cursor * { cursor: inherit; }
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
@@ -360,29 +360,24 @@ body.has-page-cursor * { cursor: inherit !important; }
 .orbit-link:nth-child(5):hover,
 .orbit-link:nth-child(6):hover { transform: scale(1.06); }
 
-.orbit-link-detail {
-  font-size: 0.5rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  opacity: 0.48;
-  text-transform: uppercase;
-}
-
 .orbit-link-label {
-  margin-top: 0.2rem;
+  display: block;
   font-size: clamp(0.86rem, 1.6vw, 1.05rem);
   font-weight: 700;
+  line-height: 1.1;
 }
 
 .orbit-arrow {
-  margin-top: 0.2rem;
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 1rem);
   font-size: 0.65rem;
   opacity: 0;
-  transform: translate(-0.2rem, 0.2rem);
+  transform: translate(-0.7rem, 0.2rem);
   transition: opacity 200ms ease, transform 200ms ease;
 }
 
-.orbit-link:hover .orbit-arrow { opacity: 0.65; transform: translate(0, 0); }
+.orbit-link:hover .orbit-arrow { opacity: 0.65; transform: translate(-50%, 0); }
 
 @keyframes portrait-zoom-out {
   0% {
@@ -865,6 +860,18 @@ body.has-page-cursor * { cursor: inherit !important; }
   line-height: 1.45;
 }
 
+.restaurant-map-card .restaurant-card-hours {
+  color: rgb(var(--color-ink) / 0.5);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.restaurant-map-card .restaurant-card-closed-days {
+  color: #9f5b2f;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
 .restaurant-results {
   display: flex;
   min-width: 0;
@@ -947,10 +954,13 @@ body.has-page-cursor * { cursor: inherit !important; }
   font-size: 0.62rem;
 }
 
-.restaurant-result-meta .is-open { color: #52704d; font-weight: 700; }
+.restaurant-result-meta .is-open,
+.restaurant-map-card .is-open { color: #52704d; font-weight: 700; }
 .restaurant-result-meta .is-temporarily-closed,
 .restaurant-map-card .is-temporarily-closed { color: #b42318; font-weight: 700; }
 .restaurant-result-meta a { text-decoration: underline; text-underline-offset: 0.15rem; }
+
+.recipes-section-summary::-webkit-details-marker { display: none; }
 
 .restaurant-results-limit {
   padding: 1rem;

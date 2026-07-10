@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
+import { wishlistEntries } from "@/lib/recipes";
 import { RecipePhotoPicker } from "@/components/recipe-photo-picker";
 import { markProcessed, submitRecipe } from "./actions";
 
@@ -16,6 +17,8 @@ function truncate(text: string, max: number) {
 export default async function RecipeAdminPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const authenticated = await isRecipeAdminAuthenticated();
+  const wishlistSlug = typeof params.wishlist === "string" ? params.wishlist : "";
+  const wishlistEntry = wishlistEntries.find((entry) => entry.slug === wishlistSlug);
 
   if (!authenticated) {
     return (
@@ -41,7 +44,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
   return (
     <div className="page-shell py-16 sm:py-20">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="section-title">Add a recipe</h1>
+        <h1 className="section-title">{wishlistEntry ? "Upload made wishlist dish" : "Add a recipe"}</h1>
         <Link className="text-xs font-semibold text-ink/50 hover:text-ink" href="/recipes">← Back to recipes</Link>
       </div>
 
@@ -50,6 +53,23 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
       {params.error === "save-failed" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Something went wrong saving that — try again.</p>}
 
       <form action={submitRecipe} className="mt-8 max-w-2xl space-y-6">
+        {wishlistEntry && (
+          <div className="rounded-2xl border border-moss/20 bg-lime/25 px-4 py-3 text-sm leading-6 text-ink/65">
+            This will publish <strong className="font-semibold text-ink">{wishlistEntry.title}</strong> into the recipes section after upload.
+          </div>
+        )}
+        {wishlistEntry && <input name="publish_now" type="hidden" value="1" />}
+        <div>
+          <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="title">Recipe title</label>
+          <input
+            className="mt-2 block w-full rounded-2xl border border-ink/15 bg-surface px-4 py-2.5 text-sm"
+            defaultValue={wishlistEntry?.title ?? ""}
+            id="title"
+            name="title"
+            placeholder="Recipe title"
+            type="text"
+          />
+        </div>
         <div>
           <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50">Photos (first = thumbnail)</label>
           <div className="mt-2">

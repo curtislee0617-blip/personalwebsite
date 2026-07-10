@@ -94,7 +94,13 @@ export default function ContactPage() {
 
       <section className="page-section pt-12 sm:pt-16">
         <div className="mb-8 flex flex-wrap items-center gap-3 border-b border-ink/10 pb-8 text-sm text-ink/60">
-          <span className="grid size-9 place-items-center rounded-full bg-mist" aria-hidden="true">⌖</span>
+          <span className="grid size-9 place-items-center rounded-full bg-mist" aria-hidden="true">
+            <svg className="size-4" fill="none" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+              <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+            </svg>
+          </span>
           <p>Primarily located in <strong className="font-semibold text-ink">Los Angeles, London, and Hong Kong</strong>.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">

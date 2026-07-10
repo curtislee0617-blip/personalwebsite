@@ -21,6 +21,8 @@ export async function submitRecipe(formData: FormData) {
   if (!(await isRecipeAdminAuthenticated())) redirect("/recipes");
 
   const description = String(formData.get("description") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const publishNow = String(formData.get("publish_now") ?? "") === "1";
   const photos = formData.getAll("photos").filter((entry): entry is File => entry instanceof File && entry.size > 0);
   // A YYYY-MM-DD date so old photos can be backdated; null if left blank.
   const rawDate = String(formData.get("recipe_date") ?? "").trim();
@@ -42,10 +44,11 @@ export async function submitRecipe(formData: FormData) {
 
   const supabase = createAdminClient();
   const { error } = await supabase.from("recipe_drafts").insert({
-    description,
+    description: title ? `${title}\n\n${description}` : description,
     image_urls: imageUrls,
     thumbnail_url: imageUrls[0],
     recipe_date: recipeDate,
+    status: publishNow ? "published" : undefined,
   });
   if (error) {
     console.error("Failed to save recipe draft", error);

@@ -5,6 +5,12 @@ export type RecipeEntry = {
   description: string;
   status?: "published" | "coming-soon";
   href: string;
+  category?: "desserts-pastries" | "pasta" | "general";
+  guideSlugs?: string[];
+  showInRecipes?: boolean;
+  thumbnail?: string;
+  ingredientGroups?: Array<{ title: string; items: string[] }>;
+  methodGroups?: Array<{ title: string; steps: string[] }>;
   // ISO "YYYY-MM-DD" — the recipes section is ordered newest first by this.
   date?: string;
 };
@@ -15,9 +21,36 @@ export const recipeEntries: RecipeEntry[] = [
     kind: "guide",
     title: "Sourdough guide",
     description:
-      "A clearer version of the step-by-step sourdough notes, with a dough calculator, hydration slider, and timeline labels.",
+      "A practical sourdough walkthrough covering starter use, baker's percentages, hydration, timing, shaping, proofing, scoring, and baking, with tools for scaling and adjusting the dough.",
     status: "published",
     href: "/recipes/sourdough-guide",
+  },
+  {
+    slug: "core-basics",
+    kind: "guide",
+    title: "Core basics",
+    description:
+      "Foundational recipes from Core by Clare Smyth, the book from the three Michelin starred restaurant, including powders, stocks and sauces, butters and purees, brines, oils and gels, mousse, pastry, and bakery starters.",
+    status: "published",
+    href: "/recipes/core-basics",
+  },
+  {
+    slug: "viennoiserie-guide",
+    kind: "guide",
+    title: "Viennoiserie guide",
+    description:
+      "A working guide for laminated doughs, proofing, shaping, fillings, and bakes — croissants, pains au chocolat, and related pastries.",
+    status: "coming-soon",
+    href: "/recipes/viennoiserie-guide",
+  },
+  {
+    slug: "pasta-guide",
+    kind: "guide",
+    title: "Pasta guide",
+    description:
+      "A working guide for fresh pasta doughs, flour blends, hydration by egg weight, resting, rolling, cutting, shaping, and cooking.",
+    status: "coming-soon",
+    href: "/recipes/pasta-guide",
   },
   {
     slug: "cookbook-guide",
@@ -29,12 +62,80 @@ export const recipeEntries: RecipeEntry[] = [
     href: "/projects/cook-enterprise",
   },
   {
+    slug: "flan",
+    kind: "recipe",
+    title: "Flan",
+    description: "A custard flan built with pastry cream and puff pastry, baked in rings until set and browned.",
+    status: "published",
+    href: "/recipes",
+    category: "desserts-pastries",
+    guideSlugs: ["viennoiserie-guide"],
+    date: "2026-07-10",
+    ingredientGroups: [
+      {
+        title: "Pastry cream",
+        items: [
+          "Milk - 940g",
+          "Cream - 200g",
+          "Yolk - 200g",
+          "Sugar - 300g",
+          "Cornstarch - 95g",
+          "Vanilla - 2 pcs",
+        ],
+      },
+      {
+        title: "Puff pastry",
+        items: [
+          "Water - 500g",
+          "T55 - 1000g",
+          "Salt - 10g",
+          "Dry butter - 500g",
+        ],
+      },
+    ],
+    methodGroups: [
+      {
+        title: "Pastry cream",
+        steps: [
+          "Boil milk and cream.",
+          "Reserve a small amount of milk to blend with the vanilla in the Thermomix.",
+          "Pass the vanilla mixture back into the milk.",
+          "Mix yolk, sugar, and cornstarch together.",
+          "Combine the milk and yolk mixture.",
+          "Cook it like a pastry cream.",
+          "Cool down until ready to use.",
+        ],
+      },
+      {
+        title: "Puff pastry",
+        steps: [
+          "Mix water, salt, and T55 until it becomes a dough.",
+          "Wrap the dough and keep it in the fridge overnight.",
+          "Laminate the dough with dry butter in 6 times; use a single fold and rest 3-4 hours after 2 folds.",
+          "Extend the puff pastry in the dough machine until 0.5cm thickness.",
+          "Keep it in the freezer.",
+        ],
+      },
+      {
+        title: "Assemble",
+        steps: [
+          "Bake the puff pastry between 2 trays at 170°C for 15 minutes on fan 3, keeping 2cm space between each tray.",
+          "Cut the half-cooked puff pastry into 2 types: 28cm x 3.5cm strips and N.12 rings.",
+          "Place the cut puff pastry into the N.13 ring.",
+          "Fill up with pastry cream.",
+          "Bake at 190°C for 15 minutes on fan 4; turn and bake 5 minutes on fan 3.",
+        ],
+      },
+    ],
+  },
+  {
     slug: "future-recipe-1",
     kind: "recipe",
     title: "Recipe title",
     description: "Future recipe card scaffold for when you upload the first recipe post.",
     status: "coming-soon",
     href: "/recipes",
+    category: "desserts-pastries",
     date: "2026-07-01",
   },
   {
@@ -44,6 +145,7 @@ export const recipeEntries: RecipeEntry[] = [
     description: "Another placeholder slot so the recipes section already has the intended structure.",
     status: "coming-soon",
     href: "/recipes",
+    category: "general",
     date: "2026-06-15",
   },
 ];
@@ -51,9 +153,33 @@ export const recipeEntries: RecipeEntry[] = [
 // Newest first; entries without a date fall to the end.
 export function recipesByDate(entries: RecipeEntry[]) {
   return [...entries]
-    .filter((entry) => entry.kind === "recipe")
+    .filter((entry) => entry.kind === "recipe" && entry.showInRecipes !== false)
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
 }
+
+export function recipesForGuide(guideSlug: string, entries: RecipeEntry[] = recipeEntries) {
+  return [...entries]
+    .filter((entry) => entry.kind === "recipe" && entry.guideSlugs?.includes(guideSlug))
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
+export const recipeSections: Array<{ id: NonNullable<RecipeEntry["category"]>; title: string; description: string }> = [
+  {
+    id: "desserts-pastries",
+    title: "Desserts & pastries",
+    description: "Sweet bakes, plated desserts, laminated doughs, cakes, and pastry projects.",
+  },
+  {
+    id: "pasta",
+    title: "Pasta",
+    description: "Fresh pasta doughs, filled shapes, cut pastas, sauces, and cooking notes.",
+  },
+  {
+    id: "general",
+    title: "Other recipes",
+    description: "Everything that does not belong cleanly in desserts and pastries.",
+  },
+];
 
 // "Recipes I would like to make" — a to-cook list. Add entries here as the list grows.
 export type WishlistEntry = {

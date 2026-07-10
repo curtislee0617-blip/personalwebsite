@@ -101,7 +101,7 @@ export function svgDataUrl(svg: string) {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
-function cursorUrl(config: PageCursorConfig, isDark: boolean) {
+export function cursorUrl(config: PageCursorConfig, isDark: boolean) {
   if (config.img) return config.img;
   const svg = (isDark && config.svgDark ? config.svgDark : config.svg) ?? "";
   return svgDataUrl(svg);

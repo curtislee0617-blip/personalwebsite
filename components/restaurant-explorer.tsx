@@ -361,6 +361,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     () => parseDateTimeInput(hoursDate, hoursTime),
     [hoursDate, hoursTime],
   );
+  const selectedRestaurantStatus = selectedRestaurant ? openingStatus(selectedRestaurant) : null;
+  const selectedRestaurantHours = selectedRestaurant ? openingHoursSummary(selectedRestaurant) : "";
+  const selectedRestaurantClosedDays = selectedRestaurant ? closedDaysSummary(selectedRestaurant) : "";
   const hasFilters = activeCategories.length > 0 || activePrice !== "All" || activeHours !== "All" || search.length > 0;
   const shouldShowMobileLoadPinsButton = Boolean(isMobileMap && mapStatus === "ready" && !isMobileMapMoving && unloadedMobileRestaurants.length > 0);
   const detachMarkers = useCallback(() => {
@@ -749,6 +752,59 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     };
   }
 
+  function openingHoursSummary(restaurant: Restaurant) {
+    const weekdayDescriptions = restaurant.openingHours?.weekdayDescriptions ?? [];
+    if (!weekdayDescriptions.length) return "";
+
+    const targetDate = activeHours === "OpenAtDateTime" ? selectedHoursDateTime : new Date();
+    const weekdayName = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(targetDate);
+    const matchingDay = weekdayDescriptions.find((line) => line.toLocaleLowerCase("en").startsWith(weekdayName.toLocaleLowerCase("en")));
+    if (!matchingDay) return "";
+
+    const dayLabel = activeHours === "OpenAtDateTime"
+      ? new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric" }).format(targetDate)
+      : "Today";
+    const hours = matchingDay.split(":").slice(1).join(":").trim();
+    if (!hours) return "";
+    if (/closed/i.test(hours)) return `${dayLabel}: Closed`;
+    if (/open 24 hours/i.test(hours)) return `${dayLabel}: Open 24 hours`;
+
+    const ranges = hours.split(",").map((range) => range.trim()).filter(Boolean);
+    const firstRange = ranges[0] ?? hours;
+    const lastRange = ranges[ranges.length - 1] ?? firstRange;
+    const [openTime] = firstRange.split(/–|-/).map((part) => part.trim());
+    const lastRangeParts = lastRange.split(/–|-/).map((part) => part.trim());
+    const closeTime = lastRangeParts[lastRangeParts.length - 1];
+    if (openTime && closeTime) return `${dayLabel}: Open ${openTime} · Close ${closeTime}`;
+
+    return `${dayLabel}: ${hours}`;
+  }
+
+  function closedDaysSummary(restaurant: Restaurant) {
+    const weekdayDescriptions = restaurant.openingHours?.weekdayDescriptions ?? [];
+    if (!weekdayDescriptions.length) return "";
+
+    const abbreviations: Record<string, string> = {
+      Monday: "M",
+      Tuesday: "T",
+      Wednesday: "W",
+      Thursday: "Th",
+      Friday: "F",
+      Saturday: "Sa",
+      Sunday: "Su",
+    };
+    const closedDays = weekdayDescriptions
+      .map((line) => {
+        const day = Object.keys(abbreviations).find((weekday) => line.toLocaleLowerCase("en").startsWith(weekday.toLocaleLowerCase("en")));
+        if (!day) return null;
+        const hours = line.split(":").slice(1).join(":").trim();
+        return /closed/i.test(hours) ? abbreviations[day] : null;
+      })
+      .filter((day): day is string => Boolean(day));
+
+    return closedDays.length ? `Closed on: ${closedDays.join(", ")}` : "";
+  }
+
   function downloadFilteredList() {
     const headers = ["Name", "Latitude", "Longitude", "Address", "Category", "Price", "Description", "Google Maps URL"];
     const rows = restaurantsInView.map((restaurant) => [
@@ -900,7 +956,9 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
               <div>
                 <p>{selectedRestaurant.category} · {"$".repeat(selectedRestaurant.priceLevel)} · {selectedRestaurant.area}</p>
                 <h2>{selectedRestaurant.name}</h2>
-                {selectedRestaurant.businessStatus === "CLOSED_TEMPORARILY" && <span className="is-temporarily-closed">Temporarily closed</span>}
+                {selectedRestaurantStatus && <span className={selectedRestaurantStatus.className}>{selectedRestaurantStatus.label}</span>}
+                {selectedRestaurantHours && <span className="restaurant-card-hours">{selectedRestaurantHours}</span>}
+                {selectedRestaurantClosedDays && <span className="restaurant-card-closed-days">{selectedRestaurantClosedDays}</span>}
                 {selectedRestaurant.description && <span>{selectedRestaurant.description}</span>}
               </div>
             </article>

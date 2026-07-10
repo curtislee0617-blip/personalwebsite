@@ -4,16 +4,17 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { cursorCss, pageCursors } from "@/lib/page-cursors";
 
 const orbitLinks = [
-  { href: "/about", label: "About", detail: "The person" },
-  { href: "/projects", label: "Projects", detail: "The work" },
-  { href: "/recipes", label: "Recipes", detail: "The kitchen" },
-  { href: "/restaurants", label: "Restaurants", detail: "The table" },
-  { href: "/tools", label: "Tools", detail: "The kit" },
-  { href: "/contact", label: "Contact", detail: "Say hello" },
+  { href: "/about", label: "About" },
+  { href: "/projects", label: "Projects" },
+  { href: "/recipes", label: "Recipes" },
+  { href: "/restaurants", label: "Restaurants" },
+  { href: "/tools", label: "Tools" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const placeholderColors = [
@@ -182,10 +183,24 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
   const router = useRouter();
   const isLeaving = useRef(false);
   const [entryMode, setEntryMode] = useState<"pending" | "center" | "menu">("pending");
+  const [isDark, setIsDark] = useState(
+    () => typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
+  );
+  const bubbleCursors = useMemo(() => new Map(orbitLinks.map((item) => {
+    const match = pageCursors.find((entry) => entry.match(item.href));
+    return [item.href, match ? cursorCss(match, isDark) : undefined];
+  })), [isDark]);
 
   function menuAnchor() {
     return { x: window.innerWidth - 44, y: 44 };
   }
+
+  useEffect(() => {
+    const el = document.documentElement;
+    const observer = new MutationObserver(() => setIsDark(el.classList.contains("dark")));
+    observer.observe(el, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -337,8 +352,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
         <nav className="home-orbit-nav" aria-label="Explore the website">
           {orbitLinks.map((item) => (
-            <Link className="orbit-link" href={item.href} key={item.href} onClick={(event) => leaveHome(event, item.href)}>
-              <span className="orbit-link-detail">{item.detail}</span>
+            <Link className="orbit-link" href={item.href} key={item.href} onClick={(event) => leaveHome(event, item.href)} style={{ cursor: bubbleCursors.get(item.href) }}>
               <span className="orbit-link-label">{item.label}</span>
               <span className="orbit-arrow" aria-hidden="true">↗</span>
             </Link>

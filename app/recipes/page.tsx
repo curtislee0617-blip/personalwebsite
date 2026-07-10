@@ -2,19 +2,52 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
-import { recipeBooks, recipeEntries, recipesByDate, wishlistEntries } from "@/lib/recipes";
+import { RecipeCard, type RecipeCardEntry } from "@/components/recipe-card";
+import { recipeEntries, recipeSections, recipesByDate, wishlistEntries } from "@/lib/recipes";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Recipes" };
 
-function formatDate(date?: string) {
-  if (!date) return null;
-  return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+function parseUploadedRecipe(draft: { id: string; description: string; recipe_date: string | null; thumbnail_url: string; status: string }): RecipeCardEntry {
+  const lines = draft.description.split("\n").map((line) => line.trim()).filter(Boolean);
+  const firstLine = lines[0] ?? "Uploaded recipe";
+  const title = firstLine.replace(/^#+\s*/, "");
+  const description = lines.slice(1).join(" ") || "Uploaded from the recipe admin.";
+
+  return {
+    slug: `uploaded-${draft.id}`,
+    title,
+    description,
+    status: draft.status,
+    date: draft.recipe_date ?? undefined,
+    thumbnail: draft.thumbnail_url,
+  };
+}
+
+async function getUploadedRecipes() {
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("recipe_drafts")
+      .select("id,description,recipe_date,thumbnail_url,status")
+      .eq("status", "published")
+      .order("recipe_date", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false });
+
+    if (error) return [];
+    return data.map(parseUploadedRecipe);
+  } catch {
+    return [];
+  }
 }
 
 export default async function RecipesPage() {
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
-  const recipes = recipesByDate(recipeEntries);
+  const uploadedRecipes = await getUploadedRecipes();
+  const recipes = [...recipesByDate(recipeEntries), ...uploadedRecipes];
+  const publishedUploadTitles = new Set(uploadedRecipes.map((entry) => entry.title.toLowerCase()));
+  const wishlist = wishlistEntries.filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
   const authenticated = await isRecipeAdminAuthenticated();
 
   return (
@@ -22,7 +55,7 @@ export default async function RecipesPage() {
       <PageIntro
         eyebrow="Recipes"
         title="Guides and recipes"
-        description="Guides are for deeper walkthroughs and kitchen systems. Recipes are where the finished dishes will live once they are uploaded."
+        description="Guides are for deeper walkthroughs, kitchen systems, and the specific complexities within each topic. Recipes are where the finished dishes will live once they are uploaded, and I will always update the recipes whenever I can."
       />
 
       <section className="page-section pt-12 sm:pt-16">
@@ -32,15 +65,22 @@ export default async function RecipesPage() {
               <div>
                 <p className="eyebrow">Guides</p>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Reference-style kitchen posts</h2>
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {guides.map((entry) => (
+                    <a className="rounded-full border border-ink/10 bg-surface/70 px-2.5 py-1 text-[0.65rem] font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink" href={`#${entry.slug}`} key={entry.slug}>
+                      {entry.title}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="mt-6 grid gap-5 md:grid-cols-2">
+            <div className="-mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0">
               {guides.map((entry) => (
-                <Link className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href={entry.href} key={entry.slug}>
+                <Link className="w-[20rem] shrink-0 snap-start rounded-[2rem] border border-ink/10 bg-surface/55 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem] sm:p-8" href={entry.href} id={entry.slug} key={entry.slug}>
                   <div className="flex items-center justify-between gap-4">
                     <p className="eyebrow">Guide</p>
-                    <span className="rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">Published</span>
+                    <span className="rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">{entry.status === "coming-soon" ? "Coming soon" : "Published"}</span>
                   </div>
                   <h3 className="mt-4 text-2xl font-semibold tracking-tight">{entry.title}</h3>
                   <p className="mt-4 text-sm leading-7 text-ink/65">{entry.description}</p>
@@ -93,25 +133,29 @@ export default async function RecipesPage() {
               )}
             </div>
 
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {recipes.map((entry) => (
-                <article className="rounded-[2rem] border border-dashed border-ink/15 bg-surface/40 p-6 sm:p-8" key={entry.slug}>
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="eyebrow">Recipe</p>
-                    <span className="rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">Coming later</span>
-                  </div>
-                  <h3 className="mt-4 text-2xl font-semibold tracking-tight">{entry.title}</h3>
-                  {formatDate(entry.date) && <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-ink/40">{formatDate(entry.date)}</p>}
-                  <p className="mt-4 text-sm leading-7 text-ink/65">{entry.description}</p>
-                  <div className="mt-6 grid gap-2 text-sm text-ink/45">
-                    <p>Title</p>
-                    <p>Short headnote</p>
-                    <p>Ingredients</p>
-                    <p>Method</p>
-                    <p>Notes / variations</p>
-                  </div>
-                </article>
-              ))}
+            <div className="mt-6 space-y-8">
+              {recipeSections.map((section) => {
+                const sectionRecipes = recipes.filter((entry) => (entry.category ?? "general") === section.id);
+                if (sectionRecipes.length === 0) return null;
+
+                return (
+                  <details className="group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" key={section.id}>
+                    <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
+                      <div>
+                        <p className="eyebrow">{section.title}</p>
+                        <h3 className="mt-3 text-2xl font-semibold tracking-tight">{section.title}</h3>
+                        <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/50">{section.description}</p>
+                      </div>
+                      <span className="grid size-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-paper/80 text-lg text-ink/50 transition group-open:rotate-45">
+                        +
+                      </span>
+                    </summary>
+                    <div className="mt-5 grid gap-4 border-t border-ink/10 pt-5 sm:grid-cols-2 lg:grid-cols-3">
+                      {sectionRecipes.map((entry) => <RecipeCard entry={entry} key={entry.slug} />)}
+                    </div>
+                  </details>
+                );
+              })}
             </div>
           </section>
 
@@ -122,13 +166,18 @@ export default async function RecipesPage() {
               <p className="mt-2 text-sm text-ink/50">A running list of dishes I want to cook next.</p>
             </div>
 
-            {wishlistEntries.length > 0 ? (
+            {wishlist.length > 0 ? (
               <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {wishlistEntries.map((entry) => (
+                {wishlist.map((entry) => (
                   <article className="rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:p-8" key={entry.slug}>
                     <p className="eyebrow">To make</p>
                     <h3 className="mt-4 text-xl font-semibold tracking-tight">{entry.title}</h3>
                     {entry.note && <p className="mt-3 text-sm leading-7 text-ink/65">{entry.note}</p>}
+                    {authenticated && (
+                      <Link className="mt-5 inline-flex rounded-full border border-ink/15 bg-paper/75 px-4 py-2 text-xs font-semibold text-ink/55 transition hover:border-ink/30 hover:text-ink" href={`/recipes/admin?wishlist=${entry.slug}`}>
+                        Upload made dish
+                      </Link>
+                    )}
                   </article>
                 ))}
               </div>
@@ -139,35 +188,6 @@ export default async function RecipesPage() {
             )}
           </section>
 
-          <section>
-            <div>
-              <p className="eyebrow">Bookshelf</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipe books I&apos;ve bought</h2>
-              <p className="mt-2 text-sm text-ink/50">Cookbooks in my collection. Photos coming soon.</p>
-            </div>
-
-            {recipeBooks.length > 0 ? (
-              <div className="mt-6 grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                {recipeBooks.map((book) => (
-                  <article className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/45" key={book.slug}>
-                    {book.cover && (
-                      <div className="relative aspect-[3/4]">
-                        <Image alt={book.title} className="object-cover" fill sizes="(max-width: 768px) 50vw, 25vw" src={book.cover} />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <h3 className="text-base font-semibold tracking-tight">{book.title}</h3>
-                      {book.author && <p className="mt-1 text-sm text-ink/55">{book.author}</p>}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-ink/15 bg-surface/30 p-8 text-sm text-ink/45">
-                The shelf is being built — book photos will go here.
-              </div>
-            )}
-          </section>
         </div>
       </section>
     </>
