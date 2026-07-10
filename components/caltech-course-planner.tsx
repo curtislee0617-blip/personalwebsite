@@ -275,7 +275,9 @@ type SubjectSelectorGroup = (typeof SUBJECT_GROUPS)[number];
 
 function SubjectDropdown({ group, selectedMajors, onToggleMajor }: MajorSelectorProps & { group: SubjectSelectorGroup }) {
   const selectedCount = group.ids.filter((id) => selectedMajors.includes(id)).length;
-  const [open, setOpen] = useState(selectedCount > 0);
+  // Keep every subject group compact on entry, including when a returning
+  // user's saved selections are restored. The user can open only what they need.
+  const [open, setOpen] = useState(false);
 
   const countLabel = (count: number, singular: string, empty: string) => (
     count ? `${count} ${singular}${count === 1 ? "" : "s"}` : empty

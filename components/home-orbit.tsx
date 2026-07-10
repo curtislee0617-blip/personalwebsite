@@ -96,7 +96,7 @@ function createLogoPlacements(itemCount: number, rows: number) {
 
 function PhotoGridBackground({ photos }: { photos: string[] }) {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
-  const [itemCount, setItemCount] = useState(220);
+  const [itemCount, setItemCount] = useState(120);
   const [rowCount, setRowCount] = useState(8);
 
   useEffect(() => {
@@ -107,7 +107,9 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
       const columnWidth = mobile
         ? Math.max(72, window.innerHeight * 0.15)
         : Math.max(46, (window.innerHeight - 73) * 0.075);
-      const columns = Math.ceil(window.innerWidth / columnWidth) + (mobile ? 6 : 4);
+      // One viewport plus a small overlap is enough because the track is
+      // duplicated. Avoid building hundreds of off-screen image nodes.
+      const columns = Math.ceil(window.innerWidth / columnWidth) + (mobile ? 3 : 2);
       setRowCount(rows);
       setItemCount(rows * columns);
     };
@@ -239,8 +241,8 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
             { translate: "0 0", scale: "1", rotate: "0deg", opacity: 1 },
           ],
           {
-            duration: 880,
-            delay: 120 + index * 42,
+            duration: 620,
+            delay: 60 + index * 28,
             easing: "cubic-bezier(.16, 1, .3, 1)",
             fill: "forwards",
           },
@@ -253,7 +255,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
           { offset: 0.55, opacity: 1, scale: "0.9", rotate: "-5deg" },
           { opacity: 0, scale: "0.15", rotate: "25deg" },
         ],
-        { duration: 440, delay: 80, easing: "cubic-bezier(.7, 0, .3, 1)", fill: "forwards" },
+        { duration: 320, delay: 40, easing: "cubic-bezier(.22, 1, .36, 1)", fill: "forwards" },
       );
     });
 
@@ -294,13 +296,13 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
           { offset: 0.72, translate: `${moveX * 0.9}px ${moveY * 0.9}px`, scale: "0.28", opacity: 0.7 },
           { translate: `${moveX}px ${moveY}px`, scale: "0", opacity: 0 },
         ],
-        { duration: 700, delay: index * 24, easing: "cubic-bezier(.76, 0, .24, 1)", fill: "forwards" },
+        { duration: 360, delay: index * 12, easing: "cubic-bezier(.4, 0, 1, 1)", fill: "forwards" },
       );
     });
 
     const profileAnimation = profile?.animate(
       [{ opacity: 1, scale: "1" }, { opacity: 0, scale: "0.9" }],
-      { duration: 380, easing: "ease-in", fill: "forwards" },
+      { duration: 240, easing: "ease-in", fill: "forwards" },
     );
 
     const menuAnimation = menuGlyph?.animate(
@@ -309,7 +311,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
         { offset: 0.65, opacity: 1, scale: "1.08", rotate: "2deg" },
         { opacity: 1, scale: "1", rotate: "0deg" },
       ],
-      { duration: 360, delay: 570, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" },
+      { duration: 250, delay: 270, easing: "cubic-bezier(.22, 1, .36, 1)", fill: "forwards" },
     );
 
     const animations = [...bubbleAnimations, profileAnimation, menuAnimation].filter(
@@ -317,7 +319,6 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     );
 
     await Promise.all(animations.map((animation) => animation.finished.catch(() => undefined)));
-    await new Promise((resolve) => window.setTimeout(resolve, 90));
     router.push(href);
   }
 

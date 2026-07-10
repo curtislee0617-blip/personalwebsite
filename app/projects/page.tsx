@@ -23,99 +23,33 @@ export default function ProjectsPage() {
       />
 
       <section className="page-section pt-6 sm:pt-7">
-        <div className="grid gap-5 lg:grid-cols-[9rem_minmax(0,1fr)] lg:gap-7">
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="-mt-1 flex gap-2 overflow-x-auto pb-2 pt-1 lg:grid lg:gap-2 lg:overflow-visible">
-              {projects.map((project, index) => (
-                <a
-                  className="shrink-0 rounded-full border border-ink/10 bg-surface/55 px-3 py-2 text-xs font-semibold text-ink/60 transition hover:border-ink/20 hover:bg-surface hover:text-ink lg:rounded-2xl lg:px-3 lg:py-2.5"
-                  href={`#${project.slug}`}
-                  key={project.slug}
-                >
-                  <span className="mr-1.5 text-ink/30">{String(index + 1).padStart(2, "0")}</span>
-                  {project.shortTitle ?? project.title}
-                </a>
-              ))}
-            </div>
-          </aside>
-
-          <div className="divide-y divide-ink/10 border-y border-ink/10">
-            {projects.map((project, index) => (
-              <article className="scroll-mt-24 py-7 sm:py-9" id={project.slug} key={project.slug}>
-                <div className="grid gap-4 md:grid-cols-[4.5rem_minmax(0,1fr)] md:gap-7">
-                  <p className="text-sm font-semibold text-ink/30">{String(index + 1).padStart(2, "0")}</p>
-                  <div>
-                    <p className="eyebrow">{project.eyebrow}</p>
-                    <div className="mt-3 flex flex-col gap-2.5 sm:flex-row sm:items-start sm:justify-between">
-                      <h2 className="max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">{project.title}</h2>
-                      <Link className="text-sm font-semibold text-moss hover:text-ink" href={`/projects/${project.slug}`}>
-                        View project ↗
-                      </Link>
-                    </div>
-                    <p className="mt-3.5 max-w-3xl text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">{project.description}</p>
-                    {project.previews.length > 0 && (
-                      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {project.previews.map((preview, previewIndex) => {
-                          const hasAsset = assetExists(preview.src);
-
-                          return (
-                            <Link
-                              className="group overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20"
-                              href={`/projects/${project.slug}/viewer`}
-                              key={preview.src}
-                            >
-                              {hasAsset ? (
-                                <div className="relative aspect-[4/3]">
-                                  <Image
-                                    alt={preview.alt}
-                                    className="object-cover transition duration-300 group-hover:scale-[1.02]"
-                                    fill
-                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                    src={preview.src}
-                                  />
-                                </div>
-                              ) : (
-                                <div className="flex aspect-[4/3] items-end rounded-[1.5rem] bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.95),rgba(219,210,191,0.42))] p-4">
-                                  <div>
-                                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/45">
-                                      Preview {previewIndex + 1}
-                                    </p>
-                                    <p className="mt-2 text-sm leading-6 text-ink/60">
-                                      Add an image in public/project-previews/{project.slug}/
-                                    </p>
-                                  </div>
-                                </div>
-                              )}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    )}
-                    <ul className="mt-4 flex flex-wrap gap-2" aria-label={`${project.title} topics`}>
-                      {project.tags.map((tag) => (
-                        <li className="rounded-full border border-ink/10 bg-surface/45 px-3 py-1.5 text-xs text-ink/55" key={tag}>{tag}</li>
-                      ))}
-                    </ul>
-                    {project.documents?.some((document) => assetExists(document.href)) ? (
-                      <div className="mt-4">
-                        {project.documents
-                          .filter((document) => assetExists(document.href))
-                          .map((document) => (
-                            <a
-                              className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-surface"
-                              href={`/projects/${project.slug}/viewer`}
-                              key={document.href}
-                            >
-                              {document.label} ↗
-                            </a>
-                          ))}
-                      </div>
-                    ) : null}
+        <div className="project-card-carousel mobile-snap-carousel -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 pt-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
+          {projects.map((project, index) => {
+            const preview = project.previews.find((item) => assetExists(item.src));
+            return (
+              <Link className="project-card mobile-snap-card group shrink-0 snap-start overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-1 hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto" href={`/projects/${project.slug}`} id={project.slug} key={project.slug}>
+                <div className="project-card-media relative aspect-[16/10] overflow-hidden bg-mist">
+                  {preview ? (
+                    <Image alt={preview.alt} className="object-cover transition duration-500 group-hover:scale-[1.025]" fill loading={index === 0 ? "eager" : "lazy"} sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw" src={preview.src} />
+                  ) : (
+                    <span className="grid h-full place-items-center text-xs font-semibold uppercase tracking-[0.16em] text-ink/35">Preview soon</span>
+                  )}
+                  <span className="project-card-number">{String(index + 1).padStart(2, "0")}</span>
+                </div>
+                <div className="project-card-copy">
+                  <p className="eyebrow">{project.eyebrow}</p>
+                  <div className="mt-3 flex items-start justify-between gap-3">
+                    <h2>{project.title}</h2>
+                    <span aria-hidden="true">↗</span>
+                  </div>
+                  <p className="project-card-description">{project.description}</p>
+                  <div className="project-card-tags">
+                    {project.tags.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
                   </div>
                 </div>
-              </article>
-            ))}
-          </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
     </>

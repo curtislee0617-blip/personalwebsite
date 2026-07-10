@@ -42,6 +42,30 @@ async function getUploadedRecipes() {
   }
 }
 
+const guideVisuals: Record<string, { src?: string; alt: string; mark: string; tone: string }> = {
+  "sourdough-guide": { src: "/Screenshot 2026-07-01 at 1.38.07 AM.png", alt: "Sourdough loaf", mark: "SD", tone: "grain" },
+  "core-basics": { alt: "Core cooking fundamentals graphic", mark: "CORE", tone: "core" },
+  "viennoiserie-guide": { alt: "Laminated pastry guide graphic", mark: "LAM", tone: "pastry" },
+  "pasta-guide": { alt: "Fresh pasta guide graphic", mark: "PASTA", tone: "pasta" },
+  "sushi-guide": { alt: "Sushi guide graphic", mark: "SUSHI", tone: "sushi" },
+  "cookbook-guide": { src: "/project-documents/cook-enterprise/book2.jpeg", alt: "Cookbook spread preview", mark: "BOOK", tone: "book" },
+};
+
+function GuideVisual({ slug }: { slug: string }) {
+  const visual = guideVisuals[slug] ?? { alt: "Recipe guide graphic", mark: "GUIDE", tone: "default" };
+  return (
+    <div className={`recipe-guide-media is-${visual.tone}`}>
+      {visual.src ? (
+        <Image alt={visual.alt} className="object-cover" fill sizes="(max-width: 640px) 70vw, 24rem" src={visual.src} />
+      ) : (
+        <div className="recipe-guide-generated" aria-label={visual.alt} role="img">
+          <i /><b /><span>{visual.mark}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default async function RecipesPage() {
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
   const uploadedRecipes = await getUploadedRecipes();
@@ -65,9 +89,9 @@ export default async function RecipesPage() {
               <div>
                 <p className="eyebrow">Guides</p>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Reference-style kitchen posts</h2>
-                <div className="mt-4 flex flex-wrap gap-1.5">
+                <div className="recipe-anchor-tabs mt-4 flex flex-wrap gap-1.5">
                   {guides.map((entry) => (
-                    <Link className="rounded-full border border-ink/10 bg-surface/70 px-2.5 py-1 text-[0.65rem] font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink" href={entry.href} key={entry.slug}>
+                    <Link className="recipe-anchor-tab rounded-full border border-ink/10 bg-surface/70 px-2.5 py-1 text-[0.65rem] font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink" href={entry.href} key={entry.slug}>
                       {entry.title}
                     </Link>
                   ))}
@@ -75,45 +99,21 @@ export default async function RecipesPage() {
               </div>
             </div>
 
-            <div className="-mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0">
+            <div className="mobile-snap-carousel -mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0">
               {guides.map((entry) => (
-                <Link className="w-[20rem] shrink-0 snap-start rounded-[2rem] border border-ink/10 bg-surface/55 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem] sm:p-8" href={entry.href} id={entry.slug} key={entry.slug}>
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="eyebrow">Guide</p>
-                    <span className="rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">{entry.status === "coming-soon" ? "Coming soon" : "Published"}</span>
+                <Link className="recipe-guide-card mobile-snap-card w-[20rem] shrink-0 snap-start overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" href={entry.href} id={entry.slug} key={entry.slug}>
+                  <GuideVisual slug={entry.slug} />
+                  <div className="recipe-guide-copy">
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="eyebrow">Guide</p>
+                      <span className="recipe-guide-status">{entry.status === "coming-soon" ? "Coming soon" : "Published"}</span>
+                    </div>
+                    <div className="recipe-guide-title-row">
+                      <h3>{entry.title}</h3>
+                      <span aria-hidden="true">↗</span>
+                    </div>
+                    <p className="recipe-guide-description">{entry.description}</p>
                   </div>
-                  <h3 className="mt-4 text-2xl font-semibold tracking-tight">{entry.title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-ink/65">{entry.description}</p>
-                  {entry.slug === "cookbook-guide" ? (
-                    <div className="mt-5 grid grid-cols-2 gap-3">
-                      {[
-                        { src: "/project-documents/cook-enterprise/book1.jpeg", alt: "Cookbook team photo" },
-                        { src: "/project-documents/cook-enterprise/book2.jpeg", alt: "Cookbook spread preview" },
-                      ].map((image) => (
-                        <div className="relative overflow-hidden rounded-[1.2rem] border border-ink/10 bg-paper/70" key={image.src}>
-                          <div className="relative aspect-[4/3]">
-                            <Image alt={image.alt} className="object-cover" fill sizes="(max-width: 768px) 50vw, 25vw" src={image.src} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : null}
-                  {entry.slug === "sourdough-guide" ? (
-                    <div className="mt-5 grid grid-cols-3 gap-2">
-                      {[
-                        { src: "/Screenshot 2026-07-01 at 1.38.07 AM.png", alt: "Sourdough loaf" },
-                        { src: "/Screenshot 2026-07-01 at 1.39.02 AM.png", alt: "Sourdough crumb" },
-                        { src: "/Screenshot 2026-07-01 at 1.39.43 AM.png", alt: "Sourdough boule" },
-                      ].map((image) => (
-                        <div className="relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70" key={image.src}>
-                          <div className="relative aspect-square">
-                            <Image alt={image.alt} className="object-cover" fill sizes="(max-width: 768px) 33vw, 12vw" src={image.src} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : null}
-                  <p className="mt-6 text-sm font-semibold text-moss">Open guide ↗</p>
                 </Link>
               ))}
             </div>
