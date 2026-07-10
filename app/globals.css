@@ -65,10 +65,23 @@ body.has-page-cursor * { cursor: inherit; }
   transform: translateY(-1px);
 }
 
+::view-transition-group(root),
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+::view-transition-image-pair(root) {
+  isolation: isolate;
+}
+
+html[data-theme-transition],
+html[data-theme-transition] body,
+html[data-theme-transition] *,
+html[data-theme-transition] *::before,
+html[data-theme-transition] *::after {
+  transition-property: none !important;
 }
 
 ::view-transition-old(root) { z-index: 1; }

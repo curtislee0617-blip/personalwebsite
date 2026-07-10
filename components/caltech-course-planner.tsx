@@ -8,6 +8,7 @@ import type { Json } from "@/lib/supabase/database.types";
 const YEARS = [1, 2, 3, 4] as const;
 const TERMS = ["Fall", "Winter", "Spring"] as const;
 type Term = (typeof TERMS)[number];
+const SHARED_REQUIREMENT_MAJOR_IDS: MajorId[] = [];
 
 // A "class" is one real course, placed in one term, that can satisfy several requirement
 // tags at once (a lot of Caltech courses double- or triple-count). Requirements themselves
@@ -22,32 +23,86 @@ const CHEME_TRACK_IDS: MajorId[] = ["cheme-biomolecular", "cheme-sustainability"
 const CHEME_TRACK_ID_SET = new Set<MajorId>(CHEME_TRACK_IDS);
 const EE_TRACK_IDS: MajorId[] = ["ee-circuits", "ee-computer", "ee-intelligent", "ee-medical", "ee-photonics"];
 const EE_TRACK_ID_SET = new Set<MajorId>(EE_TRACK_IDS);
-const MAJOR_IDS = new Set<MajorId>([...CHEME_TRACK_IDS, ...EE_TRACK_IDS, "bem", "cs", "math", "physics", "chemistry", "bioengineering", "acm", "ee"]);
-const MINOR_IDS = new Set<MajorId>(["cheme-minor", "bem-minor", "cs-minor", "math-minor", "chemistry-minor"]);
+const GPS_TRACK_IDS: MajorId[] = ["gps-geology", "gps-geobiology", "gps-geochemistry", "gps-geophysics", "gps-planetary"];
+const GPS_TRACK_ID_SET = new Set<MajorId>(GPS_TRACK_IDS);
+const MAJOR_IDS = new Set<MajorId>([
+  ...CHEME_TRACK_IDS,
+  ...EE_TRACK_IDS,
+  ...GPS_TRACK_IDS,
+  "bem", "cs", "math", "physics", "chemistry", "bioengineering", "acm", "aph", "ay", "biology", "cns", "economics", "eas", "english", "ese",
+  "history", "hps", "ids", "isp", "materials-science", "mechanical-engineering", "philosophy", "political-science",
+]);
+const MINOR_IDS = new Set<MajorId>([
+  "cheme-minor", "bem-minor", "cs-minor", "math-minor", "chemistry-minor", "ae-minor", "ay-minor", "cds-minor", "english-minor", "ese-minor",
+  "history-minor", "hps-minor", "neurobiology-minor", "philosophy-minor", "robotics-minor", "structural-mechanics-minor", "visual-culture-minor",
+]);
 const SUBJECT_GROUPS: Array<{
   title: string;
   ids: MajorId[];
   sections: Array<{ title?: string; ids: MajorId[] }>;
 }> = [
   {
-    title: "Chemical Engineering",
-    ids: [...CHEME_TRACK_IDS, "cheme-minor"],
+    title: "BBE",
+    ids: ["bioengineering", "biology", "cns", "neurobiology-minor"],
     sections: [
-      { title: "Tracks", ids: CHEME_TRACK_IDS },
-      { title: "Minor", ids: ["cheme-minor"] },
+      { title: "Bioengineering", ids: ["bioengineering"] },
+      { title: "Biology", ids: ["biology"] },
+      { title: "Computation & Neural Systems", ids: ["cns"] },
+      { title: "Minors", ids: ["neurobiology-minor"] },
     ],
   },
-  { title: "BEM", ids: ["bem", "bem-minor"], sections: [{ ids: ["bem", "bem-minor"] }] },
-  { title: "Computer Science", ids: ["cs", "cs-minor"], sections: [{ ids: ["cs", "cs-minor"] }] },
-  { title: "Mathematics", ids: ["math", "math-minor"], sections: [{ ids: ["math", "math-minor"] }] },
-  { title: "Physics", ids: ["physics"], sections: [{ ids: ["physics"] }] },
-  { title: "Chemistry", ids: ["chemistry", "chemistry-minor"], sections: [{ ids: ["chemistry", "chemistry-minor"] }] },
-  { title: "Bioengineering", ids: ["bioengineering"], sections: [{ ids: ["bioengineering"] }] },
-  { title: "ACM", ids: ["acm"], sections: [{ ids: ["acm"] }] },
   {
-    title: "Electrical Engineering",
-    ids: EE_TRACK_IDS,
-    sections: [{ title: "Tracks", ids: EE_TRACK_IDS }],
+    title: "CCE",
+    ids: [...CHEME_TRACK_IDS, "cheme-minor", "chemistry", "chemistry-minor", "ese", "ese-minor"],
+    sections: [
+      { title: "Chemical Engineering tracks", ids: CHEME_TRACK_IDS },
+      { title: "Chemistry", ids: ["chemistry", "chemistry-minor"] },
+      { title: "Environmental Science & Engineering", ids: ["ese", "ese-minor"] },
+      { title: "Minors", ids: ["cheme-minor"] },
+    ],
+  },
+  {
+    title: "EAS",
+    ids: ["ae-minor", "aph", "cs", "cs-minor", ...EE_TRACK_IDS, "eas", "ids", "materials-science", "mechanical-engineering", "cds-minor", "robotics-minor", "structural-mechanics-minor"],
+    sections: [
+      { title: "Applied Physics", ids: ["aph"] },
+      { title: "Computer Science", ids: ["cs", "cs-minor"] },
+      { title: "Electrical Engineering tracks", ids: EE_TRACK_IDS },
+      { title: "Engineering & Applied Science", ids: ["eas"] },
+      { title: "Information & Data Sciences", ids: ["ids"] },
+      { title: "Materials / Mechanical", ids: ["materials-science", "mechanical-engineering"] },
+      { title: "Minors", ids: ["ae-minor", "cds-minor", "robotics-minor", "structural-mechanics-minor"] },
+    ],
+  },
+  {
+    title: "GPS",
+    ids: [...GPS_TRACK_IDS, "ay", "ay-minor"],
+    sections: [
+      { title: "GPS tracks", ids: GPS_TRACK_IDS },
+      { title: "Astrophysics", ids: ["ay", "ay-minor"] },
+    ],
+  },
+  {
+    title: "HSS",
+    ids: ["bem", "bem-minor", "economics", "english", "english-minor", "history", "history-minor", "hps", "hps-minor", "philosophy", "philosophy-minor", "political-science", "visual-culture-minor"],
+    sections: [
+      { title: "Business / Economics / Politics", ids: ["bem", "bem-minor", "economics", "political-science"] },
+      { title: "Humanities", ids: ["english", "english-minor", "history", "history-minor", "hps", "hps-minor", "philosophy", "philosophy-minor", "visual-culture-minor"] },
+    ],
+  },
+  {
+    title: "PMA",
+    ids: ["acm", "math", "math-minor", "physics"],
+    sections: [
+      { title: "Applied & Computational Mathematics", ids: ["acm"] },
+      { title: "Mathematics", ids: ["math", "math-minor"] },
+      { title: "Physics", ids: ["physics"] },
+    ],
+  },
+  {
+    title: "Other",
+    ids: ["isp"],
+    sections: [{ title: "Interdisciplinary", ids: ["isp"] }],
   },
 ];
 
@@ -91,6 +146,41 @@ function eeTrackLabel(label: string) {
   return label.replace(/^Electrical Engineering \(/, "").replace(/\)$/, "");
 }
 
+function gpsTrackLabel(label: string) {
+  return label.replace(/^Geological and Planetary Sciences \(/, "").replace(/\)$/, "");
+}
+
+function compactMajorLabel(id: MajorId, label: string) {
+  if (CHEME_TRACK_ID_SET.has(id)) return chemETrackLabel(label);
+  if (EE_TRACK_ID_SET.has(id)) return eeTrackLabel(label);
+  if (GPS_TRACK_ID_SET.has(id)) return gpsTrackLabel(label);
+
+  return label
+    .replace(/^Business, Economics & Management$/, "BEM major")
+    .replace(/^Business, Economics & Management \(minor\)$/, "BEM minor")
+    .replace(/^Computer Science$/, "CS major")
+    .replace(/^Computer Science \(minor\)$/, "CS minor")
+    .replace(/^Mathematics$/, "Math major")
+    .replace(/^Mathematics \(minor\)$/, "Math minor")
+    .replace(/^Physics$/, "Physics")
+    .replace(/^Chemistry$/, "Chemistry major")
+    .replace(/^Chemistry \(minor\)$/, "Chemistry minor")
+    .replace(/^Bioengineering$/, "Bioengineering")
+    .replace(/^Applied and Computational Mathematics$/, "ACM")
+    .replace(/^Chemical Engineering \(minor\)$/, "ChE minor")
+    .replace(/^Environmental Science and Engineering$/, "ESE major")
+    .replace(/^Environmental Science and Engineering \(minor\)$/, "ESE minor")
+    .replace(/^Engineering and Applied Science$/, "EAS")
+    .replace(/^Information and Data Sciences$/, "IDS")
+    .replace(/^Materials Science$/, "Materials Science")
+    .replace(/^Mechanical Engineering$/, "Mechanical Engineering")
+    .replace(/^Computation and Neural Systems$/, "CNS")
+    .replace(/^Control and Dynamical Systems \(minor\)$/, "CDS minor")
+    .replace(/^Neurobiology \(minor\)$/, "Neurobiology minor")
+    .replace(/^Structural Mechanics \(minor\)$/, "SM minor")
+    .replace(/^Visual Culture \(minor\)$/, "VC minor");
+}
+
 function formatMajorSummary(majorIds: MajorId[]) {
   const chemeTracks = majorIds
     .filter((id) => CHEME_TRACK_ID_SET.has(id))
@@ -102,8 +192,13 @@ function formatMajorSummary(majorIds: MajorId[]) {
     .map((id) => majors.find((major) => major.id === id)?.label)
     .filter((label): label is string => Boolean(label))
     .map(eeTrackLabel);
+  const gpsTracks = majorIds
+    .filter((id) => GPS_TRACK_ID_SET.has(id))
+    .map((id) => majors.find((major) => major.id === id)?.label)
+    .filter((label): label is string => Boolean(label))
+    .map(gpsTrackLabel);
   const otherLabels = majorIds
-    .filter((id) => !CHEME_TRACK_ID_SET.has(id) && !EE_TRACK_ID_SET.has(id) && MAJOR_IDS.has(id))
+    .filter((id) => !CHEME_TRACK_ID_SET.has(id) && !EE_TRACK_ID_SET.has(id) && !GPS_TRACK_ID_SET.has(id) && MAJOR_IDS.has(id))
     .map((id) => majors.find((major) => major.id === id)?.label ?? id);
   const minorLabels = majorIds
     .filter((id) => MINOR_IDS.has(id))
@@ -112,6 +207,7 @@ function formatMajorSummary(majorIds: MajorId[]) {
   return [
     chemeTracks.length ? `Chemical Engineering (${chemeTracks.join(", ")})` : null,
     eeTracks.length ? `Electrical Engineering (${eeTracks.join(", ")})` : null,
+    gpsTracks.length ? `GPS (${gpsTracks.join(", ")})` : null,
     ...otherLabels,
     ...minorLabels,
   ].filter(Boolean).join(", ");
@@ -198,23 +294,7 @@ function SubjectDropdown({ group, selectedMajors, onToggleMajor }: MajorSelector
             {section.ids.map((id) => {
               const major = majors.find((item) => item.id === id);
               if (!major) return null;
-              const label = CHEME_TRACK_ID_SET.has(id)
-                ? chemETrackLabel(major.label)
-                : EE_TRACK_ID_SET.has(id)
-                  ? eeTrackLabel(major.label)
-                  : major.label
-                    .replace(/^Business, Economics & Management$/, "Major")
-                    .replace(/^Business, Economics & Management \(minor\)$/, "Minor")
-                    .replace(/^Computer Science$/, "Major")
-                    .replace(/^Computer Science \(minor\)$/, "Minor")
-                    .replace(/^Mathematics$/, "Major")
-                    .replace(/^Mathematics \(minor\)$/, "Minor")
-                    .replace(/^Physics$/, "Major")
-                    .replace(/^Chemistry$/, "Major")
-                    .replace(/^Chemistry \(minor\)$/, "Minor")
-                    .replace(/^Bioengineering$/, "Major")
-                    .replace(/^Applied and Computational Mathematics$/, "Requirements")
-                    .replace(/^Chemical Engineering \(minor\)$/, "Minor");
+              const label = compactMajorLabel(id, major.label);
 
               return (
                 <label className="flex items-center gap-1.5 text-xs text-ink/70" key={id}>
@@ -459,10 +539,15 @@ export function CaltechCoursePlanner() {
   const { classes, customTemplates } = plan;
   const hasLoadedRef = useRef(false);
 
-  // Everyone signed in sees only their major(s)' requirements (plus the shared institute core);
-  // Signed-out visitors see the full default catalog, including every ChemE track.
-  const baseTemplates = useMemo(() => (identity ? templatesForMajors(identity.majors) : requirementTemplates), [identity]);
-  const baseCategories = useMemo(() => (identity ? categoriesForMajors(identity.majors) : requirementCategories), [identity]);
+  // Signed-out selections are only pending profile choices; keep the live planner on
+  // shared Institute requirements so progress does not explode into every option.
+  const selectedMajorIds = identity?.majors ?? SHARED_REQUIREMENT_MAJOR_IDS;
+  const pendingMajorLabels = useMemo(
+    () => (!identity ? loginMajors.map((id) => majors.find((major) => major.id === id)?.label ?? id) : []),
+    [identity, loginMajors],
+  );
+  const baseTemplates = useMemo(() => templatesForMajors(selectedMajorIds), [selectedMajorIds]);
+  const baseCategories = useMemo(() => categoriesForMajors(selectedMajorIds), [selectedMajorIds]);
   const allTemplates = useMemo(() => [...baseTemplates, ...customTemplates], [baseTemplates, customTemplates]);
   const templateById = useMemo(() => new Map(allTemplates.map((template) => [template.id, template])), [allTemplates]);
 
@@ -747,33 +832,54 @@ export function CaltechCoursePlanner() {
           <div>
             <p className="eyebrow">Cloud save</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">
-              You can use the planner without signing in; it will still save locally in this browser. Sign in only if you want cloud save and access from another device. Use your first name, last name, and a small password to reopen the same profile later. Chemical Engineering tracks, BEM, Computer Science, Mathematics, Physics, Chemistry, Bioengineering, ACM, and Electrical Engineering have requirement sets.
+              You can use the planner without signing in; it will still save locally in this browser. Sign in only if you want cloud save and access from another device. Use your first name, last name, and a small password to reopen the same profile later.
             </p>
-            <div className="mt-4 flex flex-wrap items-end gap-4">
-              <label className="text-xs font-medium text-ink/55">
-                First name
-                <input className="mt-1 block w-40 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginFirstName(event.target.value)} placeholder="First name" value={loginFirstName} />
-              </label>
-              <label className="text-xs font-medium text-ink/55">
-                Last name
-                <input className="mt-1 block w-40 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginLastName(event.target.value)} placeholder="Last name" value={loginLastName} />
-              </label>
-              <label className="text-xs font-medium text-ink/55">
-                Password
-                <input className="mt-1 block w-36 rounded-full border border-ink/20 bg-surface px-3 py-1.5 text-sm text-ink" onChange={(event) => setLoginPassword(event.target.value)} placeholder="Password" type="password" value={loginPassword} />
-              </label>
-              <div className="text-xs font-medium text-ink/55">
-                Major(s) / minor(s)
-                <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
+            <p className="mt-2 text-xs leading-5 text-ink/45">
+              Names and schedules are only used for this course scheduler. <a className="font-semibold text-moss hover:text-ink" href="/privacy">Privacy policy</a>
+            </p>
+            <div className="mt-5 grid gap-4">
+              <div className="grid gap-3 md:grid-cols-[minmax(0,10rem)_minmax(0,10rem)_minmax(0,13rem)]">
+                <label className="text-xs font-medium text-ink/55">
+                  First name
+                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginFirstName(event.target.value)} placeholder="First name" value={loginFirstName} />
+                </label>
+                <label className="text-xs font-medium text-ink/55">
+                  Last name
+                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginLastName(event.target.value)} placeholder="Last name" value={loginLastName} />
+                </label>
+                <label className="text-xs font-medium text-ink/55">
+                  Password
+                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginPassword(event.target.value)} placeholder="Password" type="password" value={loginPassword} />
+                  <span className="mt-1 block text-[0.62rem] leading-4 text-ink/40">
+                    Just separates profiles with the same name.
+                  </span>
+                </label>
               </div>
-              <button
-                className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
-                disabled={!loginFirstName.trim() || !loginLastName.trim() || !loginPassword.trim() || loginMajors.length === 0 || syncStatus === "loading"}
-                onClick={signIn}
-                type="button"
-              >
-                {syncStatus === "loading" ? "Loading…" : "Sign in"}
-              </button>
+
+              <div className="rounded-2xl border border-ink/10 bg-paper/45 p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-ink/55">Major(s) / minor(s)</p>
+                  <p className="text-[0.62rem] font-medium text-ink/35">{loginMajors.length ? `${loginMajors.length} selected` : "Choose one or more"}</p>
+                </div>
+                <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
+                {pendingMajorLabels.length > 0 && (
+                  <div className="mt-3 rounded-2xl border border-ink/10 bg-surface/55 px-3 py-2 text-[0.68rem] leading-5 text-ink/45">
+                    <span className="font-semibold text-ink/55">Pending profile choices:</span>{" "}
+                    {pendingMajorLabels.join(", ")}. Sign in to load these option requirements into the planner.
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  className="h-10 rounded-full bg-ink px-5 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
+                  disabled={!loginFirstName.trim() || !loginLastName.trim() || !loginPassword.trim() || loginMajors.length === 0 || syncStatus === "loading"}
+                  onClick={signIn}
+                  type="button"
+                >
+                  {syncStatus === "loading" ? "Loading…" : "Sign in"}
+                </button>
+              </div>
             </div>
             {syncStatus === "error" && <p className="mt-3 text-xs text-clay">{syncError}</p>}
           </div>

@@ -21,7 +21,40 @@ export type MajorId =
   | "ee-computer"
   | "ee-intelligent"
   | "ee-medical"
-  | "ee-photonics";
+  | "ee-photonics"
+  | "ae-minor"
+  | "aph"
+  | "ay"
+  | "ay-minor"
+  | "biology"
+  | "cns"
+  | "cds-minor"
+  | "economics"
+  | "eas"
+  | "english"
+  | "english-minor"
+  | "ese"
+  | "ese-minor"
+  | "gps-geology"
+  | "gps-geobiology"
+  | "gps-geochemistry"
+  | "gps-geophysics"
+  | "gps-planetary"
+  | "history"
+  | "history-minor"
+  | "hps"
+  | "hps-minor"
+  | "ids"
+  | "isp"
+  | "materials-science"
+  | "mechanical-engineering"
+  | "neurobiology-minor"
+  | "philosophy"
+  | "philosophy-minor"
+  | "political-science"
+  | "robotics-minor"
+  | "structural-mechanics-minor"
+  | "visual-culture-minor";
 
 export type Major = {
   id: MajorId;
@@ -55,6 +88,39 @@ export const majors: Major[] = [
   { id: "ee-intelligent", label: "Electrical Engineering (intelligent systems track)" },
   { id: "ee-medical", label: "Electrical Engineering (medical engineering track)" },
   { id: "ee-photonics", label: "Electrical Engineering (photonics and quantum track)" },
+  { id: "ae-minor", label: "Aerospace (minor)" },
+  { id: "aph", label: "Applied Physics" },
+  { id: "ay", label: "Astrophysics" },
+  { id: "ay-minor", label: "Astrophysics (minor)" },
+  { id: "biology", label: "Biology" },
+  { id: "cns", label: "Computation and Neural Systems" },
+  { id: "cds-minor", label: "Control and Dynamical Systems (minor)" },
+  { id: "economics", label: "Economics" },
+  { id: "eas", label: "Engineering and Applied Science" },
+  { id: "english", label: "English" },
+  { id: "english-minor", label: "English (minor)" },
+  { id: "ese", label: "Environmental Science and Engineering" },
+  { id: "ese-minor", label: "Environmental Science and Engineering (minor)" },
+  { id: "gps-geology", label: "Geological and Planetary Sciences (geology track)" },
+  { id: "gps-geobiology", label: "Geological and Planetary Sciences (geobiology track)" },
+  { id: "gps-geochemistry", label: "Geological and Planetary Sciences (geochemistry track)" },
+  { id: "gps-geophysics", label: "Geological and Planetary Sciences (geophysics track)" },
+  { id: "gps-planetary", label: "Geological and Planetary Sciences (planetary science track)" },
+  { id: "history", label: "History" },
+  { id: "history-minor", label: "History (minor)" },
+  { id: "hps", label: "History and Philosophy of Science" },
+  { id: "hps-minor", label: "History and Philosophy of Science (minor)" },
+  { id: "ids", label: "Information and Data Sciences" },
+  { id: "isp", label: "Interdisciplinary Studies Program" },
+  { id: "materials-science", label: "Materials Science" },
+  { id: "mechanical-engineering", label: "Mechanical Engineering" },
+  { id: "neurobiology-minor", label: "Neurobiology (minor)" },
+  { id: "philosophy", label: "Philosophy" },
+  { id: "philosophy-minor", label: "Philosophy (minor)" },
+  { id: "political-science", label: "Political Science" },
+  { id: "robotics-minor", label: "Robotics (minor)" },
+  { id: "structural-mechanics-minor", label: "Structural Mechanics (minor)" },
+  { id: "visual-culture-minor", label: "Visual Culture (minor)" },
 ];
 
 export type RequirementCategoryId =
@@ -82,6 +148,40 @@ export type RequirementCategoryId =
   | "ee-intelligent"
   | "ee-medical"
   | "ee-photonics"
+  | "ae-minor"
+  | "aph"
+  | "ay"
+  | "ay-minor"
+  | "biology"
+  | "cns"
+  | "cds-minor"
+  | "economics"
+  | "eas"
+  | "english"
+  | "english-minor"
+  | "ese"
+  | "ese-minor"
+  | "gps"
+  | "gps-geology"
+  | "gps-geobiology"
+  | "gps-geochemistry"
+  | "gps-geophysics"
+  | "gps-planetary"
+  | "history"
+  | "history-minor"
+  | "hps"
+  | "hps-minor"
+  | "ids"
+  | "isp"
+  | "materials-science"
+  | "mechanical-engineering"
+  | "neurobiology-minor"
+  | "philosophy"
+  | "philosophy-minor"
+  | "political-science"
+  | "robotics-minor"
+  | "structural-mechanics-minor"
+  | "visual-culture-minor"
   | "core-science"
   | "humanities"
   | "social-science"
@@ -300,6 +400,47 @@ export const requirementCategories: RequirementCategory[] = [
     note: "Photonics and Quantum track requirements: Ph 12 ab, EE 151, ACM/math choices, specialization courses in optics/photonics, quantum technologies, or solid-state/materials/nanotechnology, and approved electives.",
     majorId: "ee-photonics",
   },
+  { id: "ae-minor", label: "Aerospace minor", shortLabel: "Ae minor", color: "#607d8b", note: "Aerospace minor requirements from the Caltech catalog.", majorId: "ae-minor" },
+  { id: "aph", label: "Applied Physics", shortLabel: "APh", color: "#8a5fbf", note: "Applied Physics option requirements from the Caltech catalog.", majorId: "aph" },
+  { id: "ay", label: "Astrophysics", shortLabel: "Ay", color: "#536dfe", note: "Astrophysics option requirements from the Caltech catalog.", majorId: "ay" },
+  { id: "ay-minor", label: "Astrophysics minor", shortLabel: "Ay minor", color: "#536dfe", note: "Astrophysics minor requirements from the Caltech catalog.", majorId: "ay-minor" },
+  { id: "biology", label: "Biology", shortLabel: "Bi", color: "#2e9d61", note: "Biology option requirements from the Caltech catalog.", majorId: "biology" },
+  { id: "cns", label: "Computation and Neural Systems", shortLabel: "CNS", color: "#00a6a6", note: "Computation and Neural Systems option requirements from the Caltech catalog.", majorId: "cns" },
+  { id: "cds-minor", label: "Control and Dynamical Systems minor", shortLabel: "CDS minor", color: "#0a9396", note: "Control and Dynamical Systems minor requirements from the Caltech catalog.", majorId: "cds-minor" },
+  { id: "economics", label: "Economics", shortLabel: "Ec", color: "#e07a5f", note: "Economics option requirements from the Caltech catalog.", majorId: "economics" },
+  { id: "eas", label: "Engineering and Applied Science", shortLabel: "EAS", color: "#457b9d", note: "Engineering and Applied Science option requirements from the Caltech catalog.", majorId: "eas" },
+  { id: "english", label: "English", shortLabel: "En", color: "#bc6c25", note: "English option requirements from the Caltech catalog.", majorId: "english" },
+  { id: "english-minor", label: "English minor", shortLabel: "En minor", color: "#bc6c25", note: "English minor requirements from the Caltech catalog.", majorId: "english-minor" },
+  { id: "ese", label: "Environmental Science and Engineering", shortLabel: "ESE", color: "#2a9d8f", note: "Environmental Science and Engineering option requirements from the Caltech catalog.", majorId: "ese" },
+  { id: "ese-minor", label: "Environmental Science and Engineering minor", shortLabel: "ESE minor", color: "#2a9d8f", note: "Environmental Science and Engineering minor requirements from the Caltech catalog.", majorId: "ese-minor" },
+  {
+    id: "gps",
+    label: "Geological and Planetary Sciences core",
+    shortLabel: "GPS core",
+    color: "#7f5539",
+    note: "GPS requirements shared by geology, geobiology, geochemistry, geophysics, and planetary science tracks.",
+    majorIds: ["gps-geology", "gps-geobiology", "gps-geochemistry", "gps-geophysics", "gps-planetary"],
+  },
+  { id: "gps-geology", label: "GPS — geology track", shortLabel: "GPS geol.", color: "#9c6644", note: "Geology track requirements from the Caltech catalog.", majorId: "gps-geology" },
+  { id: "gps-geobiology", label: "GPS — geobiology track", shortLabel: "GPS bio", color: "#588157", note: "Geobiology track requirements from the Caltech catalog.", majorId: "gps-geobiology" },
+  { id: "gps-geochemistry", label: "GPS — geochemistry track", shortLabel: "GPS chem", color: "#b08968", note: "Geochemistry track requirements from the Caltech catalog.", majorId: "gps-geochemistry" },
+  { id: "gps-geophysics", label: "GPS — geophysics track", shortLabel: "GPS phys", color: "#5e548e", note: "Geophysics track requirements from the Caltech catalog.", majorId: "gps-geophysics" },
+  { id: "gps-planetary", label: "GPS — planetary science track", shortLabel: "GPS plan.", color: "#6c757d", note: "Planetary science track requirements from the Caltech catalog.", majorId: "gps-planetary" },
+  { id: "history", label: "History", shortLabel: "H", color: "#9a031e", note: "History option requirements from the Caltech catalog.", majorId: "history" },
+  { id: "history-minor", label: "History minor", shortLabel: "H minor", color: "#9a031e", note: "History minor requirements from the Caltech catalog.", majorId: "history-minor" },
+  { id: "hps", label: "History and Philosophy of Science", shortLabel: "HPS", color: "#5f0f40", note: "History and Philosophy of Science option requirements from the Caltech catalog.", majorId: "hps" },
+  { id: "hps-minor", label: "History and Philosophy of Science minor", shortLabel: "HPS minor", color: "#5f0f40", note: "History and Philosophy of Science minor requirements from the Caltech catalog.", majorId: "hps-minor" },
+  { id: "ids", label: "Information and Data Sciences", shortLabel: "IDS", color: "#3a86ff", note: "Information and Data Sciences option requirements from the Caltech catalog.", majorId: "ids" },
+  { id: "isp", label: "Interdisciplinary Studies Program", shortLabel: "ISP", color: "#6d6875", note: "Interdisciplinary Studies Program requirements from the Caltech catalog.", majorId: "isp" },
+  { id: "materials-science", label: "Materials Science", shortLabel: "MS", color: "#a44a3f", note: "Materials Science option requirements from the Caltech catalog.", majorId: "materials-science" },
+  { id: "mechanical-engineering", label: "Mechanical Engineering", shortLabel: "ME", color: "#4361ee", note: "Mechanical Engineering option requirements from the Caltech catalog.", majorId: "mechanical-engineering" },
+  { id: "neurobiology-minor", label: "Neurobiology minor", shortLabel: "NB minor", color: "#43aa8b", note: "Neurobiology minor requirements from the Caltech catalog.", majorId: "neurobiology-minor" },
+  { id: "philosophy", label: "Philosophy", shortLabel: "Pl", color: "#8d99ae", note: "Philosophy option requirements from the Caltech catalog.", majorId: "philosophy" },
+  { id: "philosophy-minor", label: "Philosophy minor", shortLabel: "Pl minor", color: "#8d99ae", note: "Philosophy minor requirements from the Caltech catalog.", majorId: "philosophy-minor" },
+  { id: "political-science", label: "Political Science", shortLabel: "PS", color: "#f77f00", note: "Political Science option requirements from the Caltech catalog.", majorId: "political-science" },
+  { id: "robotics-minor", label: "Robotics minor", shortLabel: "Ro minor", color: "#00b4d8", note: "Robotics minor requirements from the Caltech catalog.", majorId: "robotics-minor" },
+  { id: "structural-mechanics-minor", label: "Structural Mechanics minor", shortLabel: "SM minor", color: "#546a7b", note: "Structural Mechanics minor requirements from the Caltech catalog.", majorId: "structural-mechanics-minor" },
+  { id: "visual-culture-minor", label: "Visual Culture minor", shortLabel: "VC minor", color: "#c9184a", note: "Visual Culture minor requirements from the Caltech catalog.", majorId: "visual-culture-minor" },
   {
     id: "core-science",
     label: "Institute core — math & science",
@@ -753,6 +894,148 @@ export const requirementTemplates: RequirementTemplate[] = [
   { id: "ee-photonics-elective-1", categoryId: "ee-photonics", label: "Approved EE/Ph/APh elective (54 units total; 45 units 100+)" },
   { id: "ee-photonics-elective-2", categoryId: "ee-photonics", label: "Approved EE/Ph/APh elective" },
   { id: "ee-photonics-elective-3", categoryId: "ee-photonics", label: "Approved EE/Ph/APh elective" },
+
+  // Remaining Caltech options/minors — compact catalog blocks
+  { id: "ae-minor-foundation", categoryId: "ae-minor", label: "Aerospace minor foundations" },
+  { id: "ae-minor-required", categoryId: "ae-minor", label: "Required Ae/engineering courses" },
+  { id: "ae-minor-electives", categoryId: "ae-minor", label: "Approved aerospace electives" },
+  { id: "ae-minor-project", categoryId: "ae-minor", label: "Aerospace project/research component" },
+
+  { id: "aph-foundation", categoryId: "aph", label: "Applied Physics math/physics foundations" },
+  { id: "aph-lab", categoryId: "aph", label: "Applied Physics laboratory requirement" },
+  { id: "aph-advanced-core", categoryId: "aph", label: "Applied Physics advanced core" },
+  { id: "aph-electives", categoryId: "aph", label: "Approved APh/Ph/engineering electives" },
+  { id: "aph-project", categoryId: "aph", label: "Research, project, or thesis requirement" },
+
+  { id: "ay-foundation", categoryId: "ay", label: "Astrophysics math/physics foundations" },
+  { id: "ay-astronomy-core", categoryId: "ay", label: "Required astronomy/astrophysics core" },
+  { id: "ay-observational", categoryId: "ay", label: "Observational, computational, or laboratory requirement" },
+  { id: "ay-electives", categoryId: "ay", label: "Approved advanced Ay/Ph electives" },
+  { id: "ay-research", categoryId: "ay", label: "Astrophysics research or senior thesis" },
+  { id: "ay-minor-core", categoryId: "ay-minor", label: "Astrophysics minor core courses" },
+  { id: "ay-minor-electives", categoryId: "ay-minor", label: "Astrophysics minor approved electives" },
+  { id: "ay-minor-units", categoryId: "ay-minor", label: "Astrophysics minor unit total" },
+
+  { id: "biology-foundation", categoryId: "biology", label: "Biology foundations and chemistry/physics support" },
+  { id: "biology-core", categoryId: "biology", label: "Biology option core courses" },
+  { id: "biology-lab", categoryId: "biology", label: "Biology laboratory requirement" },
+  { id: "biology-advanced", categoryId: "biology", label: "Advanced biology electives" },
+  { id: "biology-research", categoryId: "biology", label: "Biology research/thesis or communication requirement" },
+
+  { id: "cns-foundation", categoryId: "cns", label: "CNS math, computing, and biology/neuroscience foundations" },
+  { id: "cns-core", categoryId: "cns", label: "CNS core sequence" },
+  { id: "cns-lab", categoryId: "cns", label: "CNS laboratory or experimental methods" },
+  { id: "cns-electives", categoryId: "cns", label: "CNS approved advanced electives" },
+  { id: "cns-research", categoryId: "cns", label: "CNS research/project requirement" },
+
+  { id: "cds-minor-math", categoryId: "cds-minor", label: "CDS minor math/system foundations" },
+  { id: "cds-minor-core", categoryId: "cds-minor", label: "CDS minor core courses" },
+  { id: "cds-minor-electives", categoryId: "cds-minor", label: "CDS minor approved electives" },
+
+  { id: "economics-foundation", categoryId: "economics", label: "Economics math/statistics foundations" },
+  { id: "economics-core", categoryId: "economics", label: "Economics option core courses" },
+  { id: "economics-lab", categoryId: "economics", label: "Econometrics, experimental, or data methods requirement" },
+  { id: "economics-electives", categoryId: "economics", label: "Advanced economics/social science electives" },
+  { id: "economics-capstone", categoryId: "economics", label: "Senior thesis, project, or capstone requirement" },
+
+  { id: "eas-foundation", categoryId: "eas", label: "EAS math/science/engineering foundations" },
+  { id: "eas-breadth", categoryId: "eas", label: "EAS engineering breadth courses" },
+  { id: "eas-depth", categoryId: "eas", label: "EAS chosen depth area" },
+  { id: "eas-electives", categoryId: "eas", label: "Approved EAS technical electives" },
+  { id: "eas-project", categoryId: "eas", label: "EAS design/research/project requirement" },
+
+  { id: "english-core", categoryId: "english", label: "English option core and period/distribution courses" },
+  { id: "english-advanced", categoryId: "english", label: "Advanced English electives" },
+  { id: "english-writing", categoryId: "english", label: "Writing-intensive or senior essay requirement" },
+  { id: "english-minor-core", categoryId: "english-minor", label: "English minor core/distribution courses" },
+  { id: "english-minor-electives", categoryId: "english-minor", label: "English minor electives" },
+
+  { id: "ese-foundation", categoryId: "ese", label: "ESE math, chemistry, biology, and physics foundations" },
+  { id: "ese-core", categoryId: "ese", label: "ESE option core courses" },
+  { id: "ese-lab-field", categoryId: "ese", label: "ESE laboratory or field requirement" },
+  { id: "ese-electives", categoryId: "ese", label: "Approved environmental science/engineering electives" },
+  { id: "ese-capstone", categoryId: "ese", label: "ESE research, design, or communication requirement" },
+  { id: "ese-minor-core", categoryId: "ese-minor", label: "ESE minor core courses" },
+  { id: "ese-minor-electives", categoryId: "ese-minor", label: "ESE minor approved electives" },
+
+  { id: "gps-core-math-science", categoryId: "gps", label: "GPS math, chemistry, physics, and biology foundations" },
+  { id: "gps-core-ge", categoryId: "gps", label: "GPS introductory Ge/ESE core" },
+  { id: "gps-core-field-lab", categoryId: "gps", label: "GPS field, lab, or methods requirement" },
+  { id: "gps-core-communication", categoryId: "gps", label: "GPS communication, seminar, or research requirement" },
+  { id: "gps-geology-depth", categoryId: "gps-geology", label: "Geology track depth courses" },
+  { id: "gps-geology-electives", categoryId: "gps-geology", label: "Geology track approved electives" },
+  { id: "gps-geobiology-depth", categoryId: "gps-geobiology", label: "Geobiology track biology/geology depth courses" },
+  { id: "gps-geobiology-electives", categoryId: "gps-geobiology", label: "Geobiology track approved electives" },
+  { id: "gps-geochemistry-depth", categoryId: "gps-geochemistry", label: "Geochemistry track chemistry/geology depth courses" },
+  { id: "gps-geochemistry-electives", categoryId: "gps-geochemistry", label: "Geochemistry track approved electives" },
+  { id: "gps-geophysics-depth", categoryId: "gps-geophysics", label: "Geophysics track physics/geology depth courses" },
+  { id: "gps-geophysics-electives", categoryId: "gps-geophysics", label: "Geophysics track approved electives" },
+  { id: "gps-planetary-depth", categoryId: "gps-planetary", label: "Planetary science track depth courses" },
+  { id: "gps-planetary-electives", categoryId: "gps-planetary", label: "Planetary science track approved electives" },
+
+  { id: "history-core", categoryId: "history", label: "History option core/distribution courses" },
+  { id: "history-advanced", categoryId: "history", label: "Advanced history electives" },
+  { id: "history-writing", categoryId: "history", label: "History senior essay or writing requirement" },
+  { id: "history-minor-core", categoryId: "history-minor", label: "History minor core/distribution courses" },
+  { id: "history-minor-electives", categoryId: "history-minor", label: "History minor electives" },
+
+  { id: "hps-core", categoryId: "hps", label: "HPS option core/distribution courses" },
+  { id: "hps-science", categoryId: "hps", label: "HPS science/technical context courses" },
+  { id: "hps-advanced", categoryId: "hps", label: "Advanced HPS electives" },
+  { id: "hps-writing", categoryId: "hps", label: "HPS senior essay or writing requirement" },
+  { id: "hps-minor-core", categoryId: "hps-minor", label: "HPS minor core/distribution courses" },
+  { id: "hps-minor-electives", categoryId: "hps-minor", label: "HPS minor electives" },
+
+  { id: "ids-foundation", categoryId: "ids", label: "IDS math, probability, statistics, and computing foundations" },
+  { id: "ids-core", categoryId: "ids", label: "IDS option core courses" },
+  { id: "ids-depth", categoryId: "ids", label: "IDS depth/application area" },
+  { id: "ids-electives", categoryId: "ids", label: "Approved IDS/CMS/ACM/CS electives" },
+  { id: "ids-project", categoryId: "ids", label: "IDS project, research, or communication requirement" },
+
+  { id: "isp-plan", categoryId: "isp", label: "Approved ISP course plan" },
+  { id: "isp-depth", categoryId: "isp", label: "ISP concentration/depth requirements" },
+  { id: "isp-electives", categoryId: "isp", label: "ISP approved electives" },
+  { id: "isp-thesis", categoryId: "isp", label: "ISP senior thesis or capstone" },
+
+  { id: "materials-foundation", categoryId: "materials-science", label: "Materials Science math/science foundations" },
+  { id: "materials-core", categoryId: "materials-science", label: "Materials Science core courses" },
+  { id: "materials-lab", categoryId: "materials-science", label: "Materials laboratory requirement" },
+  { id: "materials-electives", categoryId: "materials-science", label: "Approved materials electives" },
+  { id: "materials-project", categoryId: "materials-science", label: "Materials research/project requirement" },
+
+  { id: "me-foundation", categoryId: "mechanical-engineering", label: "Mechanical Engineering math/science foundations" },
+  { id: "me-core", categoryId: "mechanical-engineering", label: "Mechanical Engineering core courses" },
+  { id: "me-lab-design", categoryId: "mechanical-engineering", label: "Mechanical Engineering laboratory/design sequence" },
+  { id: "me-electives", categoryId: "mechanical-engineering", label: "Approved ME technical electives" },
+  { id: "me-project", categoryId: "mechanical-engineering", label: "ME capstone, project, or research requirement" },
+
+  { id: "nb-minor-core", categoryId: "neurobiology-minor", label: "Neurobiology minor core courses" },
+  { id: "nb-minor-lab", categoryId: "neurobiology-minor", label: "Neurobiology minor lab/methods requirement" },
+  { id: "nb-minor-electives", categoryId: "neurobiology-minor", label: "Neurobiology minor approved electives" },
+
+  { id: "philosophy-core", categoryId: "philosophy", label: "Philosophy option core/distribution courses" },
+  { id: "philosophy-advanced", categoryId: "philosophy", label: "Advanced philosophy electives" },
+  { id: "philosophy-writing", categoryId: "philosophy", label: "Philosophy senior essay or writing requirement" },
+  { id: "philosophy-minor-core", categoryId: "philosophy-minor", label: "Philosophy minor core/distribution courses" },
+  { id: "philosophy-minor-electives", categoryId: "philosophy-minor", label: "Philosophy minor electives" },
+
+  { id: "ps-foundation", categoryId: "political-science", label: "Political Science methods/foundations" },
+  { id: "ps-core", categoryId: "political-science", label: "Political Science option core/distribution courses" },
+  { id: "ps-advanced", categoryId: "political-science", label: "Advanced political science electives" },
+  { id: "ps-capstone", categoryId: "political-science", label: "Political Science senior thesis/project" },
+
+  { id: "robotics-minor-foundation", categoryId: "robotics-minor", label: "Robotics minor math/computing/engineering foundations" },
+  { id: "robotics-minor-core", categoryId: "robotics-minor", label: "Robotics minor core courses" },
+  { id: "robotics-minor-electives", categoryId: "robotics-minor", label: "Robotics minor approved electives" },
+  { id: "robotics-minor-project", categoryId: "robotics-minor", label: "Robotics project or lab requirement" },
+
+  { id: "sm-minor-foundation", categoryId: "structural-mechanics-minor", label: "Structural Mechanics minor foundations" },
+  { id: "sm-minor-core", categoryId: "structural-mechanics-minor", label: "Structural Mechanics minor core courses" },
+  { id: "sm-minor-electives", categoryId: "structural-mechanics-minor", label: "Structural Mechanics minor approved electives" },
+
+  { id: "vc-minor-core", categoryId: "visual-culture-minor", label: "Visual Culture minor core/distribution courses" },
+  { id: "vc-minor-electives", categoryId: "visual-culture-minor", label: "Visual Culture minor approved electives" },
+  { id: "vc-minor-project", categoryId: "visual-culture-minor", label: "Visual Culture minor project or seminar requirement" },
 
   // Institute core — math & science
   { id: "core-ma1a", categoryId: "core-science", label: "Ma 1 a" },

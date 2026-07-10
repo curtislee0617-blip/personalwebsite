@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useState, type MouseEvent } from "react";
+import { flushSync } from "react-dom";
 
 type ViewTransition = { ready: Promise<void>; finished: Promise<void> };
 type DocumentWithViewTransitions = Document & {
   startViewTransition?: (callback: () => void) => ViewTransition;
 };
+
+const THEME_TRANSITION_MS = 1150;
+const THEME_TRANSITION_EASING = "cubic-bezier(0.76, 0, 0.24, 1)";
 
 function SunIcon() {
   return (
@@ -47,7 +51,9 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     const y = iconBounds ? iconBounds.top + iconBounds.height / 2 : bounds.top + bounds.height / 2;
     const flip = () => {
       applyTheme(next);
-      setState((prev) => ({ ...prev, isDark: next }));
+      flushSync(() => {
+        setState((prev) => ({ ...prev, isDark: next }));
+      });
     };
 
     const doc = document as DocumentWithViewTransitions;
@@ -72,8 +78,8 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
               : [`circle(0px at ${x}px ${y}px)`, `circle(${buttonRadius}px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`],
           },
           {
-            duration: 650,
-            easing: "cubic-bezier(0.33, 1, 0.68, 1)",
+            duration: THEME_TRANSITION_MS,
+            easing: THEME_TRANSITION_EASING,
             pseudoElement: isLightToDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
           },
         );

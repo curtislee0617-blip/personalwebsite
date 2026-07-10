@@ -67,9 +67,9 @@ export default async function RecipesPage() {
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Reference-style kitchen posts</h2>
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   {guides.map((entry) => (
-                    <a className="rounded-full border border-ink/10 bg-surface/70 px-2.5 py-1 text-[0.65rem] font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink" href={`#${entry.slug}`} key={entry.slug}>
+                    <Link className="rounded-full border border-ink/10 bg-surface/70 px-2.5 py-1 text-[0.65rem] font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink" href={entry.href} key={entry.slug}>
                       {entry.title}
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
