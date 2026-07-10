@@ -43,8 +43,17 @@ const getUploadedRecipes = unstable_cache(async () => {
   }
 }, ["published-recipes"], { revalidate: 300, tags: ["published-recipes"] });
 
-const guideVisuals: Record<string, { src?: string; alt: string; mark: string; tone: string }> = {
-  "sourdough-guide": { src: "/Screenshot 2026-07-01 at 1.38.07 AM.png", alt: "Sourdough loaf", mark: "SD", tone: "grain" },
+const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string; mark: string; tone: string }> = {
+  "sourdough-guide": {
+    srcs: [
+      "/Screenshot 2026-07-01 at 1.38.07 AM.png",
+      "/Screenshot 2026-07-01 at 1.39.02 AM.png",
+      "/Screenshot 2026-07-01 at 1.39.43 AM.png",
+    ],
+    alt: "Three sourdough loaves and crumb views",
+    mark: "SD",
+    tone: "grain",
+  },
   "core-basics": { alt: "Core cooking fundamentals graphic", mark: "CORE", tone: "core" },
   "viennoiserie-guide": { alt: "Laminated pastry guide graphic", mark: "LAM", tone: "pastry" },
   "pasta-guide": { alt: "Fresh pasta guide graphic", mark: "PASTA", tone: "pasta" },
@@ -56,7 +65,15 @@ function GuideVisual({ slug }: { slug: string }) {
   const visual = guideVisuals[slug] ?? { alt: "Recipe guide graphic", mark: "GUIDE", tone: "default" };
   return (
     <div className={`recipe-guide-media is-${visual.tone}`}>
-      {visual.src ? (
+      {visual.srcs ? (
+        <div className="recipe-guide-photo-grid">
+          {visual.srcs.map((src, index) => (
+            <div className="relative" key={src}>
+              <Image alt={`${visual.alt}, image ${index + 1}`} className="object-cover" fill sizes="(max-width: 640px) 24vw, 8rem" src={src} />
+            </div>
+          ))}
+        </div>
+      ) : visual.src ? (
         <Image alt={visual.alt} className="object-cover" fill sizes="(max-width: 640px) 70vw, 24rem" src={visual.src} />
       ) : (
         <div className="recipe-guide-generated" aria-label={visual.alt} role="img">
