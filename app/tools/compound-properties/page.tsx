@@ -16,7 +16,7 @@ export default function CompoundPropertiesPage() {
         title="Compound properties"
         description="Search by name or formula, then calculate vapour pressure and Lee–Kesler real-fluid properties at a chosen temperature and pressure."
       />
-      <div className="page-shell pb-4 pt-5 sm:pt-6"><Link className="text-xs font-semibold text-ink/55 transition hover:text-ink" href="/tools">← Back to tools</Link></div>
+      <div className="page-shell pb-4 pt-5 sm:pt-6"><Link className="back-link-bubble" href="/tools">← Back to tools</Link></div>
       <div className="page-shell pb-16 sm:pb-20"><CompoundPropertiesCalculator /></div>
     </>
   );

@@ -55,10 +55,7 @@ export default function BiodieselProjectViewerPage() {
               A scrollable in-site reader for both parts of the biodiesel project.
             </p>
           </div>
-          <Link
-            className="inline-flex self-start rounded-full border border-ink/15 bg-surface/85 px-4 py-2 text-sm font-semibold transition hover:border-ink/30 hover:bg-surface"
-            href="/projects#biodiesel-from-used-cooking-oil"
-          >
+          <Link className="back-link-bubble self-start" href="/projects#biodiesel-from-used-cooking-oil">
             Back to projects
           </Link>
         </div>

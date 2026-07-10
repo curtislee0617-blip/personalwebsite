@@ -27,7 +27,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
         <p className="mt-3 max-w-md text-sm text-ink/60">
           Log in from the footer — click “Curtis Lee” at the bottom of any page — then come back here.
         </p>
-        <Link className="mt-6 inline-block text-sm font-semibold text-moss hover:text-ink" href="/recipes">← Back to recipes</Link>
+        <Link className="back-link-bubble mt-6" href="/recipes">← Back to recipes</Link>
       </div>
     );
   }
@@ -45,7 +45,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
     <div className="page-shell py-16 sm:py-20">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="section-title">{wishlistEntry ? "Upload made wishlist dish" : "Add a recipe"}</h1>
-        <Link className="text-xs font-semibold text-ink/50 hover:text-ink" href="/recipes">← Back to recipes</Link>
+        <Link className="back-link-bubble" href="/recipes">← Back to recipes</Link>
       </div>
 
       {params.submitted === "1" && <p className="mt-4 rounded-2xl bg-lime/40 px-4 py-3 text-sm text-ink">Saved — the first photo is the thumbnail.</p>}

@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { navIconForPath } from "@/lib/page-cursors";
 
@@ -16,6 +16,7 @@ const links = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const shellRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const isProjectViewer = pathname.startsWith("/projects/");
 
@@ -23,10 +24,31 @@ export function SiteHeader() {
     if (pathname !== "/") window.sessionStorage.setItem("home-entry", "menu");
   }, [pathname]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    function closeOnOutsidePointer(event: PointerEvent) {
+      const target = event.target;
+      if (!(target instanceof Node) || shellRef.current?.contains(target)) return;
+      setOpen(false);
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
+
   if (pathname === "/") return null;
 
   return (
-    <header id="top" className={`site-menu-shell ${isProjectViewer ? "site-menu-shell-project-viewer" : ""}`}>
+    <header id="top" className={`site-menu-shell ${isProjectViewer ? "site-menu-shell-project-viewer" : ""}`} ref={shellRef}>
       <button
         className={`site-menu-button ${open ? "is-open" : ""}`}
         onClick={() => setOpen(!open)}

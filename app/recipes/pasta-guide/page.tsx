@@ -19,7 +19,7 @@ export default function PastaGuidePage() {
             <p>
               This guide is being built. The first formula is the basic egg pasta dough, and future notes can expand into rolling thicknesses, cuts, filled shapes, storage, and cooking times.
             </p>
-            <Link className="mt-6 inline-block text-sm font-semibold text-moss hover:text-ink" href="/recipes">← Back to recipes</Link>
+            <Link className="back-link-bubble mt-6" href="/recipes">← Back to recipes</Link>
           </div>
 
           <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 text-sm leading-7 text-ink/60 sm:p-8">

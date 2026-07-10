@@ -15,7 +15,7 @@ export default function SourdoughGuidePage() {
       />
 
       <section className="page-section pt-12 sm:pt-16">
-        <Link className="mb-6 inline-block text-sm font-semibold text-moss hover:text-ink" href="/recipes">← Back to recipes</Link>
+        <Link className="back-link-bubble mb-6" href="/recipes">← Back to recipes</Link>
         <SourdoughGuide />
       </section>
     </>

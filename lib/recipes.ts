@@ -53,6 +53,15 @@ export const recipeEntries: RecipeEntry[] = [
     href: "/recipes/pasta-guide",
   },
   {
+    slug: "sushi-guide",
+    kind: "guide",
+    title: "Sushi guide",
+    description:
+      "A working guide for sushi rice seasoning, fish preparation, zuke marinades, nigiri notes, and other sushi ratios as they are added.",
+    status: "coming-soon",
+    href: "/recipes/sushi-guide",
+  },
+  {
     slug: "cookbook-guide",
     kind: "guide",
     title: "Cookbook",

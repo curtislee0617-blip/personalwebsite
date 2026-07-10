@@ -10,7 +10,18 @@ export type MajorId =
   | "cs"
   | "cs-minor"
   | "math"
-  | "math-minor";
+  | "math-minor"
+  | "physics"
+  | "chemistry"
+  | "chemistry-minor"
+  | "bioengineering"
+  | "acm"
+  | "ee"
+  | "ee-circuits"
+  | "ee-computer"
+  | "ee-intelligent"
+  | "ee-medical"
+  | "ee-photonics";
 
 export type Major = {
   id: MajorId;
@@ -33,6 +44,17 @@ export const majors: Major[] = [
   { id: "cs-minor", label: "Computer Science (minor)" },
   { id: "math", label: "Mathematics" },
   { id: "math-minor", label: "Mathematics (minor)" },
+  { id: "physics", label: "Physics" },
+  { id: "chemistry", label: "Chemistry" },
+  { id: "chemistry-minor", label: "Chemistry (minor)" },
+  { id: "bioengineering", label: "Bioengineering" },
+  { id: "acm", label: "Applied and Computational Mathematics" },
+  { id: "ee", label: "Electrical Engineering" },
+  { id: "ee-circuits", label: "Electrical Engineering (circuits & electronics track)" },
+  { id: "ee-computer", label: "Electrical Engineering (computer engineering track)" },
+  { id: "ee-intelligent", label: "Electrical Engineering (intelligent systems track)" },
+  { id: "ee-medical", label: "Electrical Engineering (medical engineering track)" },
+  { id: "ee-photonics", label: "Electrical Engineering (photonics and quantum track)" },
 ];
 
 export type RequirementCategoryId =
@@ -49,6 +71,17 @@ export type RequirementCategoryId =
   | "cs-minor"
   | "math"
   | "math-minor"
+  | "physics"
+  | "chemistry"
+  | "chemistry-minor"
+  | "bioengineering"
+  | "acm"
+  | "ee"
+  | "ee-circuits"
+  | "ee-computer"
+  | "ee-intelligent"
+  | "ee-medical"
+  | "ee-photonics"
   | "core-science"
   | "humanities"
   | "social-science"
@@ -178,6 +211,94 @@ export const requirementCategories: RequirementCategory[] = [
     color: "#4a3aa7",
     note: "Mathematics minor requirements: Ma 2, Ma 3 or Ma 140 a, two three-term Ma sequences from Ma 5/108/109, and 18 units of approved Ma courses.",
     majorId: "math-minor",
+  },
+  {
+    id: "physics",
+    label: "Physics",
+    shortLabel: "Physics",
+    color: "#7a4fc8",
+    note: "Physics option requirements: Ph 3, Ma 2/3, Ph 12 abc, physics labs, research/lab units, Ph 70, Ph 106 abc, Ph 125 ab, computational/analysis course, advanced physics electives, and outside science/engineering elective.",
+    majorId: "physics",
+  },
+  {
+    id: "chemistry",
+    label: "Chemistry",
+    shortLabel: "Chem",
+    color: "#b96b00",
+    note: "Chemistry option requirements: Ch 14, Ch 21 abc, Ch 41 abc, Ch 90, Ma 2, Ph 2 a, scientific writing, five chemistry labs, and five advanced chemistry electives.",
+    majorId: "chemistry",
+  },
+  {
+    id: "chemistry-minor",
+    label: "Chemistry minor",
+    shortLabel: "Chem minor",
+    color: "#b96b00",
+    note: "Chemistry minor requirements: 18 units organic chemistry, 18 units physical chemistry, 27 units advanced chemistry electives, and at least 9 units of chemistry laboratory.",
+    majorId: "chemistry-minor",
+  },
+  {
+    id: "bioengineering",
+    label: "Bioengineering",
+    shortLabel: "BE",
+    color: "#c24c78",
+    note: "Bioengineering option requirements: representative BE courses, experimental methods, biology/chemistry/physics foundations, mathematical/computational methods, BE electives, and Bi/BE 24 communication.",
+    majorId: "bioengineering",
+  },
+  {
+    id: "acm",
+    label: "Applied and Computational Mathematics",
+    shortLabel: "ACM",
+    color: "#276fbf",
+    note: "ACM option requirements: mathematical fundamentals, programming, communication, ACM core classes, ACM electives, an application-area sequence, and scientific fundamentals.",
+    majorId: "acm",
+  },
+  {
+    id: "ee",
+    label: "Electrical Engineering core",
+    shortLabel: "EE core",
+    color: "#0f77a8",
+    note: "Electrical Engineering requirements shared by the base EE option and all EE tracks.",
+    majorIds: ["ee", "ee-circuits", "ee-computer", "ee-intelligent", "ee-medical", "ee-photonics"],
+  },
+  {
+    id: "ee-circuits",
+    label: "Electrical Engineering — circuits & electronics track",
+    shortLabel: "EE circuits",
+    color: "#168aad",
+    note: "Circuits & Electronics track requirements: circuits/electronics depth, electromagnetic choice, project or thesis, and track electives.",
+    majorId: "ee-circuits",
+  },
+  {
+    id: "ee-computer",
+    label: "Electrical Engineering — computer engineering track",
+    shortLabel: "EE comp.",
+    color: "#1e6091",
+    note: "Computer Engineering track requirements: digital systems sequence, CS systems courses, computer architecture, and track electives.",
+    majorId: "ee-computer",
+  },
+  {
+    id: "ee-intelligent",
+    label: "Electrical Engineering — intelligent systems track",
+    shortLabel: "EE systems",
+    color: "#197278",
+    note: "Intelligent Systems track requirements: math, signals, learning, control, communication, depth sequence, and systems-oriented electives.",
+    majorId: "ee-intelligent",
+  },
+  {
+    id: "ee-medical",
+    label: "Electrical Engineering — medical engineering track",
+    shortLabel: "EE medical",
+    color: "#b24c63",
+    note: "Medical Engineering track requirements: medical-device-oriented electronics, MedE cross-listed electives, project/thesis, and approved EE/MedE/BBE/CCE electives.",
+    majorId: "ee-medical",
+  },
+  {
+    id: "ee-photonics",
+    label: "Electrical Engineering — photonics and quantum track",
+    shortLabel: "EE photon.",
+    color: "#6a4c93",
+    note: "Photonics and Quantum track requirements: Ph 12 ab, EE 151, ACM/math choices, specialization courses in optics/photonics, quantum technologies, or solid-state/materials/nanotechnology, and approved electives.",
+    majorId: "ee-photonics",
   },
   {
     id: "core-science",
@@ -419,6 +540,219 @@ export const requirementTemplates: RequirementTemplate[] = [
   { id: "math-minor-sequence-2c", categoryId: "math-minor", label: "Three-term Ma sequence 2 (Ma 5/108/109), part c" },
   { id: "math-minor-elective-1", categoryId: "math-minor", label: "Approved Ma elective" },
   { id: "math-minor-elective-2", categoryId: "math-minor", label: "Approved Ma elective" },
+
+  // Physics — option (major) requirements
+  { id: "physics-ph3", categoryId: "physics", label: "Ph 3 (or approved lab substitute)" },
+  { id: "physics-ma2", categoryId: "physics", label: "Ma 2" },
+  { id: "physics-ma3", categoryId: "physics", label: "Ma 3 (or approved statistics substitute)" },
+  { id: "physics-ph12a", categoryId: "physics", label: "Ph 12 a" },
+  { id: "physics-ph12b", categoryId: "physics", label: "Ph 12 b" },
+  { id: "physics-ph12c", categoryId: "physics", label: "Ph 12 c" },
+  { id: "physics-ph6", categoryId: "physics", label: "Ph 6" },
+  { id: "physics-ph7", categoryId: "physics", label: "Ph 7 or APh/EE 24" },
+  { id: "physics-research-lab", categoryId: "physics", label: "18 units Ph 77, 27 units Ph 78, or approved research/lab combination" },
+  { id: "physics-ph70", categoryId: "physics", label: "Ph 70 (or approved communication substitute)" },
+  { id: "physics-ph106a", categoryId: "physics", label: "Ph 106 a" },
+  { id: "physics-ph106b", categoryId: "physics", label: "Ph 106 b" },
+  { id: "physics-ph106c", categoryId: "physics", label: "Ph 106 c" },
+  { id: "physics-ph125a", categoryId: "physics", label: "Ph 125 a" },
+  { id: "physics-ph125b", categoryId: "physics", label: "Ph 125 b" },
+  { id: "physics-computation", categoryId: "physics", label: "Ph 21, Ph 22, one term Ph 121 abc, Ay 190, APh/MS 141, or CS 155" },
+  { id: "physics-advanced-1", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-2", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-3", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-4", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-5", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-6", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-7", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-8", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-9", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-advanced-10", categoryId: "physics", label: "Advanced physics elective (90 units total)" },
+  { id: "physics-outside-se", categoryId: "physics", label: "Science/engineering elective outside Ph, Ay, APh, Ma, and ACM" },
+
+  // Chemistry — option (major) requirements
+  { id: "chemistry-ch14", categoryId: "chemistry", label: "Ch 14 (or ESE/Ge 142)" },
+  { id: "chemistry-ch21a", categoryId: "chemistry", label: "Ch 21 a (or approved substitute)" },
+  { id: "chemistry-ch21b", categoryId: "chemistry", label: "Ch 21 b" },
+  { id: "chemistry-ch21c", categoryId: "chemistry", label: "Ch 21 c (or approved substitute)" },
+  { id: "chemistry-ch41a", categoryId: "chemistry", label: "Ch 41 a" },
+  { id: "chemistry-ch41b", categoryId: "chemistry", label: "Ch 41 b" },
+  { id: "chemistry-ch41c", categoryId: "chemistry", label: "Ch 41 c" },
+  { id: "chemistry-ch90", categoryId: "chemistry", label: "Ch 90 oral presentation" },
+  { id: "chemistry-ma2", categoryId: "chemistry", label: "Ma 2" },
+  { id: "chemistry-ph2a", categoryId: "chemistry", label: "Ph 2 a" },
+  { id: "chemistry-ch91", categoryId: "chemistry", label: "Ch 91 scientific writing (or approved senior thesis route)" },
+  { id: "chemistry-lab-1", categoryId: "chemistry", label: "Chemistry lab term (5 total from Ch 4 ab, Ch 5 ab, Ch 6, Ch 7, Ch 11, Ch 15, or approved substitute)" },
+  { id: "chemistry-lab-2", categoryId: "chemistry", label: "Chemistry lab term (5 total)" },
+  { id: "chemistry-lab-3", categoryId: "chemistry", label: "Chemistry lab term (5 total)" },
+  { id: "chemistry-lab-4", categoryId: "chemistry", label: "Chemistry lab term (5 total)" },
+  { id: "chemistry-lab-5", categoryId: "chemistry", label: "Chemistry lab term (5 total)" },
+  { id: "chemistry-advanced-1", categoryId: "chemistry", label: "Advanced chemistry elective (Ch 102+, 45 units total)" },
+  { id: "chemistry-advanced-2", categoryId: "chemistry", label: "Advanced chemistry elective (Ch 102+, 45 units total)" },
+  { id: "chemistry-advanced-3", categoryId: "chemistry", label: "Advanced chemistry elective (Ch 102+, 45 units total)" },
+  { id: "chemistry-advanced-4", categoryId: "chemistry", label: "Advanced chemistry elective (Ch 102+, 45 units total)" },
+  { id: "chemistry-advanced-5", categoryId: "chemistry", label: "Advanced chemistry elective (Ch 102+, 45 units total)" },
+
+  // Chemistry — minor
+  { id: "chemistry-minor-organic-1", categoryId: "chemistry-minor", label: "Organic chemistry from Ch 41 abc (18 units total)" },
+  { id: "chemistry-minor-organic-2", categoryId: "chemistry-minor", label: "Organic chemistry from Ch 41 abc (18 units total)" },
+  { id: "chemistry-minor-physical-1", categoryId: "chemistry-minor", label: "Physical chemistry from Ch 21 abc or approved substitute (18 units total)" },
+  { id: "chemistry-minor-physical-2", categoryId: "chemistry-minor", label: "Physical chemistry from Ch 21 abc or approved substitute (18 units total)" },
+  { id: "chemistry-minor-advanced-1", categoryId: "chemistry-minor", label: "Advanced chemistry elective Ch 102+ (27 units total)" },
+  { id: "chemistry-minor-advanced-2", categoryId: "chemistry-minor", label: "Advanced chemistry elective Ch 102+ (27 units total)" },
+  { id: "chemistry-minor-advanced-3", categoryId: "chemistry-minor", label: "Advanced chemistry elective Ch 102+ (27 units total)" },
+  { id: "chemistry-minor-lab", categoryId: "chemistry-minor", label: "Chemistry laboratory course, 9+ units (Ch 4 ab, Ch 5 ab, Ch 6 ab, Ch 7, Ch 11, or Ch 15)" },
+
+  // Bioengineering — option (major) requirements
+  { id: "be-data-analysis", categoryId: "bioengineering", label: "BE/Bi 103 a or IDS/ACM/CS 157" },
+  { id: "be-circuit-design", categoryId: "bioengineering", label: "BE 150 or BE/CS/CNS/Bi 191 a" },
+  { id: "be-physical-biology", categoryId: "bioengineering", label: "BE/Bi/APh 161" },
+  { id: "be-biomolecular-engineering", categoryId: "bioengineering", label: "BE/ChE 163" },
+  { id: "be-bi1x", categoryId: "bioengineering", label: "Bi 1x (waived if integrated core completed)" },
+  { id: "be-experimental-methods", categoryId: "bioengineering", label: "BE/EE/MedE 189 a or BE 107" },
+  { id: "be-design-methods", categoryId: "bioengineering", label: "ChE/Ch/BE 130 or BE/CS 196 a" },
+  { id: "be-ph2-term-1", categoryId: "bioengineering", label: "Two terms from Ph 2 abc (or Ch 21 substitutes)" },
+  { id: "be-ph2-term-2", categoryId: "bioengineering", label: "Two terms from Ph 2 abc (or Ch 21 substitutes)" },
+  { id: "be-bi8", categoryId: "bioengineering", label: "Bi 8" },
+  { id: "be-bi9", categoryId: "bioengineering", label: "Bi 9" },
+  { id: "be-bi25", categoryId: "bioengineering", label: "BE/Bi 25" },
+  { id: "be-ch41a", categoryId: "bioengineering", label: "Ch 41 a" },
+  { id: "be-ch-bi-110a", categoryId: "bioengineering", label: "Ch/Bi 110 a" },
+  { id: "be-advanced-biology", categoryId: "bioengineering", label: "Advanced biology course, 9+ units" },
+  { id: "be-acm95a", categoryId: "bioengineering", label: "ACM 95 a" },
+  { id: "be-acm95b", categoryId: "bioengineering", label: "ACM 95 b" },
+  { id: "be-ma2", categoryId: "bioengineering", label: "Ma 2" },
+  { id: "be-ma3", categoryId: "bioengineering", label: "Ma 3" },
+  { id: "be-control-methods", categoryId: "bioengineering", label: "ChE 105, CDS 110, or ACM 116" },
+  { id: "be-cs-methods", categoryId: "bioengineering", label: "9 units from CS 1, CS 2, CS 3, CS 21, CS 24, or CS 38" },
+  { id: "be-elective-1", categoryId: "bioengineering", label: "BE elective (36 units total)" },
+  { id: "be-elective-2", categoryId: "bioengineering", label: "BE elective (36 units total)" },
+  { id: "be-elective-3", categoryId: "bioengineering", label: "BE elective (36 units total)" },
+  { id: "be-elective-4", categoryId: "bioengineering", label: "BE elective (36 units total)" },
+  { id: "be-communication", categoryId: "bioengineering", label: "Bi/BE 24 communication" },
+
+  // Applied and Computational Mathematics — option (major) requirements
+  { id: "acm-ma2", categoryId: "acm", label: "Ma 2" },
+  { id: "acm-ma3", categoryId: "acm", label: "Ma 3" },
+  { id: "acm-ma6a", categoryId: "acm", label: "Ma 6 a or Ma 121 a" },
+  { id: "acm-ma6b", categoryId: "acm", label: "Ma 6 b or Ma 121 b" },
+  { id: "acm-ma6c-cs21", categoryId: "acm", label: "Ma 6 c or CS 21" },
+  { id: "acm-ma108a", categoryId: "acm", label: "Ma 108 a" },
+  { id: "acm-ma108b", categoryId: "acm", label: "Ma 108 b" },
+  { id: "acm-cs1", categoryId: "acm", label: "CS 1 or CS 1 x" },
+  { id: "acm-11", categoryId: "acm", label: "ACM 11" },
+  { id: "acm-sec10", categoryId: "acm", label: "SEC 10" },
+  { id: "acm-sec-written", categoryId: "acm", label: "One of SEC 11-13" },
+  { id: "acm-95a", categoryId: "acm", label: "ACM 95 a" },
+  { id: "acm-95b", categoryId: "acm", label: "ACM 95 b" },
+  { id: "acm-linear", categoryId: "acm", label: "ACM 104 or ACM 107 a" },
+  { id: "acm-probability", categoryId: "acm", label: "ACM 116 or CMS/ACM 117" },
+  { id: "acm-101a", categoryId: "acm", label: "ACM 101 a" },
+  { id: "acm-101b", categoryId: "acm", label: "ACM 101 b" },
+  { id: "acm-106a", categoryId: "acm", label: "ACM 106 a" },
+  { id: "acm-106b", categoryId: "acm", label: "ACM 106 b" },
+  { id: "acm-elective-1", categoryId: "acm", label: "Approved 100+ ACM elective (27 units total)" },
+  { id: "acm-elective-2", categoryId: "acm", label: "Approved 100+ ACM elective (27 units total)" },
+  { id: "acm-elective-3", categoryId: "acm", label: "Approved 100+ ACM elective (27 units total)" },
+  { id: "acm-sequence-1", categoryId: "acm", label: "Approved 100+ application-area sequence (27 units total)" },
+  { id: "acm-sequence-2", categoryId: "acm", label: "Approved 100+ application-area sequence (27 units total)" },
+  { id: "acm-sequence-3", categoryId: "acm", label: "Approved 100+ application-area sequence (27 units total)" },
+  { id: "acm-science-1", categoryId: "acm", label: "Scientific fundamentals course (18 units from BE/Bi, Bi, Ch, ME, Ph menus)" },
+  { id: "acm-science-2", categoryId: "acm", label: "Scientific fundamentals course (18 units from BE/Bi, Bi, Ch, ME, Ph menus)" },
+
+  // Electrical Engineering — shared option/track requirements
+  { id: "ee-ma2", categoryId: "ee", label: "Ma 2" },
+  { id: "ee-2", categoryId: "ee", label: "EE 2" },
+  { id: "ee-sec10", categoryId: "ee", label: "SEC 10" },
+  { id: "ee-sec-written", categoryId: "ee", label: "One of SEC 11-13" },
+  { id: "ee-cs10a", categoryId: "ee", label: "EE/CS 10 a" },
+  { id: "ee-cs10b", categoryId: "ee", label: "EE/CS 10 b" },
+  { id: "ee-aph40", categoryId: "ee", label: "EE/APh 40" },
+  { id: "ee-44", categoryId: "ee", label: "EE 44" },
+  { id: "ee-45", categoryId: "ee", label: "EE 45" },
+  { id: "ee-55", categoryId: "ee", label: "EE 55" },
+  { id: "ee-90", categoryId: "ee", label: "EE 90" },
+  { id: "ee-111", categoryId: "ee", label: "EE 111" },
+  { id: "ee-ph2-1", categoryId: "ee", label: "One of Ph 2 a/b/c or APh/EE 23 (Ph 12 may substitute)" },
+  { id: "ee-ph2-2", categoryId: "ee", label: "Second Ph/APh choice from Ph 2 a/b/c or APh/EE 23" },
+  { id: "ee-math-choice-1", categoryId: "ee", label: "One of ACM 95 a, ACM 95 b, ACM/IDS 104, or ACM/EE/IDS 116" },
+  { id: "ee-math-choice-2", categoryId: "ee", label: "Second ACM/IDS/EE math choice" },
+  { id: "ee-math-choice-3", categoryId: "ee", label: "Third ACM/IDS/EE math choice" },
+  { id: "ee-151-or-160", categoryId: "ee", label: "EE 151 or EE/CS/IDS 160" },
+  { id: "ee-project", categoryId: "ee", label: "EE 91 ab, or waived by EE 80 abc senior thesis" },
+  { id: "ee-elective-1", categoryId: "ee", label: "EE or approved 100+ science/engineering elective (72 units total)" },
+  { id: "ee-elective-2", categoryId: "ee", label: "EE or approved 100+ science/engineering elective (72 units total)" },
+  { id: "ee-elective-3", categoryId: "ee", label: "EE or approved 100+ science/engineering elective (72 units total)" },
+  { id: "ee-elective-4", categoryId: "ee", label: "EE or approved 100+ science/engineering elective (72 units total)" },
+  { id: "ee-elective-5", categoryId: "ee", label: "EE or approved 100+ science/engineering elective (72 units total)" },
+  { id: "ee-elective-6", categoryId: "ee", label: "EE or approved 100+ science/engineering elective (72 units total)" },
+  { id: "ee-elective-7", categoryId: "ee", label: "EE or approved 100+ science/engineering elective (72 units total)" },
+  { id: "ee-elective-8", categoryId: "ee", label: "EE or approved 100+ science/engineering elective (72 units total)" },
+
+  // Electrical Engineering — circuits & electronics track
+  { id: "ee-circuits-depth-1", categoryId: "ee-circuits", label: "Circuit/electronics depth course: EE 113/114 a/114 b/124/119 a/119 b/153" },
+  { id: "ee-circuits-depth-2", categoryId: "ee-circuits", label: "Circuit/electronics depth course" },
+  { id: "ee-circuits-depth-3", categoryId: "ee-circuits", label: "Circuit/electronics depth course" },
+  { id: "ee-circuits-depth-4", categoryId: "ee-circuits", label: "Circuit/electronics depth course" },
+  { id: "ee-circuits-em", categoryId: "ee-circuits", label: "One of EE 151, EE 152, EE 154, or EE 158" },
+  { id: "ee-circuits-project", categoryId: "ee-circuits", label: "EE 80 abc or EE 91 ab" },
+  { id: "ee-circuits-elective-1", categoryId: "ee-circuits", label: "EE/Ph/ACM approved elective (99 units total; 45 units 100+)" },
+  { id: "ee-circuits-elective-2", categoryId: "ee-circuits", label: "EE/Ph/ACM approved elective" },
+  { id: "ee-circuits-elective-3", categoryId: "ee-circuits", label: "EE/Ph/ACM approved elective" },
+  { id: "ee-circuits-elective-4", categoryId: "ee-circuits", label: "EE/Ph/ACM approved elective" },
+
+  // Electrical Engineering — computer engineering track
+  { id: "ee-computer-188", categoryId: "ee-computer", label: "EE 188" },
+  { id: "ee-computer-design-1", categoryId: "ee-computer", label: "EE 110 a or EE/CS 119 a" },
+  { id: "ee-computer-design-2", categoryId: "ee-computer", label: "EE 110 b or EE/CS 119 b" },
+  { id: "ee-computer-design-3", categoryId: "ee-computer", label: "EE 110 c or EE/CS 119 c (EE 91 ab may substitute)" },
+  { id: "ee-computer-cs3", categoryId: "ee-computer", label: "CS 3" },
+  { id: "ee-computer-cs24", categoryId: "ee-computer", label: "CS 24" },
+  { id: "ee-computer-cs124", categoryId: "ee-computer", label: "CS 124" },
+  { id: "ee-computer-elective-1", categoryId: "ee-computer", label: "EE/Ph/ACM approved elective (96 units total; 45 units 100+)" },
+  { id: "ee-computer-elective-2", categoryId: "ee-computer", label: "EE/Ph/ACM approved elective" },
+  { id: "ee-computer-elective-3", categoryId: "ee-computer", label: "EE/Ph/ACM approved elective" },
+
+  // Electrical Engineering — intelligent systems track
+  { id: "ee-intelligent-acm104", categoryId: "ee-intelligent", label: "ACM/IDS 104" },
+  { id: "ee-intelligent-probability", categoryId: "ee-intelligent", label: "ACM/EE/IDS 116 or CMS/ACM 117" },
+  { id: "ee-intelligent-157", categoryId: "ee-intelligent", label: "IDS/ACM/CS 157" },
+  { id: "ee-intelligent-acm95a", categoryId: "ee-intelligent", label: "ACM 95 a" },
+  { id: "ee-intelligent-ee111", categoryId: "ee-intelligent", label: "EE 111" },
+  { id: "ee-intelligent-156a", categoryId: "ee-intelligent", label: "CS/CNS/EE 156 a" },
+  { id: "ee-intelligent-cds110", categoryId: "ee-intelligent", label: "CDS 110" },
+  { id: "ee-intelligent-160", categoryId: "ee-intelligent", label: "EE/CS/IDS 160" },
+  { id: "ee-intelligent-depth-1", categoryId: "ee-intelligent", label: "EE 80 abc or approved systems depth sequence, part 1" },
+  { id: "ee-intelligent-depth-2", categoryId: "ee-intelligent", label: "Approved systems depth sequence, part 2" },
+  { id: "ee-intelligent-depth-3", categoryId: "ee-intelligent", label: "Approved systems depth sequence, part 3" },
+  { id: "ee-intelligent-elective-1", categoryId: "ee-intelligent", label: "Approved systems/EE elective (99 units total; 45 units 100+)" },
+  { id: "ee-intelligent-elective-2", categoryId: "ee-intelligent", label: "Approved systems/EE elective" },
+  { id: "ee-intelligent-elective-3", categoryId: "ee-intelligent", label: "Approved systems/EE elective" },
+
+  // Electrical Engineering — medical engineering track
+  { id: "ee-medical-ee45-or-aph", categoryId: "ee-medical", label: "EE 45 or APh/EE 23 + APh/EE 24 sequence" },
+  { id: "ee-medical-mede-1", categoryId: "ee-medical", label: "EE course cross-listed with MedE, numbered 100+ (45 units total)" },
+  { id: "ee-medical-mede-2", categoryId: "ee-medical", label: "EE/MedE 100+ elective" },
+  { id: "ee-medical-mede-3", categoryId: "ee-medical", label: "EE/MedE 100+ elective" },
+  { id: "ee-medical-project", categoryId: "ee-medical", label: "EE 80 abc or EE/MedE/BE 189 ab" },
+  { id: "ee-medical-elective-1", categoryId: "ee-medical", label: "Approved EE/MedE/BBE/CCE elective (96 units total; 45 units 100+)" },
+  { id: "ee-medical-elective-2", categoryId: "ee-medical", label: "Approved EE/MedE/BBE/CCE elective" },
+  { id: "ee-medical-elective-3", categoryId: "ee-medical", label: "Approved EE/MedE/BBE/CCE elective" },
+
+  // Electrical Engineering — photonics and quantum track
+  { id: "ee-photonics-ph12a", categoryId: "ee-photonics", label: "Ph 12 a" },
+  { id: "ee-photonics-ph12b", categoryId: "ee-photonics", label: "Ph 12 b" },
+  { id: "ee-photonics-ee151", categoryId: "ee-photonics", label: "EE 151" },
+  { id: "ee-photonics-acm-choice-1", categoryId: "ee-photonics", label: "One of ACM 95 a, ACM 95 b, ACM/IDS 104, ACM/EE/IDS 116" },
+  { id: "ee-photonics-acm-choice-2", categoryId: "ee-photonics", label: "Second ACM/IDS/EE math choice" },
+  { id: "ee-photonics-acm-choice-3", categoryId: "ee-photonics", label: "Third ACM/IDS/EE math choice" },
+  { id: "ee-photonics-specialization-1", categoryId: "ee-photonics", label: "Photonics/quantum/solid-state specialization course (27 units total)" },
+  { id: "ee-photonics-specialization-2", categoryId: "ee-photonics", label: "Photonics/quantum/solid-state specialization course" },
+  { id: "ee-photonics-specialization-3", categoryId: "ee-photonics", label: "Photonics/quantum/solid-state specialization course" },
+  { id: "ee-photonics-project", categoryId: "ee-photonics", label: "EE 80 abc or approved advanced course sequence/project" },
+  { id: "ee-photonics-elective-1", categoryId: "ee-photonics", label: "Approved EE/Ph/APh elective (54 units total; 45 units 100+)" },
+  { id: "ee-photonics-elective-2", categoryId: "ee-photonics", label: "Approved EE/Ph/APh elective" },
+  { id: "ee-photonics-elective-3", categoryId: "ee-photonics", label: "Approved EE/Ph/APh elective" },
 
   // Institute core — math & science
   { id: "core-ma1a", categoryId: "core-science", label: "Ma 1 a" },

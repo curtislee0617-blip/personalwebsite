@@ -12,7 +12,7 @@ export default function VlePage() {
   return (
     <>
       <PageIntro eyebrow="Engineering tool" title="VLE simulator" description="Explore binary vapour–liquid equilibrium with ideal, activity-coefficient, and Peng–Robinson models." />
-      <div className="page-shell pb-4 pt-5 sm:pt-6"><Link className="text-xs font-semibold text-ink/55 transition hover:text-ink" href="/tools">← Back to tools</Link></div>
+      <div className="page-shell pb-4 pt-5 sm:pt-6"><Link className="back-link-bubble" href="/tools">← Back to tools</Link></div>
       <div className="page-shell pb-16 sm:pb-20"><VleSimulator /></div>
     </>
   );

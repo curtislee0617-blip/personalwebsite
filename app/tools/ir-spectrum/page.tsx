@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function IrSpectrumPage() {
   return <>
     <PageIntro eyebrow="Engineering tool" title="IR spectrum plotter" description="Upload, compare, and label infrared spectra without sending the measurement files to a server." />
-    <div className="page-shell pb-4 pt-5 sm:pt-6"><Link className="text-xs font-semibold text-ink/55 transition hover:text-ink" href="/tools">← Back to tools</Link></div>
+    <div className="page-shell pb-4 pt-5 sm:pt-6"><Link className="back-link-bubble" href="/tools">← Back to tools</Link></div>
     <div className="page-shell pb-16 sm:pb-20"><IrSpectrumTool /></div>
   </>;
 }

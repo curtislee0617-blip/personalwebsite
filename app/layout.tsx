@@ -41,7 +41,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <FooterAdminLogin authenticated={authenticated} />
               <div className="flex gap-5">
                 <Link className="hover:text-ink" href="/contact">Say hello</Link>
-                <a className="hover:text-ink" href="#top">Back to top ↑</a>
+                <a className="back-link-bubble" href="#top">Back to top ↑</a>
               </div>
             </div>
           </footer>

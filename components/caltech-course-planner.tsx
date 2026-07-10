@@ -20,8 +20,10 @@ type RequirementOwner = { classId: string; className: string };
 const STORAGE_KEY = "caltech-course-planner-v2";
 const CHEME_TRACK_IDS: MajorId[] = ["cheme-biomolecular", "cheme-sustainability", "cheme-process", "cheme-materials", "cheme-computational"];
 const CHEME_TRACK_ID_SET = new Set<MajorId>(CHEME_TRACK_IDS);
-const MAJOR_IDS = new Set<MajorId>([...CHEME_TRACK_IDS, "bem", "cs", "math"]);
-const MINOR_IDS = new Set<MajorId>(["cheme-minor", "bem-minor", "cs-minor", "math-minor"]);
+const EE_TRACK_IDS: MajorId[] = ["ee-circuits", "ee-computer", "ee-intelligent", "ee-medical", "ee-photonics"];
+const EE_TRACK_ID_SET = new Set<MajorId>(EE_TRACK_IDS);
+const MAJOR_IDS = new Set<MajorId>([...CHEME_TRACK_IDS, ...EE_TRACK_IDS, "bem", "cs", "math", "physics", "chemistry", "bioengineering", "acm", "ee"]);
+const MINOR_IDS = new Set<MajorId>(["cheme-minor", "bem-minor", "cs-minor", "math-minor", "chemistry-minor"]);
 const SUBJECT_GROUPS: Array<{
   title: string;
   ids: MajorId[];
@@ -38,6 +40,15 @@ const SUBJECT_GROUPS: Array<{
   { title: "BEM", ids: ["bem", "bem-minor"], sections: [{ ids: ["bem", "bem-minor"] }] },
   { title: "Computer Science", ids: ["cs", "cs-minor"], sections: [{ ids: ["cs", "cs-minor"] }] },
   { title: "Mathematics", ids: ["math", "math-minor"], sections: [{ ids: ["math", "math-minor"] }] },
+  { title: "Physics", ids: ["physics"], sections: [{ ids: ["physics"] }] },
+  { title: "Chemistry", ids: ["chemistry", "chemistry-minor"], sections: [{ ids: ["chemistry", "chemistry-minor"] }] },
+  { title: "Bioengineering", ids: ["bioengineering"], sections: [{ ids: ["bioengineering"] }] },
+  { title: "ACM", ids: ["acm"], sections: [{ ids: ["acm"] }] },
+  {
+    title: "Electrical Engineering",
+    ids: EE_TRACK_IDS,
+    sections: [{ title: "Tracks", ids: EE_TRACK_IDS }],
+  },
 ];
 
 function cellId(year: number, term: Term) {
@@ -76,14 +87,23 @@ function chemETrackLabel(label: string) {
   return label.replace(/^Chemical Engineering \(/, "").replace(/\)$/, "");
 }
 
+function eeTrackLabel(label: string) {
+  return label.replace(/^Electrical Engineering \(/, "").replace(/\)$/, "");
+}
+
 function formatMajorSummary(majorIds: MajorId[]) {
   const chemeTracks = majorIds
     .filter((id) => CHEME_TRACK_ID_SET.has(id))
     .map((id) => majors.find((major) => major.id === id)?.label)
     .filter((label): label is string => Boolean(label))
     .map(chemETrackLabel);
+  const eeTracks = majorIds
+    .filter((id) => EE_TRACK_ID_SET.has(id))
+    .map((id) => majors.find((major) => major.id === id)?.label)
+    .filter((label): label is string => Boolean(label))
+    .map(eeTrackLabel);
   const otherLabels = majorIds
-    .filter((id) => !CHEME_TRACK_ID_SET.has(id) && MAJOR_IDS.has(id))
+    .filter((id) => !CHEME_TRACK_ID_SET.has(id) && !EE_TRACK_ID_SET.has(id) && MAJOR_IDS.has(id))
     .map((id) => majors.find((major) => major.id === id)?.label ?? id);
   const minorLabels = majorIds
     .filter((id) => MINOR_IDS.has(id))
@@ -91,6 +111,7 @@ function formatMajorSummary(majorIds: MajorId[]) {
 
   return [
     chemeTracks.length ? `Chemical Engineering (${chemeTracks.join(", ")})` : null,
+    eeTracks.length ? `Electrical Engineering (${eeTracks.join(", ")})` : null,
     ...otherLabels,
     ...minorLabels,
   ].filter(Boolean).join(", ");
@@ -179,7 +200,21 @@ function SubjectDropdown({ group, selectedMajors, onToggleMajor }: MajorSelector
               if (!major) return null;
               const label = CHEME_TRACK_ID_SET.has(id)
                 ? chemETrackLabel(major.label)
-                : major.label.replace(/^Business, Economics & Management$/, "Major").replace(/^Business, Economics & Management \(minor\)$/, "Minor").replace(/^Computer Science$/, "Major").replace(/^Computer Science \(minor\)$/, "Minor").replace(/^Mathematics$/, "Major").replace(/^Mathematics \(minor\)$/, "Minor").replace(/^Chemical Engineering \(minor\)$/, "Minor");
+                : EE_TRACK_ID_SET.has(id)
+                  ? eeTrackLabel(major.label)
+                  : major.label
+                    .replace(/^Business, Economics & Management$/, "Major")
+                    .replace(/^Business, Economics & Management \(minor\)$/, "Minor")
+                    .replace(/^Computer Science$/, "Major")
+                    .replace(/^Computer Science \(minor\)$/, "Minor")
+                    .replace(/^Mathematics$/, "Major")
+                    .replace(/^Mathematics \(minor\)$/, "Minor")
+                    .replace(/^Physics$/, "Major")
+                    .replace(/^Chemistry$/, "Major")
+                    .replace(/^Chemistry \(minor\)$/, "Minor")
+                    .replace(/^Bioengineering$/, "Major")
+                    .replace(/^Applied and Computational Mathematics$/, "Requirements")
+                    .replace(/^Chemical Engineering \(minor\)$/, "Minor");
 
               return (
                 <label className="flex items-center gap-1.5 text-xs text-ink/70" key={id}>
@@ -542,7 +577,6 @@ export function CaltechCoursePlanner() {
     setLoginLastName("");
     setLoginPassword("");
     setLoginMajors([]);
-    setPlan({ classes: {}, customTemplates: [] });
   }, []);
 
   const updateProfileMajors = useCallback(() => {
@@ -627,13 +661,6 @@ export function CaltechCoursePlanner() {
     });
   }, []);
 
-  const resetAll = useCallback(() => {
-    if (!window.confirm("Reset the planner? This clears every class, checkbox, and custom requirement.")) return;
-    setPlan({ classes: {}, customTemplates: [] });
-    setSelection(null);
-    setOpenPickerClassId(null);
-  }, []);
-
   const handleDrop = useCallback(
     (targetCell: string, event: DragEvent) => {
       event.preventDefault();
@@ -698,7 +725,7 @@ export function CaltechCoursePlanner() {
               </p>
             </div>
             <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-surface" onClick={signOut} type="button">
-              Switch profile
+              Sign out
             </button>
             <div className="basis-full rounded-2xl border border-ink/10 bg-paper/45 p-3">
               <p className="text-xs font-semibold text-ink/55">Update majors / minors</p>
@@ -720,7 +747,7 @@ export function CaltechCoursePlanner() {
           <div>
             <p className="eyebrow">Cloud save</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">
-              Save your plan online so you can pick it up on another device. Use your first name, last name, and a small password to reopen the same profile later. Chemical Engineering tracks, BEM, Computer Science (major and minor), and Mathematics have real requirement sets so far; more are coming.
+              You can use the planner without signing in; it will still save locally in this browser. Sign in only if you want cloud save and access from another device. Use your first name, last name, and a small password to reopen the same profile later. Chemical Engineering tracks, BEM, Computer Science, Mathematics, Physics, Chemistry, Bioengineering, ACM, and Electrical Engineering have requirement sets.
             </p>
             <div className="mt-4 flex flex-wrap items-end gap-4">
               <label className="text-xs font-medium text-ink/55">
@@ -745,7 +772,7 @@ export function CaltechCoursePlanner() {
                 onClick={signIn}
                 type="button"
               >
-                {syncStatus === "loading" ? "Loading…" : "Save online"}
+                {syncStatus === "loading" ? "Loading…" : "Sign in"}
               </button>
             </div>
             {syncStatus === "error" && <p className="mt-3 text-xs text-clay">{syncError}</p>}
@@ -754,16 +781,11 @@ export function CaltechCoursePlanner() {
       </section>
 
       <section className="rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="eyebrow">Progress</p>
-            <p className="mt-2 text-sm text-ink/60">
-              {totals.placed} / {totals.total} requirements satisfied by a class · {totals.done} / {totals.total} checked off as done
-            </p>
-          </div>
-          <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-surface" onClick={resetAll} type="button">
-            Reset planner
-          </button>
+        <div>
+          <p className="eyebrow">Progress</p>
+          <p className="mt-2 text-sm text-ink/60">
+            {totals.placed} / {totals.total} requirements satisfied by a class · {totals.done} / {totals.total} checked off as done
+          </p>
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

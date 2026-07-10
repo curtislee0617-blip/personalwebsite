@@ -73,7 +73,7 @@ export function RecipeCard({ entry, showBackLink = false }: { entry: RecipeCardE
             </div>
           ))}
           {showBackLink && (
-            <Link className="inline-flex w-fit rounded-full border border-ink/15 bg-paper/75 px-4 py-2 text-xs font-semibold text-ink/55 transition hover:border-ink/30 hover:text-ink" href="/recipes">
+            <Link className="back-link-bubble" href="/recipes">
               Back to recipes
             </Link>
           )}
@@ -86,7 +86,7 @@ export function RecipeCard({ entry, showBackLink = false }: { entry: RecipeCardE
           <p>Method</p>
           <p>Notes / variations</p>
           {showBackLink && (
-            <Link className="mt-3 inline-flex w-fit rounded-full border border-ink/15 bg-paper/75 px-4 py-2 text-xs font-semibold text-ink/55 transition hover:border-ink/30 hover:text-ink" href="/recipes">
+            <Link className="back-link-bubble mt-3" href="/recipes">
               Back to recipes
             </Link>
           )}

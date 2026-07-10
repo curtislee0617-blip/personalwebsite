@@ -17,7 +17,7 @@ export default function WaterPropertiesPage() {
         description="Calculate specific volume, internal energy, enthalpy, and entropy from any two independent properties within the Koretsky steam-table ranges."
       />
       <div className="page-shell pb-4 pt-5 sm:pt-6">
-        <Link className="text-xs font-semibold text-ink/55 transition hover:text-ink" href="/tools">← Back to tools</Link>
+        <Link className="back-link-bubble" href="/tools">← Back to tools</Link>
       </div>
       <div className="page-shell pb-16 sm:pb-20">
         <SteamTableCalculator />

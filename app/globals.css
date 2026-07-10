@@ -42,6 +42,29 @@ body {
 /* Keep the page's themed cursor over buttons/links/images too, while allowing explicit previews. */
 body.has-page-cursor * { cursor: inherit; }
 
+.back-link-bubble {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgb(var(--color-ink) / 0.15);
+  border-radius: 9999px;
+  background: rgb(var(--color-surface) / 0.72);
+  padding: 0.55rem 0.95rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.back-link-bubble:hover {
+  border-color: rgb(var(--color-ink) / 0.3);
+  background: rgb(var(--color-surface) / 0.95);
+  color: rgb(var(--color-ink));
+  transform: translateY(-1px);
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -50,6 +73,11 @@ body.has-page-cursor * { cursor: inherit; }
 
 ::view-transition-old(root) { z-index: 1; }
 ::view-transition-new(root) { z-index: 2; }
+
+html[data-theme-transition="light-to-dark"]::view-transition-old(root) { z-index: 2; }
+html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index: 1; }
+html[data-theme-transition="dark-to-light"]::view-transition-old(root) { z-index: 1; }
+html[data-theme-transition="dark-to-light"]::view-transition-new(root) { z-index: 2; }
 
 .home-orbit {
   position: relative;

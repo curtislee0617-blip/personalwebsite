@@ -41,7 +41,10 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
 
   function toggle(event: MouseEvent<HTMLButtonElement>) {
     const next = !isDark;
-    const { clientX: x, clientY: y } = event;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const iconBounds = event.currentTarget.querySelector("svg")?.getBoundingClientRect();
+    const x = iconBounds ? iconBounds.left + iconBounds.width / 2 : bounds.left + bounds.width / 2;
+    const y = iconBounds ? iconBounds.top + iconBounds.height / 2 : bounds.top + bounds.height / 2;
     const flip = () => {
       applyTheme(next);
       setState((prev) => ({ ...prev, isDark: next }));
@@ -55,18 +58,32 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       return;
     }
 
+    document.documentElement.dataset.themeTransition = next ? "light-to-dark" : "dark-to-light";
     const transition = doc.startViewTransition(flip);
     transition.ready
       .then(() => {
         const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
-        // A clean, fully-opaque clip reveal — no opacity fade, which otherwise lets the old theme
-        // ghost through the new layer and reads as a tear. Ease-out keeps it smooth.
+        const buttonRadius = Math.max(iconBounds?.width ?? bounds.width, iconBounds?.height ?? bounds.height) / 2;
+        const isLightToDark = next;
         document.documentElement.animate(
-          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
-          { duration: 650, easing: "cubic-bezier(0.33, 1, 0.68, 1)", pseudoElement: "::view-transition-new(root)" },
+          {
+            clipPath: isLightToDark
+              ? [`circle(${radius}px at ${x}px ${y}px)`, `circle(${buttonRadius}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
+              : [`circle(0px at ${x}px ${y}px)`, `circle(${buttonRadius}px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`],
+          },
+          {
+            duration: 650,
+            easing: "cubic-bezier(0.33, 1, 0.68, 1)",
+            pseudoElement: isLightToDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
+          },
         );
       })
-      .catch(() => undefined);
+      .catch(() => undefined)
+      .finally(() => {
+        transition.finished.finally(() => {
+          delete document.documentElement.dataset.themeTransition;
+        });
+      });
   }
 
   if (!mounted) return null;

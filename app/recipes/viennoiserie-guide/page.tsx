@@ -22,7 +22,7 @@ export default function ViennoiserieGuidePage() {
           <p>
             This guide is being built. Images and notes can be uploaded through the recipe media/import workflow, then I will fold them into a full viennoiserie reference.
           </p>
-          <Link className="mt-6 inline-block text-sm font-semibold text-moss hover:text-ink" href="/recipes">← Back to recipes</Link>
+          <Link className="back-link-bubble mt-6" href="/recipes">← Back to recipes</Link>
         </div>
 
         {relatedRecipes.length > 0 && (

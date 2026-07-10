@@ -52,10 +52,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
       <section className="page-section pt-12 sm:pt-16">
         <div className="mb-6 sm:mb-8">
-          <Link
-            className="inline-flex rounded-full border border-ink/15 bg-surface/75 px-4 py-2 text-sm font-semibold text-ink transition hover:border-ink/30 hover:bg-surface"
-            href="/projects"
-          >
+          <Link className="back-link-bubble" href="/projects">
             ← Back to projects
           </Link>
         </div>
