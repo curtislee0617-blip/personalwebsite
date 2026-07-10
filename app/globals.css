@@ -65,6 +65,10 @@ body.has-page-cursor * { cursor: inherit; }
   transform: translateY(-1px);
 }
 
+.page-intro { display: grid; justify-items: start; }
+.page-intro-title { width: min(100%, 60rem); text-wrap: balance; }
+.page-intro-description { width: min(100%, 44rem); text-wrap: pretty; }
+
 .contact-cities {
   display: grid;
   align-items: center;
@@ -1752,7 +1756,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     display: block;
     width: 540svh;
     height: 100%;
-    background-image: url("/mobile-photo-collage.webp");
+    background-image: url("/mobile-photo-collage.webp?v=2");
     background-position: 0 50%;
     background-repeat: repeat-x;
     background-size: 270svh 100%;

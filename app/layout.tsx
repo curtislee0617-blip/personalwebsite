@@ -4,7 +4,6 @@ import Script from "next/script";
 import { SiteHeader } from "@/components/site-header";
 import { FooterAdminLogin } from "@/components/footer-admin-login";
 import { PageCursor } from "@/components/page-cursor";
-import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
@@ -25,11 +24,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const authenticated = await isRecipeAdminAuthenticated();
-
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html data-scroll-behavior="smooth" lang="en" suppressHydrationWarning>
       <body>
         <Script id="theme-init" strategy="beforeInteractive">{THEME_INIT_SCRIPT}</Script>
         <PageCursor />
@@ -38,7 +35,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <main className="flex-1">{children}</main>
           <footer className="border-t border-ink/10">
             <div className="page-shell flex flex-col gap-4 py-8 text-sm text-ink/55 sm:flex-row sm:items-center sm:justify-between">
-              <FooterAdminLogin authenticated={authenticated} />
+              <FooterAdminLogin />
               <div className="flex gap-5">
                 <Link className="hover:text-ink" href="/contact">Say hello</Link>
                 <a className="back-link-bubble" href="#top">Back to top ↑</a>

@@ -1,6 +1,7 @@
 "use server";
 
 import crypto from "node:crypto";
+import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { uploadToR2 } from "@/lib/r2";
@@ -54,6 +55,7 @@ export async function submitRecipe(formData: FormData) {
     console.error("Failed to save recipe draft", error);
     redirect("/recipes/admin?error=save-failed");
   }
+  if (publishNow) updateTag("published-recipes");
   redirect("/recipes/admin?submitted=1");
 }
 
@@ -63,5 +65,6 @@ export async function markProcessed(formData: FormData) {
   if (!id) return;
   const supabase = createAdminClient();
   await supabase.from("recipe_drafts").update({ status: "processed" }).eq("id", id);
+  updateTag("published-recipes");
   redirect("/recipes/admin");
 }

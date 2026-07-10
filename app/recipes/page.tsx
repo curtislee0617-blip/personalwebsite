@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeCard, type RecipeCardEntry } from "@/components/recipe-card";
 import { recipeEntries, recipeSections, recipesByDate, wishlistEntries } from "@/lib/recipes";
@@ -25,7 +26,7 @@ function parseUploadedRecipe(draft: { id: string; description: string; recipe_da
   };
 }
 
-async function getUploadedRecipes() {
+const getUploadedRecipes = unstable_cache(async () => {
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase
@@ -40,7 +41,7 @@ async function getUploadedRecipes() {
   } catch {
     return [];
   }
-}
+}, ["published-recipes"], { revalidate: 300, tags: ["published-recipes"] });
 
 const guideVisuals: Record<string, { src?: string; alt: string; mark: string; tone: string }> = {
   "sourdough-guide": { src: "/Screenshot 2026-07-01 at 1.38.07 AM.png", alt: "Sourdough loaf", mark: "SD", tone: "grain" },
