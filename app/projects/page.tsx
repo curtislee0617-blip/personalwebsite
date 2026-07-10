@@ -4,6 +4,7 @@ import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { SnapCarousel } from "@/components/snap-carousel";
 import { projects } from "@/lib/projects";
 
 export const metadata: Metadata = { title: "Projects" };
@@ -23,7 +24,7 @@ export default function ProjectsPage() {
       />
 
       <section className="page-section pt-6 sm:pt-7">
-        <div className="project-card-carousel mobile-snap-carousel -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 pt-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
+        <SnapCarousel className="project-card-carousel mobile-snap-carousel -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 pt-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
           {projects.map((project, index) => {
             const preview = project.previews.find((item) => assetExists(item.src));
             return (
@@ -50,7 +51,7 @@ export default function ProjectsPage() {
               </Link>
             );
           })}
-        </div>
+        </SnapCarousel>
       </section>
     </>
   );

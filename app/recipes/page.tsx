@@ -4,6 +4,7 @@ import Link from "next/link";
 import { unstable_cache } from "next/cache";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeCard, type RecipeCardEntry } from "@/components/recipe-card";
+import { SnapCarousel } from "@/components/snap-carousel";
 import { recipeEntries, recipeSections, recipesByDate, wishlistEntries } from "@/lib/recipes";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -117,7 +118,7 @@ export default async function RecipesPage() {
               </div>
             </div>
 
-            <div className="mobile-snap-carousel -mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0">
+            <SnapCarousel className="mobile-snap-carousel -mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0">
               {guides.map((entry) => (
                 <Link className="recipe-guide-card mobile-snap-card w-[20rem] shrink-0 snap-start overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" href={entry.href} id={entry.slug} key={entry.slug}>
                   <GuideVisual slug={entry.slug} />
@@ -134,7 +135,7 @@ export default async function RecipesPage() {
                   </div>
                 </Link>
               ))}
-            </div>
+            </SnapCarousel>
           </section>
 
           <section>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { SnapCarousel } from "@/components/snap-carousel";
 
 export const metadata: Metadata = { title: "Tools" };
 
@@ -94,11 +95,11 @@ export default function ToolsPage() {
         {toolSections.map((section) => (
           <section key={section.title}>
             <h2 className="section-title">{section.title}</h2>
-            <div className="mobile-snap-carousel -mx-5 -mt-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 pt-6 sm:mx-0 sm:px-0">
+            <SnapCarousel className="mobile-snap-carousel -mx-5 -mt-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 pt-6 sm:mx-0 sm:px-0">
               {section.tools.map((tool) => (
                 <ToolCard key={tool.href} tool={tool} />
               ))}
-            </div>
+            </SnapCarousel>
           </section>
         ))}
       </div>
