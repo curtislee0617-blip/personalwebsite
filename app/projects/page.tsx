@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import fs from "node:fs";
-import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
@@ -8,11 +6,6 @@ import { SnapCarousel } from "@/components/snap-carousel";
 import { projects } from "@/lib/projects";
 
 export const metadata: Metadata = { title: "Projects" };
-
-function assetExists(publicPath: string) {
-  const relativePath = publicPath.startsWith("/") ? publicPath.slice(1) : publicPath;
-  return fs.existsSync(path.join(process.cwd(), "public", relativePath));
-}
 
 export default function ProjectsPage() {
   return (
@@ -26,7 +19,7 @@ export default function ProjectsPage() {
       <section className="page-section pt-6 sm:pt-7">
         <SnapCarousel className="project-card-carousel mobile-snap-carousel -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 pt-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
           {projects.map((project, index) => {
-            const preview = project.previews.find((item) => assetExists(item.src));
+            const preview = project.previews[0];
             return (
               <Link className="project-card mobile-snap-card group shrink-0 snap-start overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-1 hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto" href={`/projects/${project.slug}`} id={project.slug} key={project.slug}>
                 <div className="project-card-media relative aspect-[16/10] overflow-hidden bg-mist">
