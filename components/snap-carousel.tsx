@@ -14,15 +14,45 @@ export function SnapCarousel({ children, className, repeatEdges = true }: { chil
 
   useLayoutEffect(() => {
     const rail = railRef.current;
-    if (!rail || !loops || !window.matchMedia("(max-width: 639px)").matches) return;
+    if (!rail || !window.matchMedia("(max-width: 639px)").matches) return;
+
+    let animationFrame = 0;
+
+    const updateFocusedCard = () => {
+      window.cancelAnimationFrame(animationFrame);
+      animationFrame = window.requestAnimationFrame(() => {
+        const railCenter = rail.scrollLeft + rail.clientWidth / 2;
+        const slots = Array.from(rail.querySelectorAll<HTMLElement>(".mobile-snap-slot:not(.is-clone)"));
+        let closest: HTMLElement | null = null;
+        let closestDistance = Number.POSITIVE_INFINITY;
+
+        slots.forEach((slot) => {
+          const distance = Math.abs(slot.offsetLeft + slot.offsetWidth / 2 - railCenter);
+          if (distance < closestDistance) {
+            closest = slot;
+            closestDistance = distance;
+          }
+        });
+
+        slots.forEach((slot) => slot.classList.toggle("is-focused", slot === closest));
+      });
+    };
 
     const frame = window.requestAnimationFrame(() => {
-      const first = rail.querySelector<HTMLElement>('[data-carousel-original="0"]');
-      if (!first) return;
-      rail.scrollLeft = first.offsetLeft - (rail.clientWidth - first.offsetWidth) / 2;
+      if (loops) {
+        const first = rail.querySelector<HTMLElement>('[data-carousel-original="0"]');
+        if (first) rail.scrollLeft = first.offsetLeft - (rail.clientWidth - first.offsetWidth) / 2;
+      }
+      updateFocusedCard();
     });
 
-    return () => window.cancelAnimationFrame(frame);
+    rail.addEventListener("scroll", updateFocusedCard, { passive: true });
+
+    return () => {
+      rail.removeEventListener("scroll", updateFocusedCard);
+      window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(animationFrame);
+    };
   }, [items.length, loops]);
 
   return (
