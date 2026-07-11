@@ -18,11 +18,13 @@ function formatDate(date?: string) {
   return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-export function RecipeCard({ entry, showBackLink = false, carousel = false }: { entry: RecipeCardEntry; showBackLink?: boolean; carousel?: boolean }) {
+export function RecipeCard({ entry, showBackLink = false, variant = "default" }: { entry: RecipeCardEntry; showBackLink?: boolean; variant?: "default" | "shelf" }) {
+  const shelf = variant === "shelf";
+
   return (
-    <details className={`recipe-card rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${carousel ? "swipe-bubble-card recipe-carousel-card" : ""}`}>
+    <details className={`recipe-card rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""}`}>
       <summary className="recipe-card-summary recipes-section-summary cursor-pointer list-none marker:hidden">
-        <div className={`recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70 ${carousel ? "swipe-bubble-media" : ""}`}>
+        <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
           <div className="relative aspect-[4/3]">
             {entry.thumbnail ? (
               <Image alt="" className="object-cover" fill sizes="(max-width: 768px) 50vw, 22vw" src={entry.thumbnail} />
@@ -33,13 +35,13 @@ export function RecipeCard({ entry, showBackLink = false, carousel = false }: { 
             )}
           </div>
         </div>
-        <div className={carousel ? "recipe-card-copy swipe-bubble-copy" : "recipe-card-copy"}>
+        <div className="recipe-card-copy">
           <div className="flex items-center justify-between gap-4">
             <p className="eyebrow mt-4">Recipe</p>
             <span className="recipe-card-status rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">{entry.status === "published" ? "Published" : "Coming later"}</span>
           </div>
           <h3 className="mt-3 text-xl font-semibold tracking-tight">{entry.title}</h3>
-          {formatDate(entry.date) && <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-ink/40">{formatDate(entry.date)}</p>}
+          {formatDate(entry.date) && <p className="recipe-card-date mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-ink/40">{formatDate(entry.date)}</p>}
           <p className="recipe-card-description mt-3 text-sm leading-6 text-ink/65">{entry.description}</p>
           <p className="recipe-card-action mt-5 text-sm font-semibold text-moss">Open recipe ↓</p>
         </div>

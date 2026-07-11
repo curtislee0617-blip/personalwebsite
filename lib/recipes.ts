@@ -15,6 +15,32 @@ export type RecipeEntry = {
   date?: string;
 };
 
+const additionalDessertPlaceholders = Array.from({ length: 5 }, (_, index): RecipeEntry => {
+  const number = index + 2;
+  return {
+    slug: `future-dessert-${number}`,
+    kind: "recipe",
+    title: `Dessert recipe ${number}`,
+    description: "A compact placeholder for a future dessert or pastry recipe.",
+    status: "coming-soon",
+    href: "/recipes",
+    category: "desserts-pastries",
+  };
+});
+
+const additionalGeneralPlaceholders = Array.from({ length: 5 }, (_, index): RecipeEntry => {
+  const number = index + 2;
+  return {
+    slug: `future-other-${number}`,
+    kind: "recipe",
+    title: `Other recipe ${number}`,
+    description: "A compact placeholder for a future recipe, kitchen note, or finished dish.",
+    status: "coming-soon",
+    href: "/recipes",
+    category: "general",
+  };
+});
+
 export const recipeEntries: RecipeEntry[] = [
   {
     slug: "sourdough-guide",
@@ -157,6 +183,8 @@ export const recipeEntries: RecipeEntry[] = [
     category: "general",
     date: "2026-06-15",
   },
+  ...additionalDessertPlaceholders,
+  ...additionalGeneralPlaceholders,
 ];
 
 // Newest first; entries without a date fall to the end.

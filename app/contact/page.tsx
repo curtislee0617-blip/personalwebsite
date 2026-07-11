@@ -109,12 +109,12 @@ export default function ContactPage() {
           <div className="contact-cities-art">
             <Image
               alt="Pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
-              className="h-auto w-full"
-              height={819}
+              className="h-auto"
+              height={820}
               priority
-              sizes="(max-width: 768px) 100vw, 70vw"
-              src="/contact-cities-pixel-art.png"
-              width={2048}
+              sizes="(max-width: 639px) 13.5rem, 28rem"
+              src="/contact-cities-pixel-art-v2.png"
+              width={1919}
             />
           </div>
         </div>
