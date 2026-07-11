@@ -28,6 +28,18 @@ export function SnapCarousel({ children, className, repeatEdges = true }: { chil
 
         slots.forEach((slot) => {
           const distance = Math.abs(slot.offsetLeft + slot.offsetWidth / 2 - railCenter);
+          const progress = Math.max(0, 1 - distance / (slot.offsetWidth * 1.15));
+          const easedProgress = 1 - Math.pow(1 - progress, 2);
+          const card = slot.querySelector<HTMLElement>(".mobile-snap-card");
+
+          if (card) {
+            card.style.setProperty("--carousel-opacity", (0.42 + easedProgress * 0.58).toFixed(3));
+            card.style.setProperty("--carousel-blur", `${((1 - easedProgress) * 2.2).toFixed(2)}px`);
+            card.style.setProperty("--carousel-scale", (0.8 + easedProgress * 0.2).toFixed(3));
+            card.style.setProperty("--carousel-shift", `${((1 - easedProgress) * 0.9).toFixed(3)}rem`);
+            card.style.zIndex = String(Math.round(easedProgress * 10));
+          }
+
           if (distance < closestDistance) {
             closest = slot;
             closestDistance = distance;
