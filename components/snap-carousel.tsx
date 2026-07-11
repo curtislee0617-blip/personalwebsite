@@ -33,10 +33,13 @@ export function SnapCarousel({ children, className, repeatEdges = true }: { chil
           const card = slot.querySelector<HTMLElement>(".mobile-snap-card");
 
           if (card) {
-            card.style.setProperty("--carousel-opacity", (0.42 + easedProgress * 0.58).toFixed(3));
-            card.style.setProperty("--carousel-blur", `${((1 - easedProgress) * 2.2).toFixed(2)}px`);
-            card.style.setProperty("--carousel-scale", (0.8 + easedProgress * 0.2).toFixed(3));
-            card.style.setProperty("--carousel-shift", `${((1 - easedProgress) * 0.9).toFixed(3)}rem`);
+            const opacity = 0.42 + easedProgress * 0.58;
+            const blur = (1 - easedProgress) * 2.4;
+            const scale = 0.8 + easedProgress * 0.2;
+            const shift = (1 - easedProgress) * 14;
+            card.style.opacity = opacity.toFixed(3);
+            card.style.filter = `blur(${blur.toFixed(2)}px)`;
+            card.style.transform = `translate3d(0, ${shift.toFixed(2)}px, 0) scale(${scale.toFixed(3)})`;
             card.style.zIndex = String(Math.round(easedProgress * 10));
           }
 

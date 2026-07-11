@@ -1823,18 +1823,14 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   }
   .mobile-snap-slot.is-clone { display: block; }
   .page-section .mobile-snap-card {
-    --carousel-opacity: 0.42;
-    --carousel-blur: 2.2px;
-    --carousel-scale: 0.8;
-    --carousel-shift: 0.9rem;
     width: 100% !important;
     position: relative;
     transform-origin: center;
-    opacity: var(--carousel-opacity);
-    filter: blur(var(--carousel-blur));
-    scale: var(--carousel-scale);
-    translate: 0 var(--carousel-shift);
-    will-change: filter, opacity, scale, translate;
+    opacity: 0.42;
+    filter: blur(2.4px);
+    transform: translate3d(0, 14px, 0) scale(0.8);
+    backface-visibility: hidden;
+    will-change: filter, opacity, transform;
   }
 
   .tool-card { padding: 0 !important; border-radius: 1rem !important; }
