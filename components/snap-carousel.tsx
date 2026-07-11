@@ -7,8 +7,16 @@ function inertCopy(item: ReactNode) {
   return cloneElement(item as ReactElement<{ id?: string; tabIndex?: number }>, { id: undefined, tabIndex: -1 });
 }
 
-export function SnapCarousel({ children, className, repeatEdges = true }: { children: ReactNode; className: string; repeatEdges?: boolean }) {
+type SnapCarouselProps = {
+  children: ReactNode;
+  className: string;
+  repeatEdges?: boolean;
+  onActiveIndexChange?: (index: number) => void;
+};
+
+export function SnapCarousel({ children, className, repeatEdges = true, onActiveIndexChange }: SnapCarouselProps) {
   const railRef = useRef<HTMLDivElement>(null);
+  const activeIndexRef = useRef(-1);
   const items = Children.toArray(children);
   const loops = repeatEdges && items.length > 1;
 
@@ -37,10 +45,10 @@ export function SnapCarousel({ children, className, repeatEdges = true }: { chil
         if (railRect.width === 0) return;
         const railCenter = railRect.left + railRect.width / 2;
         const slots = Array.from(rail.querySelectorAll<HTMLElement>(".mobile-snap-slot:not(.is-clone)"));
-        let closest: HTMLElement | null = null;
+        let closestSlotIndex = -1;
         let closestDistance = Number.POSITIVE_INFINITY;
 
-        slots.forEach((slot) => {
+        slots.forEach((slot, slotIndex) => {
           const slotRect = slot.getBoundingClientRect();
           if (slotRect.width === 0) return;
           const slotCenter = slotRect.left + slotRect.width / 2;
@@ -65,12 +73,20 @@ export function SnapCarousel({ children, className, repeatEdges = true }: { chil
           }
 
           if (distance < closestDistance) {
-            closest = slot;
+            closestSlotIndex = slotIndex;
             closestDistance = distance;
           }
         });
 
-        slots.forEach((slot) => slot.classList.toggle("is-focused", slot === closest));
+        slots.forEach((slot, slotIndex) => slot.classList.toggle("is-focused", slotIndex === closestSlotIndex));
+
+        if (closestSlotIndex >= 0) {
+          const activeIndex = Number(slots[closestSlotIndex]?.dataset.carouselOriginal);
+          if (Number.isInteger(activeIndex) && activeIndex !== activeIndexRef.current) {
+            activeIndexRef.current = activeIndex;
+            onActiveIndexChange?.(activeIndex);
+          }
+        }
       });
     };
 
@@ -102,7 +118,7 @@ export function SnapCarousel({ children, className, repeatEdges = true }: { chil
       window.cancelAnimationFrame(animationFrame);
       clearDepthStyles();
     };
-  }, [items.length, loops]);
+  }, [items.length, loops, onActiveIndexChange]);
 
   return (
     <div className={className} ref={railRef}>

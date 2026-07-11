@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { AboutSectionRail } from "@/components/about-section-rail";
 import { PageIntro } from "@/components/page-intro";
 
 export const metadata: Metadata = { title: "About" };
@@ -35,7 +36,7 @@ function LogoBadge({ logo }: { logo?: LogoMeta }) {
   if (!logo) return null;
 
   return (
-    <div className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-ink/10 shadow-[0_12px_24px_rgba(32,35,31,0.06)] ${logo.frameClassName ?? "bg-white/90"}`}>
+    <div className={`about-logo-badge flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-ink/10 shadow-[0_12px_24px_rgba(32,35,31,0.06)] ${logo.frameClassName ?? "bg-white/90"}`}>
       {logo.src ? (
         <div className="relative flex h-full w-full items-center justify-center">
           <Image
@@ -161,7 +162,7 @@ const featuredWork = [
 
 export default function AboutPage() {
   return (
-    <>
+    <div className="about-page">
       <PageIntro
         eyebrow="About"
         title="Chemical engineering, food science, and kitchens."
@@ -174,8 +175,10 @@ export default function AboutPage() {
         }
       />
 
-      <section className="page-section pt-10 sm:pt-12 lg:pt-14">
-        <div className="flex flex-wrap gap-3 border-b border-ink/10 pb-10">
+      <AboutSectionRail />
+
+      <section className="about-page__content page-section pt-10 sm:pt-12 lg:pt-14">
+        <div className="about-resume-actions flex flex-wrap gap-3 border-b border-ink/10 pb-10">
           <a className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" download href="/curtis-lee-resume.pdf">
             Download résumé ↓
           </a>
@@ -184,52 +187,56 @@ export default function AboutPage() {
           </a>
         </div>
 
-        <div className="mt-12 grid gap-14 lg:grid-cols-[minmax(0,2fr)_minmax(15rem,1fr)] lg:gap-20">
-          <div>
-            <h2 className="section-title">Education</h2>
-            <div className="mt-7 divide-y divide-ink/10 border-y border-ink/10">
+        <div className="about-main-grid mt-12 grid gap-14 lg:grid-cols-[minmax(0,2fr)_minmax(15rem,1fr)] lg:gap-20">
+          <div className="about-primary">
+            <section className="about-section about-section--education scroll-mt-24" id="about-education">
+            <h2 className="about-section-heading section-title">Education</h2>
+            <div className="about-list mt-7 divide-y divide-ink/10 border-y border-ink/10">
               {education.map((item) => (
-                <article className="grid gap-4 py-7 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8" key={item.school}>
-                  <p className="text-sm leading-6 text-ink/45">{item.dates}</p>
-                  <div className="grid gap-4 sm:grid-cols-[4.25rem_minmax(0,1fr)] sm:items-start">
+                <article className="about-entry grid gap-4 py-7 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8" key={item.school}>
+                  <p className="about-entry-dates text-sm leading-6 text-ink/45">{item.dates}</p>
+                  <div className="about-entry-main grid gap-4 sm:grid-cols-[4.25rem_minmax(0,1fr)] sm:items-start">
                     <LogoBadge logo={item.logo} />
-                    <div>
-                      <h3 className="text-lg font-semibold">{item.school}</h3>
-                      <p className="mt-3 text-sm leading-7 text-ink/60">{item.detail}</p>
+                    <div className="about-entry-copy">
+                      <h3 className="about-entry-title text-lg font-semibold">{item.school}</h3>
+                      <p className="about-entry-description mt-3 text-sm leading-7 text-ink/60">{item.detail}</p>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
+            </section>
 
-            <h2 className="section-title mt-14">Experience</h2>
-            <div className="mt-7 divide-y divide-ink/10 border-y border-ink/10">
+            <section className="about-section about-section--experience mt-14 scroll-mt-24" id="about-experience">
+            <h2 className="about-section-heading section-title">Experience</h2>
+            <div className="about-list mt-7 divide-y divide-ink/10 border-y border-ink/10">
               {experience.map((item) => (
-                <article className="grid gap-4 py-7 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8" key={`${item.role}-${item.organisation}`}>
-                  <p className="text-sm leading-6 text-ink/45">{item.dates}</p>
-                  <div className="grid gap-4 sm:grid-cols-[4.25rem_minmax(0,1fr)] sm:items-start">
+                <article className="about-entry grid gap-4 py-7 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8" key={`${item.role}-${item.organisation}`}>
+                  <p className="about-entry-dates text-sm leading-6 text-ink/45">{item.dates}</p>
+                  <div className="about-entry-main grid gap-4 sm:grid-cols-[4.25rem_minmax(0,1fr)] sm:items-start">
                     <LogoBadge logo={item.logo} />
-                    <div>
-                      <h3 className="text-lg font-semibold">{item.role}</h3>
-                      <p className="mt-1 text-sm font-medium text-moss">
+                    <div className="about-entry-copy">
+                      <h3 className="about-entry-title text-lg font-semibold">{item.role}</h3>
+                      <p className="about-entry-organisation mt-1 text-sm font-medium text-moss">
                         {item.organisationWordmarkSrc ? (
                           <OrganisationWordmark alt={item.organisation} fallback={item.organisation} src={item.organisationWordmarkSrc} />
                         ) : (
                           item.organisation
                         )}
                       </p>
-                      <p className="mt-4 max-w-2xl text-sm leading-7 text-ink/60">{item.detail}</p>
+                      <p className="about-entry-description mt-4 max-w-2xl text-sm leading-7 text-ink/60">{item.detail}</p>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
+            </section>
           </div>
 
-          <aside className="space-y-12">
-            <section>
-              <p className="eyebrow">Awards</p>
-              <ul className="mt-5 space-y-3 text-sm leading-6 text-ink/60">
+          <aside className="about-aside space-y-12">
+            <section className="about-section about-section--awards scroll-mt-24" id="about-awards">
+              <h2 className="about-section-heading eyebrow">Awards</h2>
+              <ul className="about-aside-list mt-5 space-y-3 text-sm leading-6 text-ink/60">
                 <li>RSC UK Chemistry Olympiad - Gold Award, 2024</li>
                 <li>Cambridge Chemistry Challenge - Gold Award, 2023</li>
                 <li>BPhO Senior Physics Challenge - Gold Award, 2023</li>
@@ -237,34 +244,34 @@ export default function AboutPage() {
               </ul>
             </section>
 
-            <section>
-              <p className="eyebrow">Beyond the lab</p>
-              <p className="mt-5 text-sm leading-6 text-ink/60">ChemE Car, chamber singing, a cappella, glee club, violin and cooking. Grade 8 in singing and violin, and a PADI Advanced Open Water Diver.</p>
+            <section className="about-section about-section--beyond scroll-mt-24" id="about-beyond">
+              <h2 className="about-section-heading eyebrow">Beyond the lab</h2>
+              <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">ChemE Car, chamber singing, a cappella, glee club, violin and cooking. Grade 8 in singing and violin, and a PADI Advanced Open Water Diver.</p>
             </section>
 
-            <section>
-              <p className="eyebrow">Languages</p>
-              <p className="mt-5 text-sm leading-6 text-ink/60">English, Cantonese and Mandarin (native); French (elementary).</p>
+            <section className="about-section about-section--languages scroll-mt-24" id="about-languages">
+              <h2 className="about-section-heading eyebrow">Languages</h2>
+              <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">English, Cantonese and Mandarin (native); French (elementary).</p>
             </section>
 
-            <section>
-              <p className="eyebrow">Technical skills</p>
-              <p className="mt-5 text-sm leading-6 text-ink/60">Python, process modelling, NMR, IR, mass spectrometry; basic DWSIM.</p>
+            <section className="about-section about-section--skills scroll-mt-24" id="about-skills">
+              <h2 className="about-section-heading eyebrow">Technical skills</h2>
+              <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">Python, process modelling, NMR, IR, mass spectrometry; basic DWSIM.</p>
             </section>
           </aside>
         </div>
 
-        <section className="mt-20 border-t border-ink/10 pt-12" aria-labelledby="projects-publications-title">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <section className="about-featured-work about-section about-section--projects mt-20 scroll-mt-24 border-t border-ink/10 pt-12" aria-labelledby="projects-publications-title" id="about-projects">
+          <div className="about-featured-heading flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="eyebrow">Selected work</p>
               <h2 className="section-title mt-3" id="projects-publications-title">Projects &amp; publications</h2>
             </div>
             <Link className="text-sm font-semibold text-moss hover:text-ink" href="/projects">View all projects →</Link>
           </div>
-          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+          <div className="about-featured-grid mt-7 grid gap-3 sm:grid-cols-2">
             {featuredWork.map((item) => (
-              <Link className="design-card group rounded-3xl border border-ink/10 bg-surface/45 p-6" href={item.href} key={item.href}>
+              <Link className="about-featured-card design-card group rounded-3xl border border-ink/10 bg-surface/45 p-6" href={item.href} key={item.href}>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-moss">{item.type}</p>
                 <h3 className="mt-3 text-lg font-semibold group-hover:text-moss">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-ink/60">{item.summary}</p>
@@ -273,6 +280,6 @@ export default function AboutPage() {
           </div>
         </section>
       </section>
-    </>
+    </div>
   );
 }
