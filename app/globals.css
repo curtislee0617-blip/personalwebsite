@@ -1887,9 +1887,9 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 
   .mobile-snap-carousel {
     gap: 1.1rem !important;
-    padding-inline: calc((100vw - 11.75rem) / 2) !important;
+    padding-inline: max(0px, calc((100% - 11.75rem) / 2)) !important;
     perspective: 900px;
-    scroll-padding-inline: calc((100vw - 11.75rem) / 2);
+    scroll-padding-inline: max(0px, calc((100% - 11.75rem) / 2));
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
   }

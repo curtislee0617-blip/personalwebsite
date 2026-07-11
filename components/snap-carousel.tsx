@@ -75,9 +75,11 @@ export function SnapCarousel({ children, className, repeatEdges = true }: { chil
     };
 
     const frame = window.requestAnimationFrame(() => {
-      if (loops && mobileQuery.matches) {
+      if (mobileQuery.matches) {
         const first = rail.querySelector<HTMLElement>('[data-carousel-original="0"]');
-        if (first) rail.scrollLeft = first.offsetLeft - (rail.clientWidth - first.offsetWidth) / 2;
+        if (first && rail.scrollLeft < 1) {
+          rail.scrollLeft = first.offsetLeft - (rail.clientWidth - first.offsetWidth) / 2;
+        }
       }
       updateFocusedCard();
     });
