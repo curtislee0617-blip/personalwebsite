@@ -36,7 +36,7 @@ const toolSections: ToolSection[] = [
 function ToolThumbnail({ kind }: { kind: ToolKind }) {
   if (kind === "planner") {
     return (
-      <div className="tool-thumbnail tool-thumbnail-planner" aria-hidden="true">
+      <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-planner" aria-hidden="true">
         <span /><span className="is-filled" /><span /><span className="is-filled" /><span /><span /><span /><span className="is-accent" /><span /><span /><span className="is-filled" /><span />
       </div>
     );
@@ -44,7 +44,7 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
 
   if (kind === "water" || kind === "compound") {
     return (
-      <div className={`tool-thumbnail tool-thumbnail-properties is-${kind}`} aria-hidden="true">
+      <div className={`tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-${kind}`} aria-hidden="true">
         <div className="tool-property-heading"><span>{kind === "water" ? "H₂O state" : "Fluid state"}</span><i /></div>
         <div className="tool-property-grid">
           <span><small>{kind === "water" ? "T" : "Tᵣ"}</small><strong>{kind === "water" ? "425 K" : "1.18"}</strong></span>
@@ -62,7 +62,7 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
   };
 
   return (
-    <div className={`tool-thumbnail tool-thumbnail-chart is-${kind}`} aria-hidden="true">
+    <div className={`tool-thumbnail swipe-bubble-media tool-thumbnail-chart is-${kind}`} aria-hidden="true">
       <div className="tool-chart-toolbar"><span /><span /><span /><i /></div>
       <svg viewBox="0 0 160 90" preserveAspectRatio="none">
         <path className="tool-chart-grid" d="M8 18H152M8 45H152M8 72H152M32 10V80M72 10V80M112 10V80" />
@@ -74,9 +74,9 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
 
 function ToolCard({ tool }: { tool: Tool }) {
   return (
-    <Link className="tool-card mobile-snap-card group block w-[19rem] shrink-0 snap-start rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem] sm:p-6" href={tool.href}>
+    <Link className="tool-card swipe-bubble-card mobile-snap-card group block w-[19rem] shrink-0 snap-start rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem] sm:p-6" href={tool.href}>
       <ToolThumbnail kind={tool.kind} />
-      <div className="tool-card-copy flex items-end justify-between gap-5">
+      <div className="tool-card-copy swipe-bubble-copy flex items-end justify-between gap-5">
         <div>
           <h3 className="text-xl font-semibold">{tool.title}</h3>
           <p className="mt-1 text-sm leading-6 text-ink/55">{tool.description}</p>

@@ -65,7 +65,7 @@ const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string;
 function GuideVisual({ slug }: { slug: string }) {
   const visual = guideVisuals[slug] ?? { alt: "Recipe guide graphic", mark: "GUIDE", tone: "default" };
   return (
-    <div className={`recipe-guide-media is-${visual.tone}`}>
+    <div className={`recipe-guide-media swipe-bubble-media is-${visual.tone}`}>
       {visual.srcs ? (
         <div className="recipe-guide-photo-grid">
           {visual.srcs.map((src, index) => (
@@ -120,9 +120,9 @@ export default async function RecipesPage() {
 
             <SnapCarousel className="mobile-snap-carousel -mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0" repeatEdges={false}>
               {guides.map((entry) => (
-                <Link className="recipe-guide-card mobile-snap-card w-[20rem] shrink-0 snap-start overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" href={entry.href} id={entry.slug} key={entry.slug}>
+                <Link className="recipe-guide-card swipe-bubble-card mobile-snap-card w-[20rem] shrink-0 snap-start overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" href={entry.href} id={entry.slug} key={entry.slug}>
                   <GuideVisual slug={entry.slug} />
-                  <div className="recipe-guide-copy">
+                  <div className="recipe-guide-copy swipe-bubble-copy">
                     <div className="flex items-center justify-between gap-4">
                       <p className="eyebrow">Guide</p>
                       <span className="recipe-guide-status">{entry.status === "coming-soon" ? "Coming soon" : "Published"}</span>

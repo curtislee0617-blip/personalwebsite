@@ -21,8 +21,8 @@ export default function ProjectsPage() {
           {projects.map((project, index) => {
             const preview = project.previews[0];
             return (
-              <Link className="project-card mobile-snap-card group shrink-0 snap-start overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-1 hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto" href={`/projects/${project.slug}`} id={project.slug} key={project.slug}>
-                <div className="project-card-media relative aspect-[16/10] overflow-hidden bg-mist">
+              <Link className="project-card swipe-bubble-card mobile-snap-card group shrink-0 snap-start overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-1 hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto" href={`/projects/${project.slug}`} id={project.slug} key={project.slug}>
+                <div className="project-card-media swipe-bubble-media relative aspect-[16/10] overflow-hidden bg-mist">
                   {preview ? (
                     <Image alt={preview.alt} className="object-cover transition duration-500 group-hover:scale-[1.025]" fill loading={index === 0 ? "eager" : "lazy"} sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw" src={preview.src} />
                   ) : (
@@ -30,7 +30,7 @@ export default function ProjectsPage() {
                   )}
                   <span className="project-card-number">{String(index + 1).padStart(2, "0")}</span>
                 </div>
-                <div className="project-card-copy">
+                <div className="project-card-copy swipe-bubble-copy">
                   <p className="eyebrow">{project.eyebrow}</p>
                   <div className="mt-3 flex items-start justify-between gap-3">
                     <h2>{project.title}</h2>
