@@ -227,6 +227,15 @@ html[data-theme-transition] *::after {
   transition-property: none !important;
 }
 
+html[data-theme-color-transition] body,
+html[data-theme-color-transition] body *,
+html[data-theme-color-transition] body *::before,
+html[data-theme-color-transition] body *::after {
+  transition-property: color, background-color, border-color, outline-color, fill, stroke, box-shadow !important;
+  transition-duration: 760ms !important;
+  transition-timing-function: cubic-bezier(.22, 1, .36, 1) !important;
+}
+
 ::view-transition-old(root) { z-index: 1; }
 ::view-transition-new(root) { z-index: 2; }
 

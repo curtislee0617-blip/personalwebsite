@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
 
 type ViewTransition = { ready: Promise<void>; finished: Promise<void> };
@@ -8,8 +8,11 @@ type DocumentWithViewTransitions = Document & {
   startViewTransition?: (callback: () => void) => ViewTransition;
 };
 
-const THEME_TRANSITION_MS = 940;
-const THEME_TRANSITION_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+const DARK_TO_LIGHT_MS = 940;
+const LIGHT_TO_DARK_MS = 1240;
+const EXPAND_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+const CONTRACT_EASING = "cubic-bezier(0.45, 0, 0.2, 1)";
+const FALLBACK_TRANSITION_MS = 760;
 
 function SunIcon() {
   return (
@@ -35,6 +38,7 @@ function applyTheme(isDark: boolean) {
 
 export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "menu-row" }) {
   const [state, setState] = useState({ mounted: false, isDark: false });
+  const transitionInProgress = useRef(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of the dark-mode class the pre-hydration theme-init script already set on <html>
@@ -59,8 +63,22 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     const doc = document as DocumentWithViewTransitions;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (typeof doc.startViewTransition !== "function" || reducedMotion) {
+    if (reducedMotion) {
       flip();
+      return;
+    }
+
+    if (transitionInProgress.current) return;
+    transitionInProgress.current = true;
+
+    if (typeof doc.startViewTransition !== "function") {
+      document.documentElement.dataset.themeColorTransition = "true";
+      document.documentElement.getBoundingClientRect();
+      flip();
+      window.setTimeout(() => {
+        delete document.documentElement.dataset.themeColorTransition;
+        transitionInProgress.current = false;
+      }, FALLBACK_TRANSITION_MS);
       return;
     }
 
@@ -71,22 +89,26 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
         const buttonRadius = Math.max(iconBounds?.width ?? bounds.width, iconBounds?.height ?? bounds.height) / 2;
         const isLightToDark = next;
+        const moss = window.getComputedStyle(document.documentElement).getPropertyValue("--color-moss").trim();
+        const edgeColor = `rgb(${moss} / 0.42)`;
+        const keyframes: Keyframe[] = isLightToDark
+          ? [
+              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 0 ${edgeColor})`, opacity: 1 },
+              { clipPath: `circle(${radius * 0.42}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 12px ${edgeColor})`, offset: 0.64, opacity: 0.92 },
+              { clipPath: `circle(${buttonRadius * 1.8}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 7px ${edgeColor})`, offset: 0.9, opacity: 0.56 },
+              { clipPath: `circle(0px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 0 ${edgeColor})`, opacity: 0 },
+            ]
+          : [
+              { clipPath: `circle(${buttonRadius}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 5px ${edgeColor})`, opacity: 0.38 },
+              { clipPath: `circle(${radius * 0.28}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 13px ${edgeColor})`, offset: 0.28, opacity: 0.68 },
+              { clipPath: `circle(${radius * 0.72}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 9px ${edgeColor})`, offset: 0.68, opacity: 0.9 },
+              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 0 ${edgeColor})`, opacity: 1 },
+            ];
         document.documentElement.animate(
+          keyframes,
           {
-            clipPath: isLightToDark
-              ? [
-                  `circle(${radius}px at ${x}px ${y}px)`,
-                  `circle(${buttonRadius}px at ${x}px ${y}px)`,
-                  `circle(0px at ${x}px ${y}px)`,
-                ]
-              : [
-                  `circle(${buttonRadius}px at ${x}px ${y}px)`,
-                  `circle(${radius}px at ${x}px ${y}px)`,
-                ],
-          },
-          {
-            duration: THEME_TRANSITION_MS,
-            easing: THEME_TRANSITION_EASING,
+            duration: isLightToDark ? LIGHT_TO_DARK_MS : DARK_TO_LIGHT_MS,
+            easing: isLightToDark ? CONTRACT_EASING : EXPAND_EASING,
             fill: "forwards",
             pseudoElement: isLightToDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
           },
@@ -96,6 +118,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       .finally(() => {
         transition.finished.finally(() => {
           delete document.documentElement.dataset.themeTransition;
+          transitionInProgress.current = false;
         });
       });
   }
