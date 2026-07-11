@@ -132,6 +132,7 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
   }, [goToSection, sections]);
 
   const handlePointerDown = (event: PointerEvent<HTMLOListElement>) => {
+    setIsScrolling(true);
     dragRef.current = { active: true, moved: false, index: -1 };
     event.currentTarget.setPointerCapture(event.pointerId);
     selectFromPointer(event.clientY);
@@ -150,11 +151,14 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
     }
     const currentId = activeIdRef.current;
     if (currentId) window.history.replaceState(null, "", `#${currentId}`);
+    if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
+    scrollEndTimer.current = window.setTimeout(() => setIsScrolling(false), 360);
   };
 
   if (sections.length < 2) return null;
 
   const activeIndex = Math.max(0, sections.findIndex((section) => section.id === activeId));
+  const activeLabel = sections[activeIndex]?.label ?? sections[0].label;
 
   return (
     <nav
@@ -162,6 +166,7 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
       className={`section-rail${isScrolling ? " is-scrolling" : ""}`}
       data-active-section={activeId}
     >
+      <p aria-live="polite" className="sr-only">{activeLabel}</p>
       <ol
         className="section-rail__track"
         onPointerCancel={finishPointer}
@@ -185,6 +190,7 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
                 onClick={(event) => handleSectionClick(event, section.id)}
                 style={{ "--rail-distance": distance } as CSSProperties}
               >
+                <span aria-hidden="true" className="section-rail__label">{section.label}</span>
                 <span aria-hidden="true" className="section-rail__bar" />
                 <span className="sr-only">{section.label}</span>
               </a>

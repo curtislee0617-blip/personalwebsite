@@ -198,6 +198,8 @@ export type RequirementCategory = {
   majorId?: MajorId;
   /** Use this when one category is shared by multiple selectable tracks of the same option. */
   majorIds?: MajorId[];
+  /** When present, progress for this category is measured in course units instead of course slots. */
+  requiredUnits?: number;
 };
 
 // A fixed-order categorical palette, validated with the six-checks method (lightness band,
@@ -335,6 +337,7 @@ export const requirementCategories: RequirementCategory[] = [
     color: "#b96b00",
     note: "Chemistry minor requirements: 18 units organic chemistry, 18 units physical chemistry, 27 units advanced chemistry electives, and at least 9 units of chemistry laboratory.",
     majorId: "chemistry-minor",
+    requiredUnits: 72,
   },
   {
     id: "bioengineering",
@@ -454,6 +457,7 @@ export const requirementCategories: RequirementCategory[] = [
     shortLabel: "Humanities",
     color: "#eda100",
     note: "36 units minimum, including two first-year courses in different disciplines, 18 units of advanced humanities, and 3 writing-intensive courses on grades (sophomore–senior) — usually the same courses as the advanced humanities and flex-elective tags, not extra ones.",
+    requiredUnits: 36,
   },
   {
     id: "social-science",
@@ -461,6 +465,7 @@ export const requirementCategories: RequirementCategory[] = [
     shortLabel: "Social science",
     color: "#e87ba4",
     note: "27 units minimum. One introductory slot is commonly satisfied by Ec 11, which also counts toward BEM.",
+    requiredUnits: 27,
   },
   {
     id: "pe",
@@ -468,13 +473,7 @@ export const requirementCategories: RequirementCategory[] = [
     shortLabel: "PE",
     color: "#e34948",
     note: "9 units total, via PE coursework or intercollegiate athletics.",
-  },
-  {
-    id: "elective",
-    label: "Free electives & other",
-    shortLabel: "Elective",
-    color: "#78766c",
-    note: "Unallocated units toward the ~486-unit graduation total — use these to soak up overlap or extra courses.",
+    requiredUnits: 9,
   },
 ];
 
@@ -483,6 +482,27 @@ export type RequirementTemplate = {
   categoryId: RequirementCategoryId;
   label: string;
 };
+
+export const integratedCoreRequirementTemplates: RequirementTemplate[] = [
+  { id: "core-ic-ma1a", categoryId: "core-science", label: "IC/Ma 1 a" },
+  { id: "core-ic-ma1b", categoryId: "core-science", label: "IC/Ma 1 b" },
+  { id: "core-ic-ma1c", categoryId: "core-science", label: "IC/Ma 1 c" },
+  { id: "core-ic-ph1a", categoryId: "core-science", label: "IC/Ph 1 a" },
+  { id: "core-ic-ph1b", categoryId: "core-science", label: "IC/Ph 1 b" },
+  { id: "core-ic-ph1c", categoryId: "core-science", label: "IC/Ph 1 c" },
+  { id: "core-ic-ch1a", categoryId: "core-science", label: "IC/Ch 1 a" },
+  { id: "core-ic-ch1b", categoryId: "core-science", label: "IC/Ch 1 b" },
+  { id: "core-ic-ch1c", categoryId: "core-science", label: "IC/Ch 1 c" },
+  { id: "core-ic-bi1a", categoryId: "core-science", label: "IC/Bi 1 a" },
+  { id: "core-ic-bi1b", categoryId: "core-science", label: "IC/Bi 1 b" },
+  { id: "core-ic-bi1c", categoryId: "core-science", label: "IC/Bi 1 c" },
+  { id: "core-ic-ge1a", categoryId: "core-science", label: "IC/Ge 1 a" },
+  { id: "core-ic-ge1b", categoryId: "core-science", label: "IC/Ge 1 b" },
+  { id: "core-ic-ge1c", categoryId: "core-science", label: "IC/Ge 1 c" },
+  { id: "core-ic-hum55a", categoryId: "core-science", label: "IC/Hum 55 a" },
+  { id: "core-ic-hum55b", categoryId: "core-science", label: "IC/Hum 55 b" },
+  { id: "core-ic-hum55c", categoryId: "core-science", label: "IC/Hum 55 c" },
+];
 
 export const requirementTemplates: RequirementTemplate[] = [
   // Chemical Engineering — core option requirements
@@ -1077,13 +1097,6 @@ export const requirementTemplates: RequirementTemplate[] = [
   { id: "pe-2", categoryId: "pe", label: "Physical education" },
   { id: "pe-3", categoryId: "pe", label: "Physical education" },
 
-  // Free electives
-  { id: "elective-1", categoryId: "elective", label: "Free elective" },
-  { id: "elective-2", categoryId: "elective", label: "Free elective" },
-  { id: "elective-3", categoryId: "elective", label: "Free elective" },
-  { id: "elective-4", categoryId: "elective", label: "Free elective" },
-  { id: "elective-5", categoryId: "elective", label: "Free elective" },
-  { id: "elective-6", categoryId: "elective", label: "Free elective" },
 ];
 
 /** Categories visible to someone in the given majors: every shared/universal category, plus each selected major's own. */

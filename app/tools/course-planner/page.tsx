@@ -14,7 +14,7 @@ export default function CoursePlannerPage() {
       <PageIntro
         eyebrow="Planning tool"
         title="Course planner"
-        description="Requirements are grouped into compact department dropdowns. Drag a requirement onto a term to turn it into a class, then tag on anything else that same class also satisfies — a lot of Caltech courses double-count. Click a course name to edit it. Ticks mark classes already taken, and they stay saved if you change majors/minors or the requirement sets are updated. Sign in to save your plan to the cloud and pick it up on another device."
+        description="Requirements are grouped into compact department dropdowns. Drag a requirement onto a term to turn it into a class, then tag on anything else that same class also satisfies — a lot of Caltech courses double-count. Click a course name or its unit badge to edit it. Ticks mark classes already taken, and they stay saved if you change majors/minors or the requirement sets are updated. Sign in to save your plan to the cloud and pick it up on another device."
       />
       <div className="page-shell pb-4 pt-5 sm:pt-6"><Link className="back-link-bubble" href="/tools">← Back to tools</Link></div>
       <div className="page-shell pb-16 sm:pb-20">

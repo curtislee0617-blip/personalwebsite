@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
 import { SiteHeader } from "@/components/site-header";
+import { BackToTopButton } from "@/components/back-to-top-button";
 import { FooterAdminLogin } from "@/components/footer-admin-login";
 import { PageCursor } from "@/components/page-cursor";
 import "@fontsource/roboto/300.css";
@@ -40,7 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <FooterAdminLogin />
               <div className="flex gap-5">
                 <Link className="hover:text-ink" href="/contact">Say hello</Link>
-                <a className="back-link-bubble" href="#top">Back to top ↑</a>
+                <BackToTopButton />
               </div>
             </div>
           </footer>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { normalizeNumericInputText } from "@/lib/numeric-input";
 
 const STARTER_PERCENT = 0.2;
 const SALT_PERCENT = 0.02;
@@ -165,7 +166,12 @@ export function SourdoughGuide() {
               <input
                 className="h-11 rounded-2xl border border-ink/15 bg-surface/75 px-4 text-base outline-none transition focus:border-ink/35"
                 min={300}
-                onChange={(event) => setTargetWeight(Number(event.currentTarget.value) || 0)}
+                onChange={(event) => {
+                  const normalized = normalizeNumericInputText(event.currentTarget.value);
+                  event.currentTarget.value = normalized;
+                  setTargetWeight(Number(normalized) || 0);
+                }}
+                onFocus={(event) => event.currentTarget.select()}
                 step={10}
                 type="number"
                 value={targetWeight}

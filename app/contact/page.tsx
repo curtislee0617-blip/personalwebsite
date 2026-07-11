@@ -110,22 +110,26 @@ export default function ContactPage() {
             <div className="contact-cities-picture">
               <Image
                 alt="Daytime pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
-                className="contact-cities-art-light h-auto"
-                height={820}
+                className="contact-cities-art-image contact-cities-art-light"
+                fill
                 priority
-                sizes="(max-width: 639px) 13.5rem, 28rem"
-                src="/contact-cities-pixel-art-v2.png"
-                width={1919}
+                sizes="(max-width: 639px) 18rem, (max-width: 899px) 30rem, 40rem"
+                src="/contact-cities-pixel-art-v3.png"
               />
               <Image
                 alt="Nighttime pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
-                className="contact-cities-art-dark h-auto"
-                height={820}
+                className="contact-cities-art-image contact-cities-art-dark"
+                fill
                 priority
-                sizes="(max-width: 639px) 13.5rem, 28rem"
-                src="/contact-cities-pixel-art-night.png"
-                width={1918}
+                sizes="(max-width: 639px) 18rem, (max-width: 899px) 30rem, 40rem"
+                src="/contact-cities-pixel-art-night-v2.png"
               />
+              <div className="contact-hollywood-spotlights" aria-hidden="true">
+                <span className="contact-hollywood-beam contact-hollywood-beam-left" />
+                <span className="contact-hollywood-beam contact-hollywood-beam-right" />
+                <span className="contact-hollywood-beam contact-hollywood-beam-center" />
+                <span className="contact-hollywood-glow" />
+              </div>
             </div>
           </div>
         </div>

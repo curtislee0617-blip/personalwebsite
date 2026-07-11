@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { coreCategories, coreIntro, coreRecipes, coreRecipesByCategory, type CoreRecipe } from "@/lib/core-basics";
+import { normalizeNumericInputText } from "@/lib/numeric-input";
 
 function isSubheading(line: string) {
   return line.startsWith("§ ");
@@ -130,7 +131,12 @@ function ScaleCalculator({
           className="h-8 w-24 rounded-lg border border-ink/15 bg-paper/70 px-2 text-sm outline-none transition focus:border-ink/35"
           inputMode="decimal"
           min={0}
-          onChange={(event) => onChange(event.currentTarget.value)}
+          onChange={(event) => {
+            const normalized = normalizeNumericInputText(event.currentTarget.value);
+            event.currentTarget.value = normalized;
+            onChange(normalized);
+          }}
+          onFocus={(event) => event.currentTarget.select()}
           step="any"
           type="number"
           value={factorText}

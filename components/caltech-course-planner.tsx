@@ -1,8 +1,10 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent, type MouseEvent } from "react";
-import { categoriesForMajors, majors, requirementCategories, requirementTemplates, templatesForMajors, type MajorId, type RequirementCategory, type RequirementTemplate } from "@/data/caltech-requirements";
+import { categoriesForMajors, integratedCoreRequirementTemplates, majors, requirementCategories, requirementTemplates, templatesForMajors, type MajorId, type RequirementCategory, type RequirementTemplate } from "@/data/caltech-requirements";
+import { scheduledUnitsForCourseLabel } from "@/lib/caltech-course-units";
 import { buildAccountLoginKey, displayNameFor, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
+import { normalizeNumericInputText } from "@/lib/numeric-input";
 import type { Json } from "@/lib/supabase/database.types";
 
 const YEARS = [1, 2, 3, 4] as const;
@@ -13,12 +15,15 @@ const SHARED_REQUIREMENT_MAJOR_IDS: MajorId[] = [];
 // A "class" is one real course, placed in one term, that can satisfy several requirement
 // tags at once (a lot of Caltech courses double- or triple-count). Requirements themselves
 // are never placed — a requirement is "satisfied" once some class's requirementIds includes it.
-type PlacedClass = { id: string; label: string; done: boolean; cell: string; requirementIds: string[] };
-type SavedPlan = { classes: Record<string, PlacedClass>; customTemplates: RequirementTemplate[] };
+type PlacedClass = { id: string; label: string; units: number; unitsEdited: boolean; done: boolean; cell: string; requirementIds: string[] };
+type CoreScheduleMode = "normal" | "integrated";
+type SavedPlan = { classes: Record<string, PlacedClass>; customTemplates: RequirementTemplate[]; coreScheduleMode: CoreScheduleMode };
 type Selection = { type: "requirement" | "class"; id: string } | null;
-type RequirementOwner = { classId: string; className: string };
+type RequirementOwner = { classId: string; className: string; units: number };
 
 const STORAGE_KEY = "caltech-course-planner-v2";
+const DEFAULT_CLASS_UNITS = 9;
+const DEFAULT_CORE_SCHEDULE_MODE: CoreScheduleMode = "normal";
 const CHEME_TRACK_IDS: MajorId[] = ["cheme-biomolecular", "cheme-sustainability", "cheme-process", "cheme-materials", "cheme-computational"];
 const CHEME_TRACK_ID_SET = new Set<MajorId>(CHEME_TRACK_IDS);
 const EE_TRACK_IDS: MajorId[] = ["ee-circuits", "ee-computer", "ee-intelligent", "ee-medical", "ee-photonics"];
@@ -110,6 +115,11 @@ function cellId(year: number, term: Term) {
   return `${year}-${term}`;
 }
 
+function termFromCell(cell: string): Term | null {
+  const term = cell.split("-")[1];
+  return TERMS.includes(term as Term) ? term as Term : null;
+}
+
 function categoryOf(id: string) {
   return requirementCategories.find((category) => category.id === id) ?? requirementCategories[requirementCategories.length - 1];
 }
@@ -122,16 +132,64 @@ function newId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+function sanitizeUnits(value: unknown, fallback = DEFAULT_CLASS_UNITS) {
+  const numeric = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(numeric)) return fallback;
+  return Math.min(99, Math.max(0, Math.round(numeric * 10) / 10));
+}
+
+function normalizeCoreScheduleMode(value: unknown): CoreScheduleMode {
+  return value === "integrated" ? "integrated" : DEFAULT_CORE_SCHEDULE_MODE;
+}
+
+function templatesForCoreScheduleMode(templates: RequirementTemplate[], coreScheduleMode: CoreScheduleMode) {
+  if (coreScheduleMode === "normal") return templates;
+  return [
+    ...templates.filter((template) => template.categoryId !== "core-science"),
+    ...integratedCoreRequirementTemplates,
+  ];
+}
+
+function defaultUnitsForClass(label: string, cell: string, requirementIds: string[], templates: Map<string, RequirementTemplate>) {
+  const template = requirementIds.map((id) => templates.get(id)).find(Boolean);
+  if (template?.categoryId === "pe") return 3;
+  const term = termFromCell(cell);
+  return term ? scheduledUnitsForCourseLabel(template?.label ?? label, term) ?? DEFAULT_CLASS_UNITS : DEFAULT_CLASS_UNITS;
+}
+
+/** Counts each class once, even when it is tagged to multiple requirements in the category. */
+function unitsMatchingRequirements(classes: Record<string, PlacedClass>, requirementIds: Iterable<string>, doneOnly = false) {
+  const idSet = new Set(requirementIds);
+  return Object.values(classes).reduce((sum, cls) => {
+    if (doneOnly && !cls.done) return sum;
+    return cls.requirementIds.some((id) => idSet.has(id)) ? sum + cls.units : sum;
+  }, 0);
+}
+
 /** Drops any requirementIds that no longer resolve to a real template (stale major/catalog data). */
 function sanitizePlan(templates: RequirementTemplate[], saved: Partial<SavedPlan> | null | undefined): SavedPlan {
-  const customTemplates = saved?.customTemplates ?? [];
-  const validIds = new Set([...templates, ...customTemplates].map((template) => template.id));
+  const coreScheduleMode = normalizeCoreScheduleMode(saved?.coreScheduleMode);
+  const customTemplates = (saved?.customTemplates ?? []).filter((template) => template.categoryId !== "elective");
+  const availableTemplates = [...templatesForCoreScheduleMode(templates, coreScheduleMode), ...customTemplates];
+  const templateById = new Map(availableTemplates.map((template) => [template.id, template]));
+  const validIds = new Set(templateById.keys());
   const classes: Record<string, PlacedClass> = {};
   for (const [id, cls] of Object.entries(saved?.classes ?? {})) {
     if (!cls || typeof cls !== "object") continue;
-    classes[id] = { id, label: cls.label ?? "New class", done: !!cls.done, cell: cls.cell, requirementIds: (cls.requirementIds ?? []).filter((rid) => validIds.has(rid)) };
+    const requirementIds = (cls.requirementIds ?? []).filter((rid) => validIds.has(rid));
+    const defaultUnits = defaultUnitsForClass(cls.label ?? "New class", cls.cell, requirementIds, templateById);
+    const unitsEdited = cls.unitsEdited === true;
+    classes[id] = {
+      id,
+      label: cls.label ?? "New class",
+      units: unitsEdited ? sanitizeUnits(cls.units, defaultUnits) : defaultUnits,
+      unitsEdited,
+      done: !!cls.done,
+      cell: cls.cell,
+      requirementIds,
+    };
   }
-  return { classes, customTemplates };
+  return { classes, customTemplates, coreScheduleMode };
 }
 
 function normalizedTemplateLabel(value: string) {
@@ -215,7 +273,7 @@ function formatMajorSummary(majorIds: MajorId[]) {
 
 function reconcileTakenClassesForMajors(plan: SavedPlan, nextTemplates: RequirementTemplate[]): SavedPlan {
   const validIds = new Set([...nextTemplates, ...plan.customTemplates].map((template) => template.id));
-  const knownTemplates = new Map([...requirementTemplates, ...plan.customTemplates].map((template) => [template.id, template]));
+  const knownTemplates = new Map([...requirementTemplates, ...integratedCoreRequirementTemplates, ...plan.customTemplates].map((template) => [template.id, template]));
   const targetByLabel = new Map([...nextTemplates, ...plan.customTemplates].map((template) => [normalizedTemplateLabel(template.label), template.id]));
   const classes: Record<string, PlacedClass> = {};
 
@@ -239,7 +297,32 @@ function reconcileTakenClassesForMajors(plan: SavedPlan, nextTemplates: Requirem
     classes[id] = { ...cls, requirementIds: Array.from(mappedIds) };
   }
 
-  return { classes, customTemplates: plan.customTemplates };
+  return { classes, customTemplates: plan.customTemplates, coreScheduleMode: plan.coreScheduleMode };
+}
+
+function reconcilePlanForCoreScheduleMode(plan: SavedPlan, nextMode: CoreScheduleMode, selectedMajorIds: MajorId[]): SavedPlan {
+  const nextTemplates = templatesForCoreScheduleMode(templatesForMajors(selectedMajorIds), nextMode);
+  const validIds = new Set([...nextTemplates, ...plan.customTemplates].map((template) => template.id));
+  const knownTemplates = new Map([...requirementTemplates, ...integratedCoreRequirementTemplates, ...plan.customTemplates].map((template) => [template.id, template]));
+  const targetByLabel = new Map([...nextTemplates, ...plan.customTemplates].map((template) => [normalizedTemplateLabel(template.label), template.id]));
+  const classes: Record<string, PlacedClass> = {};
+
+  for (const [id, cls] of Object.entries(plan.classes)) {
+    const mappedIds = new Set<string>();
+    for (const requirementId of cls.requirementIds) {
+      if (validIds.has(requirementId)) {
+        mappedIds.add(requirementId);
+        continue;
+      }
+
+      const previousTemplate = knownTemplates.get(requirementId);
+      const mappedId = previousTemplate ? targetByLabel.get(normalizedTemplateLabel(previousTemplate.label)) : null;
+      if (mappedId) mappedIds.add(mappedId);
+    }
+    classes[id] = { ...cls, requirementIds: Array.from(mappedIds) };
+  }
+
+  return { classes, customTemplates: plan.customTemplates, coreScheduleMode: nextMode };
 }
 
 // A single-field label editor that wraps onto multiple lines and grows to fit,
@@ -365,7 +448,7 @@ function RequirementRow({ template, category, owner, isSelected, isCustom, onSel
       </span>
       <div className="min-w-0 flex-1">
         <p className={`text-xs font-medium leading-4 ${satisfied ? "text-ink/45 line-through" : "text-ink/85"}`}>{template.label}</p>
-        <p className="mt-0.5 truncate text-[0.6rem] uppercase tracking-[0.1em] text-ink/40">{satisfied ? `via ${owner.className}` : category.shortLabel}</p>
+        <p className="mt-0.5 truncate text-[0.6rem] uppercase tracking-[0.1em] text-ink/40">{satisfied ? `via ${owner.className} · ${owner.units} units` : category.shortLabel}</p>
       </div>
       {isCustom && (
         <button
@@ -438,6 +521,7 @@ type ClassCardProps = {
   onSelect: (id: string) => void;
   onToggleDone: (id: string) => void;
   onRename: (id: string, label: string) => void;
+  onUnitsChange: (id: string, units: number) => void;
   onDelete: (id: string) => void;
   onDragStart: (id: string) => void;
   onDragEnd: () => void;
@@ -445,7 +529,7 @@ type ClassCardProps = {
   onToggleRequirement: (classId: string, requirementId: string) => void;
 };
 
-function ClassCard({ cls, templateById, categories, allTemplates, owners, isPickerOpen, isSelected, onSelect, onToggleDone, onRename, onDelete, onDragStart, onDragEnd, onTogglePicker, onToggleRequirement }: ClassCardProps) {
+function ClassCard({ cls, templateById, categories, allTemplates, owners, isPickerOpen, isSelected, onSelect, onToggleDone, onRename, onUnitsChange, onDelete, onDragStart, onDragEnd, onTogglePicker, onToggleRequirement }: ClassCardProps) {
   const needsReassignment = cls.done && cls.requirementIds.length === 0;
 
   return (
@@ -479,6 +563,25 @@ function ClassCard({ cls, templateById, categories, allTemplates, owners, isPick
           ✕
         </button>
       </div>
+
+      <label className="course-class-units" onClick={(event) => event.stopPropagation()}>
+        <input
+          aria-label={`Units for ${cls.label || "this class"}`}
+          inputMode="decimal"
+          max={99}
+          min={0}
+          onChange={(event) => {
+            const normalized = normalizeNumericInputText(event.currentTarget.value);
+            event.currentTarget.value = normalized;
+            onUnitsChange(cls.id, Number(normalized));
+          }}
+          onFocus={(event) => event.currentTarget.select()}
+          step={1}
+          type="number"
+          value={cls.units}
+        />
+        <span>units</span>
+      </label>
 
       {cls.requirementIds.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-1 pl-[1.375rem]">
@@ -524,13 +627,13 @@ function ClassCard({ cls, templateById, categories, allTemplates, owners, isPick
 }
 
 export function CaltechCoursePlanner() {
-  const [plan, setPlan] = useState<SavedPlan>({ classes: {}, customTemplates: [] });
+  const [plan, setPlan] = useState<SavedPlan>({ classes: {}, customTemplates: [], coreScheduleMode: DEFAULT_CORE_SCHEDULE_MODE });
   const [selection, setSelection] = useState<Selection>(null);
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
   const [collapsedYears, setCollapsedYears] = useState<Record<number, boolean>>({ 2: true, 3: true, 4: true });
   const [openPickerClassId, setOpenPickerClassId] = useState<string | null>(null);
-  const [addCategory, setAddCategory] = useState(requirementCategories[requirementCategories.length - 1].id);
+  const [addCategory, setAddCategory] = useState<RequirementCategory["id"]>("core-science");
   const [addLabel, setAddLabel] = useState("");
   const [identity, setIdentity] = useState<StoredIdentity | null>(null);
   const [syncStatus, setSyncStatus] = useState<"idle" | "loading" | "saving" | "saved" | "error">("idle");
@@ -539,13 +642,13 @@ export function CaltechCoursePlanner() {
   const [loginLastName, setLoginLastName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginMajors, setLoginMajors] = useState<MajorId[]>([]);
-  const { classes, customTemplates } = plan;
+  const { classes, customTemplates, coreScheduleMode } = plan;
   const hasLoadedRef = useRef(false);
 
   // Signed-out selections are only pending profile choices; keep the live planner on
   // shared Institute requirements so progress does not explode into every option.
   const selectedMajorIds = identity?.majors ?? SHARED_REQUIREMENT_MAJOR_IDS;
-  const baseTemplates = useMemo(() => templatesForMajors(selectedMajorIds), [selectedMajorIds]);
+  const baseTemplates = useMemo(() => templatesForCoreScheduleMode(templatesForMajors(selectedMajorIds), coreScheduleMode), [selectedMajorIds, coreScheduleMode]);
   const baseCategories = useMemo(() => categoriesForMajors(selectedMajorIds), [selectedMajorIds]);
   const allTemplates = useMemo(() => [...baseTemplates, ...customTemplates], [baseTemplates, customTemplates]);
   const templateById = useMemo(() => new Map(allTemplates.map((template) => [template.id, template])), [allTemplates]);
@@ -556,7 +659,7 @@ export function CaltechCoursePlanner() {
     const map = new Map<string, RequirementOwner>();
     for (const cls of Object.values(classes)) {
       for (const requirementId of cls.requirementIds) {
-        if (!map.has(requirementId)) map.set(requirementId, { classId: cls.id, className: cls.label || "Untitled class" });
+        if (!map.has(requirementId)) map.set(requirementId, { classId: cls.id, className: cls.label || "Untitled class", units: cls.units });
       }
     }
     return map;
@@ -636,7 +739,7 @@ export function CaltechCoursePlanner() {
         nextMajors = row.majors.filter((majorId): majorId is MajorId => majors.some((major) => major.id === majorId));
         nextPlan = sanitizePlan(templatesForMajors(nextMajors), row.plan as Partial<SavedPlan> | null);
       } else {
-        nextPlan = { classes: {}, customTemplates: [] };
+        nextPlan = { classes: {}, customTemplates: [], coreScheduleMode: DEFAULT_CORE_SCHEDULE_MODE };
       }
       setPlan(nextPlan);
       const nextIdentity: StoredIdentity = { loginKey, displayName, firstName, lastName, majors: nextMajors };
@@ -665,17 +768,25 @@ export function CaltechCoursePlanner() {
 
   const updateProfileMajors = useCallback(() => {
     if (!identity || loginMajors.length === 0) return;
-    const nextTemplates = templatesForMajors(loginMajors);
+    const nextTemplates = templatesForCoreScheduleMode(templatesForMajors(loginMajors), coreScheduleMode);
     const nextIdentity = { ...identity, majors: loginMajors };
     setPlan((currentPlan) => reconcileTakenClassesForMajors(currentPlan, nextTemplates));
     setIdentity(nextIdentity);
     saveStoredIdentity(nextIdentity);
     setSyncStatus("saving");
-  }, [identity, loginMajors]);
+  }, [coreScheduleMode, identity, loginMajors]);
 
   const toggleLoginMajor = useCallback((majorId: MajorId) => {
     setLoginMajors((prev) => (prev.includes(majorId) ? prev.filter((id) => id !== majorId) : [...prev, majorId]));
   }, []);
+
+  const switchCoreScheduleMode = useCallback((mode: CoreScheduleMode) => {
+    setPlan((prev) => {
+      if (prev.coreScheduleMode === mode) return prev;
+      return reconcilePlanForCoreScheduleMode(prev, mode, selectedMajorIds);
+    });
+    setOpenCategories((prev) => ({ ...prev, "core-science": true }));
+  }, [selectedMajorIds]);
 
   const updateClass = useCallback((id: string, update: (cls: PlacedClass) => PlacedClass) => {
     setPlan((prev) => (prev.classes[id] ? { ...prev, classes: { ...prev.classes, [id]: update(prev.classes[id]) } } : prev));
@@ -683,12 +794,24 @@ export function CaltechCoursePlanner() {
 
   const toggleClassDone = useCallback((id: string) => updateClass(id, (cls) => ({ ...cls, done: !cls.done })), [updateClass]);
 
-  const renameClass = useCallback((id: string, label: string) => updateClass(id, (cls) => ({ ...cls, label })), [updateClass]);
+  const renameClass = useCallback((id: string, label: string) => updateClass(id, (cls) => ({
+    ...cls,
+    label,
+    units: cls.unitsEdited ? cls.units : defaultUnitsForClass(label, cls.cell, cls.requirementIds, templateById),
+  })), [templateById, updateClass]);
+
+  const updateClassUnits = useCallback((id: string, units: number) => {
+    updateClass(id, (cls) => ({ ...cls, units: sanitizeUnits(units, cls.units), unitsEdited: true }));
+  }, [updateClass]);
 
   const moveClass = useCallback((id: string, cell: string) => {
-    updateClass(id, (cls) => ({ ...cls, cell }));
+    updateClass(id, (cls) => ({
+      ...cls,
+      cell,
+      units: cls.unitsEdited ? cls.units : defaultUnitsForClass(cls.label, cell, cls.requirementIds, templateById),
+    }));
     setSelection(null);
-  }, [updateClass]);
+  }, [templateById, updateClass]);
 
   const deleteClass = useCallback((id: string) => {
     setPlan((prev) => {
@@ -708,9 +831,11 @@ export function CaltechCoursePlanner() {
       if (ownedByOther) return prev;
       const has = cls.requirementIds.includes(requirementId);
       const requirementIds = has ? cls.requirementIds.filter((id) => id !== requirementId) : [...cls.requirementIds, requirementId];
-      return { ...prev, classes: { ...prev.classes, [classId]: { ...cls, requirementIds } } };
+      const shouldRefreshUnits = !has && cls.requirementIds.length === 0 && !cls.unitsEdited;
+      const units = shouldRefreshUnits ? defaultUnitsForClass(cls.label, cls.cell, requirementIds, templateById) : cls.units;
+      return { ...prev, classes: { ...prev.classes, [classId]: { ...cls, units, requirementIds } } };
     });
-  }, []);
+  }, [templateById]);
 
   const createClassFromRequirement = useCallback(
     (requirementId: string, cell: string) => {
@@ -718,7 +843,8 @@ export function CaltechCoursePlanner() {
       const template = templateById.get(requirementId);
       if (!template) return;
       const id = newId("class");
-      setPlan((prev) => ({ ...prev, classes: { ...prev.classes, [id]: { id, label: template.label, done: false, cell, requirementIds: [requirementId] } } }));
+      const units = defaultUnitsForClass(template.label, cell, [requirementId], templateById);
+      setPlan((prev) => ({ ...prev, classes: { ...prev.classes, [id]: { id, label: template.label, units, unitsEdited: false, done: false, cell, requirementIds: [requirementId] } } }));
       setSelection(null);
     },
     [requirementOwners, templateById],
@@ -726,7 +852,7 @@ export function CaltechCoursePlanner() {
 
   const addBlankClass = useCallback((cell: string) => {
     const id = newId("class");
-    setPlan((prev) => ({ ...prev, classes: { ...prev.classes, [id]: { id, label: "New class", done: false, cell, requirementIds: [] } } }));
+    setPlan((prev) => ({ ...prev, classes: { ...prev.classes, [id]: { id, label: "New class", units: DEFAULT_CLASS_UNITS, unitsEdited: false, done: false, cell, requirementIds: [] } } }));
   }, []);
 
   const addCustomRequirement = useCallback(() => {
@@ -741,7 +867,7 @@ export function CaltechCoursePlanner() {
     setPlan((prev) => {
       const classes: Record<string, PlacedClass> = {};
       for (const [classId, cls] of Object.entries(prev.classes)) classes[classId] = { ...cls, requirementIds: cls.requirementIds.filter((rid) => rid !== id) };
-      return { classes, customTemplates: prev.customTemplates.filter((template) => template.id !== id) };
+      return { ...prev, classes, customTemplates: prev.customTemplates.filter((template) => template.id !== id) };
     });
   }, []);
 
@@ -773,26 +899,34 @@ export function CaltechCoursePlanner() {
   const categoryStats = useMemo(() => {
     return baseCategories.map((category) => {
       const ids = allTemplates.filter((template) => template.categoryId === category.id).map((template) => template.id);
+      if (category.requiredUnits) {
+        const placed = unitsMatchingRequirements(classes, ids);
+        const done = unitsMatchingRequirements(classes, ids, true);
+        return { category, total: category.requiredUnits, placed, done, metric: "units" as const };
+      }
       const placed = ids.filter((id) => requirementOwners.has(id)).length;
       const done = ids.filter((id) => {
         const owner = requirementOwners.get(id);
         return owner ? classes[owner.classId]?.done : false;
       }).length;
-      return { category, total: ids.length, placed, done };
+      return { category, total: ids.length, placed, done, metric: "requirements" as const };
     });
   }, [baseCategories, allTemplates, requirementOwners, classes]);
 
   const totals = useMemo(
-    () => categoryStats.reduce(
+    () => categoryStats.filter((stat) => stat.metric === "requirements").reduce(
       (acc, stat) => ({ total: acc.total + stat.total, placed: acc.placed + stat.placed, done: acc.done + stat.done }),
       { total: 0, placed: 0, done: 0 },
     ),
     [categoryStats],
   );
+  const scheduledUnits = Object.values(classes).reduce((sum, cls) => sum + cls.units, 0);
+  const takenUnits = Object.values(classes).filter((cls) => cls.done).reduce((sum, cls) => sum + cls.units, 0);
 
   const renderPlanCell = (year: number, term: Term, compact = false) => {
     const id = cellId(year, term);
     const classesInCell = Object.values(classes).filter((cls) => cls.cell === id);
+    const termUnits = classesInCell.reduce((sum, cls) => sum + cls.units, 0);
 
     return (
       <div
@@ -803,6 +937,9 @@ export function CaltechCoursePlanner() {
         onDrop={(event) => handleDrop(id, event)}
       >
         <div className="flex flex-col gap-1.5">
+          <p aria-label={`${termUnits} units planned for ${term}, year ${year}`} className="course-term-units">
+            <strong>{termUnits}</strong> units
+          </p>
           {classesInCell.map((cls) => (
             <ClassCard
               allTemplates={allTemplates}
@@ -819,6 +956,7 @@ export function CaltechCoursePlanner() {
               onToggleDone={toggleClassDone}
               onTogglePicker={togglePicker}
               onToggleRequirement={toggleClassRequirement}
+              onUnitsChange={updateClassUnits}
               owners={requirementOwners}
               templateById={templateById}
             />
@@ -837,6 +975,33 @@ export function CaltechCoursePlanner() {
       </div>
     );
   };
+
+  const renderCoreScheduleToggle = () => (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <p className="text-xs font-semibold text-ink/55">Core schedule</p>
+        <p className="mt-1 max-w-2xl text-xs leading-5 text-ink/45">
+          Integrated core swaps the normal Institute core checklist for the IC sequence. Placed classes stay editable.
+        </p>
+      </div>
+      <div className="inline-flex rounded-full border border-ink/15 bg-paper/55 p-1 text-xs font-semibold text-ink/55" role="group" aria-label="Core schedule path">
+        {([
+          ["normal", "Normal"],
+          ["integrated", "Integrated core"],
+        ] as const).map(([mode, label]) => (
+          <button
+            aria-pressed={coreScheduleMode === mode}
+            className={`rounded-full px-3 py-1.5 transition ${coreScheduleMode === mode ? "bg-ink text-paper shadow-sm" : "hover:bg-ink/5 hover:text-ink"}`}
+            key={mode}
+            onClick={() => switchCoreScheduleMode(mode)}
+            type="button"
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-10">
@@ -865,6 +1030,9 @@ export function CaltechCoursePlanner() {
                 Changing these keeps checked-off classes, removes unchecked classes, and tries to retag completed classes against the new requirements.
               </p>
               <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
+              <div className="mt-4 border-t border-ink/10 pt-4">
+                {renderCoreScheduleToggle()}
+              </div>
               <button
                 className="mt-3 rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
                 disabled={loginMajors.length === 0 || JSON.stringify([...loginMajors].sort()) === JSON.stringify([...identity.majors].sort())}
@@ -915,6 +1083,9 @@ export function CaltechCoursePlanner() {
               </div>
             </div>
             {syncStatus === "error" && <p className="mt-3 text-xs text-clay">{syncError}</p>}
+            <div className="mt-5 border-t border-ink/10 pt-4">
+              {renderCoreScheduleToggle()}
+            </div>
           </div>
         )}
       </section>
@@ -923,12 +1094,23 @@ export function CaltechCoursePlanner() {
         <div>
           <p className="eyebrow">Progress</p>
           <p className="mt-2 text-sm text-ink/60">
-            {totals.placed} / {totals.total} requirements satisfied by a class · {totals.done} / {totals.total} checked off as done
+            {totals.placed} / {totals.total} course requirements satisfied · {totals.done} / {totals.total} checked off as done. Unit-based requirements use actual course units below.
           </p>
         </div>
 
+        <div className="mt-4 grid max-w-sm grid-cols-2 gap-2">
+          <div className="rounded-xl border border-ink/10 bg-paper/55 px-3 py-2.5">
+            <p className="text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-ink/40">Scheduled</p>
+            <p className="mt-1 text-lg font-semibold tracking-tight"><span className="text-moss">{scheduledUnits}</span> <small className="text-[0.62rem] font-semibold text-ink/40">units</small></p>
+          </div>
+          <div className="rounded-xl border border-ink/10 bg-paper/55 px-3 py-2.5">
+            <p className="text-[0.58rem] font-semibold uppercase tracking-[0.1em] text-ink/40">Taken</p>
+            <p className="mt-1 text-lg font-semibold tracking-tight"><span className="text-moss">{takenUnits}</span> <small className="text-[0.62rem] font-semibold text-ink/40">units</small></p>
+          </div>
+        </div>
+
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {categoryStats.map(({ category, total, placed, done }) => (
+          {categoryStats.map(({ category, total, placed, done, metric }) => (
             <div key={category.id}>
               <div className="flex items-center justify-between text-[0.68rem] font-medium text-ink/60">
                 <span className="flex items-center gap-1.5">
@@ -936,12 +1118,12 @@ export function CaltechCoursePlanner() {
                   {category.shortLabel}
                 </span>
                 <span>
-                  {done}/{total}
+                  {done}/{total}{metric === "units" ? " units" : ""}
                 </span>
               </div>
               <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ink/10" title={category.note}>
-                <div className="h-full rounded-full transition-all" style={{ width: `${total ? (placed / total) * 100 : 0}%`, backgroundColor: tint(category.color, "55") }} />
-                <div className="-mt-1.5 h-1.5 rounded-full transition-all" style={{ width: `${total ? (done / total) * 100 : 0}%`, backgroundColor: category.color }} />
+                <div className="h-full rounded-full transition-all" style={{ width: `${total ? Math.min(100, (placed / total) * 100) : 0}%`, backgroundColor: tint(category.color, "55") }} />
+                <div className="-mt-1.5 h-1.5 rounded-full transition-all" style={{ width: `${total ? Math.min(100, (done / total) * 100) : 0}%`, backgroundColor: category.color }} />
               </div>
             </div>
           ))}
@@ -959,6 +1141,9 @@ export function CaltechCoursePlanner() {
             {baseCategories.map((category) => {
               const items = allTemplates.filter((template) => template.categoryId === category.id);
               const satisfiedCount = items.filter((template) => requirementOwners.has(template.id)).length;
+              const placedUnits = category.requiredUnits
+                ? unitsMatchingRequirements(classes, items.map((template) => template.id))
+                : 0;
               const isOpen = !!openCategories[category.id];
               return (
                 <div className="rounded-2xl border border-ink/10 bg-surface/40" key={category.id}>
@@ -973,7 +1158,7 @@ export function CaltechCoursePlanner() {
                       {category.label}
                     </span>
                     <span className="flex shrink-0 items-center gap-1.5 text-xs text-ink/45">
-                      {satisfiedCount}/{items.length}
+                      {category.requiredUnits ? `${placedUnits}/${category.requiredUnits} units` : `${satisfiedCount}/${items.length}`}
                       <span className={`transition-transform ${isOpen ? "rotate-180" : ""}`}>▾</span>
                     </span>
                   </button>
@@ -1063,13 +1248,15 @@ export function CaltechCoursePlanner() {
                     </span>
                   </button>
                   {!isCollapsed && (
-                    <div className="grid gap-2 border-t border-ink/10 p-2">
-                      {TERMS.map((term) => (
-                        <div className="grid grid-cols-[3.35rem_minmax(0,1fr)] items-start gap-1.5" key={term}>
-                          <p className="pt-2 text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-ink/45">{term}</p>
-                          {renderPlanCell(year, term, true)}
-                        </div>
-                      ))}
+                    <div className="course-plan-mobile-terms border-t border-ink/10">
+                      <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto px-2 pb-2 pt-2">
+                        {TERMS.map((term) => (
+                          <div className="w-[74vw] max-w-[17rem] shrink-0 snap-start" key={term}>
+                            <p className="mb-1.5 px-1 text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-ink/45">{term}</p>
+                            {renderPlanCell(year, term, true)}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </section>
