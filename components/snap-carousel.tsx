@@ -21,14 +21,17 @@ export function SnapCarousel({ children, className, repeatEdges = true }: { chil
     const updateFocusedCard = () => {
       window.cancelAnimationFrame(animationFrame);
       animationFrame = window.requestAnimationFrame(() => {
-        const railCenter = rail.scrollLeft + rail.clientWidth / 2;
+        const railRect = rail.getBoundingClientRect();
+        const railCenter = railRect.left + railRect.width / 2;
         const slots = Array.from(rail.querySelectorAll<HTMLElement>(".mobile-snap-slot:not(.is-clone)"));
         let closest: HTMLElement | null = null;
         let closestDistance = Number.POSITIVE_INFINITY;
 
         slots.forEach((slot) => {
-          const distance = Math.abs(slot.offsetLeft + slot.offsetWidth / 2 - railCenter);
-          const progress = Math.max(0, 1 - distance / (slot.offsetWidth * 1.15));
+          const slotRect = slot.getBoundingClientRect();
+          const slotCenter = slotRect.left + slotRect.width / 2;
+          const distance = Math.abs(slotCenter - railCenter);
+          const progress = Math.max(0, 1 - distance / (slotRect.width * 1.15));
           const easedProgress = 1 - Math.pow(1 - progress, 2);
           const card = slot.querySelector<HTMLElement>(".mobile-snap-card");
 
