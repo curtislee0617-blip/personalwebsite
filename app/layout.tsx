@@ -4,8 +4,10 @@ import Script from "next/script";
 import { SiteHeader } from "@/components/site-header";
 import { FooterAdminLogin } from "@/components/footer-admin-login";
 import { PageCursor } from "@/components/page-cursor";
+import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/600.css";
 import "@fontsource/roboto/700.css";
 import "./globals.css";
 

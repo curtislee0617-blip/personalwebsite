@@ -4,6 +4,9 @@
 
 :root {
   color-scheme: light;
+  --font-ui: Roboto, Arial, sans-serif;
+  --font-technical: Georgia, "Times New Roman", serif;
+  --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --color-paper: 250 251 252;
   --color-ink: 32 35 31;
   --color-moss: 82 107 70;
@@ -30,11 +33,18 @@ body {
   min-height: 100vh;
   background: rgb(var(--color-paper));
   color: rgb(var(--color-ink));
-  font-family: Roboto, Arial, sans-serif;
+  font-family: var(--font-ui);
   transition: background-color 0.28s ease, color 0.28s ease;
 }
 
 * { box-sizing: border-box; }
+
+button,
+input,
+select,
+textarea { font: inherit; }
+
+svg text { font-family: var(--font-ui); }
 
 ::selection { background: #c9dfbd; color: rgb(var(--color-ink)); }
 .dark ::selection { background: #47593c; color: rgb(var(--color-ink)); }
@@ -76,7 +86,7 @@ body.has-page-cursor * { cursor: inherit; }
 }
 
 .contact-cities-copy { padding: clamp(1.5rem, 3vw, 3rem); }
-.contact-cities-copy h2 { margin-top: 0.75rem; font-family: Georgia, serif; font-size: clamp(1.7rem, 3vw, 2.8rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; }
+.contact-cities-copy h2 { margin-top: 0.75rem; font-family: var(--font-ui); font-size: clamp(1.7rem, 3vw, 2.8rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; }
 .contact-cities-copy > div > p:last-child { max-width: 28rem; margin-top: 1rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.82rem; line-height: 1.7; }
 .contact-city-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
@@ -86,9 +96,9 @@ body.has-page-cursor * { cursor: inherit; }
 
 .project-card { min-width: 0; }
 .project-card-media { border-bottom: 1px solid rgb(var(--color-ink) / 0.08); }
-.project-card-number { position: absolute; left: 0.8rem; top: 0.8rem; display: grid; min-width: 2rem; height: 2rem; padding: 0 0.5rem; place-items: center; border-radius: 9999px; background: rgb(var(--color-paper) / 0.9); box-shadow: 0 8px 24px rgb(var(--color-ink) / 0.13); color: rgb(var(--color-ink) / 0.56); font-size: 0.62rem; font-weight: 800; backdrop-filter: blur(8px); }
+.project-card-number { position: absolute; left: 0.8rem; top: 0.8rem; display: grid; min-width: 2rem; height: 2rem; padding: 0 0.5rem; place-items: center; border-radius: 9999px; background: rgb(var(--color-paper) / 0.9); box-shadow: 0 8px 24px rgb(var(--color-ink) / 0.13); color: rgb(var(--color-ink) / 0.56); font-size: 0.62rem; font-weight: 700; backdrop-filter: blur(8px); }
 .project-card-copy { padding: 1.25rem; }
-.project-card-copy h2 { font-size: 1.2rem; font-weight: 650; line-height: 1.18; letter-spacing: -0.025em; }
+.project-card-copy h2 { font-size: 1.2rem; font-weight: 600; line-height: 1.18; letter-spacing: -0.025em; }
 .project-card-copy div > span { flex: none; color: rgb(var(--color-moss)); font-size: 0.85rem; }
 .project-card-description { display: -webkit-box; margin-top: 0.75rem; overflow: hidden; color: rgb(var(--color-ink) / 0.56); font-size: 0.75rem; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .project-card-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.9rem; }
@@ -101,7 +111,7 @@ body.has-page-cursor * { cursor: inherit; }
 .recipe-guide-generated i, .recipe-guide-generated b { position: absolute; display: block; border-radius: 9999px; background: rgb(var(--color-surface) / 0.62); }
 .recipe-guide-generated i { width: 8rem; height: 8rem; right: -1rem; top: -3rem; }
 .recipe-guide-generated b { width: 4.5rem; height: 4.5rem; left: -0.7rem; bottom: -1.2rem; }
-.recipe-guide-generated span { position: relative; z-index: 1; color: rgb(var(--color-ink) / 0.7); font-family: Georgia, serif; font-size: 1.5rem; font-weight: 600; letter-spacing: 0.06em; }
+.recipe-guide-generated span { position: relative; z-index: 1; color: rgb(var(--color-ink) / 0.7); font-family: var(--font-ui); font-size: 1.5rem; font-weight: 600; letter-spacing: 0.06em; }
 .recipe-guide-media.is-pastry .recipe-guide-generated { background: linear-gradient(145deg, #f1dfbd, #dbb77d); }
 .recipe-guide-media.is-pasta .recipe-guide-generated { background: linear-gradient(145deg, #f5e7bd, #d9c078); }
 .recipe-guide-media.is-sushi .recipe-guide-generated { background: linear-gradient(145deg, #d8e4e7, #9cb8b8); }
@@ -109,7 +119,7 @@ body.has-page-cursor * { cursor: inherit; }
 .recipe-guide-copy { padding: 1rem; }
 .recipe-guide-status { padding: 0.28rem 0.48rem; border-radius: 9999px; background: rgb(var(--color-paper) / 0.78); color: rgb(var(--color-ink) / 0.45); font-size: 0.56rem; font-weight: 700; }
 .recipe-guide-title-row { display: flex; align-items: start; justify-content: space-between; gap: 0.75rem; margin-top: 0.7rem; }
-.recipe-guide-title-row h3 { font-size: 1.08rem; font-weight: 650; line-height: 1.2; letter-spacing: -0.02em; }
+.recipe-guide-title-row h3 { font-size: 1.08rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }
 .recipe-guide-title-row > span { flex: none; color: rgb(var(--color-moss)); font-size: 0.75rem; }
 .recipe-guide-description { display: -webkit-box; margin-top: 0.55rem; overflow: hidden; color: rgb(var(--color-ink) / 0.55); font-size: 0.68rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 
@@ -126,7 +136,7 @@ body.has-page-cursor * { cursor: inherit; }
 .tool-thumbnail-chart.is-ir .tool-chart-line { stroke: rgb(var(--color-clay)); }
 .tool-thumbnail-chart.is-nmr .tool-chart-line { stroke: #6e5c92; }
 .tool-thumbnail-properties { display: grid; align-content: center; gap: 0.55rem; padding: 1rem; }
-.tool-property-heading { display: flex; align-items: center; justify-content: space-between; color: rgb(var(--color-ink) / 0.55); font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; }
+.tool-property-heading { display: flex; align-items: center; justify-content: space-between; color: rgb(var(--color-ink) / 0.55); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
 .tool-property-heading i { width: 2.5rem; height: 0.35rem; border-radius: 99px; background: rgb(var(--color-moss) / 0.25); }
 .tool-property-grid { display: grid; gap: 0.4rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .tool-property-grid > span { display: grid; min-width: 0; padding: 0.55rem; gap: 0.2rem; border: 1px solid rgb(var(--color-ink) / 0.08); border-radius: 0.65rem; background: rgb(var(--color-surface) / 0.64); }
@@ -172,7 +182,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   overflow: hidden;
   padding: 1.5rem 1.25rem;
   isolation: isolate;
-  font-family: Roboto, Arial, sans-serif;
+  font-family: var(--font-ui);
 }
 
 .home-photo-grid {
@@ -832,7 +842,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   box-shadow: 0 12px 30px rgb(var(--color-ink) / 0.16);
   color: rgb(var(--color-ink));
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 700;
   transform: translateX(-50%);
 }
 
@@ -896,7 +906,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 }
 
 .restaurant-map-message h2 {
-  font-family: Georgia, serif;
+  font-family: var(--font-ui);
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   letter-spacing: -0.03em;
 }
@@ -1103,7 +1113,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .restaurant-recommendations h2 {
   max-width: 28rem;
   margin-top: 0.8rem;
-  font-family: Georgia, serif;
+  font-family: var(--font-ui);
   font-size: clamp(2rem, 4vw, 3.5rem);
   line-height: 1;
   letter-spacing: -0.035em;
@@ -1348,7 +1358,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .compound-equation-grid { display: grid; padding: 0.75rem; gap: 0.45rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .compound-equation-grid article { display: grid; min-width: 0; padding: 0.7rem; align-content: start; gap: 0.32rem; border-radius: 0.85rem; background: rgb(var(--color-paper) / 0.72); }
 .compound-equation-grid article p { color: rgb(var(--color-ink) / 0.46); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.compound-equation-grid article strong { overflow-wrap: break-word; font-family: Georgia, serif; font-size: 0.69rem; font-weight: 500; line-height: 1.45; }
+.compound-equation-grid article strong { overflow-wrap: break-word; font-family: var(--font-technical); font-size: 0.69rem; font-weight: 500; line-height: 1.45; }
 .compound-equation-grid article span { color: rgb(var(--color-ink) / 0.48); font-size: 0.53rem; line-height: 1.45; }
 .compound-equation-grid .compound-equation-wide { grid-column: span 2; }
 .compound-equation-grid .compound-generalized-equations { border: 1px solid rgb(79 108 73 / 0.13); background: rgb(208 224 202 / 0.26); }
@@ -1376,7 +1386,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .lk-reference h2 { margin-top: 0.15rem; font-size: 1rem; }
 .lk-reference section > span, .lk-reference aside span { display: block; margin-top: 0.6rem; color: rgb(var(--color-ink) / 0.55); font-size: 0.68rem; line-height: 1.6; }
 .lk-equations { display: flex; margin-top: 0.7rem; flex-wrap: wrap; gap: 0.45rem; }
-.lk-equations strong { padding: 0.55rem 0.7rem; border-radius: 0.7rem; background: rgb(79 108 73 / 0.09); font-family: Georgia, serif; font-size: 0.78rem; font-weight: 500; }
+.lk-equations strong { padding: 0.55rem 0.7rem; border-radius: 0.7rem; background: rgb(79 108 73 / 0.09); font-family: var(--font-technical); font-size: 0.78rem; font-weight: 500; }
 .lk-reference aside strong { font-size: 0.72rem; }
 .lk-reference footer { color: rgb(var(--color-ink) / 0.48); font-size: 0.62rem; }
 
@@ -1529,7 +1539,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .ir-peak-table > div:last-child { max-height: 13rem; overflow: auto; border-left: 1px solid rgb(var(--color-ink) / 0.07); }
 .ir-peak-table article { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgb(var(--color-ink) / 0.06); }
 .ir-peak-table h3 { font-size: 0.57rem; }
-.ir-peak-table article p { margin-top: 0.25rem; color: rgb(var(--color-ink) / 0.47); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.52rem; line-height: 1.55; }
+.ir-peak-table article p { margin-top: 0.25rem; color: rgb(var(--color-ink) / 0.47); font-family: var(--font-code); font-size: 0.52rem; line-height: 1.55; }
 .ir-method-note { display: flex; padding: 0.75rem 0.9rem; align-items: start; gap: 0.7rem; }
 .ir-method-note strong { flex: none; color: rgb(var(--color-moss)); font-size: 0.58rem; }
 .ir-method-note p { color: rgb(var(--color-ink) / 0.48); font-size: 0.56rem; line-height: 1.55; }
@@ -1562,7 +1572,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .ir-equation-grid { display: grid; padding: 0 0.65rem 0.65rem; gap: 0.45rem; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .ir-equation-grid article { display: grid; min-width: 0; padding: 0.68rem; align-content: start; gap: 0.2rem; border-radius: 0.78rem; background: rgb(var(--color-ink) / 0.035); }
 .ir-equation-grid article p { color: rgb(var(--color-ink) / 0.48); font-size: 0.48rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-.ir-equation-grid article strong { overflow-wrap: anywhere; font-family: Georgia, serif; font-size: 0.72rem; font-weight: 500; }
+.ir-equation-grid article strong { overflow-wrap: anywhere; font-family: var(--font-technical); font-size: 0.72rem; font-weight: 500; }
 .ir-equation-grid article span { color: rgb(var(--color-ink) / 0.45); font-size: 0.5rem; line-height: 1.45; }
 .ir-guide-note { margin: 0 0.65rem 0.65rem; padding: 0.68rem 0.75rem; border-radius: 0.75rem; background: rgb(178 106 75 / 0.07); color: rgb(var(--color-ink) / 0.51); font-size: 0.53rem; line-height: 1.55; }
 .ir-guide-note strong { color: #9a5b40; }
@@ -1665,7 +1675,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .nmr-integral-list article > strong { color: rgb(var(--color-moss)); font-size: 0.62rem; }
 .nmr-integral-list button { width: 1.3rem; height: 1.3rem; border-radius: 99px; background: rgb(var(--color-ink) / 0.06); color: rgb(var(--color-ink) / 0.45); }
 .nmr-j-result { display: grid; padding: 0.7rem; gap: 0.12rem; border-radius: 0.7rem; background: rgb(110 92 146 / 0.08); }
-.nmr-j-result span { color: rgb(var(--color-ink) / 0.48); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.52rem; }
+.nmr-j-result span { color: rgb(var(--color-ink) / 0.48); font-family: var(--font-code); font-size: 0.52rem; }
 .nmr-j-result strong { color: #6e5c92 !important; font-size: 1rem !important; }
 .nmr-analysis-card > button { min-height: 1.9rem; border-radius: 0.58rem; background: rgb(var(--color-ink) / 0.055); color: rgb(var(--color-ink) / 0.52); font-size: 0.52rem; font-weight: 700; }
 .nmr-signal-table { overflow: hidden; }
@@ -1689,7 +1699,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .nmr-equation-grid { display: grid; padding: 0.65rem; gap: 0.45rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .nmr-equation-grid article { display: grid; min-width: 0; padding: 0.65rem; gap: 0.2rem; border-radius: 0.72rem; background: rgb(var(--color-ink) / 0.035); }
 .nmr-equation-grid article p { color: rgb(var(--color-moss)); font-size: 0.49rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
-.nmr-equation-grid article strong { overflow-wrap: anywhere; font-family: Georgia, serif; font-size: 0.74rem; font-weight: 500; }
+.nmr-equation-grid article strong { overflow-wrap: anywhere; font-family: var(--font-technical); font-size: 0.74rem; font-weight: 500; }
 .nmr-equation-grid article span { color: rgb(var(--color-ink) / 0.45); font-size: 0.5rem; line-height: 1.45; }
 .nmr-equations > p { padding: 0 0.9rem 0.8rem; color: rgb(var(--color-ink) / 0.48); font-size: 0.53rem; line-height: 1.55; }
 
