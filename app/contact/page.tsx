@@ -93,15 +93,30 @@ export default function ContactPage() {
       />
 
       <section className="page-section pt-12 sm:pt-16">
-        <div className="mb-8 flex flex-wrap items-center gap-3 border-b border-ink/10 pb-8 text-sm text-ink/60">
-          <span className="grid size-9 place-items-center rounded-full bg-mist" aria-hidden="true">
-            <svg className="size-4" fill="none" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="7" stroke="currentColor" strokeWidth="1.8" />
-              <circle cx="12" cy="12" r="2" fill="currentColor" />
-              <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-            </svg>
-          </span>
-          <p>Primarily located in <strong className="font-semibold text-ink">Los Angeles, London, and Hong Kong</strong>.</p>
+        <div className="contact-cities mb-8 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55">
+          <div className="contact-cities-copy">
+            <div>
+              <p className="eyebrow">Across three cities</p>
+              <h2>Hong Kong, London &amp; Los Angeles</h2>
+              <p>I split my time between dense harbours, rainy streets, and sunny hills — and I am happy to connect wherever I happen to be.</p>
+            </div>
+            <div className="contact-city-chips" aria-label="Cities where Curtis is primarily located">
+              <span><i aria-hidden="true">⛵</i> Hong Kong</span>
+              <span><i aria-hidden="true">☂</i> London</span>
+              <span><i aria-hidden="true">☀</i> Los Angeles</span>
+            </div>
+          </div>
+          <div className="contact-cities-art">
+            <Image
+              alt="Pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
+              className="h-auto w-full"
+              height={819}
+              priority
+              sizes="(max-width: 768px) 100vw, 70vw"
+              src="/contact-cities-pixel-art.png"
+              width={2048}
+            />
+          </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {contactLinks.map((contact) => (

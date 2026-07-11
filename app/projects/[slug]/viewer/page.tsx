@@ -1,27 +1,16 @@
 import type { Metadata } from "next";
-import fs from "node:fs";
-import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProjectViewer } from "@/components/project-viewer";
 import { getProjectBySlug, projects } from "@/lib/projects";
+import projectPages from "@/data/project-pages.json";
 
 type ProjectViewerPageProps = {
   params: Promise<{ slug: string }>;
 };
 
 function getRenderedPages(slug: string) {
-  const directory = path.join(process.cwd(), "public", "project-pages", slug);
-
-  if (!fs.existsSync(directory)) {
-    return [];
-  }
-
-  return fs
-    .readdirSync(directory)
-    .filter((file) => file.endsWith(".jpg") || file.endsWith(".png"))
-    .sort((first, second) => first.localeCompare(second, undefined, { numeric: true }))
-    .map((file) => `/project-pages/${slug}/${file}`);
+  return projectPages[slug as keyof typeof projectPages] ?? [];
 }
 
 export async function generateStaticParams() {

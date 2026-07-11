@@ -4,13 +4,23 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { loginAction, logoutAction } from "@/app/recipes/admin/actions";
 
-export function FooterAdminLogin({ authenticated }: { authenticated: boolean }) {
+export function FooterAdminLogin() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [pending, setPending] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+      .then((response) => response.json() as Promise<{ authenticated: boolean }>)
+      .then((result) => setAuthenticated(result.authenticated))
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -32,6 +42,7 @@ export function FooterAdminLogin({ authenticated }: { authenticated: boolean }) 
     const result = await loginAction(password);
     setPending(false);
     if (result.ok) {
+      setAuthenticated(true);
       setOpen(false);
       setPassword("");
       setError(false);
@@ -43,6 +54,7 @@ export function FooterAdminLogin({ authenticated }: { authenticated: boolean }) 
 
   async function handleLogout() {
     await logoutAction();
+    setAuthenticated(false);
     setOpen(false);
     router.refresh();
   }

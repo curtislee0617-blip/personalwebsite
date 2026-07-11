@@ -1,8 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import projectPages from "@/data/project-pages.json";
 
 export const metadata: Metadata = {
   title: "Biodiesel from used cooking oil documents",
@@ -10,15 +9,7 @@ export const metadata: Metadata = {
 };
 
 function getRenderedPages(folder: string) {
-  const directory = path.join(process.cwd(), "public", "project-pages", folder);
-
-  if (!fs.existsSync(directory)) return [];
-
-  return fs
-    .readdirSync(directory)
-    .filter((file) => file.endsWith(".jpg") || file.endsWith(".png"))
-    .sort((first, second) => first.localeCompare(second, undefined, { numeric: true }))
-    .map((file) => `/project-pages/${folder}/${file}`);
+  return projectPages[folder as keyof typeof projectPages] ?? [];
 }
 
 const documents = [

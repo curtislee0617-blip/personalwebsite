@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import fs from "node:fs";
-import path from "node:path";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,11 +8,6 @@ import { getProjectBySlug, projects } from "@/lib/projects";
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
 };
-
-function assetExists(publicPath: string) {
-  const relativePath = publicPath.startsWith("/") ? publicPath.slice(1) : publicPath;
-  return fs.existsSync(path.join(process.cwd(), "public", relativePath));
-}
 
 export async function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
@@ -42,8 +35,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  const availablePreviews = project.previews.filter((preview) => assetExists(preview.src));
-  const availableDocuments = (project.documents ?? []).filter((document) => assetExists(document.href));
+  const availablePreviews = project.previews;
+  const availableDocuments = project.documents ?? [];
   const primaryDocument = availableDocuments[0];
 
   return (

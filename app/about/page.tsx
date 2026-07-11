@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,20 +31,12 @@ type EducationItem = {
   logo?: LogoMeta;
 };
 
-function assetExists(publicPath?: string) {
-  if (!publicPath) return false;
-  const relativePath = publicPath.startsWith("/") ? publicPath.slice(1) : publicPath;
-  return fs.existsSync(path.join(process.cwd(), "public", relativePath));
-}
-
 function LogoBadge({ logo }: { logo?: LogoMeta }) {
   if (!logo) return null;
 
-  const hasImage = assetExists(logo.src);
-
   return (
     <div className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-ink/10 shadow-[0_12px_24px_rgba(32,35,31,0.06)] ${logo.frameClassName ?? "bg-white/90"}`}>
-      {hasImage && logo.src ? (
+      {logo.src ? (
         <div className="relative flex h-full w-full items-center justify-center">
           <Image
             alt={logo.alt}
@@ -64,9 +54,7 @@ function LogoBadge({ logo }: { logo?: LogoMeta }) {
 }
 
 function OrganisationWordmark({ src, alt, fallback }: { src?: string; alt: string; fallback: string }) {
-  const hasImage = assetExists(src);
-
-  if (!hasImage || !src) {
+  if (!src) {
     return <>{fallback}</>;
   }
 

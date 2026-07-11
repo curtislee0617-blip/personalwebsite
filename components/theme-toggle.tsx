@@ -8,8 +8,8 @@ type DocumentWithViewTransitions = Document & {
   startViewTransition?: (callback: () => void) => ViewTransition;
 };
 
-const THEME_TRANSITION_MS = 1150;
-const THEME_TRANSITION_EASING = "cubic-bezier(0.76, 0, 0.24, 1)";
+const THEME_TRANSITION_MS = 940;
+const THEME_TRANSITION_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 function SunIcon() {
   return (
@@ -74,15 +74,19 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         document.documentElement.animate(
           {
             clipPath: isLightToDark
-              ? [`circle(${radius}px at ${x}px ${y}px)`, `circle(${buttonRadius}px at ${x}px ${y}px)`, `circle(0px at ${x}px ${y}px)`]
-              : [`circle(0px at ${x}px ${y}px)`, `circle(${buttonRadius}px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`],
+              ? [
+                  `circle(${radius}px at ${x}px ${y}px)`,
+                  `circle(${buttonRadius}px at ${x}px ${y}px)`,
+                  `circle(0px at ${x}px ${y}px)`,
+                ]
+              : [
+                  `circle(${buttonRadius}px at ${x}px ${y}px)`,
+                  `circle(${radius}px at ${x}px ${y}px)`,
+                ],
           },
           {
             duration: THEME_TRANSITION_MS,
             easing: THEME_TRANSITION_EASING,
-            // Hold the final clip so the old (light) snapshot stays hidden until the
-            // view transition tears down — without this it snaps back to unclipped for
-            // a frame and flashes light-over-dark at the end.
             fill: "forwards",
             pseudoElement: isLightToDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
           },

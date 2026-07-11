@@ -1,10 +1,11 @@
-import { readdir } from "node:fs/promises";
+import { readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
 const root = process.cwd();
 const photosDirectory = path.join(root, "public", "photos");
 const outputPath = path.join(root, "public", "mobile-photo-collage.webp");
+const manifestPath = path.join(root, "data", "home-photos.json");
 const logoPath = path.join(root, "public", "logos", "caltech-collage-orange.png");
 const supportedImage = /\.(avif|gif|jpe?g|png|webp)$/i;
 const columns = 18;
@@ -26,6 +27,12 @@ const files = (await readdir(photosDirectory))
   .sort((first, second) => score(first) - score(second));
 
 if (!files.length) throw new Error("No photos found in public/photos.");
+
+await writeFile(
+  manifestPath,
+  `${JSON.stringify(files.map((file) => `/photos/${file}`), null, 2)}\n`,
+  "utf8",
+);
 
 const composites = await Promise.all(
   Array.from({ length: columns * rows }, async (_, index) => {

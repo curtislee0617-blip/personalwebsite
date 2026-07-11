@@ -1,5 +1,5 @@
 import type { Restaurant } from "@/data/restaurants";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 type StoredOpeningHours = {
   openNow?: boolean;
@@ -18,7 +18,7 @@ function priceLevel(value: number | null): 1 | 2 | 3 | 4 {
 }
 
 export async function getPublishedRestaurants(): Promise<Restaurant[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const rows = [];
 
   for (let start = 0; ; start += 1000) {
