@@ -20,9 +20,9 @@ function formatDate(date?: string) {
 
 export function RecipeCard({ entry, showBackLink = false, carousel = false }: { entry: RecipeCardEntry; showBackLink?: boolean; carousel?: boolean }) {
   return (
-    <details className={`recipe-card rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${carousel ? "mobile-snap-card w-[76vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:max-w-none" : ""}`}>
+    <details className={`recipe-card rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${carousel ? "swipe-bubble-card recipe-carousel-card" : ""}`}>
       <summary className="recipe-card-summary recipes-section-summary cursor-pointer list-none marker:hidden">
-        <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
+        <div className={`recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70 ${carousel ? "swipe-bubble-media" : ""}`}>
           <div className="relative aspect-[4/3]">
             {entry.thumbnail ? (
               <Image alt="" className="object-cover" fill sizes="(max-width: 768px) 50vw, 22vw" src={entry.thumbnail} />
@@ -33,7 +33,7 @@ export function RecipeCard({ entry, showBackLink = false, carousel = false }: { 
             )}
           </div>
         </div>
-        <div className="recipe-card-copy">
+        <div className={carousel ? "recipe-card-copy swipe-bubble-copy" : "recipe-card-copy"}>
           <div className="flex items-center justify-between gap-4">
             <p className="eyebrow mt-4">Recipe</p>
             <span className="recipe-card-status rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">{entry.status === "published" ? "Published" : "Coming later"}</span>

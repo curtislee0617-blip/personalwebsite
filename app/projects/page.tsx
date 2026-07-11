@@ -21,7 +21,7 @@ export default function ProjectsPage() {
           {projects.map((project, index) => {
             const preview = project.previews[0];
             return (
-              <Link className="project-card swipe-bubble-card mobile-snap-card group shrink-0 snap-start overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-1 hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto" href={`/projects/${project.slug}`} id={project.slug} key={project.slug}>
+              <Link className="project-card swipe-bubble-card group overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-1 hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto" href={`/projects/${project.slug}`} id={project.slug} key={project.slug}>
                 <div className="project-card-media swipe-bubble-media relative aspect-[16/10] overflow-hidden bg-mist">
                   {preview ? (
                     <Image alt={preview.alt} className="object-cover transition duration-500 group-hover:scale-[1.025]" fill loading={index === 0 ? "eager" : "lazy"} sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw" src={preview.src} />

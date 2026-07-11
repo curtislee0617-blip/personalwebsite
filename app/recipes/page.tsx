@@ -120,7 +120,7 @@ export default async function RecipesPage() {
 
             <SnapCarousel className="mobile-snap-carousel -mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0" repeatEdges={false}>
               {guides.map((entry) => (
-                <Link className="recipe-guide-card swipe-bubble-card mobile-snap-card w-[20rem] shrink-0 snap-start overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" href={entry.href} id={entry.slug} key={entry.slug}>
+                <Link className="recipe-guide-card swipe-bubble-card w-[20rem] shrink-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" href={entry.href} id={entry.slug} key={entry.slug}>
                   <GuideVisual slug={entry.slug} />
                   <div className="recipe-guide-copy swipe-bubble-copy">
                     <div className="flex items-center justify-between gap-4">

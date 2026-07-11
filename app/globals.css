@@ -323,6 +323,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 }
 
 .mobile-snap-slot { display: contents; }
+.mobile-snap-depth { display: contents; }
 .mobile-snap-slot.is-clone { display: none; }
 
 .home-orbit::after {
@@ -1876,6 +1877,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .mobile-snap-carousel {
     gap: 1.1rem !important;
     padding-inline: calc((100vw - 11.75rem) / 2) !important;
+    perspective: 900px;
     scroll-padding-inline: calc((100vw - 11.75rem) / 2);
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
@@ -1889,20 +1891,28 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     scroll-snap-stop: normal;
   }
   .mobile-snap-slot.is-clone { display: block; }
-  .page-section .mobile-snap-card {
+  .mobile-snap-depth {
+    display: block;
     width: 100% !important;
     position: relative;
     transform-origin: center;
-    opacity: 0.42;
-    filter: blur(2.4px);
-    transform: translate3d(0, 14px, 0) scale(0.8);
+    opacity: 0.34;
+    filter: blur(3.2px);
+    transform: translate3d(0, 18px, 0) scale(0.76);
+    transform-style: preserve-3d;
     backface-visibility: hidden;
     will-change: filter, opacity, transform;
+  }
+  .mobile-snap-depth > * {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
   }
 
   /* Tools, project previews and kitchen guides share one compact bubble shell
      so the carousel measures and animates identical card geometry. */
   .swipe-bubble-card {
+    display: block;
     min-height: 9.8rem;
     padding: 0 !important;
     overflow: hidden;
@@ -1976,6 +1986,22 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     -webkit-line-clamp: 2;
   }
   .recipe-card-action { margin-top: 0.55rem; font-size: 0.68rem !important; }
+  .recipe-card.recipe-carousel-card { padding: 0 !important; }
+  .recipe-carousel-card .recipe-card-summary { display: block; }
+  .recipe-carousel-card .recipe-card-thumbnail {
+    width: 100%;
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .recipe-carousel-card .recipe-card-thumbnail > div {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+  .recipe-carousel-card .recipe-card-copy {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .recipe-carousel-card[open] > :not(summary) { padding-inline: 0.8rem; padding-bottom: 0.8rem; }
 
   .recipe-guide-card {
     min-height: 0;
