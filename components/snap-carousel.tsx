@@ -31,6 +31,15 @@ export function SnapCarousel({ children, className, repeatEdges = true, onActive
       rail.querySelectorAll<HTMLElement>(".mobile-snap-depth").forEach((depth) => {
         depth.removeAttribute("style");
       });
+      rail.style.removeProperty("--carousel-gutter");
+    };
+
+    const updateGutter = () => {
+      const firstSlot = rail.querySelector<HTMLElement>('[data-carousel-original="0"]');
+      if (!firstSlot || !mobileQuery.matches) return;
+      const railGap = Number.parseFloat(window.getComputedStyle(rail).columnGap) || 0;
+      const gutter = Math.max(0, (rail.clientWidth - firstSlot.offsetWidth) / 2 - railGap);
+      rail.style.setProperty("--carousel-gutter", `${gutter}px`);
     };
 
     const updateFocusedCard = () => {
@@ -41,6 +50,7 @@ export function SnapCarousel({ children, className, repeatEdges = true, onActive
           return;
         }
 
+        updateGutter();
         const railRect = rail.getBoundingClientRect();
         if (railRect.width === 0) return;
         const railCenter = railRect.left + railRect.width / 2;
@@ -92,9 +102,12 @@ export function SnapCarousel({ children, className, repeatEdges = true, onActive
 
     const frame = window.requestAnimationFrame(() => {
       if (mobileQuery.matches) {
+        updateGutter();
         const first = rail.querySelector<HTMLElement>('[data-carousel-original="0"]');
         if (first && rail.scrollLeft < 1) {
-          rail.scrollLeft = first.offsetLeft - (rail.clientWidth - first.offsetWidth) / 2;
+          const railRect = rail.getBoundingClientRect();
+          const firstRect = first.getBoundingClientRect();
+          rail.scrollLeft += firstRect.left + firstRect.width / 2 - (railRect.left + railRect.width / 2);
         }
       }
       updateFocusedCard();
@@ -122,6 +135,7 @@ export function SnapCarousel({ children, className, repeatEdges = true, onActive
 
   return (
     <div className={className} ref={railRef}>
+      <div aria-hidden="true" className="mobile-snap-spacer" />
       {loops && <div aria-hidden="true" className="mobile-snap-slot is-clone" inert><div className="mobile-snap-depth">{inertCopy(items[items.length - 1])}</div></div>}
       {items.map((item, index) => (
         <div className="mobile-snap-slot" data-carousel-original={index} key={index}>
@@ -129,6 +143,7 @@ export function SnapCarousel({ children, className, repeatEdges = true, onActive
         </div>
       ))}
       {loops && <div aria-hidden="true" className="mobile-snap-slot is-clone" inert><div className="mobile-snap-depth">{inertCopy(items[0])}</div></div>}
+      <div aria-hidden="true" className="mobile-snap-spacer" />
     </div>
   );
 }
