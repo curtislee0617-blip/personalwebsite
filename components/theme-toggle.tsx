@@ -9,8 +9,10 @@ type DocumentWithViewTransitions = Document & {
 };
 
 const DARK_TO_LIGHT_MS = 940;
+const LAPTOP_DARK_TO_LIGHT_MS = 1120;
 const LIGHT_TO_DARK_MS = 1240;
 const EXPAND_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
+const LAPTOP_EXPAND_EASING = "cubic-bezier(0.4, 0, 0.2, 1)";
 const CONTRACT_EASING = "cubic-bezier(0.45, 0, 0.2, 1)";
 const FALLBACK_TRANSITION_MS = 760;
 
@@ -89,26 +91,38 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
         const buttonRadius = Math.max(iconBounds?.width ?? bounds.width, iconBounds?.height ?? bounds.height) / 2;
         const isLightToDark = next;
+        const isMobileTransition = window.matchMedia("(max-width: 899px), (pointer: coarse)").matches;
         const moss = window.getComputedStyle(document.documentElement).getPropertyValue("--color-moss").trim();
         const edgeColor = `rgb(${moss} / 0.42)`;
-        const keyframes: Keyframe[] = isLightToDark
+        const opacity = (desktopOpacity: number) => isMobileTransition ? 1 : desktopOpacity;
+        const edge = (desktopBlur: number) => `drop-shadow(0 0 ${isMobileTransition ? Math.min(desktopBlur, 4) : desktopBlur}px ${edgeColor})`;
+        const expandKeyframes: Keyframe[] = isMobileTransition
           ? [
-              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 0 ${edgeColor})`, opacity: 1 },
-              { clipPath: `circle(${radius * 0.42}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 12px ${edgeColor})`, offset: 0.64, opacity: 0.92 },
-              { clipPath: `circle(${buttonRadius * 1.8}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 7px ${edgeColor})`, offset: 0.9, opacity: 0.56 },
-              { clipPath: `circle(0px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 0 ${edgeColor})`, opacity: 0 },
+              { clipPath: `circle(${buttonRadius}px at ${x}px ${y}px)`, filter: edge(5), opacity: 1 },
+              { clipPath: `circle(${radius * 0.28}px at ${x}px ${y}px)`, filter: edge(13), offset: 0.28, opacity: 1 },
+              { clipPath: `circle(${radius * 0.72}px at ${x}px ${y}px)`, filter: edge(9), offset: 0.68, opacity: 1 },
+              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: edge(0), opacity: 1 },
             ]
           : [
-              { clipPath: `circle(${buttonRadius}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 5px ${edgeColor})`, opacity: 0.38 },
-              { clipPath: `circle(${radius * 0.28}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 13px ${edgeColor})`, offset: 0.28, opacity: 0.68 },
-              { clipPath: `circle(${radius * 0.72}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 9px ${edgeColor})`, offset: 0.68, opacity: 0.9 },
-              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: `drop-shadow(0 0 0 ${edgeColor})`, opacity: 1 },
+              { clipPath: `circle(${buttonRadius}px at ${x}px ${y}px)`, filter: edge(3), opacity: 1 },
+              { clipPath: `circle(${radius * 0.18}px at ${x}px ${y}px)`, filter: edge(6), offset: 0.2, opacity: 1 },
+              { clipPath: `circle(${radius * 0.48}px at ${x}px ${y}px)`, filter: edge(8), offset: 0.5, opacity: 1 },
+              { clipPath: `circle(${radius * 0.78}px at ${x}px ${y}px)`, filter: edge(5), offset: 0.8, opacity: 1 },
+              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: edge(0), opacity: 1 },
             ];
+        const keyframes: Keyframe[] = isLightToDark
+          ? [
+              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: edge(0), opacity: 1 },
+              { clipPath: `circle(${radius * 0.42}px at ${x}px ${y}px)`, filter: edge(12), offset: 0.64, opacity: opacity(0.92) },
+              { clipPath: `circle(${buttonRadius * 1.8}px at ${x}px ${y}px)`, filter: edge(7), offset: 0.9, opacity: opacity(0.56) },
+              { clipPath: `circle(0px at ${x}px ${y}px)`, filter: edge(0), opacity: opacity(0) },
+            ]
+          : expandKeyframes;
         document.documentElement.animate(
           keyframes,
           {
-            duration: isLightToDark ? LIGHT_TO_DARK_MS : DARK_TO_LIGHT_MS,
-            easing: isLightToDark ? CONTRACT_EASING : EXPAND_EASING,
+            duration: isLightToDark ? LIGHT_TO_DARK_MS : isMobileTransition ? DARK_TO_LIGHT_MS : LAPTOP_DARK_TO_LIGHT_MS,
+            easing: isLightToDark ? CONTRACT_EASING : isMobileTransition ? EXPAND_EASING : LAPTOP_EXPAND_EASING,
             fill: "forwards",
             pseudoElement: isLightToDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
           },

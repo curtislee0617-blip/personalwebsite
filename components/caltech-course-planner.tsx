@@ -450,7 +450,7 @@ function ClassCard({ cls, templateById, categories, allTemplates, owners, isPick
 
   return (
     <div
-      className={`rounded-xl border px-2.5 py-2 text-left text-xs shadow-sm transition ${needsReassignment ? "border-clay/70 bg-clay/10" : "border-ink/15 bg-surface/70"} ${isSelected ? "ring-2 ring-moss ring-offset-1 ring-offset-paper" : ""}`}
+      className={`course-plan-class-card rounded-xl border px-2.5 py-2 text-left text-xs shadow-sm transition ${needsReassignment ? "border-clay/70 bg-clay/10" : "border-ink/15 bg-surface/70"} ${isSelected ? "ring-2 ring-moss ring-offset-1 ring-offset-paper" : ""}`}
       draggable
       onClick={() => onSelect(cls.id)}
       onDragEnd={onDragEnd}
@@ -528,6 +528,7 @@ export function CaltechCoursePlanner() {
   const [selection, setSelection] = useState<Selection>(null);
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
+  const [collapsedYears, setCollapsedYears] = useState<Record<number, boolean>>({ 2: true, 3: true, 4: true });
   const [openPickerClassId, setOpenPickerClassId] = useState<string | null>(null);
   const [addCategory, setAddCategory] = useState(requirementCategories[requirementCategories.length - 1].id);
   const [addLabel, setAddLabel] = useState("");
@@ -789,6 +790,54 @@ export function CaltechCoursePlanner() {
     [categoryStats],
   );
 
+  const renderPlanCell = (year: number, term: Term, compact = false) => {
+    const id = cellId(year, term);
+    const classesInCell = Object.values(classes).filter((cls) => cls.cell === id);
+
+    return (
+      <div
+        className={`${compact ? "course-plan-mobile-cell min-h-[4.5rem] rounded-xl p-1.5" : "min-h-[6rem] rounded-2xl p-2"} border transition ${selection ? "border-moss/50 bg-lime/20" : "border-ink/10 bg-surface/40"}`}
+        key={id}
+        onClick={() => handleZoneClick(id)}
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={(event) => handleDrop(id, event)}
+      >
+        <div className="flex flex-col gap-1.5">
+          {classesInCell.map((cls) => (
+            <ClassCard
+              allTemplates={allTemplates}
+              categories={baseCategories}
+              cls={cls}
+              isPickerOpen={openPickerClassId === cls.id}
+              isSelected={selection?.type === "class" && selection.id === cls.id}
+              key={cls.id}
+              onDelete={deleteClass}
+              onDragEnd={() => setDraggingKey(null)}
+              onDragStart={(clsId) => setDraggingKey(`class:${clsId}`)}
+              onRename={renameClass}
+              onSelect={selectClass}
+              onToggleDone={toggleClassDone}
+              onTogglePicker={togglePicker}
+              onToggleRequirement={toggleClassRequirement}
+              owners={requirementOwners}
+              templateById={templateById}
+            />
+          ))}
+          <button
+            className="w-full rounded-lg border border-dashed border-ink/20 py-1 text-[0.65rem] text-ink/40 transition hover:border-ink/40 hover:text-ink/70"
+            onClick={(event) => {
+              event.stopPropagation();
+              addBlankClass(id);
+            }}
+            type="button"
+          >
+            + Add class
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-10">
       <section className="rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
@@ -974,8 +1023,61 @@ export function CaltechCoursePlanner() {
         </section>
 
         <section aria-labelledby="grid-title" className="min-w-0">
-          <h2 className="section-title" id="grid-title">Four-year plan</h2>
-          <div className="mt-5 overflow-x-auto pb-2">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="section-title" id="grid-title">Four-year plan</h2>
+            <div className="flex gap-1.5 sm:hidden">
+              <button
+                className="rounded-full border border-ink/15 px-2.5 py-1 text-[0.62rem] font-semibold text-ink/50"
+                onClick={() => setCollapsedYears({})}
+                type="button"
+              >
+                Expand all
+              </button>
+              <button
+                className="rounded-full border border-ink/15 px-2.5 py-1 text-[0.62rem] font-semibold text-ink/50"
+                onClick={() => setCollapsedYears({ 1: true, 2: true, 3: true, 4: true })}
+                type="button"
+              >
+                Collapse all
+              </button>
+            </div>
+          </div>
+
+          <div className="course-plan-mobile mt-3 space-y-2 sm:hidden">
+            {YEARS.map((year) => {
+              const isCollapsed = !!collapsedYears[year];
+              const classCount = Object.values(classes).filter((cls) => cls.cell.startsWith(`${year}-`)).length;
+
+              return (
+                <section className="overflow-hidden rounded-xl border border-ink/10 bg-surface/35" key={year}>
+                  <button
+                    aria-expanded={!isCollapsed}
+                    className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left"
+                    onClick={() => setCollapsedYears((current) => ({ ...current, [year]: !current[year] }))}
+                    type="button"
+                  >
+                    <span className="text-xs font-semibold">Year {year}</span>
+                    <span className="flex items-center gap-2 text-[0.6rem] text-ink/45">
+                      {classCount} {classCount === 1 ? "class" : "classes"}
+                      <span className={`transition-transform ${isCollapsed ? "" : "rotate-180"}`}>▾</span>
+                    </span>
+                  </button>
+                  {!isCollapsed && (
+                    <div className="grid gap-2 border-t border-ink/10 p-2">
+                      {TERMS.map((term) => (
+                        <div className="grid grid-cols-[3.35rem_minmax(0,1fr)] items-start gap-1.5" key={term}>
+                          <p className="pt-2 text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-ink/45">{term}</p>
+                          {renderPlanCell(year, term, true)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+
+          <div className="mt-5 hidden overflow-x-auto pb-2 sm:block">
             <div className="grid min-w-[46rem] gap-2" style={{ gridTemplateColumns: "5rem repeat(3, minmax(13rem, 1fr))" }}>
               <div />
               {TERMS.map((term) => (
@@ -984,52 +1086,7 @@ export function CaltechCoursePlanner() {
               {YEARS.map((year) => (
                 <Fragment key={year}>
                   <div className="flex items-center justify-end pr-2 text-sm font-semibold text-ink/60">Year {year}</div>
-                  {TERMS.map((term) => {
-                    const id = cellId(year, term);
-                    const classesInCell = Object.values(classes).filter((cls) => cls.cell === id);
-                    return (
-                      <div
-                        className={`min-h-[6rem] rounded-2xl border p-2 transition ${selection ? "border-moss/50 bg-lime/20" : "border-ink/10 bg-surface/40"}`}
-                        key={id}
-                        onClick={() => handleZoneClick(id)}
-                        onDragOver={(event) => event.preventDefault()}
-                        onDrop={(event) => handleDrop(id, event)}
-                      >
-                        <div className="flex flex-col gap-1.5">
-                          {classesInCell.map((cls) => (
-                            <ClassCard
-                              allTemplates={allTemplates}
-                              categories={baseCategories}
-                              cls={cls}
-                              isPickerOpen={openPickerClassId === cls.id}
-                              isSelected={selection?.type === "class" && selection.id === cls.id}
-                              key={cls.id}
-                              onDelete={deleteClass}
-                              onDragEnd={() => setDraggingKey(null)}
-                              onDragStart={(clsId) => setDraggingKey(`class:${clsId}`)}
-                              onRename={renameClass}
-                              onSelect={selectClass}
-                              onToggleDone={toggleClassDone}
-                              onTogglePicker={togglePicker}
-                              onToggleRequirement={toggleClassRequirement}
-                              owners={requirementOwners}
-                              templateById={templateById}
-                            />
-                          ))}
-                          <button
-                            className="w-full rounded-lg border border-dashed border-ink/20 py-1 text-[0.65rem] text-ink/40 transition hover:border-ink/40 hover:text-ink/70"
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              addBlankClass(id);
-                            }}
-                            type="button"
-                          >
-                            + Add class
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {TERMS.map((term) => renderPlanCell(year, term))}
                 </Fragment>
               ))}
             </div>

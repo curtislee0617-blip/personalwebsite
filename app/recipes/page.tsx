@@ -5,12 +5,19 @@ import { unstable_cache } from "next/cache";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeCard, type RecipeCardEntry } from "@/components/recipe-card";
 import { RecipeShelf } from "@/components/recipe-shelf";
+import { SectionRail } from "@/components/section-rail";
 import { SnapCarousel } from "@/components/snap-carousel";
 import { recipeEntries, recipeSections, recipesByDate, wishlistEntries } from "@/lib/recipes";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Recipes" };
+
+const recipePageSections = [
+  { id: "recipe-guides", label: "Guides" },
+  { id: "recipe-collection", label: "Recipes" },
+  { id: "recipe-wishlist", label: "Wishlist" },
+] as const;
 
 function parseUploadedRecipe(draft: { id: string; description: string; recipe_date: string | null; thumbnail_url: string; status: string }): RecipeCardEntry {
   const lines = draft.description.split("\n").map((line) => line.trim()).filter(Boolean);
@@ -101,10 +108,11 @@ export default async function RecipesPage() {
         title="Guides and recipes"
         description="Guides are for deeper walkthroughs, kitchen systems, and the specific complexities within each topic. Recipes are where the finished dishes will live once they are uploaded, and I will always update the recipes whenever I can."
       />
+      <SectionRail ariaLabel="Recipe page sections" sections={recipePageSections} />
 
       <section className="page-section pt-12 sm:pt-16">
         <div className="space-y-12">
-          <section>
+          <section id="recipe-guides">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="eyebrow">Guides</p>
@@ -139,7 +147,7 @@ export default async function RecipesPage() {
             </SnapCarousel>
           </section>
 
-          <section>
+          <section id="recipe-collection">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="eyebrow">Recipes</p>
@@ -179,7 +187,7 @@ export default async function RecipesPage() {
             </div>
           </section>
 
-          <section>
+          <section id="recipe-wishlist">
             <div>
               <p className="eyebrow">Wishlist</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipes I&apos;d like to make</h2>

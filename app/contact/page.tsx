@@ -107,15 +107,26 @@ export default function ContactPage() {
             </div>
           </div>
           <div className="contact-cities-art">
-            <Image
-              alt="Pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
-              className="h-auto"
-              height={820}
-              priority
-              sizes="(max-width: 639px) 13.5rem, 28rem"
-              src="/contact-cities-pixel-art-v2.png"
-              width={1919}
-            />
+            <div className="contact-cities-picture">
+              <Image
+                alt="Daytime pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
+                className="contact-cities-art-light h-auto"
+                height={820}
+                priority
+                sizes="(max-width: 639px) 13.5rem, 28rem"
+                src="/contact-cities-pixel-art-v2.png"
+                width={1919}
+              />
+              <Image
+                alt="Nighttime pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
+                className="contact-cities-art-dark h-auto"
+                height={820}
+                priority
+                sizes="(max-width: 639px) 13.5rem, 28rem"
+                src="/contact-cities-pixel-art-night.png"
+                width={1918}
+              />
+            </div>
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">

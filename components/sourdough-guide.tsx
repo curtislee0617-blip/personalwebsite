@@ -146,7 +146,7 @@ export function SourdoughGuide() {
 
   return (
     <div className="grid gap-7 sm:gap-8">
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]" id="sourdough-calculator">
         <article className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -271,7 +271,7 @@ export function SourdoughGuide() {
         </div>
       </section>
 
-      <section className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
+      <section className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6" id="sourdough-timeline">
         <p className="eyebrow">Timeline</p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Example schedule with time labels</h2>
@@ -294,7 +294,7 @@ export function SourdoughGuide() {
         </div>
       </section>
 
-      <section className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
+      <section className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6" id="sourdough-gallery">
         <p className="eyebrow">Gallery</p>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Recent loaves and crumb shots</h2>
@@ -329,7 +329,7 @@ export function SourdoughGuide() {
         </div>
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-2">
+      <section className="grid gap-5 lg:grid-cols-2" id="sourdough-notes">
         <article className="rounded-[1.7rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
           <p className="eyebrow">Flours</p>
           <h2 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">Ingredient notes</h2>

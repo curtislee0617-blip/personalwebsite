@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { PageIntro } from "@/components/page-intro";
 import { RestaurantExplorer } from "@/components/restaurant-explorer";
+import { RestaurantRecommendationAdminList } from "@/components/restaurant-recommendation-admin-list";
 import { RestaurantRecommendations } from "@/components/restaurant-recommendations";
 import { restaurants } from "@/data/restaurants";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { getPublishedRestaurants } from "@/lib/restaurants";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Restaurants" };
 export const revalidate = 300;
@@ -15,6 +18,23 @@ export default async function RestaurantsPage() {
     console.warn("Using bundled restaurant data because Supabase is unavailable.");
     return [];
   });
+  const isAdmin = await isRecipeAdminAuthenticated();
+  const recommendationResult = isAdmin
+    ? await (async () => {
+        try {
+          const supabase = createAdminClient();
+          const { data, error } = await supabase
+            .from("restaurant_recommendations")
+            .select("id,restaurant_name,location,message,submitter_name,status,created_at")
+            .order("created_at", { ascending: false });
+          if (error) throw error;
+          return { recommendations: data, unavailable: false };
+        } catch (error) {
+          console.error("Unable to load restaurant recommendations for admin", error);
+          return { recommendations: [], unavailable: true };
+        }
+      })()
+    : { recommendations: [], unavailable: false };
 
   return (
     <>
@@ -29,6 +49,12 @@ export default async function RestaurantsPage() {
       </section>
       <div className="page-shell pb-16 sm:pb-20 lg:pb-24">
         <RestaurantRecommendations />
+        {isAdmin && (
+          <RestaurantRecommendationAdminList
+            recommendations={recommendationResult.recommendations}
+            unavailable={recommendationResult.unavailable}
+          />
+        )}
       </div>
     </>
   );
