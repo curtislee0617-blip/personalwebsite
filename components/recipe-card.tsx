@@ -18,9 +18,9 @@ function formatDate(date?: string) {
   return new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
 
-export function RecipeCard({ entry, showBackLink = false }: { entry: RecipeCardEntry; showBackLink?: boolean }) {
+export function RecipeCard({ entry, showBackLink = false, carousel = false }: { entry: RecipeCardEntry; showBackLink?: boolean; carousel?: boolean }) {
   return (
-    <details className="recipe-card rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5">
+    <details className={`recipe-card rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${carousel ? "mobile-snap-card w-[76vw] max-w-[17rem] shrink-0 snap-center sm:w-auto sm:max-w-none" : ""}`}>
       <summary className="recipe-card-summary recipes-section-summary cursor-pointer list-none marker:hidden">
         <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
           <div className="relative aspect-[4/3]">
