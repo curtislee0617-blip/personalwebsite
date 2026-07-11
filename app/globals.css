@@ -1847,10 +1847,17 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
      without desktop-sized cards, bubbles, and empty space. */
   .page-shell { padding-left: 1rem !important; padding-right: 1rem !important; }
   .page-intro { padding-top: 2rem !important; }
+  .page-intro-title { text-wrap: pretty; }
+  .page-intro-description {
+    margin-top: 0.65rem !important;
+    max-width: 34rem;
+    font-size: 0.62rem !important;
+    line-height: 1.38 !important;
+  }
   .contact-cities { border-radius: 1.15rem !important; }
   .contact-cities-copy { padding: 1rem; }
   .contact-cities-copy h2 { margin-top: 0.5rem; font-size: 1.35rem; }
-  .contact-cities-copy > div > p:last-child { margin-top: 0.65rem; font-size: 0.68rem; line-height: 1.55; }
+  .contact-cities-copy > div > p:last-child { margin-top: 0.5rem; font-size: 0.68rem; line-height: 1.4; }
   .contact-city-chips { margin-top: 0.8rem; }
   .contact-city-chips span { padding: 0.36rem 0.55rem; font-size: 0.58rem; }
   .contact-cities-art { padding: 1.25rem; }
@@ -1860,6 +1867,10 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .section-title { font-size: 1.18rem !important; }
   .eyebrow { font-size: 0.5rem !important; letter-spacing: 0.15em !important; }
   .page-section p { line-height: 1.55; }
+  .section-description {
+    margin-top: 0.38rem !important;
+    line-height: 1.38 !important;
+  }
   .page-section .text-sm { font-size: 0.64rem !important; }
   .page-section .text-2xl { font-size: 1.02rem !important; }
   .page-section [class*="rounded-[2rem]"] { border-radius: 1.25rem !important; }
@@ -1913,7 +1924,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
      so the carousel measures and animates identical card geometry. */
   .swipe-bubble-card {
     display: block;
-    min-height: 9.8rem;
+    min-height: 9.15rem;
     padding: 0 !important;
     overflow: hidden;
     border-radius: 1rem !important;
@@ -1926,8 +1937,8 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     border-radius: 0 !important;
   }
   .swipe-bubble-copy {
-    min-height: 5rem;
-    padding: 0.65rem 0.75rem 0.72rem !important;
+    min-height: 4.35rem;
+    padding: 0.55rem 0.7rem 0.62rem !important;
   }
 
   .tool-card { padding: 0 !important; border-radius: 1rem !important; }
@@ -1936,14 +1947,14 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .tool-thumbnail-properties { display: grid !important; }
   .tool-chart-grid { stroke: rgb(var(--color-ink) / 0.14); }
   .tool-chart-line { stroke-width: 2.5; }
-  .tool-card-copy { align-items: center; gap: 0.65rem; padding: 0.65rem 0.75rem 0.72rem; }
+  .tool-card-copy { align-items: center; gap: 0.55rem; padding: 0.55rem 0.7rem 0.62rem; }
   .tool-card h3 { font-size: 0.8rem !important; }
   .tool-card p {
     display: -webkit-box;
-    margin-top: 0.25rem;
+    margin-top: 0.18rem;
     overflow: hidden;
     font-size: 0.55rem !important;
-    line-height: 1.4 !important;
+    line-height: 1.3 !important;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
@@ -1954,7 +1965,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .project-card-tags { display: none; }
   .project-card-copy > div { margin-top: 0; }
   .project-card-copy h2 { font-size: 0.8rem; }
-  .project-card-description { margin-top: 0.45rem; font-size: 0.55rem; line-height: 1.4; -webkit-line-clamp: 2; }
+  .project-card-description { margin-top: 0.28rem; font-size: 0.55rem; line-height: 1.3; -webkit-line-clamp: 2; }
   .project-card-tags { margin-top: 0.55rem; }
   .project-card-tags span { padding: 0.24rem 0.38rem; font-size: 0.48rem; }
 
@@ -1975,17 +1986,17 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .recipe-card-copy { min-width: 0; grid-column: 1; grid-row: 1; }
   .recipe-card-copy .eyebrow { margin-top: 0; }
   .recipe-card-status { display: none; }
-  .recipe-card-copy h3 { margin-top: 0.45rem; font-size: 1rem !important; line-height: 1.2; }
+  .recipe-card-copy h3 { margin-top: 0.32rem; font-size: 1rem !important; line-height: 1.15; }
   .recipe-card-description {
     display: -webkit-box;
-    margin-top: 0.45rem;
+    margin-top: 0.28rem;
     overflow: hidden;
     font-size: 0.7rem !important;
-    line-height: 1.45 !important;
+    line-height: 1.32 !important;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
-  .recipe-card-action { margin-top: 0.55rem; font-size: 0.68rem !important; }
+  .recipe-card-action { margin-top: 0.38rem; font-size: 0.68rem !important; }
   .recipe-card.recipe-carousel-card { padding: 0 !important; }
   .recipe-carousel-card .recipe-card-summary { display: block; }
   .recipe-carousel-card .recipe-card-thumbnail {
@@ -2011,10 +2022,10 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .recipe-guide-media { height: 5.2rem; }
   .recipe-guide-copy { padding: 0.58rem 0.65rem 0.64rem; }
   .recipe-guide-status { display: none; }
-  .recipe-guide-title-row { margin-top: 0.45rem; }
+  .recipe-guide-title-row { margin-top: 0.32rem; }
   .recipe-guide-title-row h3 { font-size: 0.76rem !important; }
   .recipe-guide-copy > div:first-child { display: none; }
-  .recipe-guide-description { display: -webkit-box; font-size: 0.55rem; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .recipe-guide-description { display: -webkit-box; margin-top: 0.28rem; font-size: 0.55rem; line-height: 1.3; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
   .recipe-anchor-tabs { gap: 0.3rem !important; }
   .recipe-anchor-tab { padding: 0.28rem 0.48rem !important; font-size: 0.52rem !important; }
   .restaurant-map-layout { border-radius: 1.4rem; }

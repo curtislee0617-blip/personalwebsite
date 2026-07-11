@@ -143,7 +143,7 @@ export default async function RecipesPage() {
               <div>
                 <p className="eyebrow">Recipes</p>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipes</h2>
-                <p className="mt-2 text-sm text-ink/50">Ordered by date, newest first. Heads up: I do not have precise numbers for most of these — treat quantities as a guide, not gospel.</p>
+                <p className="section-description mt-2 text-sm text-ink/50">Ordered by date, newest first. Heads up: I do not have precise numbers for most of these — treat quantities as a guide, not gospel.</p>
               </div>
               {authenticated && (
                 <Link className="self-start rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss sm:self-auto" href="/recipes/admin">
@@ -163,7 +163,7 @@ export default async function RecipesPage() {
                       <div>
                         <p className="eyebrow">{section.title}</p>
                         <h3 className="mt-3 text-2xl font-semibold tracking-tight">{section.title}</h3>
-                        <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/50">{section.description}</p>
+                        <p className="section-description mt-2 max-w-2xl text-sm leading-6 text-ink/50">{section.description}</p>
                       </div>
                       <span className="grid size-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-paper/80 text-lg text-ink/50 transition group-open:rotate-45">
                         +
@@ -182,7 +182,7 @@ export default async function RecipesPage() {
             <div>
               <p className="eyebrow">Wishlist</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipes I&apos;d like to make</h2>
-              <p className="mt-2 text-sm text-ink/50">A running list of dishes I want to cook next.</p>
+              <p className="section-description mt-2 text-sm text-ink/50">A running list of dishes I want to cook next.</p>
             </div>
 
             {wishlist.length > 0 ? (
