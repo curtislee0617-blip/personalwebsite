@@ -7,6 +7,16 @@
   --font-ui: Roboto, Arial, sans-serif;
   --font-technical: Georgia, "Times New Roman", serif;
   --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --radius-card: 1.5rem;
+  --radius-panel: 2rem;
+  --radius-control: 0.85rem;
+  --line-subtle: rgb(var(--color-ink) / 0.1);
+  --surface-card: rgb(var(--color-surface) / 0.55);
+  --surface-panel: rgb(var(--color-surface) / 0.48);
+  --shadow-lift: 0 20px 50px rgb(var(--color-ink) / 0.1);
+  --motion-fast: 180ms;
+  --motion-standard: 280ms;
+  --ease-standard: cubic-bezier(.22, 1, .36, 1);
   --color-paper: 250 251 252;
   --color-ink: 32 35 31;
   --color-moss: 82 107 70;
@@ -45,6 +55,49 @@ select,
 textarea { font: inherit; }
 
 svg text { font-family: var(--font-ui); }
+
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid rgb(var(--color-moss));
+  outline-offset: 3px;
+}
+
+.project-card,
+.recipe-guide-card,
+.tool-card,
+.recipe-card,
+.design-card {
+  border-color: var(--line-subtle);
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  transition: border-color var(--motion-fast) ease, background-color var(--motion-fast) ease, box-shadow var(--motion-standard) var(--ease-standard), transform var(--motion-standard) var(--ease-standard);
+}
+
+.design-panel {
+  border-color: var(--line-subtle);
+  border-radius: var(--radius-panel);
+  background: var(--surface-panel);
+}
+
+@media (hover: hover) {
+  .project-card:hover,
+  .recipe-guide-card:hover,
+  .tool-card:hover,
+  .recipe-card:hover,
+  .design-card:hover {
+    border-color: rgb(var(--color-ink) / 0.22);
+    background: rgb(var(--color-surface) / 0.9);
+    box-shadow: var(--shadow-lift);
+    transform: translateY(-2px);
+  }
+}
+
+.back-link-bubble,
+.recipe-anchor-tab,
+.contact-city-chips span {
+  border-color: rgb(var(--color-ink) / 0.13);
+  background: rgb(var(--color-surface) / 0.72);
+  transition: border-color var(--motion-fast) ease, background-color var(--motion-fast) ease, color var(--motion-fast) ease, transform var(--motion-fast) ease;
+}
 
 ::selection { background: #c9dfbd; color: rgb(var(--color-ink)); }
 .dark ::selection { background: #47593c; color: rgb(var(--color-ink)); }
@@ -1733,6 +1786,10 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 }
 
 @media (max-width: 639px) {
+  :root {
+    --radius-card: 1rem;
+    --radius-panel: 1.25rem;
+  }
   body { font-size: 0.78rem; }
   main .text-xs,
   footer .text-xs,

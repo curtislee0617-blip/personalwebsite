@@ -264,7 +264,7 @@ export default function AboutPage() {
           </div>
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
             {featuredWork.map((item) => (
-              <Link className="group rounded-3xl border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/25 hover:bg-surface" href={item.href} key={item.href}>
+              <Link className="design-card group rounded-3xl border border-ink/10 bg-surface/45 p-6" href={item.href} key={item.href}>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-moss">{item.type}</p>
                 <h3 className="mt-3 text-lg font-semibold group-hover:text-moss">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-ink/60">{item.summary}</p>

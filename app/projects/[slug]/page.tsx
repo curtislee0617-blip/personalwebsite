@@ -52,7 +52,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.95fr)] lg:gap-16">
           <div>
-            <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
+            <div className="design-panel rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Overview</p>
               <div className="mt-5 space-y-4 text-sm leading-7 text-ink/65 sm:text-base sm:leading-8">
                 {project.detail.map((paragraph) => (
@@ -61,7 +61,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </div>
             </div>
 
-            <div className="mt-8 rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
+            <div className="design-panel mt-8 rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="eyebrow">Preview</p>
@@ -91,7 +91,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           </div>
 
           <aside className="space-y-8">
-            <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
+            <div className="design-panel rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Details</p>
               <dl className="mt-5 space-y-5 text-sm leading-6 text-ink/60">
                 <div>
@@ -111,7 +111,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </dl>
             </div>
 
-            <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
+            <div className="design-panel rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
               <p className="eyebrow">Document</p>
               {primaryDocument ? (
                 <div className="mt-5">

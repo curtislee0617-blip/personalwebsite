@@ -158,7 +158,7 @@ export default async function RecipesPage() {
                 if (sectionRecipes.length === 0) return null;
 
                 return (
-                  <details className="group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" key={section.id}>
+                  <details className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" key={section.id}>
                     <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
                       <div>
                         <p className="eyebrow">{section.title}</p>
@@ -188,7 +188,7 @@ export default async function RecipesPage() {
             {wishlist.length > 0 ? (
               <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {wishlist.map((entry) => (
-                  <article className="rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:p-8" key={entry.slug}>
+                  <article className="design-panel rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:p-8" key={entry.slug}>
                     <p className="eyebrow">To make</p>
                     <h3 className="mt-4 text-xl font-semibold tracking-tight">{entry.title}</h3>
                     {entry.note && <p className="mt-3 text-sm leading-7 text-ink/65">{entry.note}</p>}
@@ -201,7 +201,7 @@ export default async function RecipesPage() {
                 ))}
               </div>
             ) : (
-              <div className="mt-6 rounded-[2rem] border border-dashed border-ink/15 bg-surface/30 p-8 text-sm text-ink/45">
+              <div className="design-panel mt-6 rounded-[2rem] border border-dashed border-ink/15 bg-surface/30 p-8 text-sm text-ink/45">
                 Nothing on the list yet — check back soon.
               </div>
             )}
