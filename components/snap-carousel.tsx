@@ -7,10 +7,10 @@ function inertCopy(item: ReactNode) {
   return cloneElement(item as ReactElement<{ id?: string; tabIndex?: number }>, { id: undefined, tabIndex: -1 });
 }
 
-export function SnapCarousel({ children, className }: { children: ReactNode; className: string }) {
+export function SnapCarousel({ children, className, repeatEdges = true }: { children: ReactNode; className: string; repeatEdges?: boolean }) {
   const railRef = useRef<HTMLDivElement>(null);
   const items = Children.toArray(children);
-  const loops = items.length > 1;
+  const loops = repeatEdges && items.length > 1;
 
   useLayoutEffect(() => {
     const rail = railRef.current;
