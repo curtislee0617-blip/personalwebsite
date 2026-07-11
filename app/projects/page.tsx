@@ -17,7 +17,7 @@ export default function ProjectsPage() {
       />
 
       <section className="page-section pt-6 sm:pt-7">
-        <SnapCarousel className="project-card-carousel mobile-snap-carousel -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 pt-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3">
+        <SnapCarousel className="project-card-carousel mobile-snap-carousel -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 pt-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-3" repeatEdges={false}>
           {projects.map((project, index) => {
             const preview = project.previews[0];
             return (
