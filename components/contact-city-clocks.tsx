@@ -24,7 +24,7 @@ type DisplayTime = {
 };
 
 function useCurrentTime() {
-  const [now, setNow] = useState<Date | null>(null);
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     const update = () => setNow(new Date());
@@ -113,11 +113,11 @@ export function ContactCityTimeRow() {
   return (
     <div className="contact-city-time-row" aria-label="Current local time in each city">
       <article className="contact-city-clock contact-city-clock-hk">
-        <span className="contact-flip-clock" aria-label={`Hong Kong time ${hongKong.label}`}>
-          <span>{hongKong.hours}</span>
+        <span className="contact-flip-clock" aria-label="Hong Kong local time">
+          <span suppressHydrationWarning>{hongKong.hours}</span>
           <i aria-hidden="true">:</i>
-          <span>{hongKong.minutes}</span>
-          <b>{hongKong.meridiem}</b>
+          <span suppressHydrationWarning>{hongKong.minutes}</span>
+          <b suppressHydrationWarning>{hongKong.meridiem}</b>
         </span>
       </article>
 
@@ -132,19 +132,19 @@ export function ContactCityTimeRow() {
           <span className="contact-victorian-pin" />
         </span>
         <span className="contact-city-clock-copy">
-          <strong>
+          <strong suppressHydrationWarning>
             {londonTime.hours}:{londonTime.minutes}
-            <span>{londonTime.meridiem}</span>
+            <span suppressHydrationWarning>{londonTime.meridiem}</span>
           </strong>
         </span>
       </article>
 
       <article className="contact-city-clock contact-city-clock-la">
-        <span className="contact-digital-clock" aria-label={`Los Angeles time ${losAngelesTime.label}`}>
-          <span>{losAngelesTime.hours}</span>
+        <span className="contact-digital-clock" aria-label="Los Angeles local time">
+          <span suppressHydrationWarning>{losAngelesTime.hours}</span>
           <i aria-hidden="true">:</i>
-          <span>{losAngelesTime.minutes}</span>
-          <b>{losAngelesTime.meridiem}</b>
+          <span suppressHydrationWarning>{losAngelesTime.minutes}</span>
+          <b suppressHydrationWarning>{losAngelesTime.meridiem}</b>
         </span>
       </article>
     </div>

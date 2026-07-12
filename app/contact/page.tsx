@@ -137,7 +137,7 @@ export default function ContactPage() {
                 className="contact-cities-art-image contact-cities-art-light"
                 fill
                 priority
-                sizes="(max-width: 639px) 18rem, (max-width: 899px) 30rem, 40rem"
+                sizes="(max-width: 639px) 21rem, (max-width: 899px) 30rem, 40rem"
                 src="/contact-cities-pixel-art-day-from-night-v1.png"
               />
               <Image
@@ -145,7 +145,7 @@ export default function ContactPage() {
                 className="contact-cities-art-image contact-cities-art-dark"
                 fill
                 priority
-                sizes="(max-width: 639px) 18rem, (max-width: 899px) 30rem, 40rem"
+                sizes="(max-width: 639px) 21rem, (max-width: 899px) 30rem, 40rem"
                 src="/contact-cities-pixel-art-night-v2.png"
               />
               <span className="contact-city-auras" aria-hidden="true" />

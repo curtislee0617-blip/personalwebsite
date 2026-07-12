@@ -24,7 +24,7 @@ type GeocodeSuggestion = {
 let mapsConfigured = false;
 const resultListLimit = 250;
 const mobileMarkerLimit = 350;
-const mobileMapMediaQuery = "(max-width: 899px)";
+const mobileMapMediaQuery = "(max-width: 1099px), (max-width: 1366px) and (pointer: coarse) and (hover: none)";
 const defaultMapCenter = { lat: 22.3027, lng: 114.1772 };
 
 function googleMapsUrl(restaurant: Restaurant) {
