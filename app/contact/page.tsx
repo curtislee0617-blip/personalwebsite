@@ -168,8 +168,8 @@ export default function ContactPage() {
                 <span className="contact-hollywood-beam contact-hollywood-beam-center" />
                 <span className="contact-hollywood-glow" />
               </div>
+              <ContactCityTimeRow />
             </div>
-            <ContactCityTimeRow />
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">

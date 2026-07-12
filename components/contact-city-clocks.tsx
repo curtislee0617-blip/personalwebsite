@@ -113,7 +113,6 @@ export function ContactCityTimeRow() {
   return (
     <div className="contact-city-time-row" aria-label="Current local time in each city">
       <article className="contact-city-clock contact-city-clock-hk">
-        <span className="contact-city-clock-label">Hong Kong</span>
         <span className="contact-flip-clock" aria-label={`Hong Kong time ${hongKong.label}`}>
           <span>{hongKong.hours}</span>
           <i aria-hidden="true">:</i>
@@ -133,7 +132,6 @@ export function ContactCityTimeRow() {
           <span className="contact-victorian-pin" />
         </span>
         <span className="contact-city-clock-copy">
-          <span className="contact-city-clock-label">London</span>
           <strong>
             {londonTime.hours}:{londonTime.minutes}
             <span>{londonTime.meridiem}</span>
@@ -142,12 +140,12 @@ export function ContactCityTimeRow() {
       </article>
 
       <article className="contact-city-clock contact-city-clock-la">
-        <span className="contact-city-clock-label">Los Angeles</span>
-        <strong>
-          {losAngelesTime.hours}:{losAngelesTime.minutes}
-          <span>{losAngelesTime.meridiem}</span>
-        </strong>
-        <span className="contact-la-marquee" aria-hidden="true">HOLLYWOOD</span>
+        <span className="contact-digital-clock" aria-label={`Los Angeles time ${losAngelesTime.label}`}>
+          <span>{losAngelesTime.hours}</span>
+          <i aria-hidden="true">:</i>
+          <span>{losAngelesTime.minutes}</span>
+          <b>{losAngelesTime.meridiem}</b>
+        </span>
       </article>
     </div>
   );

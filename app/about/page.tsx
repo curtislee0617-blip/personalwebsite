@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { AboutPixelArt } from "@/components/about-pixel-art";
 import { AboutSectionRail } from "@/components/about-section-rail";
 import { PageIntro } from "@/components/page-intro";
 
@@ -174,6 +175,8 @@ export default function AboutPage() {
           </>
         }
       />
+
+      <AboutPixelArt />
 
       <AboutSectionRail />
 
