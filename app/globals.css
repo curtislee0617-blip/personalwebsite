@@ -130,6 +130,24 @@ body.has-page-cursor * { cursor: inherit; }
   transform: translateY(-1px);
 }
 
+.footer-link {
+  appearance: none;
+  display: inline-flex;
+  min-height: 1.5rem;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  line-height: 1.25;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 180ms ease;
+}
+
+.footer-link:hover { color: rgb(var(--color-ink)); }
+
 .page-intro { display: grid; justify-items: start; }
 .page-intro-title { width: min(100%, 60rem); text-wrap: balance; }
 .page-intro-description { width: min(100%, 44rem); text-wrap: pretty; }
@@ -146,15 +164,61 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
 .contact-city-chips i { font-style: normal; font-size: 0.75rem; }
-.contact-cities-art { position: relative; align-self: stretch; display: grid; min-height: 13rem; overflow: hidden; place-items: center; padding: 1.5rem; background: rgb(250 249 245); transition: background-color 360ms ease, border-color 360ms ease; }
-.contact-cities-picture { position: relative; isolation: isolate; width: min(88%, 38rem); aspect-ratio: 1918 / 821; }
-.contact-cities-art-image { object-fit: fill; object-position: 50% 50%; image-rendering: crisp-edges; image-rendering: pixelated; transition: opacity 420ms ease; }
+.contact-cities-art { --contact-art-background: 253 250 234; position: relative; align-self: stretch; display: grid; min-height: 13rem; overflow: hidden; place-items: center; padding: 1.5rem; background: rgb(var(--contact-art-background)); transition: background-color 360ms ease, border-color 360ms ease; }
+.contact-cities-picture { position: relative; isolation: isolate; width: min(88%, 38rem); aspect-ratio: 1916 / 821; background: rgb(var(--contact-art-background)); }
+.contact-cities-art-image { z-index: 0; object-fit: fill; object-position: 50% 50%; image-rendering: crisp-edges; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
 .contact-cities-art-dark,
+.contact-hong-kong-night-lift,
+.contact-harbour-clear-dark,
+.contact-harbour-boat-dark,
 .contact-hollywood-spotlights { opacity: 0; }
-.dark .contact-cities-art-light { opacity: 0; }
-.dark .contact-cities-art-dark { opacity: 1; }
+.dark .contact-cities-art-light,
+.dark .contact-harbour-clear-light,
+.dark .contact-harbour-boat-light { opacity: 0; }
+.dark .contact-cities-art-dark,
+.dark .contact-hong-kong-night-lift,
+.dark .contact-harbour-clear-dark,
+.dark .contact-harbour-boat-dark,
 .dark .contact-hollywood-spotlights { opacity: 1; }
-.dark .contact-cities-art { border-color: rgb(2 21 51); background: rgb(2 21 51); }
+.dark .contact-cities-art { --contact-art-background: 2 21 51; border-color: rgb(var(--contact-art-background)); background: rgb(var(--contact-art-background)); }
+.contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 1; background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 23% 42% at 13% 55%, #000 0 58%, rgb(0 0 0 / 0.72) 76%, transparent 100%); mask-image: radial-gradient(ellipse 23% 42% at 13% 55%, #000 0 58%, rgb(0 0 0 / 0.72) 76%, transparent 100%); transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
+.contact-harbour-clear,
+.contact-harbour-boat { position: absolute; inset: 0; pointer-events: none; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
+.contact-harbour-clear { z-index: 1; clip-path: polygon(12% 66%, 12.7% 60%, 14% 60%, 14.6% 55%, 15.8% 62.5%, 16.5% 55.5%, 17.8% 63%, 18.5% 58.5%, 19.7% 64.5%, 20.8% 65.5%, 21.1% 71%, 19.7% 74%, 13.8% 74%, 12.4% 71%); }
+.contact-harbour-clear-light { background: url('/contact-cities-pixel-art-day-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-clear-dark { background: url('/contact-cities-pixel-art-night-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-boat { z-index: 2; clip-path: polygon(12.3% 66%, 13.1% 62%, 14.1% 62%, 14.7% 56.5%, 15.8% 64%, 16.6% 57%, 17.6% 65%, 18.7% 60%, 19.5% 66%, 20.4% 67%, 20.7% 70%, 19.5% 73%, 14.3% 73%, 13% 70%); animation: harbourBoatCruise 9s ease-in-out infinite alternate; }
+.contact-harbour-boat-light { background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-boat-dark { background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; }
+.contact-london-planes { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+.contact-london-plane { position: absolute; left: -12%; width: clamp(0.9rem, 3.2%, 1.55rem); height: auto; overflow: visible; opacity: 0; filter: drop-shadow(1px 1px 0 rgb(255 255 255 / 0.68)); image-rendering: pixelated; animation: citiesPlaneFly 17s linear infinite; }
+.contact-plane-tail,
+.contact-plane-belly,
+.contact-plane-stripe { fill: #087eaf; }
+.contact-plane-tail-highlight { fill: #d8edf5; }
+.contact-plane-wing-shadow,
+.contact-plane-outline { fill: #aab0b4; }
+.contact-plane-wing { fill: #d8dcde; }
+.contact-plane-engine { fill: #b9bec1; }
+.contact-plane-engine-highlight { fill: #eef0ef; }
+.contact-plane-engine-intake { fill: #6e7478; }
+.contact-plane-fuselage { fill: #f8f9f6; }
+.contact-plane-door { fill: #cdd2d3; }
+.contact-plane-cockpit,
+.contact-plane-windows { fill: #28383f; }
+.contact-plane-nav-light { opacity: 0; }
+.contact-london-plane-one { top: 8%; }
+.contact-london-plane-two { top: 16%; scale: 0.78; animation-delay: -9s; animation-duration: 22s; }
+.dark .contact-london-plane { filter: drop-shadow(0 0 2px rgb(205 235 255 / 0.58)); }
+.dark .contact-plane-fuselage { fill: #dce8eb; }
+.dark .contact-plane-wing { fill: #aebbc1; }
+.dark .contact-plane-tail-highlight,
+.dark .contact-plane-engine-highlight { fill: #cfe1e8; }
+.dark .contact-plane-cockpit,
+.dark .contact-plane-windows { fill: #182b35; }
+.dark .contact-plane-nav-light { opacity: 1; }
+.dark .contact-plane-nav-light-red { fill: #ff4248; filter: drop-shadow(0 0 1px #ff4248); }
+.dark .contact-plane-nav-light-green { fill: #43e078; filter: drop-shadow(0 0 1px #43e078); }
 .contact-hollywood-spotlights { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; transition: opacity 520ms ease; mix-blend-mode: screen; }
 .contact-hollywood-beam { position: absolute; left: 77.4%; top: 48%; width: 4.8%; height: 38%; border-radius: 9999px 9999px 18% 18%; background: linear-gradient(to top, rgb(255 240 178 / 0.02), rgb(255 242 175 / 0.2) 48%, rgb(255 250 214 / 0.58)); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); filter: blur(0.7px); opacity: 0.88; transform-origin: 50% 100%; }
 .contact-hollywood-beam-left { transform: translate(-45%, -20%) rotate(-38deg); animation: hollywoodSpotlightLeft 5.8s ease-in-out infinite alternate; }
@@ -182,9 +246,28 @@ body.has-page-cursor * { cursor: inherit; }
   to { opacity: 0.78; transform: scaleX(1.08); }
 }
 
+@keyframes harbourBoatCruise {
+  from { transform: translate3d(-6px, -1px, 0) rotate(-0.2deg); }
+  33% { transform: translate3d(10px, 2px, 0) rotate(0.15deg); }
+  66% { transform: translate3d(27px, -2px, 0) rotate(-0.12deg); }
+  to { transform: translate3d(44px, 1px, 0) rotate(0.2deg); }
+}
+
+@keyframes citiesPlaneFly {
+  0% { left: -12%; opacity: 0; transform: translate3d(0, 0, 0); }
+  8% { opacity: 1; }
+  32% { transform: translate3d(0, -0.35rem, 0); }
+  56% { transform: translate3d(0, 0.2rem, 0); }
+  78% { transform: translate3d(0, -0.15rem, 0); }
+  92% { opacity: 1; }
+  100% { left: 104%; opacity: 0; transform: translate3d(0, -0.25rem, 0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .contact-hollywood-beam,
-  .contact-hollywood-glow { animation: none; }
+  .contact-hollywood-glow,
+  .contact-harbour-boat,
+  .contact-london-plane { animation: none; }
 }
 
 .project-card { min-width: 0; }

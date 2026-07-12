@@ -26,7 +26,7 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
   const activeIdRef = useRef(sections[0]?.id ?? "");
   const scrollEndTimer = useRef<number | null>(null);
   const trackRef = useRef<HTMLOListElement>(null);
-  const dragRef = useRef({ active: false, moved: false, index: -1 });
+  const dragRef = useRef({ active: false, moved: false, index: -1, startY: 0 });
 
   useEffect(() => {
     if (!sections.some((section) => section.id === activeIdRef.current)) {
@@ -127,19 +127,23 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
 
     if (index === dragRef.current.index) return;
     dragRef.current.index = index;
-    dragRef.current.moved = true;
     goToSection(sections[index].id, "auto");
   }, [goToSection, sections]);
 
   const handlePointerDown = (event: PointerEvent<HTMLOListElement>) => {
     setIsScrolling(true);
-    dragRef.current = { active: true, moved: false, index: -1 };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    selectFromPointer(event.clientY);
+    dragRef.current = { active: true, moved: false, index: -1, startY: event.clientY };
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLOListElement>) => {
     if (!dragRef.current.active) return;
+
+    if (!dragRef.current.moved) {
+      if (Math.abs(event.clientY - dragRef.current.startY) < 4) return;
+      dragRef.current.moved = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+
     selectFromPointer(event.clientY);
   };
 
@@ -149,8 +153,10 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
-    const currentId = activeIdRef.current;
-    if (currentId) window.history.replaceState(null, "", `#${currentId}`);
+    if (dragRef.current.moved) {
+      const currentId = activeIdRef.current;
+      if (currentId) window.history.replaceState(null, "", `#${currentId}`);
+    }
     if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
     scrollEndTimer.current = window.setTimeout(() => setIsScrolling(false), 360);
   };

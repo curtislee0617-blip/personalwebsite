@@ -39,10 +39,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <footer className="border-t border-ink/10">
             <div className="page-shell flex flex-col gap-4 py-8 text-sm text-ink/55 sm:flex-row sm:items-center sm:justify-between">
               <FooterAdminLogin />
-              <div className="flex gap-5">
-                <Link className="hover:text-ink" href="/contact">Say hello</Link>
+              <nav aria-label="Footer" className="flex items-center gap-5">
+                <Link className="footer-link" href="/contact">Say hello</Link>
                 <BackToTopButton />
-              </div>
+              </nav>
             </div>
           </footer>
         </div>

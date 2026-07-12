@@ -8,7 +8,7 @@ type DocumentWithViewTransitions = Document & {
   startViewTransition?: (callback: () => void) => ViewTransition;
 };
 
-const DARK_TO_LIGHT_MS = 940;
+const DARK_TO_LIGHT_MS = 1450;
 const LAPTOP_DARK_TO_LIGHT_MS = 1120;
 const LIGHT_TO_DARK_MS = 1240;
 const EXPAND_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";

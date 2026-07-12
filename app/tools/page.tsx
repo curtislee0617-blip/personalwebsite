@@ -11,11 +11,9 @@ type ToolSection = { title: string; tools: Tool[] };
 
 const toolSections: ToolSection[] = [
   {
-    title: "Thermodynamics",
+    title: "Planning",
     tools: [
-      { href: "/tools/water-properties", title: "Water properties", description: "Interpolate the Koretsky superheated vapour and subcooled liquid tables from two state properties.", kind: "water" },
-      { href: "/tools/compound-properties", title: "Compound properties", description: "Search Koretsky physical-property constants and calculate continuous Lee–Kesler real-fluid properties.", kind: "compound" },
-      { href: "/tools/vle", title: "VLE simulator", description: "Generate binary T–x–y and P–x–y diagrams using Raoult, NRTL, Wilson, van der Waals, or Peng–Robinson.", kind: "vle" },
+      { href: "/tools/course-planner", title: "Course planner", description: "Drag ChemE, BEM, CS, Math, and institute-core requirements onto a four-year, three-term grid — one class can satisfy several requirements at once.", kind: "planner" },
     ],
   },
   {
@@ -26,9 +24,11 @@ const toolSections: ToolSection[] = [
     ],
   },
   {
-    title: "Planning",
+    title: "Thermodynamics",
     tools: [
-      { href: "/tools/course-planner", title: "Course planner", description: "Drag ChemE, BEM, CS, Math, and institute-core requirements onto a four-year, three-term grid — one class can satisfy several requirements at once.", kind: "planner" },
+      { href: "/tools/water-properties", title: "Water properties", description: "Interpolate the Koretsky superheated vapour and subcooled liquid tables from two state properties.", kind: "water" },
+      { href: "/tools/compound-properties", title: "Compound properties", description: "Search Koretsky physical-property constants and calculate continuous Lee–Kesler real-fluid properties.", kind: "compound" },
+      { href: "/tools/vle", title: "VLE simulator", description: "Generate binary T–x–y and P–x–y diagrams using Raoult, NRTL, Wilson, van der Waals, or Peng–Robinson.", kind: "vle" },
     ],
   },
 ];

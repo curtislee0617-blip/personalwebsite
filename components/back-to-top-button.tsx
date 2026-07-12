@@ -8,7 +8,7 @@ export function BackToTopButton() {
   };
 
   return (
-    <button className="back-link-bubble" onClick={handleClick} type="button">
+    <button className="footer-link" onClick={handleClick} type="button">
       Back to top ↑
     </button>
   );
