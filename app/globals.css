@@ -164,33 +164,51 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
 .contact-city-chips i { font-style: normal; font-size: 0.75rem; }
-.contact-cities-art { --contact-art-background: 253 250 234; position: relative; align-self: stretch; display: grid; min-height: 13rem; overflow: hidden; place-items: center; padding: 1.5rem; background: rgb(var(--contact-art-background)); transition: background-color 360ms ease, border-color 360ms ease; }
+.contact-cities-art { --contact-art-background: 253 250 234; position: relative; align-self: stretch; display: grid; min-height: 13rem; overflow: hidden; align-content: center; justify-items: center; gap: 0.85rem; padding: 1.5rem; background: rgb(var(--contact-art-background)); transition: background-color 360ms ease, border-color 360ms ease; }
 .contact-cities-picture { position: relative; isolation: isolate; width: min(88%, 38rem); aspect-ratio: 1916 / 821; background: rgb(var(--contact-art-background)); }
 .contact-cities-art-image { z-index: 0; object-fit: fill; object-position: 50% 50%; image-rendering: crisp-edges; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
 .contact-cities-art-dark,
+.contact-city-auras,
 .contact-hong-kong-night-lift,
+.contact-london-balance-fill-dark,
+.contact-london-balanced-dark,
 .contact-harbour-clear-dark,
 .contact-harbour-boat-dark,
 .contact-hollywood-spotlights { opacity: 0; }
 .dark .contact-cities-art-light,
+.dark .contact-london-balance-fill-light,
+.dark .contact-london-balanced-light,
 .dark .contact-harbour-clear-light,
 .dark .contact-harbour-boat-light { opacity: 0; }
 .dark .contact-cities-art-dark,
+.dark .contact-city-auras,
 .dark .contact-hong-kong-night-lift,
+.dark .contact-london-balance-fill-dark,
+.dark .contact-london-balanced-dark,
 .dark .contact-harbour-clear-dark,
 .dark .contact-harbour-boat-dark,
 .dark .contact-hollywood-spotlights { opacity: 1; }
 .dark .contact-cities-art { --contact-art-background: 2 21 51; border-color: rgb(var(--contact-art-background)); background: rgb(var(--contact-art-background)); }
-.contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 1; background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 23% 42% at 13% 55%, #000 0 58%, rgb(0 0 0 / 0.72) 76%, transparent 100%); mask-image: radial-gradient(ellipse 23% 42% at 13% 55%, #000 0 58%, rgb(0 0 0 / 0.72) 76%, transparent 100%); transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
+.dark .contact-cities-picture { -webkit-mask-image: radial-gradient(ellipse 62% 86% at 50% 56%, #000 0 72%, rgb(0 0 0 / 0.78) 84%, transparent 100%); mask-image: radial-gradient(ellipse 62% 86% at 50% 56%, #000 0 72%, rgb(0 0 0 / 0.78) 84%, transparent 100%); }
+.contact-city-auras { position: absolute; inset: -12% -7% -18%; z-index: 1; background: radial-gradient(ellipse 26% 26% at 16% 67%, rgb(71 161 255 / 0.3), transparent 72%), radial-gradient(ellipse 24% 24% at 50% 65%, rgb(255 202 91 / 0.24), transparent 74%), radial-gradient(ellipse 26% 22% at 85% 66%, rgb(255 190 111 / 0.23), transparent 74%); filter: blur(11px); mix-blend-mode: screen; pointer-events: none; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
+.contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 2; background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%); mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%); transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
+.contact-london-balance-fill,
+.contact-london-balanced { position: absolute; inset: 0; pointer-events: none; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
+.contact-london-balance-fill { z-index: 2; -webkit-mask-image: radial-gradient(ellipse 8% 40% at 62.6% 58%, #000 0 34%, rgb(0 0 0 / 0.64) 56%, transparent 100%); mask-image: radial-gradient(ellipse 8% 40% at 62.6% 58%, #000 0 34%, rgb(0 0 0 / 0.64) 56%, transparent 100%); }
+.contact-london-balance-fill-light { background: rgb(var(--contact-art-background)); }
+.contact-london-balance-fill-dark { background: rgb(var(--contact-art-background)); }
+.contact-london-balanced { z-index: 3; transform: translateX(-2.7%); -webkit-mask-image: radial-gradient(ellipse 16% 46% at 53.7% 58%, #000 0 62%, rgb(0 0 0 / 0.68) 78%, transparent 100%); mask-image: radial-gradient(ellipse 16% 46% at 53.7% 58%, #000 0 62%, rgb(0 0 0 / 0.68) 78%, transparent 100%); }
+.contact-london-balanced-light { background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 50% / 100% 100% no-repeat; }
+.contact-london-balanced-dark { background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; }
 .contact-harbour-clear,
 .contact-harbour-boat { position: absolute; inset: 0; pointer-events: none; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
-.contact-harbour-clear { z-index: 1; clip-path: polygon(12% 66%, 12.7% 60%, 14% 60%, 14.6% 55%, 15.8% 62.5%, 16.5% 55.5%, 17.8% 63%, 18.5% 58.5%, 19.7% 64.5%, 20.8% 65.5%, 21.1% 71%, 19.7% 74%, 13.8% 74%, 12.4% 71%); }
+.contact-harbour-clear { z-index: 2; clip-path: polygon(12% 66%, 12.7% 60%, 14% 60%, 14.6% 55%, 15.8% 62.5%, 16.5% 55.5%, 17.8% 63%, 18.5% 58.5%, 19.7% 64.5%, 20.8% 65.5%, 21.1% 71%, 19.7% 74%, 13.8% 74%, 12.4% 71%); }
 .contact-harbour-clear-light { background: url('/contact-cities-pixel-art-day-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
 .contact-harbour-clear-dark { background: url('/contact-cities-pixel-art-night-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
-.contact-harbour-boat { z-index: 2; clip-path: polygon(12.3% 66%, 13.1% 62%, 14.1% 62%, 14.7% 56.5%, 15.8% 64%, 16.6% 57%, 17.6% 65%, 18.7% 60%, 19.5% 66%, 20.4% 67%, 20.7% 70%, 19.5% 73%, 14.3% 73%, 13% 70%); animation: harbourBoatCruise 9s ease-in-out infinite alternate; }
+.contact-harbour-boat { z-index: 4; clip-path: polygon(12.3% 66%, 13.1% 62%, 14.1% 62%, 14.7% 56.5%, 15.8% 64%, 16.6% 57%, 17.6% 65%, 18.7% 60%, 19.5% 66%, 20.4% 67%, 20.7% 70%, 19.5% 73%, 14.3% 73%, 13% 70%); animation: harbourBoatCruise 9s ease-in-out infinite alternate; }
 .contact-harbour-boat-light { background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 50% / 100% 100% no-repeat; }
 .contact-harbour-boat-dark { background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; }
-.contact-london-planes { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+.contact-london-planes { position: absolute; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
 .contact-london-plane { position: absolute; left: -12%; width: clamp(0.9rem, 3.2%, 1.55rem); height: auto; overflow: visible; opacity: 0; filter: drop-shadow(1px 1px 0 rgb(255 255 255 / 0.68)); image-rendering: pixelated; animation: citiesPlaneFly 17s linear infinite; }
 .contact-plane-tail,
 .contact-plane-belly,
@@ -219,12 +237,48 @@ body.has-page-cursor * { cursor: inherit; }
 .dark .contact-plane-nav-light { opacity: 1; }
 .dark .contact-plane-nav-light-red { fill: #ff4248; filter: drop-shadow(0 0 1px #ff4248); }
 .dark .contact-plane-nav-light-green { fill: #43e078; filter: drop-shadow(0 0 1px #43e078); }
-.contact-hollywood-spotlights { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; transition: opacity 520ms ease; mix-blend-mode: screen; }
+.contact-hollywood-spotlights { position: absolute; inset: 0; z-index: 7; overflow: visible; pointer-events: none; transition: opacity 520ms ease; mix-blend-mode: screen; }
 .contact-hollywood-beam { position: absolute; left: 77.4%; top: 48%; width: 4.8%; height: 38%; border-radius: 9999px 9999px 18% 18%; background: linear-gradient(to top, rgb(255 240 178 / 0.02), rgb(255 242 175 / 0.2) 48%, rgb(255 250 214 / 0.58)); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); filter: blur(0.7px); opacity: 0.88; transform-origin: 50% 100%; }
 .contact-hollywood-beam-left { transform: translate(-45%, -20%) rotate(-38deg); animation: hollywoodSpotlightLeft 5.8s ease-in-out infinite alternate; }
 .contact-hollywood-beam-right { transform: translate(-12%, -18%) rotate(33deg); animation: hollywoodSpotlightRight 6.4s ease-in-out infinite alternate; }
 .contact-hollywood-beam-center { width: 3.4%; height: 34%; transform: translate(4%, -22%) rotate(-6deg); opacity: 0.74; animation: hollywoodSpotlightCenter 4.8s ease-in-out infinite alternate; }
 .contact-hollywood-glow { position: absolute; left: 76.2%; top: 48.7%; width: 12.5%; height: 10%; border-radius: 9999px; background: radial-gradient(circle, rgb(255 246 194 / 0.46), rgb(255 235 151 / 0.16) 44%, transparent 72%); filter: blur(1px); opacity: 0.7; animation: hollywoodSignGlow 3.6s ease-in-out infinite alternate; }
+.contact-city-time-row { position: relative; z-index: 4; display: grid; width: min(88%, 38rem); gap: 0.16rem; grid-template-columns: 34fr 29fr 37fr; align-items: start; color: rgb(var(--color-ink)); }
+.contact-city-clock { min-width: 0; color: rgb(var(--color-ink)); text-shadow: 0 1px 0 rgb(var(--contact-art-background) / 0.72); }
+.contact-city-clock-label { color: rgb(var(--color-ink) / 0.56); font-size: 0.48rem; font-weight: 800; letter-spacing: 0.12em; line-height: 1; text-transform: uppercase; }
+.contact-city-clock-hk { display: grid; justify-items: center; gap: 0.3rem; transform: translateX(-2%); }
+.contact-flip-clock { display: flex; align-items: center; gap: 0.16rem; font-family: var(--font-ui); font-size: clamp(0.78rem, 1.5vw, 1rem); font-weight: 700; letter-spacing: 0.02em; }
+.contact-flip-clock span { position: relative; display: grid; min-width: 1.62rem; height: 1.55rem; place-items: center; overflow: hidden; border-radius: 0.34rem; background: linear-gradient(to bottom, #20201f 0 48%, #151514 48% 52%, #2b2b29 52% 100%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16); color: #f7ead3; }
+.contact-flip-clock span::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid rgb(0 0 0 / 0.45); }
+.contact-flip-clock i { color: rgb(var(--color-ink) / 0.48); font-style: normal; font-weight: 800; transform: translateY(-0.03rem); }
+.contact-flip-clock b { align-self: center; margin-left: 0.1rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.46rem; font-weight: 800; letter-spacing: 0.1em; line-height: 1; }
+.contact-city-clock-london { display: flex; align-items: center; justify-content: center; gap: 0.5rem; transform: translateX(-3%); }
+.contact-victorian-clock { position: relative; display: block; width: 2.34rem; aspect-ratio: 1; flex: none; border: 2px solid #5a3b1b; border-radius: 50%; background: radial-gradient(circle, #fbf1d2 0 57%, #d9b878 58% 100%); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.45), 0 4px 10px rgb(69 46 20 / 0.13); }
+.contact-clock-roman { position: absolute; color: #4a3118; font-family: Georgia, "Times New Roman", serif; font-size: 0.32rem; font-weight: 700; line-height: 1; }
+.contact-clock-roman-xii { left: 50%; top: 0.18rem; transform: translateX(-50%); }
+.contact-clock-roman-iii { right: 0.2rem; top: 50%; transform: translateY(-50%); }
+.contact-clock-roman-vi { bottom: 0.16rem; left: 50%; transform: translateX(-50%); }
+.contact-clock-roman-ix { left: 0.2rem; top: 50%; transform: translateY(-50%); }
+.contact-victorian-hand { position: absolute; left: 50%; top: 50%; width: 0.08rem; border-radius: 999px; background: #3a2412; transform-origin: 50% 100%; }
+.contact-victorian-hand-hour { height: 0.58rem; transform: translate(-50%, -100%) rotate(var(--clock-hour-turn)); }
+.contact-victorian-hand-minute { height: 0.84rem; transform: translate(-50%, -100%) rotate(var(--clock-minute-turn)); }
+.contact-victorian-pin { position: absolute; left: 50%; top: 50%; width: 0.24rem; aspect-ratio: 1; border-radius: 50%; background: #3a2412; transform: translate(-50%, -50%); }
+.contact-city-clock-copy { display: grid; gap: 0.18rem; min-width: 0; }
+.contact-city-clock-copy strong,
+.contact-city-clock-la strong { display: inline-flex; align-items: baseline; gap: 0.24rem; font-size: 0.9rem; font-weight: 700; line-height: 1; }
+.contact-city-clock-copy strong span,
+.contact-city-clock-la strong span { color: rgb(var(--color-ink) / 0.56); font-size: 0.48rem; font-weight: 800; letter-spacing: 0.1em; }
+.contact-city-clock-la { position: relative; display: grid; justify-items: center; gap: 0.2rem; transform: translateX(3%); color: rgb(var(--color-ink)); }
+.contact-city-clock-la .contact-city-clock-label { color: rgb(var(--color-ink) / 0.56); }
+.contact-city-clock-la strong { position: relative; font-family: var(--font-ui); font-size: clamp(0.86rem, 1.7vw, 1.1rem); letter-spacing: 0.01em; }
+.contact-la-marquee { position: relative; border-radius: 999px; color: rgb(188 116 43 / 0.88); font-size: 0.44rem; font-weight: 800; letter-spacing: 0.18em; text-shadow: 0 0 8px rgb(255 218 106 / 0.34); }
+.dark .contact-city-clock { color: rgb(229 242 255); text-shadow: 0 0 9px rgb(104 173 255 / 0.26); }
+.dark .contact-city-clock-label,
+.dark .contact-city-clock-copy strong span,
+.dark .contact-city-clock-la strong span,
+.dark .contact-flip-clock b { color: rgb(220 236 255 / 0.66); }
+.dark .contact-victorian-clock { box-shadow: 0 0 13px rgb(255 205 102 / 0.22), inset 0 0 0 2px rgb(255 255 255 / 0.24); }
+.dark .contact-la-marquee { color: rgb(255 218 106 / 0.86); text-shadow: 0 0 10px rgb(255 218 106 / 0.58); }
 
 @keyframes hollywoodSpotlightLeft {
   from { transform: translate(-45%, -20%) rotate(-43deg); opacity: 0.56; }
@@ -2120,6 +2174,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 @media (max-width: 899px) {
   .contact-cities { grid-template-columns: 1fr; }
   .contact-cities-art { min-height: 0; border-top: 1px solid rgb(var(--color-ink) / 0.08); }
+  .dark .contact-cities-art { border-top-color: rgb(var(--contact-art-background)); }
   .restaurant-filter-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .restaurant-search { grid-column: 1 / -1; }
   .restaurant-map-layout { min-height: 0; grid-template-columns: 1fr; }
@@ -2255,9 +2310,29 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-cities-copy > div > p:last-child { margin-top: 0.5rem; font-size: 0.68rem; line-height: 1.4; }
   .contact-city-chips { margin-top: 0.8rem; }
   .contact-city-chips span { padding: 0.36rem 0.55rem; font-size: 0.58rem; }
-  .contact-cities-art { min-height: 8rem; padding: 0.85rem; }
+  .contact-cities-art { min-height: 11.2rem; gap: 0.5rem; padding: 0.85rem; }
   .contact-cities-picture { width: min(92%, 18rem); }
   .contact-cities-picture img { width: 100%; }
+  .contact-city-time-row { width: min(96%, 18rem); gap: 0.12rem; }
+  .contact-city-clock-label { font-size: 0.38rem; letter-spacing: 0.08em; }
+  .contact-city-clock-hk { gap: 0.2rem; transform: translateX(-1%); }
+  .contact-flip-clock { gap: 0.1rem; font-size: 0.64rem; }
+  .contact-flip-clock span { min-width: 1.12rem; height: 1.18rem; border-radius: 0.22rem; }
+  .contact-flip-clock b { margin-left: 0.04rem; font-size: 0.32rem; letter-spacing: 0.06em; }
+  .contact-city-clock-london { gap: 0.28rem; transform: translateX(-2%); }
+  .contact-victorian-clock { width: 1.72rem; border-width: 1px; }
+  .contact-clock-roman { font-size: 0.23rem; }
+  .contact-victorian-hand-hour { height: 0.42rem; }
+  .contact-victorian-hand-minute { height: 0.61rem; }
+  .contact-victorian-pin { width: 0.17rem; }
+  .contact-city-clock-copy { gap: 0.12rem; }
+  .contact-city-clock-copy strong,
+  .contact-city-clock-la strong { gap: 0.12rem; font-size: 0.6rem; }
+  .contact-city-clock-copy strong span,
+  .contact-city-clock-la strong span { font-size: 0.32rem; letter-spacing: 0.06em; }
+  .contact-city-clock-la { gap: 0.12rem; transform: translateX(2%); }
+  .contact-city-clock-la strong { font-size: 0.62rem; }
+  .contact-la-marquee { font-size: 0.32rem; letter-spacing: 0.1em; }
   .page-section { padding-top: 2rem !important; padding-bottom: 2rem !important; }
   .display-title { font-size: 1.85rem !important; line-height: 1 !important; }
   .section-title { font-size: 1.25rem !important; }
@@ -2304,11 +2379,12 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   }
   .about-entry-main {
     display: grid;
-    align-items: start;
+    align-items: center;
     gap: 0.62rem !important;
     grid-template-columns: 2.75rem minmax(0, 1fr);
   }
   .about-logo-badge {
+    justify-self: center;
     width: 2.75rem !important;
     height: 2.75rem !important;
     border-radius: 0.72rem !important;

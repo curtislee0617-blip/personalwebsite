@@ -15,11 +15,26 @@ import "./globals.css";
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");var dark=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(dark)document.documentElement.classList.add("dark");}catch(e){}})();`;
 
 export const metadata: Metadata = {
+  applicationName: "Curtis Lee",
   title: {
     default: "My personal website",
     template: "%s — My personal website",
   },
   description: "School, work and life.",
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Curtis Lee",
+  },
   openGraph: {
     title: "My personal website",
     description: "School, work and life.",

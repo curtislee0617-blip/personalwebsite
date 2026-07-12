@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ContactCityTimeRow } from "@/components/contact-city-clocks";
 import { PageIntro } from "@/components/page-intro";
 
 export const metadata: Metadata = { title: "Contact" };
@@ -147,6 +148,11 @@ export default function ContactPage() {
                 sizes="(max-width: 639px) 18rem, (max-width: 899px) 30rem, 40rem"
                 src="/contact-cities-pixel-art-night-v2.png"
               />
+              <span className="contact-city-auras" aria-hidden="true" />
+              <span className="contact-london-balance-fill contact-london-balance-fill-light" aria-hidden="true" />
+              <span className="contact-london-balance-fill contact-london-balance-fill-dark" aria-hidden="true" />
+              <span className="contact-london-balanced contact-london-balanced-light" aria-hidden="true" />
+              <span className="contact-london-balanced contact-london-balanced-dark" aria-hidden="true" />
               <span className="contact-hong-kong-night-lift" aria-hidden="true" />
               <span className="contact-harbour-clear contact-harbour-clear-light" aria-hidden="true" />
               <span className="contact-harbour-clear contact-harbour-clear-dark" aria-hidden="true" />
@@ -163,6 +169,7 @@ export default function ContactPage() {
                 <span className="contact-hollywood-glow" />
               </div>
             </div>
+            <ContactCityTimeRow />
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
