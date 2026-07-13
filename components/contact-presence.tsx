@@ -77,7 +77,10 @@ export function ContactPresenceProvider({ children }: PropsWithChildren) {
         .catch(() => undefined),
     ]);
 
-    const refreshInterval = window.setInterval(loadStatus, 60_000);
+    // The record lives in Supabase, so every visitor reads the same location.
+    // Refresh often enough for an update made on another device to feel live,
+    // without exposing write access to the browser.
+    const refreshInterval = window.setInterval(loadStatus, 10_000);
     return () => {
       controller.abort();
       window.clearInterval(refreshInterval);

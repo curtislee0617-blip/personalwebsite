@@ -561,7 +561,7 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-chip-icon-sun { width: 0.94rem; height: 0.94rem; }
 .contact-city-chip-icon-umbrella { width: 1.16rem; }
 .contact-city-chip-icon-junk { width: 1.32rem; }
-.contact-cities-art { --contact-art-background: 254 250 237; --contact-art-edge: linear-gradient(180deg, rgb(254 250 237) 0%, rgb(254 250 237) 98%, rgb(253 249 235) 100%); position: relative; align-self: stretch; min-height: 13rem; overflow: hidden; padding: 0; background: var(--contact-art-edge); border-color: transparent; }
+.contact-cities-art { --contact-art-background: 254 250 237; --contact-art-edge: linear-gradient(180deg, rgb(254 251 237) 0%, rgb(254 250 237) 7%, rgb(254 250 237) 96%, rgb(253 249 235) 100%); position: relative; align-self: stretch; min-height: 13rem; overflow: hidden; padding: 0; background: var(--contact-art-edge); border-color: transparent; }
 .contact-cities-picture {
   --celestial-color: rgb(255 213 103); --celestial-moon: 0; --celestial-opacity: 0; --celestial-sun: 1; --celestial-x: 50%; --celestial-y: 55%; --city-curve-la-end: 75.5%; --city-curve-london-start: 78.4%; --city-curve-london-end: 86.4%; --city-curve-hk-start: 89.1%; --moon-lit-shape: circle(50%); --moon-phase-label-color: rgb(82 74 59); --moon-phase-label-shadow: rgb(255 251 239); --secondary-celestial-color: rgb(255 213 103); --secondary-celestial-opacity: 0; --secondary-celestial-x: 84%; --secondary-celestial-y: 55%;
   --hk-blue-hour: 0; --hk-city-night: 0; --hk-dawn: 0; --hk-daylight: 1; --hk-golden: 0; --hk-night: 0; --hk-stars: 0; --hk-sunset: 0; --hk-sun-color: rgb(255 210 93); --hk-sun-opacity: 0; --hk-sun-x: 3%; --hk-sun-y: 55%;
@@ -571,27 +571,65 @@ body.has-page-cursor * { cursor: inherit; }
   position: relative; isolation: isolate; display: grid; width: 100%; min-height: 13rem; height: 100%; place-items: center; overflow: hidden; background: var(--contact-art-edge);
   transition: --hk-blue-hour 1s linear, --hk-city-night 1s linear, --hk-dawn 1s linear, --hk-daylight 1s linear, --hk-golden 1s linear, --hk-night 1s linear, --hk-stars 1s linear, --hk-sunset 1s linear, --london-blue-hour 1s linear, --london-city-night 1s linear, --london-dawn 1s linear, --london-daylight 1s linear, --london-golden 1s linear, --london-night 1s linear, --london-stars 1s linear, --london-sunset 1s linear, --la-blue-hour 1s linear, --la-city-night 1s linear, --la-dawn 1s linear, --la-daylight 1s linear, --la-golden 1s linear, --la-night 1s linear, --la-stars 1s linear, --la-sunset 1s linear;
 }
-.contact-city-night-mask { -webkit-mask-image: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(0 0 0 / var(--la-city-night)) 0%, rgb(0 0 0 / var(--la-city-night)) var(--city-curve-la-end), rgb(0 0 0 / var(--london-city-night)) var(--city-curve-london-start), rgb(0 0 0 / var(--london-city-night)) var(--city-curve-london-end), rgb(0 0 0 / var(--hk-city-night)) var(--city-curve-hk-start), rgb(0 0 0 / var(--hk-city-night)) 100%); mask-image: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(0 0 0 / var(--la-city-night)) 0%, rgb(0 0 0 / var(--la-city-night)) var(--city-curve-la-end), rgb(0 0 0 / var(--london-city-night)) var(--city-curve-london-start), rgb(0 0 0 / var(--london-city-night)) var(--city-curve-london-end), rgb(0 0 0 / var(--hk-city-night)) var(--city-curve-hk-start), rgb(0 0 0 / var(--hk-city-night)) 100%); }
-.contact-cities-backdrop-frame { position: absolute; inset: 0 1.5rem; z-index: 0; display: flex; justify-content: center; background: var(--contact-art-edge); pointer-events: none; }
-.contact-cities-night-backdrop { position: relative; display: block; width: min(88%, 38rem); height: 100%; }
+.contact-city-night-mask {
+  -webkit-mask-image: radial-gradient(
+    ellipse 69.35194% 213.77125% at 100% 8%,
+    rgb(0 0 0 / var(--hk-city-night)) 0%,
+    rgb(0 0 0 / var(--hk-city-night)) 46.5%,
+    rgb(0 0 0 / var(--london-city-night)) 48.3%,
+    rgb(0 0 0 / var(--london-city-night)) 93%,
+    rgb(0 0 0 / var(--la-city-night)) 100%,
+    rgb(0 0 0 / var(--la-city-night)) 148%
+  );
+  mask-image: radial-gradient(
+    ellipse 69.35194% 213.77125% at 100% 8%,
+    rgb(0 0 0 / var(--hk-city-night)) 0%,
+    rgb(0 0 0 / var(--hk-city-night)) 46.5%,
+    rgb(0 0 0 / var(--london-city-night)) 48.3%,
+    rgb(0 0 0 / var(--london-city-night)) 93%,
+    rgb(0 0 0 / var(--la-city-night)) 100%,
+    rgb(0 0 0 / var(--la-city-night)) 148%
+  );
+}
+.contact-cities-backdrop-frame { position: absolute; inset: 0; z-index: 0; display: block; overflow: hidden; background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 0 / 100% 400% no-repeat; pointer-events: none; }
+.contact-cities-night-backdrop { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .contact-cities-night-backdrop::before,
-.contact-cities-night-backdrop::after { content: ""; position: absolute; top: 0; width: 100vw; height: 100%; background: linear-gradient(180deg, rgb(0 20 52) 0%, rgb(0 19 52) 10%, rgb(0 19 51) 90%, rgb(1 19 50) 100%); }
-.contact-cities-night-backdrop::before { right: 100%; opacity: var(--la-city-night); }
-.contact-cities-night-backdrop::after { left: 100%; opacity: var(--hk-city-night); }
-.contact-cities-night-backdrop-fill { position: absolute; inset: 0; display: block; background: linear-gradient(180deg, rgb(0 20 52) 0%, rgb(0 19 52) 10%, rgb(0 19 51) 90%, rgb(1 19 50) 100%); }
-.contact-cities-dawn-backdrop { position: absolute; top: 0; bottom: 0; left: 50%; display: block; width: min(88%, 38rem); background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) 0%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) var(--city-curve-la-end), rgb(255 163 101 / calc(0.42 * var(--london-dawn))) var(--city-curve-london-start), rgb(255 163 101 / calc(0.42 * var(--london-dawn))) var(--city-curve-london-end), rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) var(--city-curve-hk-start), rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) 100%); mix-blend-mode: screen; transform: translateX(-50%); }
+.contact-cities-night-backdrop::after { content: none; }
+.contact-cities-night-backdrop-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: url('/contact-cities-pixel-art-night-v2.png') 50% 0 / 100% 400% no-repeat;
+  -webkit-mask-image: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(0 0 0 / var(--hk-city-night)) 0% 46.5%, rgb(0 0 0 / var(--london-city-night)) 48.3% 93%, rgb(0 0 0 / var(--la-city-night)) 100% 148%);
+  mask-image: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(0 0 0 / var(--hk-city-night)) 0% 46.5%, rgb(0 0 0 / var(--london-city-night)) 48.3% 93%, rgb(0 0 0 / var(--la-city-night)) 100% 148%);
+}
+.contact-cities-dawn-backdrop { position: absolute; inset: 0; display: block; width: 100%; background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) 0% 46.5%, rgb(255 163 101 / calc(0.42 * var(--london-dawn))) 48.3% 93%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) 100% 148%); mix-blend-mode: screen; transform: none; }
 .contact-cities-dawn-backdrop::before,
 .contact-cities-dawn-backdrop::after { content: ""; position: absolute; top: 0; width: 100vw; height: 100%; }
 .contact-cities-dawn-backdrop::before { right: 100%; background: rgb(255 151 82 / calc(0.48 * var(--la-dawn))); }
 .contact-cities-dawn-backdrop::after { left: 100%; background: rgb(255 144 78 / calc(0.46 * var(--hk-dawn))); }
 .contact-cities-scene-frame { position: absolute; inset: 0 1.5rem; display: flex; align-items: center; justify-content: center; }
-.contact-cities-scene { position: relative; width: min(88%, 38rem); aspect-ratio: 1916 / 821; background: var(--contact-art-edge); }
+.contact-cities-scene {
+  position: relative;
+  width: min(88%, 38rem);
+  flex: none;
+  isolation: isolate;
+  aspect-ratio: 1916 / 821;
+  background: transparent;
+}
+.contact-cities-scene::before,
+.contact-cities-scene::after {
+  content: none;
+}
 .contact-city-glow-field { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 25% 30% at 14.7% 62%, rgb(255 190 111 / calc(0.15 * var(--la-city-night))), transparent 76%), radial-gradient(ellipse 27% 44% at 87.2% 52%, rgb(71 161 255 / calc(0.16 * var(--hk-city-night))), transparent 78%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); }
 .contact-moon-phase-label { position: absolute; left: clamp(0.65rem, 3.5%, 1.1rem); top: clamp(0.55rem, 4%, 0.85rem); z-index: 12; display: inline-block; width: max-content; max-width: calc(100% - 1.3rem); margin: 0; padding: 0; overflow: hidden; background: transparent; color: var(--moon-phase-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 0.72; pointer-events: none; text-overflow: ellipsis; text-shadow: 0 1px 2px var(--moon-phase-label-shadow); text-transform: uppercase; white-space: nowrap; }
 .contact-cities-art-composite { position: absolute; inset: 0; z-index: 0; display: block; }
 .contact-city-art-layer { position: absolute; top: 0; bottom: 0; display: block; background-repeat: no-repeat; image-rendering: crisp-edges; image-rendering: pixelated; }
-.contact-city-art-layer-day { background-image: url('/contact-cities-pixel-art-day-from-night-v1.png'); }
-.contact-city-art-layer-night { background-image: url('/contact-cities-pixel-art-night-v2.png'); }
+.contact-city-art-layer-day { background-image: url('/contact-cities-pixel-art-day-foreground-v1.png'); }
+.contact-city-art-layer-day.contact-city-art-layer-la { opacity: var(--la-daylight); }
+.contact-city-art-layer-day.contact-city-art-layer-london { opacity: var(--london-daylight); }
+.contact-city-art-layer-day.contact-city-art-layer-hk { opacity: var(--hk-daylight); }
+.contact-city-art-layer-night { background-image: url('/contact-cities-pixel-art-night-foreground-v1.png'); }
 .contact-city-art-layer-la { left: 0; width: 30.7%; background-position: 100% 50%; background-size: 325.733% 100%; }
 .contact-city-art-layer-london { left: 30.7%; width: 36.5%; background-position: 53.13% 50%; background-size: 273.973% 100%; }
 .contact-city-art-layer-hk { left: 67.2%; width: 32.8%; background-position: 0 50%; background-size: 304.878% 100%; }
@@ -616,9 +654,9 @@ body.has-page-cursor * { cursor: inherit; }
   opacity: var(--hk-stars);
   background-image: radial-gradient(circle at 5% 21%, rgb(255 232 183 / 0.68) 0 0.65px, transparent 1px), radial-gradient(circle at 17% 70%, rgb(188 218 255 / 0.84) 0 0.9px, transparent 1.25px), radial-gradient(circle at 27% 38%, rgb(255 255 255 / 0.72) 0 0.7px, transparent 1.05px), radial-gradient(circle at 42% 8%, rgb(255 239 193 / 0.9) 0 1px, transparent 1.4px), radial-gradient(circle at 52% 56%, rgb(188 218 255 / 0.68) 0 0.65px, transparent 1px), radial-gradient(circle at 66% 29%, rgb(255 255 255 / 0.78) 0 0.85px, transparent 1.2px), radial-gradient(circle at 78% 71%, rgb(255 225 171 / 0.72) 0 0.7px, transparent 1.05px), radial-gradient(circle at 89% 16%, rgb(188 218 255 / 0.84) 0 0.9px, transparent 1.25px), radial-gradient(circle at 96% 50%, rgb(255 255 255 / 0.68) 0 0.65px, transparent 1px);
 }
-.contact-city-celestial-track { position: absolute; inset: 0 0 auto; z-index: 5; height: 61%; overflow: hidden; pointer-events: none; }
-.contact-city-celestial-track::before { content: ""; position: absolute; left: var(--celestial-x); top: var(--celestial-y); width: clamp(3.5rem, 22%, 7rem); aspect-ratio: 1; border-radius: 50%; opacity: calc(0.2 * var(--celestial-opacity)); background: radial-gradient(circle, rgb(255 236 165 / calc(0.82 * var(--celestial-sun))) 0%, rgb(255 157 70 / calc(0.34 * var(--celestial-sun))) 30%, transparent 72%), radial-gradient(circle, rgb(209 226 250 / calc(0.72 * var(--celestial-moon))) 0%, rgb(147 180 224 / calc(0.28 * var(--celestial-moon))) 32%, transparent 72%); mix-blend-mode: screen; transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease; }
-.contact-city-celestial-track::after { content: ""; position: absolute; left: var(--secondary-celestial-x); top: var(--secondary-celestial-y); width: clamp(3.5rem, 22%, 7rem); aspect-ratio: 1; border-radius: 50%; opacity: calc(0.2 * var(--secondary-celestial-opacity)); background: radial-gradient(circle, rgb(255 236 165 / 0.82) 0%, rgb(255 157 70 / 0.34) 30%, transparent 72%); mix-blend-mode: screen; transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease; }
+.contact-city-celestial-track { position: absolute; inset: 0 0 auto; z-index: 5; height: 61%; overflow: visible; pointer-events: none; }
+.contact-city-celestial-track::before { content: ""; position: absolute; left: var(--celestial-x); top: var(--celestial-y); width: clamp(2.5rem, 15%, 4.6rem); aspect-ratio: 1; border-radius: 50%; opacity: calc(0.1 * var(--celestial-opacity)); background: radial-gradient(circle, rgb(255 236 165 / calc(0.56 * var(--celestial-sun))) 0%, rgb(255 157 70 / calc(0.16 * var(--celestial-sun))) 28%, transparent 68%), radial-gradient(circle, rgb(209 226 250 / calc(0.5 * var(--celestial-moon))) 0%, rgb(147 180 224 / calc(0.16 * var(--celestial-moon))) 30%, transparent 68%); filter: blur(3px); mix-blend-mode: screen; transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease; }
+.contact-city-celestial-track::after { content: ""; position: absolute; left: var(--secondary-celestial-x); top: var(--secondary-celestial-y); width: clamp(2.5rem, 15%, 4.6rem); aspect-ratio: 1; border-radius: 50%; opacity: calc(0.1 * var(--secondary-celestial-opacity)); background: radial-gradient(circle, rgb(255 236 165 / 0.56) 0%, rgb(255 157 70 / 0.16) 28%, transparent 68%); filter: blur(3px); mix-blend-mode: screen; transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease; }
 .contact-city-celestial { position: absolute; left: var(--celestial-x); top: var(--celestial-y); z-index: 1; display: block; width: clamp(0.48rem, 2.3%, 0.9rem); aspect-ratio: 1; overflow: hidden; opacity: var(--celestial-opacity); background: var(--celestial-color); clip-path: polygon(25% 0, 75% 0, 75% 12.5%, 100% 12.5%, 100% 87.5%, 75% 87.5%, 75% 100%, 25% 100%, 25% 87.5%, 0 87.5%, 0 12.5%, 25% 12.5%); transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease, background-color 750ms ease; }
 .contact-city-celestial-secondary { --celestial-color: var(--secondary-celestial-color); --celestial-moon: 0; --celestial-opacity: var(--secondary-celestial-opacity); --celestial-sun: 1; --celestial-x: var(--secondary-celestial-x); --celestial-y: var(--secondary-celestial-y); }
 .contact-city-celestial::before { content: ""; position: absolute; inset: 25%; opacity: var(--celestial-sun); background: #fff1a3; }
@@ -626,36 +664,27 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-moon-face::after { content: ""; position: absolute; inset: 0; background: linear-gradient(#8997af 0 0) 24% 28% / 18% 16% no-repeat, linear-gradient(#aab5c8 0 0) 70% 22% / 12% 12% no-repeat, linear-gradient(#7f8da7 0 0) 57% 67% / 20% 16% no-repeat, linear-gradient(#b9c3d2 0 0) 27% 73% / 11% 11% no-repeat; }
 .contact-cities-picture[data-celestial="sun"] .contact-city-celestial { filter: drop-shadow(0 0 2px rgb(255 193 81 / 0.94)) drop-shadow(0 0 7px rgb(255 137 45 / 0.7)); }
 .contact-cities-picture[data-celestial="moon"] .contact-city-celestial { filter: drop-shadow(0 0 2px rgb(223 235 255 / 0.9)) drop-shadow(0 0 7px rgb(142 178 226 / 0.62)); }
-.contact-city-atmosphere { position: absolute; inset: 0; z-index: 4; display: block; overflow: visible; pointer-events: none; }
+.contact-city-atmosphere { position: absolute; inset: -12% -14%; z-index: 4; display: block; overflow: visible; pointer-events: none; }
 .contact-city-atmosphere > span { position: absolute; inset: 0; display: block; }
 .contact-city-atmosphere::before,
-.contact-city-atmosphere::after { content: ""; position: absolute; top: -100vh; bottom: -100vh; width: 12%; mix-blend-mode: screen; }
-.contact-city-atmosphere::before {
-  right: 100%;
-  background: linear-gradient(rgb(45 54 93 / calc(0.34 * var(--la-blue-hour) + 0.085 * var(--la-night))), rgb(45 54 93 / calc(0.34 * var(--la-blue-hour) + 0.085 * var(--la-night)))), linear-gradient(rgb(255 151 82 / calc(0.44 * var(--la-dawn))), rgb(255 151 82 / calc(0.44 * var(--la-dawn)))), linear-gradient(rgb(255 181 84 / calc(0.22 * var(--la-golden))), rgb(255 181 84 / calc(0.22 * var(--la-golden)))), linear-gradient(rgb(255 104 69 / calc(0.48 * var(--la-sunset))), rgb(255 104 69 / calc(0.48 * var(--la-sunset))));
-  -webkit-mask-image: linear-gradient(to left, #000 0%, transparent 100%);
-  mask-image: linear-gradient(to left, #000 0%, transparent 100%);
-}
-.contact-city-atmosphere::after {
-  left: 100%;
-  background: linear-gradient(rgb(36 58 98 / calc(0.32 * var(--hk-blue-hour) + 0.085 * var(--hk-night))), rgb(36 58 98 / calc(0.32 * var(--hk-blue-hour) + 0.085 * var(--hk-night)))), linear-gradient(rgb(255 144 78 / calc(0.42 * var(--hk-dawn))), rgb(255 144 78 / calc(0.42 * var(--hk-dawn)))), linear-gradient(rgb(255 194 112 / calc(0.18 * var(--hk-golden))), rgb(255 194 112 / calc(0.18 * var(--hk-golden)))), linear-gradient(rgb(255 122 86 / calc(0.44 * var(--hk-sunset))), rgb(255 122 86 / calc(0.44 * var(--hk-sunset))));
-  -webkit-mask-image: linear-gradient(to right, #000 0%, transparent 100%);
-  mask-image: linear-gradient(to right, #000 0%, transparent 100%);
-}
+.contact-city-atmosphere::after { content: none; }
 .contact-city-atmosphere-blue {
-  background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(45 54 93 / calc(0.36 * var(--la-blue-hour) + 0.09 * var(--la-night))) 0%, rgb(45 54 93 / calc(0.36 * var(--la-blue-hour) + 0.09 * var(--la-night))) var(--city-curve-la-end), rgb(50 65 88 / calc(0.32 * var(--london-blue-hour) + 0.08 * var(--london-night))) var(--city-curve-london-start), rgb(50 65 88 / calc(0.32 * var(--london-blue-hour) + 0.08 * var(--london-night))) var(--city-curve-london-end), rgb(36 58 98 / calc(0.34 * var(--hk-blue-hour) + 0.09 * var(--hk-night))) var(--city-curve-hk-start), rgb(36 58 98 / calc(0.34 * var(--hk-blue-hour) + 0.09 * var(--hk-night))) 100%);
+  background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(36 58 98 / calc(0.34 * var(--hk-blue-hour) + 0.09 * var(--hk-night))) 0% 46.5%, rgb(50 65 88 / calc(0.32 * var(--london-blue-hour) + 0.08 * var(--london-night))) 48.3% 93%, rgb(45 54 93 / calc(0.36 * var(--la-blue-hour) + 0.09 * var(--la-night))) 100% 148%);
   mix-blend-mode: soft-light;
 }
 .contact-city-atmosphere-dawn {
-  background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) 0%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) var(--city-curve-la-end), rgb(255 163 101 / calc(0.42 * var(--london-dawn))) var(--city-curve-london-start), rgb(255 163 101 / calc(0.42 * var(--london-dawn))) var(--city-curve-london-end), rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) var(--city-curve-hk-start), rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) 100%);
+  background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) 0% 46.5%, rgb(255 163 101 / calc(0.42 * var(--london-dawn))) 48.3% 93%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) 100% 148%);
   mix-blend-mode: screen;
 }
 .contact-city-atmosphere-golden {
-  background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(255 181 84 / calc(0.26 * var(--la-golden))) 0%, rgb(255 181 84 / calc(0.26 * var(--la-golden))) var(--city-curve-la-end), rgb(242 198 139 / calc(0.18 * var(--london-golden))) var(--city-curve-london-start), rgb(242 198 139 / calc(0.18 * var(--london-golden))) var(--city-curve-london-end), rgb(255 194 112 / calc(0.21 * var(--hk-golden))) var(--city-curve-hk-start), rgb(255 194 112 / calc(0.21 * var(--hk-golden))) 100%);
+  background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(255 194 112 / calc(0.21 * var(--hk-golden))) 0% 46.5%, rgb(242 198 139 / calc(0.18 * var(--london-golden))) 48.3% 93%, rgb(255 181 84 / calc(0.26 * var(--la-golden))) 100% 148%);
+  filter: blur(18px);
   mix-blend-mode: screen;
+  opacity: 0.28;
+  transform: scale(1.06);
 }
 .contact-city-atmosphere-sunset {
-  background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(255 104 69 / calc(0.56 * var(--la-sunset))) 0%, rgb(255 104 69 / calc(0.56 * var(--la-sunset))) var(--city-curve-la-end), rgb(223 137 113 / calc(0.4 * var(--london-sunset))) var(--city-curve-london-start), rgb(223 137 113 / calc(0.4 * var(--london-sunset))) var(--city-curve-london-end), rgb(255 122 86 / calc(0.5 * var(--hk-sunset))) var(--city-curve-hk-start), rgb(255 122 86 / calc(0.5 * var(--hk-sunset))) 100%);
+  background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(255 122 86 / calc(0.5 * var(--hk-sunset))) 0% 46.5%, rgb(223 137 113 / calc(0.4 * var(--london-sunset))) 48.3% 93%, rgb(255 104 69 / calc(0.56 * var(--la-sunset))) 100% 148%);
   mix-blend-mode: screen;
 }
 .contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 2; opacity: var(--hk-city-night); background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); transform: translateX(67.2%); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); -webkit-mask-composite: source-in; mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); mask-composite: intersect; }
@@ -738,9 +767,9 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-presence-city-targets[data-editing="true"] .contact-presence-travel-target:hover,
 .contact-presence-city-targets[data-editing="true"] .contact-presence-travel-target[aria-pressed="true"] { border-color: rgb(255 197 45 / 0.98); background: rgb(255 213 83 / 0.13); }
 .contact-presence-travel-target span { position: absolute; right: 0.3rem; top: 0.3rem; padding: 0.18rem 0.38rem; border-radius: 9999px; background: rgb(29 32 35 / 0.78); color: #fff3bf; font-family: var(--font-ui); font-size: 0.48rem; font-weight: 700; letter-spacing: 0.015em; text-rendering: geometricPrecision; white-space: nowrap; -webkit-font-smoothing: antialiased; }
-.contact-travelling-presence { position: absolute; right: clamp(0.75rem, 4.5%, 1.55rem); top: clamp(0.8rem, 6%, 1.2rem); z-index: 8; display: grid; width: clamp(0.94rem, 2.16vw, 1.2rem); justify-items: center; pointer-events: none; }
+.contact-travelling-presence { position: absolute; right: clamp(0.75rem, 4.5%, 1.55rem); top: clamp(0.8rem, 6%, 1.2rem); z-index: 8; display: grid; width: clamp(0.52rem, 1vw, 0.63rem); justify-items: center; pointer-events: none; }
 .contact-travelling-presence-person { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 2px rgb(54 34 0 / 0.2)); image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.contact-travelling-presence-location { display: block; width: max-content; max-width: 7.5rem; margin-top: 0.16rem; overflow: hidden; color: var(--hk-clock-color); font-family: var(--font-ui); font-size: clamp(0.54rem, 0.82vw, 0.64rem); font-weight: 650; letter-spacing: 0; line-height: 1.2; text-align: center; text-overflow: ellipsis; text-rendering: geometricPrecision; text-shadow: 0 1px 1px var(--moon-phase-label-shadow); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-travelling-presence-location { position: absolute; left: 50%; top: calc(100% + 0.18rem); display: block; width: max-content; max-width: 7.5rem; padding: 0.14rem 0.34rem; overflow: hidden; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.9); box-shadow: 0 2px 6px rgb(22 28 20 / 0.12); color: rgb(var(--color-ink) / 0.72); font-family: Arial, sans-serif; font-size: clamp(0.6rem, 0.9vw, 0.72rem); font-weight: 700; letter-spacing: 0.01em; line-height: 1.15; text-align: center; text-overflow: ellipsis; text-rendering: auto; text-shadow: none; transform: translateX(-50%); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .contact-city-time-row { position: absolute; inset: auto 0 5.2% 0; z-index: 8; height: 2.8rem; color: rgb(var(--color-ink)); pointer-events: none; }
 .contact-city-clock { position: absolute; top: 0; left: var(--contact-clock-x); min-width: 0; text-shadow: none; transform: translateX(-50%); }
 .contact-city-clock-hk { --contact-clock-x: 81.3%; top: 0.31rem; display: grid; justify-items: center; color: var(--hk-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--hk-night))); }
@@ -776,7 +805,7 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-clock-hk > .contact-city-presence { bottom: calc(100% - 0.24rem); transform: translateX(-50%) rotate(-1.5deg); }
 .contact-city-clock-la > .contact-city-presence { left: 76%; }
 .contact-city-clock-hk > .contact-city-presence { left: 25%; }
-.contact-city-clock-copy > .contact-city-presence { left: 72%; bottom: 72%; width: clamp(1.86rem, 3.6vw, 2.21rem); transform: translateX(-50%) rotate(-1.5deg); }
+.contact-city-clock-copy > .contact-city-presence { left: 72%; bottom: 72%; width: clamp(1.86rem, 3.6vw, 2.21rem); transform: translateX(-100%) rotate(-1.5deg); }
 .contact-city-presence-person { display: block; width: 100%; height: auto; image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .contact-city-presence-sign { position: absolute; left: 42%; bottom: 63%; display: grid; min-width: 1.2rem; min-height: 0.5rem; padding: 0.08rem 0.13rem; place-items: center; border: 1px solid rgb(149 105 26 / 0.88); border-radius: 0.18rem; background: #fff0b4; box-shadow: 0 1px 2px rgb(92 59 4 / 0.22), 1px 1px 0 rgb(182 124 22 / 0.72); color: #49320b; font-family: var(--font-ui); font-size: 0.3rem; font-weight: 800; letter-spacing: 0; line-height: 1; text-rendering: geometricPrecision; text-shadow: none; transform: translateX(-50%) rotate(-2deg); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .contact-city-presence-sign::after { content: ""; position: absolute; left: 52%; top: 100%; width: 1px; height: 0.23rem; background: #95691a; transform: translateX(-50%); }
@@ -3469,32 +3498,32 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .about-pixel-card h2 { max-width: 13rem; font-size: 0.84rem; }
   .about-engine-flywheel { border-width: 5px; }
   .about-engine-cylinder { border-width: 2px; }
-  .contact-cities { border-radius: 1.15rem !important; }
+  .contact-cities { overflow: hidden; border-radius: 1.15rem !important; }
   .contact-cities-copy { padding: 1rem; }
   .contact-cities-copy h2 { margin-top: 0.5rem; font-size: 1.35rem; }
   .contact-cities-copy > div > p:last-child { margin-top: 0.5rem; font-size: 0.68rem; line-height: 1.4; }
   .contact-city-chips { margin-top: 0.8rem; }
   .contact-city-chips span { padding: 0.36rem 0.55rem; font-size: 0.58rem; }
-  .contact-cities-art { min-height: 12.35rem; padding: 0; }
-  .contact-cities-picture { width: 100%; min-height: 12.35rem; height: 100%; align-items: start; }
+  .contact-cities-art { min-height: clamp(10rem, calc(48vw + 0.35rem), 12.35rem); overflow: visible; padding: 0; }
+  .contact-cities-picture { width: 100%; min-height: clamp(10rem, calc(48vw + 0.35rem), 12.35rem); height: 100%; align-items: start; overflow: visible; }
   .contact-moon-phase-label { left: 0.62rem; top: 0.48rem; font-size: 0.4rem; letter-spacing: 0.06em; }
   .contact-presence-controls { right: 0.48rem; top: 0.42rem; max-width: calc(100% - 4.3rem); gap: 0.28rem; }
   .contact-presence-public-note { max-width: 9.5rem; padding: 0.28rem 0.42rem; font-size: 0.43rem; }
-  .contact-presence-edit-button { width: 1.5rem; }
+  .contact-presence-edit-button { position: relative; width: 1.5rem; }
+  .contact-presence-edit-button::after { content: ""; position: absolute; inset: -0.625rem; }
   .contact-presence-editor { width: min(16.5rem, calc(100vw - 3rem)); padding: 0.68rem; }
   .contact-presence-editor textarea,
   .contact-presence-editor input { font-size: 16px !important; }
-  .contact-travelling-presence { right: 0.62rem; top: 0.66rem; width: 0.82rem; }
-  .contact-travelling-presence-location { max-width: 5.6rem; font-size: 0.5rem; }
+  .contact-travelling-presence { right: 0.62rem; top: 0.66rem; width: 0.52rem; }
+  .contact-travelling-presence-location { right: 0; left: auto; max-width: min(7rem, calc(100vw - 2rem)); font-size: 0.6rem; transform: none; }
   .contact-presence-travel-target { right: 0; top: 2%; width: 21%; height: 30%; }
   .contact-presence-city-target-hongKong { top: 38%; }
-  .contact-cities-backdrop-frame { inset: 0 0.45rem; }
+  .contact-cities-backdrop-frame { inset: 0; }
   .contact-cities-night-backdrop,
-  .contact-cities-dawn-backdrop { width: min(112%, 23.5rem); }
+  .contact-cities-dawn-backdrop { width: 100%; }
   .contact-cities-scene-frame { inset: 0 0.45rem; align-items: flex-start; overflow: visible; padding-top: 0.5rem; }
-  .contact-cities-scene { width: min(112%, 23.5rem); flex: none; margin-top: -0.42rem; }
-  .contact-city-atmosphere::before,
-  .contact-city-atmosphere::after { width: 4%; }
+  .contact-cities-scene { width: min(calc(100% + 0.9rem), 23.5rem); flex: none; margin-top: -0.42rem; }
+  .contact-city-atmosphere { inset: -12% 0; }
   .contact-city-glow-field { background: radial-gradient(ellipse 26% 26% at 15.7% 48%, rgb(255 190 111 / calc(0.15 * var(--la-city-night))), transparent 76%), radial-gradient(ellipse 28% 34% at 84.2% 42%, rgb(71 161 255 / calc(0.16 * var(--hk-city-night))), transparent 78%); }
   .contact-cities-picture img { width: 100%; }
   .contact-city-time-row { inset: auto 0 1.5% 0; width: auto; height: 2.1rem; margin-top: 0; }
