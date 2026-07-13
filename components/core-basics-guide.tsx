@@ -217,7 +217,12 @@ export function CoreBasicsGuide() {
 
   return (
     <div className="grid gap-8 sm:gap-10">
-      <p className="max-w-3xl text-sm leading-7 text-ink/65 sm:text-base">{coreIntro}</p>
+      <div className="max-w-3xl">
+        <p className="text-sm italic leading-7 text-ink/65 sm:text-base">{coreIntro}</p>
+        <p className="mt-2 text-[0.68rem] font-medium uppercase tracking-[0.1em] text-ink/40">
+          This passage is from <cite className="normal-case tracking-normal">Core</cite> by Clare Smyth.
+        </p>
+      </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <nav aria-label="Categories" className="flex flex-wrap gap-2">

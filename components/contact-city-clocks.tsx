@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
+import { useContactCityNow } from "@/components/contact-city-art-cycle";
+import { ContactCityPresence } from "@/components/contact-presence";
 
 const cityTimeZones = {
   hongKong: "Asia/Hong_Kong",
@@ -22,20 +24,6 @@ type DisplayTime = {
   meridiem: string;
   label: string;
 };
-
-function useCurrentTime() {
-  const [now, setNow] = useState(() => new Date());
-
-  useEffect(() => {
-    const update = () => setNow(new Date());
-
-    update();
-    const interval = window.setInterval(update, 1000);
-    return () => window.clearInterval(interval);
-  }, []);
-
-  return now;
-}
 
 function getClockParts(now: Date | null, timeZone: string): ClockParts | null {
   if (!now) return null;
@@ -104,7 +92,7 @@ function analogClockStyle(parts: ClockParts | null): ClockStyle {
 }
 
 export function ContactCityTimeRow() {
-  const now = useCurrentTime();
+  const now = useContactCityNow();
   const hongKong = formatDisplayTime(now, cityTimeZones.hongKong);
   const londonParts = getClockParts(now, cityTimeZones.london);
   const londonTime = formatDisplayTime(now, cityTimeZones.london);
@@ -112,13 +100,14 @@ export function ContactCityTimeRow() {
 
   return (
     <div className="contact-city-time-row" aria-label="Current local time in each city">
-      <article className="contact-city-clock contact-city-clock-hk">
-        <span className="contact-flip-clock" aria-label="Hong Kong local time">
-          <span suppressHydrationWarning>{hongKong.hours}</span>
+      <article className="contact-city-clock contact-city-clock-la">
+        <span className="contact-digital-clock" aria-label="Los Angeles local time">
+          <span suppressHydrationWarning>{losAngelesTime.hours}</span>
           <i aria-hidden="true">:</i>
-          <span suppressHydrationWarning>{hongKong.minutes}</span>
-          <b suppressHydrationWarning>{hongKong.meridiem}</b>
+          <span suppressHydrationWarning>{losAngelesTime.minutes}</span>
+          <b suppressHydrationWarning>{losAngelesTime.meridiem}</b>
         </span>
+        <ContactCityPresence city="losAngeles" />
       </article>
 
       <article className="contact-city-clock contact-city-clock-london">
@@ -136,16 +125,18 @@ export function ContactCityTimeRow() {
             {londonTime.hours}:{londonTime.minutes}
             <span suppressHydrationWarning>{londonTime.meridiem}</span>
           </strong>
+          <ContactCityPresence city="london" />
         </span>
       </article>
 
-      <article className="contact-city-clock contact-city-clock-la">
-        <span className="contact-digital-clock" aria-label="Los Angeles local time">
-          <span suppressHydrationWarning>{losAngelesTime.hours}</span>
+      <article className="contact-city-clock contact-city-clock-hk">
+        <span className="contact-flip-clock" aria-label="Hong Kong local time">
+          <span suppressHydrationWarning>{hongKong.hours}</span>
           <i aria-hidden="true">:</i>
-          <span suppressHydrationWarning>{losAngelesTime.minutes}</span>
-          <b suppressHydrationWarning>{losAngelesTime.meridiem}</b>
+          <span suppressHydrationWarning>{hongKong.minutes}</span>
+          <b suppressHydrationWarning>{hongKong.meridiem}</b>
         </span>
+        <ContactCityPresence city="hongKong" />
       </article>
     </div>
   );

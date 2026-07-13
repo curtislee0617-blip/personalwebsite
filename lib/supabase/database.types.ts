@@ -115,6 +115,24 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["course_plans"]["Insert"]>;
         Relationships: [];
       };
+      contact_presence: {
+        Row: {
+          id: string;
+          city: "losAngeles" | "london" | "hongKong" | null;
+          is_travelling: boolean;
+          message: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          city?: "losAngeles" | "london" | "hongKong" | null;
+          is_travelling?: boolean;
+          message?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["contact_presence"]["Insert"]>;
+        Relationships: [];
+      };
       recipe_drafts: {
         Row: {
           id: string;

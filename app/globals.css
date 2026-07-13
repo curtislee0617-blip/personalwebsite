@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@property --hk-daylight { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --hk-night { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --hk-blue-hour { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --hk-city-night { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --hk-dawn { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --hk-golden { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --hk-sunset { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --hk-stars { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --london-daylight { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --london-night { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --london-blue-hour { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --london-city-night { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --london-dawn { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --london-golden { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --london-sunset { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --london-stars { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --la-daylight { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --la-night { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --la-blue-hour { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --la-city-night { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --la-dawn { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --la-golden { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --la-sunset { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --la-stars { syntax: "<number>"; inherits: true; initial-value: 0; }
+
 :root {
   color-scheme: light;
   --font-ui: Roboto, Arial, sans-serif;
@@ -522,67 +547,127 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-cities {
   display: grid;
   align-items: center;
+  border-color: rgb(var(--color-ink) / 0.06);
   grid-template-columns: minmax(20rem, 0.85fr) minmax(0, 1.15fr);
 }
 
-.contact-cities-copy { padding: clamp(1.5rem, 3vw, 3rem); }
+.contact-cities-copy { position: relative; padding: clamp(1.5rem, 3vw, 3rem); }
 .contact-cities-copy h2 { margin-top: 0.75rem; font-family: var(--font-ui); font-size: clamp(1.7rem, 3vw, 2.8rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; }
 .contact-cities-copy > div > p:last-child { max-width: 28rem; margin-top: 1rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.82rem; line-height: 1.7; }
 .contact-city-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
-.contact-city-chips i { font-style: normal; font-size: 0.75rem; }
-.contact-cities-art { --contact-art-background: 254 250 237; position: relative; align-self: stretch; min-height: 13rem; overflow: hidden; padding: 0; background: linear-gradient(180deg, rgb(253 250 234) 0%, rgb(var(--contact-art-background)) 10%, rgb(var(--contact-art-background)) 90%, rgb(253 249 235) 100%); border-color: rgb(var(--contact-art-background)); transition: background-color 360ms ease, border-color 360ms ease; }
-.contact-cities-picture { position: relative; isolation: isolate; display: grid; width: 100%; min-height: 13rem; height: 100%; place-items: center; overflow: hidden; background: transparent; }
-.contact-cities-scene-frame { position: absolute; inset: 1.5rem; display: flex; align-items: center; justify-content: center; }
-.contact-cities-scene { position: relative; width: min(88%, 38rem); aspect-ratio: 1916 / 821; background: rgb(var(--contact-art-background)); }
-.contact-cities-scene::before,
-.contact-cities-scene::after { content: ""; position: absolute; top: 0; z-index: 0; width: 24%; height: 100%; background: linear-gradient(180deg, rgb(253 250 234) 0%, rgb(254 250 237) 10%, rgb(254 250 237) 90%, rgb(253 249 235) 100%); pointer-events: none; }
-.contact-cities-scene::before { right: 99.5%; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 72%, #000 100%); mask-image: linear-gradient(to right, transparent 0%, #000 72%, #000 100%); }
-.contact-cities-scene::after { left: 99.5%; -webkit-mask-image: linear-gradient(to right, #000 0%, #000 28%, transparent 100%); mask-image: linear-gradient(to right, #000 0%, #000 28%, transparent 100%); }
-.contact-city-glow-field { position: absolute; inset: 0; z-index: 1; opacity: 0; background: radial-gradient(ellipse 27% 44% at 20% 52%, rgb(71 161 255 / 0.16), transparent 78%), radial-gradient(ellipse 25% 30% at 84% 62%, rgb(255 190 111 / 0.15), transparent 76%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
-.contact-cities-art-image { z-index: 0; object-fit: fill; object-position: 50% 50%; image-rendering: crisp-edges; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
-.contact-cities-art-dark,
-.contact-hong-kong-night-lift,
-.contact-london-balance-fill-dark,
-.contact-london-balanced-dark,
-.contact-harbour-clear-dark,
-.contact-harbour-boat-dark,
-.contact-hollywood-spotlights { opacity: 0; }
-.dark .contact-cities-art-light,
-.dark .contact-london-balance-fill-light,
-.dark .contact-london-balanced-light,
-.dark .contact-harbour-clear-light,
-.dark .contact-harbour-boat-light { opacity: 0; }
-.dark .contact-cities-art-dark,
-.dark .contact-hong-kong-night-lift,
-.dark .contact-london-balance-fill-dark,
-.dark .contact-london-balanced-dark,
-.dark .contact-harbour-clear-dark,
-.dark .contact-harbour-boat-dark,
-.dark .contact-hollywood-spotlights { opacity: 1; }
-.dark .contact-cities-art { --contact-art-background: 1 19 51; border-color: rgb(var(--contact-art-background)); background: linear-gradient(180deg, rgb(2 21 51) 0%, rgb(var(--contact-art-background)) 10%, rgb(var(--contact-art-background)) 90%, rgb(2 22 48) 100%); }
-.dark .contact-city-glow-field { opacity: 1; }
-.dark .contact-cities-picture { background: transparent; }
-.dark .contact-cities-scene::before,
-.dark .contact-cities-scene::after { background: linear-gradient(180deg, rgb(2 21 51) 0%, rgb(1 19 51) 10%, rgb(1 19 51) 90%, rgb(2 22 48) 100%); }
-.dark .contact-cities-art-dark { transform: scale(1.04); transform-origin: 50% 50%; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%); }
-.contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 2; background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); -webkit-mask-composite: source-in; mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); mask-composite: intersect; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
-.contact-london-balance-fill,
-.contact-london-balanced { position: absolute; inset: 0; pointer-events: none; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
-.contact-london-balance-fill { z-index: 2; -webkit-mask-image: radial-gradient(ellipse 8% 40% at 62.6% 58%, #000 0 34%, rgb(0 0 0 / 0.64) 56%, transparent 100%); mask-image: radial-gradient(ellipse 8% 40% at 62.6% 58%, #000 0 34%, rgb(0 0 0 / 0.64) 56%, transparent 100%); }
-.contact-london-balance-fill-light { background: rgb(var(--contact-art-background)); }
-.contact-london-balance-fill-dark { background: rgb(var(--contact-art-background)); }
-.contact-london-balanced { z-index: 3; transform: translateX(-2.7%); -webkit-mask-image: radial-gradient(ellipse 16% 46% at 53.7% 58%, #000 0 62%, rgb(0 0 0 / 0.68) 78%, transparent 100%); mask-image: radial-gradient(ellipse 16% 46% at 53.7% 58%, #000 0 62%, rgb(0 0 0 / 0.68) 78%, transparent 100%); }
-.contact-london-balanced-light { background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 50% / 100% 100% no-repeat; }
-.contact-london-balanced-dark { background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; }
+.contact-city-chips i { display: inline-grid; width: 1.12rem; height: 1rem; flex: none; place-items: center; font-style: normal; }
+.contact-city-chip-icon { display: block; width: 100%; height: 100%; overflow: visible; }
+.contact-city-chip-icon-sun { width: 0.94rem; height: 0.94rem; }
+.contact-city-chip-icon-umbrella { width: 1.16rem; }
+.contact-city-chip-icon-junk { width: 1.32rem; }
+.contact-cities-art { --contact-art-background: 254 250 237; --contact-art-edge: linear-gradient(180deg, rgb(254 250 237) 0%, rgb(254 250 237) 98%, rgb(253 249 235) 100%); position: relative; align-self: stretch; min-height: 13rem; overflow: hidden; padding: 0; background: var(--contact-art-edge); border-color: transparent; }
+.contact-cities-picture {
+  --celestial-color: rgb(255 213 103); --celestial-moon: 0; --celestial-opacity: 0; --celestial-sun: 1; --celestial-x: 50%; --celestial-y: 55%; --city-curve-la-end: 75.5%; --city-curve-london-start: 78.4%; --city-curve-london-end: 86.4%; --city-curve-hk-start: 89.1%; --moon-lit-shape: circle(50%); --moon-phase-label-color: rgb(82 74 59); --moon-phase-label-shadow: rgb(255 251 239); --secondary-celestial-color: rgb(255 213 103); --secondary-celestial-opacity: 0; --secondary-celestial-x: 84%; --secondary-celestial-y: 55%;
+  --hk-blue-hour: 0; --hk-city-night: 0; --hk-dawn: 0; --hk-daylight: 1; --hk-golden: 0; --hk-night: 0; --hk-stars: 0; --hk-sunset: 0; --hk-sun-color: rgb(255 210 93); --hk-sun-opacity: 0; --hk-sun-x: 3%; --hk-sun-y: 55%;
+  --london-blue-hour: 0; --london-city-night: 0; --london-dawn: 0; --london-daylight: 1; --london-golden: 0; --london-night: 0; --london-stars: 0; --london-sunset: 0; --london-sun-color: rgb(255 210 93); --london-sun-opacity: 0; --london-sun-x: 3%; --london-sun-y: 55%;
+  --la-blue-hour: 0; --la-city-night: 0; --la-dawn: 0; --la-daylight: 1; --la-golden: 0; --la-night: 0; --la-stars: 0; --la-sunset: 0; --la-sun-color: rgb(255 210 93); --la-sun-opacity: 0; --la-sun-x: 3%; --la-sun-y: 55%;
+  --hk-clock-color: rgb(54 51 44); --hk-clock-muted: rgb(105 99 86); --london-clock-color: rgb(54 51 44); --london-clock-muted: rgb(105 99 86);
+  position: relative; isolation: isolate; display: grid; width: 100%; min-height: 13rem; height: 100%; place-items: center; overflow: hidden; background: var(--contact-art-edge);
+  transition: --hk-blue-hour 1s linear, --hk-city-night 1s linear, --hk-dawn 1s linear, --hk-daylight 1s linear, --hk-golden 1s linear, --hk-night 1s linear, --hk-stars 1s linear, --hk-sunset 1s linear, --london-blue-hour 1s linear, --london-city-night 1s linear, --london-dawn 1s linear, --london-daylight 1s linear, --london-golden 1s linear, --london-night 1s linear, --london-stars 1s linear, --london-sunset 1s linear, --la-blue-hour 1s linear, --la-city-night 1s linear, --la-dawn 1s linear, --la-daylight 1s linear, --la-golden 1s linear, --la-night 1s linear, --la-stars 1s linear, --la-sunset 1s linear;
+}
+.contact-city-night-mask { -webkit-mask-image: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(0 0 0 / var(--la-city-night)) 0%, rgb(0 0 0 / var(--la-city-night)) var(--city-curve-la-end), rgb(0 0 0 / var(--london-city-night)) var(--city-curve-london-start), rgb(0 0 0 / var(--london-city-night)) var(--city-curve-london-end), rgb(0 0 0 / var(--hk-city-night)) var(--city-curve-hk-start), rgb(0 0 0 / var(--hk-city-night)) 100%); mask-image: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(0 0 0 / var(--la-city-night)) 0%, rgb(0 0 0 / var(--la-city-night)) var(--city-curve-la-end), rgb(0 0 0 / var(--london-city-night)) var(--city-curve-london-start), rgb(0 0 0 / var(--london-city-night)) var(--city-curve-london-end), rgb(0 0 0 / var(--hk-city-night)) var(--city-curve-hk-start), rgb(0 0 0 / var(--hk-city-night)) 100%); }
+.contact-cities-backdrop-frame { position: absolute; inset: 0 1.5rem; z-index: 0; display: flex; justify-content: center; background: var(--contact-art-edge); pointer-events: none; }
+.contact-cities-night-backdrop { position: relative; display: block; width: min(88%, 38rem); height: 100%; }
+.contact-cities-night-backdrop::before,
+.contact-cities-night-backdrop::after { content: ""; position: absolute; top: 0; width: 100vw; height: 100%; background: linear-gradient(180deg, rgb(0 20 52) 0%, rgb(0 19 52) 10%, rgb(0 19 51) 90%, rgb(1 19 50) 100%); }
+.contact-cities-night-backdrop::before { right: 100%; opacity: var(--la-city-night); }
+.contact-cities-night-backdrop::after { left: 100%; opacity: var(--hk-city-night); }
+.contact-cities-night-backdrop-fill { position: absolute; inset: 0; display: block; background: linear-gradient(180deg, rgb(0 20 52) 0%, rgb(0 19 52) 10%, rgb(0 19 51) 90%, rgb(1 19 50) 100%); }
+.contact-cities-dawn-backdrop { position: absolute; top: 0; bottom: 0; left: 50%; display: block; width: min(88%, 38rem); background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) 0%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) var(--city-curve-la-end), rgb(255 163 101 / calc(0.42 * var(--london-dawn))) var(--city-curve-london-start), rgb(255 163 101 / calc(0.42 * var(--london-dawn))) var(--city-curve-london-end), rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) var(--city-curve-hk-start), rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) 100%); mix-blend-mode: screen; transform: translateX(-50%); }
+.contact-cities-dawn-backdrop::before,
+.contact-cities-dawn-backdrop::after { content: ""; position: absolute; top: 0; width: 100vw; height: 100%; }
+.contact-cities-dawn-backdrop::before { right: 100%; background: rgb(255 151 82 / calc(0.48 * var(--la-dawn))); }
+.contact-cities-dawn-backdrop::after { left: 100%; background: rgb(255 144 78 / calc(0.46 * var(--hk-dawn))); }
+.contact-cities-scene-frame { position: absolute; inset: 0 1.5rem; display: flex; align-items: center; justify-content: center; }
+.contact-cities-scene { position: relative; width: min(88%, 38rem); aspect-ratio: 1916 / 821; background: var(--contact-art-edge); }
+.contact-city-glow-field { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 25% 30% at 14.7% 62%, rgb(255 190 111 / calc(0.15 * var(--la-city-night))), transparent 76%), radial-gradient(ellipse 27% 44% at 87.2% 52%, rgb(71 161 255 / calc(0.16 * var(--hk-city-night))), transparent 78%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); }
+.contact-moon-phase-label { position: absolute; left: clamp(0.65rem, 3.5%, 1.1rem); top: clamp(0.55rem, 4%, 0.85rem); z-index: 12; display: inline-block; width: max-content; max-width: calc(100% - 1.3rem); margin: 0; padding: 0; overflow: hidden; background: transparent; color: var(--moon-phase-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 0.72; pointer-events: none; text-overflow: ellipsis; text-shadow: 0 1px 2px var(--moon-phase-label-shadow); text-transform: uppercase; white-space: nowrap; }
+.contact-cities-art-composite { position: absolute; inset: 0; z-index: 0; display: block; }
+.contact-city-art-layer { position: absolute; top: 0; bottom: 0; display: block; background-repeat: no-repeat; image-rendering: crisp-edges; image-rendering: pixelated; }
+.contact-city-art-layer-day { background-image: url('/contact-cities-pixel-art-day-from-night-v1.png'); }
+.contact-city-art-layer-night { background-image: url('/contact-cities-pixel-art-night-v2.png'); }
+.contact-city-art-layer-la { left: 0; width: 30.7%; background-position: 100% 50%; background-size: 325.733% 100%; }
+.contact-city-art-layer-london { left: 30.7%; width: 36.5%; background-position: 53.13% 50%; background-size: 273.973% 100%; }
+.contact-city-art-layer-hk { left: 67.2%; width: 32.8%; background-position: 0 50%; background-size: 304.878% 100%; }
+.contact-city-night-art { position: absolute; inset: 0; display: block; }
+.contact-city-star-field { position: absolute; inset: 0 0 auto; z-index: 1; display: block; height: 31%; overflow: hidden; pointer-events: none; -webkit-mask-image: linear-gradient(to bottom, #000 0 72%, transparent 100%); mask-image: linear-gradient(to bottom, #000 0 72%, transparent 100%); }
+.contact-city-stars { position: absolute; top: 0; bottom: 0; display: block; background-repeat: no-repeat; background-size: 100% 100%; image-rendering: pixelated; }
+.contact-city-stars-la {
+  left: 0;
+  width: 30.7%;
+  opacity: var(--la-stars);
+  background-image: radial-gradient(circle at 7% 16%, rgb(255 239 193 / 0.92) 0 1px, transparent 1.4px), radial-gradient(circle at 19% 56%, rgb(188 218 255 / 0.72) 0 0.7px, transparent 1.05px), radial-gradient(circle at 32% 30%, rgb(255 255 255 / 0.78) 0 0.85px, transparent 1.2px), radial-gradient(circle at 47% 69%, rgb(255 223 168 / 0.68) 0 0.65px, transparent 1px), radial-gradient(circle at 58% 10%, rgb(193 222 255 / 0.8) 0 0.9px, transparent 1.25px), radial-gradient(circle at 72% 45%, rgb(255 255 255 / 0.7) 0 0.7px, transparent 1.05px), radial-gradient(circle at 85% 23%, rgb(255 232 183 / 0.86) 0 1px, transparent 1.4px), radial-gradient(circle at 95% 61%, rgb(188 218 255 / 0.68) 0 0.65px, transparent 1px);
+}
+.contact-city-stars-london {
+  left: 30.7%;
+  width: 36.5%;
+  opacity: var(--london-stars);
+  background-image: radial-gradient(circle at 4% 48%, rgb(188 218 255 / 0.72) 0 0.7px, transparent 1.05px), radial-gradient(circle at 15% 17%, rgb(255 239 193 / 0.82) 0 0.85px, transparent 1.2px), radial-gradient(circle at 28% 68%, rgb(255 255 255 / 0.66) 0 0.65px, transparent 1px), radial-gradient(circle at 38% 33%, rgb(188 218 255 / 0.88) 0 1px, transparent 1.4px), radial-gradient(circle at 52% 9%, rgb(255 225 171 / 0.68) 0 0.65px, transparent 1px), radial-gradient(circle at 62% 57%, rgb(255 255 255 / 0.76) 0 0.8px, transparent 1.15px), radial-gradient(circle at 74% 25%, rgb(188 218 255 / 0.68) 0 0.65px, transparent 1px), radial-gradient(circle at 84% 72%, rgb(255 232 183 / 0.84) 0 0.9px, transparent 1.25px), radial-gradient(circle at 96% 40%, rgb(255 255 255 / 0.7) 0 0.7px, transparent 1.05px);
+}
+.contact-city-stars-hk {
+  left: 67.2%;
+  width: 32.8%;
+  opacity: var(--hk-stars);
+  background-image: radial-gradient(circle at 5% 21%, rgb(255 232 183 / 0.68) 0 0.65px, transparent 1px), radial-gradient(circle at 17% 70%, rgb(188 218 255 / 0.84) 0 0.9px, transparent 1.25px), radial-gradient(circle at 27% 38%, rgb(255 255 255 / 0.72) 0 0.7px, transparent 1.05px), radial-gradient(circle at 42% 8%, rgb(255 239 193 / 0.9) 0 1px, transparent 1.4px), radial-gradient(circle at 52% 56%, rgb(188 218 255 / 0.68) 0 0.65px, transparent 1px), radial-gradient(circle at 66% 29%, rgb(255 255 255 / 0.78) 0 0.85px, transparent 1.2px), radial-gradient(circle at 78% 71%, rgb(255 225 171 / 0.72) 0 0.7px, transparent 1.05px), radial-gradient(circle at 89% 16%, rgb(188 218 255 / 0.84) 0 0.9px, transparent 1.25px), radial-gradient(circle at 96% 50%, rgb(255 255 255 / 0.68) 0 0.65px, transparent 1px);
+}
+.contact-city-celestial-track { position: absolute; inset: 0 0 auto; z-index: 5; height: 61%; overflow: hidden; pointer-events: none; }
+.contact-city-celestial-track::before { content: ""; position: absolute; left: var(--celestial-x); top: var(--celestial-y); width: clamp(3.5rem, 22%, 7rem); aspect-ratio: 1; border-radius: 50%; opacity: calc(0.2 * var(--celestial-opacity)); background: radial-gradient(circle, rgb(255 236 165 / calc(0.82 * var(--celestial-sun))) 0%, rgb(255 157 70 / calc(0.34 * var(--celestial-sun))) 30%, transparent 72%), radial-gradient(circle, rgb(209 226 250 / calc(0.72 * var(--celestial-moon))) 0%, rgb(147 180 224 / calc(0.28 * var(--celestial-moon))) 32%, transparent 72%); mix-blend-mode: screen; transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease; }
+.contact-city-celestial-track::after { content: ""; position: absolute; left: var(--secondary-celestial-x); top: var(--secondary-celestial-y); width: clamp(3.5rem, 22%, 7rem); aspect-ratio: 1; border-radius: 50%; opacity: calc(0.2 * var(--secondary-celestial-opacity)); background: radial-gradient(circle, rgb(255 236 165 / 0.82) 0%, rgb(255 157 70 / 0.34) 30%, transparent 72%); mix-blend-mode: screen; transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease; }
+.contact-city-celestial { position: absolute; left: var(--celestial-x); top: var(--celestial-y); z-index: 1; display: block; width: clamp(0.48rem, 2.3%, 0.9rem); aspect-ratio: 1; overflow: hidden; opacity: var(--celestial-opacity); background: var(--celestial-color); clip-path: polygon(25% 0, 75% 0, 75% 12.5%, 100% 12.5%, 100% 87.5%, 75% 87.5%, 75% 100%, 25% 100%, 25% 87.5%, 0 87.5%, 0 12.5%, 25% 12.5%); transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease, background-color 750ms ease; }
+.contact-city-celestial-secondary { --celestial-color: var(--secondary-celestial-color); --celestial-moon: 0; --celestial-opacity: var(--secondary-celestial-opacity); --celestial-sun: 1; --celestial-x: var(--secondary-celestial-x); --celestial-y: var(--secondary-celestial-y); }
+.contact-city-celestial::before { content: ""; position: absolute; inset: 25%; opacity: var(--celestial-sun); background: #fff1a3; }
+.contact-city-moon-face { position: absolute; inset: 0; display: block; opacity: var(--celestial-moon); background: #d7e2ef; clip-path: var(--moon-lit-shape); transition: clip-path 1s linear, opacity 550ms ease; }
+.contact-city-moon-face::after { content: ""; position: absolute; inset: 0; background: linear-gradient(#8997af 0 0) 24% 28% / 18% 16% no-repeat, linear-gradient(#aab5c8 0 0) 70% 22% / 12% 12% no-repeat, linear-gradient(#7f8da7 0 0) 57% 67% / 20% 16% no-repeat, linear-gradient(#b9c3d2 0 0) 27% 73% / 11% 11% no-repeat; }
+.contact-cities-picture[data-celestial="sun"] .contact-city-celestial { filter: drop-shadow(0 0 2px rgb(255 193 81 / 0.94)) drop-shadow(0 0 7px rgb(255 137 45 / 0.7)); }
+.contact-cities-picture[data-celestial="moon"] .contact-city-celestial { filter: drop-shadow(0 0 2px rgb(223 235 255 / 0.9)) drop-shadow(0 0 7px rgb(142 178 226 / 0.62)); }
+.contact-city-atmosphere { position: absolute; inset: 0; z-index: 4; display: block; overflow: visible; pointer-events: none; }
+.contact-city-atmosphere > span { position: absolute; inset: 0; display: block; }
+.contact-city-atmosphere::before,
+.contact-city-atmosphere::after { content: ""; position: absolute; top: -100vh; bottom: -100vh; width: 12%; mix-blend-mode: screen; }
+.contact-city-atmosphere::before {
+  right: 100%;
+  background: linear-gradient(rgb(45 54 93 / calc(0.34 * var(--la-blue-hour) + 0.085 * var(--la-night))), rgb(45 54 93 / calc(0.34 * var(--la-blue-hour) + 0.085 * var(--la-night)))), linear-gradient(rgb(255 151 82 / calc(0.44 * var(--la-dawn))), rgb(255 151 82 / calc(0.44 * var(--la-dawn)))), linear-gradient(rgb(255 181 84 / calc(0.22 * var(--la-golden))), rgb(255 181 84 / calc(0.22 * var(--la-golden)))), linear-gradient(rgb(255 104 69 / calc(0.48 * var(--la-sunset))), rgb(255 104 69 / calc(0.48 * var(--la-sunset))));
+  -webkit-mask-image: linear-gradient(to left, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 0%, transparent 100%);
+}
+.contact-city-atmosphere::after {
+  left: 100%;
+  background: linear-gradient(rgb(36 58 98 / calc(0.32 * var(--hk-blue-hour) + 0.085 * var(--hk-night))), rgb(36 58 98 / calc(0.32 * var(--hk-blue-hour) + 0.085 * var(--hk-night)))), linear-gradient(rgb(255 144 78 / calc(0.42 * var(--hk-dawn))), rgb(255 144 78 / calc(0.42 * var(--hk-dawn)))), linear-gradient(rgb(255 194 112 / calc(0.18 * var(--hk-golden))), rgb(255 194 112 / calc(0.18 * var(--hk-golden)))), linear-gradient(rgb(255 122 86 / calc(0.44 * var(--hk-sunset))), rgb(255 122 86 / calc(0.44 * var(--hk-sunset))));
+  -webkit-mask-image: linear-gradient(to right, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 0%, transparent 100%);
+}
+.contact-city-atmosphere-blue {
+  background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(45 54 93 / calc(0.36 * var(--la-blue-hour) + 0.09 * var(--la-night))) 0%, rgb(45 54 93 / calc(0.36 * var(--la-blue-hour) + 0.09 * var(--la-night))) var(--city-curve-la-end), rgb(50 65 88 / calc(0.32 * var(--london-blue-hour) + 0.08 * var(--london-night))) var(--city-curve-london-start), rgb(50 65 88 / calc(0.32 * var(--london-blue-hour) + 0.08 * var(--london-night))) var(--city-curve-london-end), rgb(36 58 98 / calc(0.34 * var(--hk-blue-hour) + 0.09 * var(--hk-night))) var(--city-curve-hk-start), rgb(36 58 98 / calc(0.34 * var(--hk-blue-hour) + 0.09 * var(--hk-night))) 100%);
+  mix-blend-mode: soft-light;
+}
+.contact-city-atmosphere-dawn {
+  background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) 0%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) var(--city-curve-la-end), rgb(255 163 101 / calc(0.42 * var(--london-dawn))) var(--city-curve-london-start), rgb(255 163 101 / calc(0.42 * var(--london-dawn))) var(--city-curve-london-end), rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) var(--city-curve-hk-start), rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) 100%);
+  mix-blend-mode: screen;
+}
+.contact-city-atmosphere-golden {
+  background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(255 181 84 / calc(0.26 * var(--la-golden))) 0%, rgb(255 181 84 / calc(0.26 * var(--la-golden))) var(--city-curve-la-end), rgb(242 198 139 / calc(0.18 * var(--london-golden))) var(--city-curve-london-start), rgb(242 198 139 / calc(0.18 * var(--london-golden))) var(--city-curve-london-end), rgb(255 194 112 / calc(0.21 * var(--hk-golden))) var(--city-curve-hk-start), rgb(255 194 112 / calc(0.21 * var(--hk-golden))) 100%);
+  mix-blend-mode: screen;
+}
+.contact-city-atmosphere-sunset {
+  background: radial-gradient(ellipse 280% 450% at -180% 50%, rgb(255 104 69 / calc(0.56 * var(--la-sunset))) 0%, rgb(255 104 69 / calc(0.56 * var(--la-sunset))) var(--city-curve-la-end), rgb(223 137 113 / calc(0.4 * var(--london-sunset))) var(--city-curve-london-start), rgb(223 137 113 / calc(0.4 * var(--london-sunset))) var(--city-curve-london-end), rgb(255 122 86 / calc(0.5 * var(--hk-sunset))) var(--city-curve-hk-start), rgb(255 122 86 / calc(0.5 * var(--hk-sunset))) 100%);
+  mix-blend-mode: screen;
+}
+.contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 2; opacity: var(--hk-city-night); background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); transform: translateX(67.2%); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); -webkit-mask-composite: source-in; mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); mask-composite: intersect; }
+.contact-harbour-group { position: absolute; inset: 0; z-index: 4; display: block; transform: translateX(67.2%); pointer-events: none; }
 .contact-harbour-clear,
-.contact-harbour-boat { position: absolute; inset: 0; pointer-events: none; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
+.contact-harbour-boat { position: absolute; inset: 0; pointer-events: none; image-rendering: pixelated; }
 .contact-harbour-clear { z-index: 2; clip-path: polygon(12% 66%, 12.7% 60%, 14% 60%, 14.6% 55%, 15.8% 62.5%, 16.5% 55.5%, 17.8% 63%, 18.5% 58.5%, 19.7% 64.5%, 20.8% 65.5%, 21.1% 71%, 19.7% 74%, 13.8% 74%, 12.4% 71%); }
-.contact-harbour-clear-light { background: url('/contact-cities-pixel-art-day-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
-.contact-harbour-clear-dark { background: url('/contact-cities-pixel-art-night-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-clear-light { opacity: 1; background: url('/contact-cities-pixel-art-day-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-clear-dark { opacity: var(--hk-city-night); background: url('/contact-cities-pixel-art-night-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
 .contact-harbour-boat { z-index: 4; clip-path: polygon(12.3% 66%, 13.1% 62%, 14.1% 62%, 14.7% 56.5%, 15.8% 64%, 16.6% 57%, 17.6% 65%, 18.7% 60%, 19.5% 66%, 20.4% 67%, 20.7% 70%, 19.5% 73%, 14.3% 73%, 13% 70%); animation: harbourBoatCruise 9s ease-in-out infinite alternate; }
-.contact-harbour-boat-light { background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 50% / 100% 100% no-repeat; }
-.contact-harbour-boat-dark { background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-boat-light { opacity: 1; background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-boat-dark { opacity: var(--hk-city-night); background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; }
 .contact-london-planes { position: absolute; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
 .contact-london-plane { position: absolute; left: -12%; width: clamp(0.9rem, 3.2%, 1.55rem); height: auto; overflow: visible; opacity: 0; filter: drop-shadow(1px 1px 0 rgb(255 255 255 / 0.68)); image-rendering: pixelated; animation: citiesPlaneFly 17s linear infinite; }
 .contact-plane-tail,
@@ -599,35 +684,73 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-plane-door { fill: #cdd2d3; }
 .contact-plane-cockpit,
 .contact-plane-windows { fill: #28383f; }
-.contact-plane-nav-light { opacity: 0; }
+.contact-plane-nav-light { opacity: 0.72; }
+.contact-plane-nav-light-red { fill: #ff4248; filter: drop-shadow(0 0 1px #ff4248); }
+.contact-plane-nav-light-green { fill: #43e078; filter: drop-shadow(0 0 1px #43e078); }
 .contact-london-plane-one { top: 8%; }
 .contact-london-plane-two { top: 16%; scale: 0.78; animation-delay: -9s; animation-duration: 22s; }
-.dark .contact-london-plane { filter: drop-shadow(0 0 2px rgb(205 235 255 / 0.58)); }
-.dark .contact-plane-fuselage { fill: #dce8eb; }
-.dark .contact-plane-wing { fill: #aebbc1; }
-.dark .contact-plane-tail-highlight,
-.dark .contact-plane-engine-highlight { fill: #cfe1e8; }
-.dark .contact-plane-cockpit,
-.dark .contact-plane-windows { fill: #182b35; }
-.dark .contact-plane-nav-light { opacity: 1; }
-.dark .contact-plane-nav-light-red { fill: #ff4248; filter: drop-shadow(0 0 1px #ff4248); }
-.dark .contact-plane-nav-light-green { fill: #43e078; filter: drop-shadow(0 0 1px #43e078); }
-.contact-hollywood-spotlights { position: absolute; inset: 0; z-index: 7; overflow: visible; pointer-events: none; transition: opacity 520ms ease; mix-blend-mode: screen; }
+.contact-hollywood-spotlights { position: absolute; inset: 0; z-index: 7; overflow: visible; opacity: var(--la-night); transform: translateX(-69.3%); pointer-events: none; mix-blend-mode: screen; }
 .contact-hollywood-beam { position: absolute; left: 77.4%; top: 48%; width: 4.8%; height: 38%; border-radius: 9999px 9999px 18% 18%; background: linear-gradient(to top, rgb(255 240 178 / 0.02), rgb(255 242 175 / 0.2) 48%, rgb(255 250 214 / 0.58)); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); filter: blur(0.7px); opacity: 0.88; transform-origin: 50% 100%; }
 .contact-hollywood-beam-left { transform: translate(-45%, -20%) rotate(-38deg); animation: hollywoodSpotlightLeft 5.8s ease-in-out infinite alternate; }
 .contact-hollywood-beam-right { transform: translate(-12%, -18%) rotate(33deg); animation: hollywoodSpotlightRight 6.4s ease-in-out infinite alternate; }
 .contact-hollywood-beam-center { width: 3.4%; height: 34%; transform: translate(4%, -22%) rotate(-6deg); opacity: 0.74; animation: hollywoodSpotlightCenter 4.8s ease-in-out infinite alternate; }
 .contact-hollywood-glow { position: absolute; left: 76.2%; top: 48.7%; width: 12.5%; height: 10%; border-radius: 9999px; background: radial-gradient(circle, rgb(255 246 194 / 0.46), rgb(255 235 151 / 0.16) 44%, transparent 72%); filter: blur(1px); opacity: 0.7; animation: hollywoodSignGlow 3.6s ease-in-out infinite alternate; }
+.contact-presence-controls { position: absolute; right: clamp(0.7rem, 3.2%, 1rem); top: clamp(0.7rem, 4%, 1rem); z-index: 30; display: flex; align-items: flex-start; justify-content: flex-end; gap: 0.42rem; pointer-events: none; }
+.contact-presence-public-note { max-width: min(16rem, 52vw); overflow: hidden; padding: 0.34rem 0.55rem; border-radius: 0.58rem; background: rgb(var(--color-paper) / 0.72); box-shadow: 0 4px 16px rgb(8 18 31 / 0.1); color: rgb(var(--color-ink) / 0.72); font-family: var(--font-ui); font-size: clamp(0.48rem, 0.78vw, 0.58rem); font-weight: 650; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; backdrop-filter: blur(7px); pointer-events: auto; }
+.contact-presence-edit-button { display: grid; width: 1.72rem; aspect-ratio: 1; flex: none; place-items: center; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 50%; background: rgb(var(--color-paper) / 0.8); box-shadow: 0 4px 14px rgb(8 18 31 / 0.1); color: rgb(var(--color-ink) / 0.58); backdrop-filter: blur(7px); pointer-events: auto; transition: border-color 160ms ease, color 160ms ease, transform 160ms ease; }
+.contact-presence-edit-button:hover,
+.contact-presence-edit-button[aria-expanded="true"] { border-color: rgb(224 169 44 / 0.72); color: #b27613; transform: translateY(-1px); }
+.contact-presence-edit-button svg { width: 0.88rem; }
+.contact-presence-editor { position: absolute; right: 0; top: calc(100% + 0.46rem); width: min(17rem, calc(100vw - 3rem)); padding: 0.78rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 0.9rem; background: rgb(var(--color-surface) / 0.97); box-shadow: 0 18px 45px rgb(7 15 26 / 0.22); color: rgb(var(--color-ink)); font-family: var(--font-ui); pointer-events: auto; backdrop-filter: blur(14px); }
+.contact-presence-editor-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.contact-presence-editor-heading > div { display: grid; gap: 0.1rem; }
+.contact-presence-editor-heading span,
+.contact-presence-editor label { color: rgb(var(--color-ink) / 0.5); font-size: 0.52rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+.contact-presence-editor-heading strong { font-size: 0.72rem; font-weight: 750; }
+.contact-presence-editor-heading button { color: rgb(var(--color-clay)); font-size: 0.56rem; font-weight: 750; }
+.contact-presence-editor button:disabled { cursor: default; opacity: 0.42; }
+.contact-presence-editor-hint { margin-top: 0.46rem; color: rgb(var(--color-ink) / 0.52); font-size: 0.56rem; line-height: 1.4; }
+.contact-presence-editor-empty { margin-top: 0.65rem; padding: 0.55rem 0.62rem; border-radius: 0.62rem; background: rgb(var(--color-paper) / 0.48); color: rgb(var(--color-ink) / 0.46); font-size: 0.56rem; line-height: 1.4; }
+.contact-presence-editor form { display: grid; margin-top: 0.65rem; gap: 0.34rem; }
+.contact-presence-editor textarea,
+.contact-presence-editor input { width: 100%; border: 1px solid rgb(var(--color-ink) / 0.14); border-radius: 0.62rem; outline: none; background: rgb(var(--color-paper) / 0.72); color: rgb(var(--color-ink)); font-family: var(--font-ui); font-size: 0.68rem; line-height: 1.35; transition: border-color 160ms ease, box-shadow 160ms ease; }
+.contact-presence-editor textarea { min-height: 4.35rem; resize: none; padding: 0.55rem 0.62rem; }
+.contact-presence-editor input { height: 2.15rem; padding: 0 0.62rem; }
+.contact-presence-editor textarea:focus,
+.contact-presence-editor input:focus { border-color: rgb(224 169 44 / 0.72); box-shadow: 0 0 0 3px rgb(244 196 71 / 0.14); }
+.contact-presence-editor-actions { display: flex; margin-top: 0.12rem; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.contact-presence-editor-actions span { color: rgb(var(--color-ink) / 0.4); font-size: 0.5rem; }
+.contact-presence-editor-actions button,
+.contact-presence-login button { min-height: 1.9rem; padding: 0.35rem 0.7rem; border-radius: 9999px; background: #e2ae35; color: #38270b; font-size: 0.58rem; font-weight: 800; }
+.contact-presence-login button { justify-self: end; }
+.contact-presence-editor-error { margin-top: 0.48rem; color: rgb(var(--color-clay)); font-size: 0.55rem; line-height: 1.35; }
+.contact-presence-city-targets { position: absolute; inset: 0; z-index: 9; pointer-events: none; }
+.contact-presence-city-target { position: absolute; top: 3%; bottom: 4%; border: 1px solid transparent; border-radius: 0.55rem; background: transparent; pointer-events: auto; transition: background 150ms ease, border-color 150ms ease; }
+.contact-presence-city-targets[data-editing="true"] .contact-presence-city-target { border-style: dashed; border-color: rgb(255 205 69 / 0.66); background: rgb(255 213 83 / 0.025); }
+.contact-presence-city-targets[data-editing="true"] .contact-presence-city-target:hover,
+.contact-presence-city-targets[data-editing="true"] .contact-presence-city-target[aria-pressed="true"] { border-color: rgb(255 197 45 / 0.95); background: rgb(255 213 83 / 0.1); }
+.contact-presence-city-target span { position: absolute; left: 50%; top: 0.38rem; padding: 0.18rem 0.38rem; border-radius: 9999px; background: rgb(29 32 35 / 0.76); color: #fff3bf; font-family: var(--font-ui); font-size: 0.48rem; font-weight: 700; letter-spacing: 0.015em; text-rendering: geometricPrecision; transform: translateX(-50%); white-space: nowrap; -webkit-font-smoothing: antialiased; }
+.contact-presence-city-target-losAngeles { left: 0; width: 30.7%; }
+.contact-presence-city-target-london { left: 30.7%; width: 36.5%; }
+.contact-presence-city-target-hongKong { left: 67.2%; top: 38%; width: 32.8%; }
+.contact-presence-travel-target { position: absolute; right: 1%; top: 3%; width: 20%; height: 30%; border: 1px solid transparent; border-radius: 0.55rem; background: transparent; pointer-events: auto; transition: background 150ms ease, border-color 150ms ease; }
+.contact-presence-city-targets[data-editing="true"] .contact-presence-travel-target { border-style: dashed; border-color: rgb(255 205 69 / 0.76); background: rgb(255 213 83 / 0.045); }
+.contact-presence-city-targets[data-editing="true"] .contact-presence-travel-target:hover,
+.contact-presence-city-targets[data-editing="true"] .contact-presence-travel-target[aria-pressed="true"] { border-color: rgb(255 197 45 / 0.98); background: rgb(255 213 83 / 0.13); }
+.contact-presence-travel-target span { position: absolute; right: 0.3rem; top: 0.3rem; padding: 0.18rem 0.38rem; border-radius: 9999px; background: rgb(29 32 35 / 0.78); color: #fff3bf; font-family: var(--font-ui); font-size: 0.48rem; font-weight: 700; letter-spacing: 0.015em; text-rendering: geometricPrecision; white-space: nowrap; -webkit-font-smoothing: antialiased; }
+.contact-travelling-presence { position: absolute; right: clamp(0.75rem, 4.5%, 1.55rem); top: clamp(0.8rem, 6%, 1.2rem); z-index: 8; display: grid; width: clamp(0.94rem, 2.16vw, 1.2rem); justify-items: center; pointer-events: none; }
+.contact-travelling-presence-person { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 2px rgb(54 34 0 / 0.2)); image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-travelling-presence-location { display: block; width: max-content; max-width: 7.5rem; margin-top: 0.16rem; overflow: hidden; color: var(--hk-clock-color); font-family: var(--font-ui); font-size: clamp(0.54rem, 0.82vw, 0.64rem); font-weight: 650; letter-spacing: 0; line-height: 1.2; text-align: center; text-overflow: ellipsis; text-rendering: geometricPrecision; text-shadow: 0 1px 1px var(--moon-phase-label-shadow); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .contact-city-time-row { position: absolute; inset: auto 0 5.2% 0; z-index: 8; height: 2.8rem; color: rgb(var(--color-ink)); pointer-events: none; }
-.contact-city-clock { position: absolute; top: 0; left: var(--contact-clock-x); min-width: 0; color: rgb(var(--color-ink)); text-shadow: none; transform: translateX(-50%); }
-.contact-city-clock-hk { --contact-clock-x: 14.8%; top: 0.31rem; display: grid; justify-items: center; }
+.contact-city-clock { position: absolute; top: 0; left: var(--contact-clock-x); min-width: 0; text-shadow: none; transform: translateX(-50%); }
+.contact-city-clock-hk { --contact-clock-x: 81.3%; top: 0.31rem; display: grid; justify-items: center; color: var(--hk-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--hk-night))); }
 .contact-flip-clock { display: flex; align-items: center; min-height: 1.72rem; gap: 0.16rem; font-family: var(--font-ui); font-size: clamp(0.78rem, 1.5vw, 1rem); font-weight: 700; letter-spacing: 0.02em; }
 .contact-flip-clock span { position: relative; display: grid; min-width: 1.62rem; height: 1.55rem; place-items: center; overflow: hidden; border-radius: 0.34rem; background: linear-gradient(to bottom, #20201f 0 48%, #151514 48% 52%, #2b2b29 52% 100%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16); color: #f7ead3; }
 .contact-flip-clock span::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid rgb(0 0 0 / 0.45); }
-.contact-flip-clock i { color: rgb(var(--color-ink) / 0.48); font-style: normal; font-weight: 800; transform: translateY(-0.03rem); }
-.contact-flip-clock b { align-self: center; margin-left: 0.1rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.46rem; font-weight: 800; letter-spacing: 0.1em; line-height: 1; }
-.contact-city-clock-london { --contact-clock-x: 50.7%; top: 0.1rem; display: flex; align-items: center; justify-content: center; gap: 0.42rem; }
-.contact-victorian-clock { position: relative; display: block; width: 2.34rem; aspect-ratio: 1; flex: none; border: 2px solid #5a3b1b; border-radius: 50%; background: radial-gradient(circle, #fbf1d2 0 57%, #d9b878 58% 100%); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.45), 0 4px 10px rgb(69 46 20 / 0.13); }
+.contact-flip-clock i { color: var(--hk-clock-muted); font-style: normal; font-weight: 800; transform: translateY(-0.03rem); }
+.contact-flip-clock b { align-self: center; margin-left: 0.1rem; color: var(--hk-clock-muted); font-size: 0.46rem; font-weight: 800; letter-spacing: 0.1em; line-height: 1; }
+.contact-city-clock-london { --contact-clock-x: 48.7%; top: 0; display: flex; align-items: center; justify-content: center; gap: 0.42rem; color: var(--london-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--london-night))); }
+.contact-victorian-clock { position: relative; display: block; width: 2.34rem; aspect-ratio: 1; flex: none; border: 2px solid #5a3b1b; border-radius: 50%; background: radial-gradient(circle, #fbf1d2 0 57%, #d9b878 58% 100%); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.45), 0 4px 10px rgb(69 46 20 / 0.13), 0 0 13px rgb(255 205 102 / calc(0.22 * var(--london-night))); }
 .contact-clock-roman { position: absolute; color: #4a3118; font-family: Georgia, "Times New Roman", serif; font-size: 0.32rem; font-weight: 700; line-height: 1; }
 .contact-clock-roman-xii { left: 50%; top: 0.18rem; transform: translateX(-50%); }
 .contact-clock-roman-iii { right: 0.2rem; top: 50%; transform: translateY(-50%); }
@@ -637,23 +760,26 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-victorian-hand-hour { height: 0.58rem; transform: translate(-50%, -100%) rotate(var(--clock-hour-turn)); }
 .contact-victorian-hand-minute { height: 0.84rem; transform: translate(-50%, -100%) rotate(var(--clock-minute-turn)); }
 .contact-victorian-pin { position: absolute; left: 50%; top: 50%; width: 0.24rem; aspect-ratio: 1; border-radius: 50%; background: #3a2412; transform: translate(-50%, -50%); }
-.contact-city-clock-copy { display: flex; min-width: 0; min-height: 1.72rem; align-items: center; }
+.contact-city-clock-copy { position: relative; display: flex; min-width: 0; min-height: 1.72rem; align-items: center; }
 .contact-city-clock-copy strong,
 .contact-city-clock-la strong { display: inline-flex; align-items: baseline; gap: 0.24rem; font-size: 0.9rem; font-weight: 700; line-height: 1; }
-.contact-city-clock-copy strong span,
+.contact-city-clock-copy strong span { color: var(--london-clock-muted); font-size: 0.48rem; font-weight: 800; letter-spacing: 0.1em; }
 .contact-city-clock-la strong span { color: rgb(var(--color-ink) / 0.56); font-size: 0.48rem; font-weight: 800; letter-spacing: 0.1em; }
-.contact-city-clock-la { --contact-clock-x: 87.8%; top: 0.31rem; display: grid; justify-items: center; color: rgb(var(--color-ink)); }
+.contact-city-clock-la { --contact-clock-x: 18.2%; top: 0.31rem; display: grid; justify-items: center; color: rgb(var(--color-ink)); }
 .contact-city-clock-la strong { position: relative; font-family: var(--font-ui); font-size: clamp(0.86rem, 1.7vw, 1.1rem); letter-spacing: 0.01em; }
-.contact-digital-clock { display: inline-flex; min-height: 1.72rem; align-items: center; gap: 0.14rem; padding: 0.24rem 0.34rem; border-radius: 0.28rem; background: linear-gradient(180deg, #303238 0%, #181b1f 56%, #0f1215 100%); box-shadow: inset 0 1px 0 rgb(255 233 179 / 0.16), inset 0 -2px 0 rgb(0 0 0 / 0.42), 0 7px 12px rgb(var(--color-ink) / 0.16); color: #ffcf65; font-family: var(--font-mono); font-size: clamp(0.82rem, 1.55vw, 1.04rem); font-weight: 750; letter-spacing: 0.04em; line-height: 1; }
+.contact-digital-clock { display: inline-flex; min-height: 1.72rem; align-items: center; gap: 0.14rem; padding: 0.24rem 0.34rem; border-radius: 0.28rem; background: linear-gradient(180deg, #303238 0%, #181b1f 56%, #0f1215 100%); box-shadow: inset 0 1px 0 rgb(255 233 179 / 0.16), inset 0 -2px 0 rgb(0 0 0 / 0.42), 0 0 12px rgb(255 205 102 / calc(0.14 * var(--la-night))), 0 7px 12px rgb(25 28 32 / 0.18); color: #ffcf65; font-family: var(--font-mono); font-size: clamp(0.82rem, 1.55vw, 1.04rem); font-weight: 750; letter-spacing: 0.04em; line-height: 1; }
 .contact-digital-clock span { text-shadow: 1px 1px 0 #9f4f1f, 2px 2px 0 #602c10, 0 0 6px rgb(255 153 48 / 0.34); }
 .contact-digital-clock i { color: rgb(255 207 101 / 0.7); font-style: normal; transform: translateY(-0.03rem); }
 .contact-digital-clock b { margin-left: 0.1rem; color: rgb(255 221 142 / 0.78); font-family: var(--font-ui); font-size: 0.46rem; font-weight: 800; letter-spacing: 0.1em; line-height: 1; }
-.dark .contact-city-clock { color: rgb(229 242 255); text-shadow: 0 0 7px rgb(104 173 255 / 0.22); }
-.dark .contact-city-clock-copy strong span,
-.dark .contact-city-clock-la strong span,
-.dark .contact-flip-clock b { color: rgb(220 236 255 / 0.66); }
-.dark .contact-victorian-clock { box-shadow: 0 0 13px rgb(255 205 102 / 0.22), inset 0 0 0 2px rgb(255 255 255 / 0.24); }
-.dark .contact-digital-clock { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), inset 0 -2px 0 rgb(0 0 0 / 0.55), 0 0 12px rgb(255 205 102 / 0.14), 0 8px 14px rgb(0 0 0 / 0.18); }
+.contact-city-presence { position: absolute; z-index: 12; display: block; width: clamp(2rem, 3.9vw, 2.42rem); aspect-ratio: 1881 / 836; filter: drop-shadow(0 2px 2px rgb(54 34 0 / 0.2)); pointer-events: none; }
+.contact-city-clock-la > .contact-city-presence,
+.contact-city-clock-hk > .contact-city-presence { bottom: calc(100% - 0.24rem); transform: translateX(-50%) rotate(-1.5deg); }
+.contact-city-clock-la > .contact-city-presence { left: 76%; }
+.contact-city-clock-hk > .contact-city-presence { left: 25%; }
+.contact-city-clock-copy > .contact-city-presence { left: 72%; bottom: 72%; width: clamp(1.86rem, 3.6vw, 2.21rem); transform: translateX(-50%) rotate(-1.5deg); }
+.contact-city-presence-person { display: block; width: 100%; height: auto; image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-city-presence-sign { position: absolute; left: 42%; bottom: 63%; display: grid; min-width: 1.2rem; min-height: 0.5rem; padding: 0.08rem 0.13rem; place-items: center; border: 1px solid rgb(149 105 26 / 0.88); border-radius: 0.18rem; background: #fff0b4; box-shadow: 0 1px 2px rgb(92 59 4 / 0.22), 1px 1px 0 rgb(182 124 22 / 0.72); color: #49320b; font-family: var(--font-ui); font-size: 0.3rem; font-weight: 800; letter-spacing: 0; line-height: 1; text-rendering: geometricPrecision; text-shadow: none; transform: translateX(-50%) rotate(-2deg); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-city-presence-sign::after { content: ""; position: absolute; left: 52%; top: 100%; width: 1px; height: 0.23rem; background: #95691a; transform: translateX(-50%); }
 
 .section-loading {
   display: grid;
@@ -1253,6 +1379,11 @@ body.has-page-cursor * { cursor: inherit; }
   to { transform: translate3d(44px, 1px, 0) rotate(0.2deg); }
 }
 
+@keyframes contactPresenceArrive {
+  from { opacity: 0; scale: 0.76; translate: 0 0.24rem; }
+  to { opacity: 1; scale: 1; translate: 0 0; }
+}
+
 @keyframes citiesPlaneFly {
   0% { left: -12%; opacity: 0; transform: translate3d(0, 0, 0); }
   8% { opacity: 1; }
@@ -1268,7 +1399,16 @@ body.has-page-cursor * { cursor: inherit; }
   .contact-hollywood-beam,
   .contact-hollywood-glow,
   .contact-harbour-boat,
-  .contact-london-plane { animation: none; }
+  .contact-london-plane,
+  .contact-city-presence-person,
+  .contact-city-presence-sign,
+  .contact-travelling-presence-person,
+  .contact-travelling-presence-location { animation: none; }
+  .contact-cities-picture,
+  .contact-city-celestial,
+  .contact-city-moon-face,
+  .contact-city-celestial-track::before,
+  .contact-city-celestial-track::after { transition: none; }
 }
 
 .project-card {
@@ -1474,6 +1614,12 @@ html[data-theme-transition] *,
 html[data-theme-transition] *::before,
 html[data-theme-transition] *::after {
   transition-property: none !important;
+}
+
+html[data-theme-transition] body *,
+html[data-theme-transition] body *::before,
+html[data-theme-transition] body *::after {
+  animation-play-state: paused !important;
 }
 
 html[data-theme-color-transition] body,
@@ -3185,7 +3331,6 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .about-pixel-card-engine { grid-column: 1 / -1; }
   .contact-cities { grid-template-columns: 1fr; }
   .contact-cities-art { min-height: 0; border-top: 0; }
-  .dark .contact-cities-art { border-top-color: transparent; }
   .steam-symbols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .steam-workspace { grid-template-columns: 1fr; }
   .compound-symbols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -3332,16 +3477,32 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-city-chips span { padding: 0.36rem 0.55rem; font-size: 0.58rem; }
   .contact-cities-art { min-height: 12.35rem; padding: 0; }
   .contact-cities-picture { width: 100%; min-height: 12.35rem; height: 100%; align-items: start; }
-  .contact-cities-scene-frame { inset: 0.5rem 0.45rem 2.15rem; align-items: flex-start; }
-  .contact-cities-scene { width: min(100%, 21rem); margin-top: -0.42rem; }
-  .contact-city-glow-field { background: radial-gradient(ellipse 28% 34% at 17% 42%, rgb(71 161 255 / 0.16), transparent 78%), radial-gradient(ellipse 26% 26% at 85% 48%, rgb(255 190 111 / 0.15), transparent 76%); }
+  .contact-moon-phase-label { left: 0.62rem; top: 0.48rem; font-size: 0.4rem; letter-spacing: 0.06em; }
+  .contact-presence-controls { right: 0.48rem; top: 0.42rem; max-width: calc(100% - 4.3rem); gap: 0.28rem; }
+  .contact-presence-public-note { max-width: 9.5rem; padding: 0.28rem 0.42rem; font-size: 0.43rem; }
+  .contact-presence-edit-button { width: 1.5rem; }
+  .contact-presence-editor { width: min(16.5rem, calc(100vw - 3rem)); padding: 0.68rem; }
+  .contact-presence-editor textarea,
+  .contact-presence-editor input { font-size: 16px !important; }
+  .contact-travelling-presence { right: 0.62rem; top: 0.66rem; width: 0.82rem; }
+  .contact-travelling-presence-location { max-width: 5.6rem; font-size: 0.5rem; }
+  .contact-presence-travel-target { right: 0; top: 2%; width: 21%; height: 30%; }
+  .contact-presence-city-target-hongKong { top: 38%; }
+  .contact-cities-backdrop-frame { inset: 0 0.45rem; }
+  .contact-cities-night-backdrop,
+  .contact-cities-dawn-backdrop { width: min(112%, 23.5rem); }
+  .contact-cities-scene-frame { inset: 0 0.45rem; align-items: flex-start; overflow: visible; padding-top: 0.5rem; }
+  .contact-cities-scene { width: min(112%, 23.5rem); flex: none; margin-top: -0.42rem; }
+  .contact-city-atmosphere::before,
+  .contact-city-atmosphere::after { width: 4%; }
+  .contact-city-glow-field { background: radial-gradient(ellipse 26% 26% at 15.7% 48%, rgb(255 190 111 / calc(0.15 * var(--la-city-night))), transparent 76%), radial-gradient(ellipse 28% 34% at 84.2% 42%, rgb(71 161 255 / calc(0.16 * var(--hk-city-night))), transparent 78%); }
   .contact-cities-picture img { width: 100%; }
   .contact-city-time-row { inset: auto 0 1.5% 0; width: auto; height: 2.1rem; margin-top: 0; }
-  .contact-city-clock-hk { --contact-clock-x: 14.8%; top: 0.2rem; }
+  .contact-city-clock-hk { --contact-clock-x: 81.3%; top: 0.2rem; }
   .contact-flip-clock { gap: 0.1rem; font-size: 0.64rem; }
   .contact-flip-clock span { min-width: 1.12rem; height: 1.18rem; border-radius: 0.22rem; }
   .contact-flip-clock b { margin-left: 0.04rem; font-size: 0.32rem; letter-spacing: 0.06em; }
-  .contact-city-clock-london { --contact-clock-x: 50.7%; top: 0.3rem; gap: 0.18rem; }
+  .contact-city-clock-london { --contact-clock-x: 48.7%; top: 0.2rem; gap: 0.18rem; }
   .contact-victorian-clock { width: 1.72rem; border-width: 1px; }
   .contact-clock-roman { font-size: 0.23rem; }
   .contact-victorian-hand-hour { height: 0.42rem; }
@@ -3352,7 +3513,13 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-city-clock-la strong { gap: 0.12rem; font-size: 0.6rem; }
   .contact-city-clock-copy strong span,
   .contact-city-clock-la strong span { font-size: 0.32rem; letter-spacing: 0.06em; }
-  .contact-city-clock-la { --contact-clock-x: 87.8%; top: 0.2rem; }
+  .contact-city-clock-la > .contact-city-presence,
+  .contact-city-clock-hk > .contact-city-presence { bottom: calc(100% - 0.18rem); width: 1.86rem; }
+  .contact-city-clock-la > .contact-city-presence { left: 76%; }
+  .contact-city-clock-hk > .contact-city-presence { left: 25%; }
+  .contact-city-clock-copy > .contact-city-presence { left: 72%; bottom: 76%; width: 1.72rem; }
+  .contact-city-presence-sign { left: 42%; bottom: 64%; min-width: 1.08rem; min-height: 0.46rem; padding: 0.07rem 0.11rem; font-size: 0.27rem; }
+  .contact-city-clock-la { --contact-clock-x: 18.2%; top: 0.2rem; }
   .contact-city-clock-la strong { font-size: 0.62rem; }
   .contact-digital-clock { gap: 0.08rem; padding: 0.2rem 0.22rem; border-radius: 0.22rem; font-size: 0.62rem; letter-spacing: 0.02em; }
   .contact-digital-clock b { margin-left: 0.02rem; font-size: 0.32rem; letter-spacing: 0.06em; }

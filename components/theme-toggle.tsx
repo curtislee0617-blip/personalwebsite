@@ -11,8 +11,7 @@ type DocumentWithViewTransitions = Document & {
 const DARK_TO_LIGHT_MS = 1450;
 const LAPTOP_DARK_TO_LIGHT_MS = 1120;
 const LIGHT_TO_DARK_MS = 1240;
-const EXPAND_EASING = "cubic-bezier(0.22, 1, 0.36, 1)";
-const LAPTOP_EXPAND_EASING = "cubic-bezier(0.4, 0, 0.2, 1)";
+const SMOOTH_EXPAND_EASING = "cubic-bezier(0.4, 0, 0.2, 1)";
 const CONTRACT_EASING = "cubic-bezier(0.45, 0, 0.2, 1)";
 const FALLBACK_TRANSITION_MS = 760;
 
@@ -92,23 +91,24 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         const buttonRadius = Math.max(iconBounds?.width ?? bounds.width, iconBounds?.height ?? bounds.height) / 2;
         const isLightToDark = next;
         const isMobileTransition = window.matchMedia("(max-width: 899px), (pointer: coarse)").matches;
+        const fullRadius = radius + (isMobileTransition ? 32 : 2);
         const moss = window.getComputedStyle(document.documentElement).getPropertyValue("--color-moss").trim();
         const edgeColor = `rgb(${moss} / 0.42)`;
         const opacity = (desktopOpacity: number) => isMobileTransition ? 1 : desktopOpacity;
         const edge = (desktopBlur: number) => `drop-shadow(0 0 ${isMobileTransition ? Math.min(desktopBlur, 4) : desktopBlur}px ${edgeColor})`;
         const expandKeyframes: Keyframe[] = isMobileTransition
           ? [
-              { clipPath: `circle(${buttonRadius}px at ${x}px ${y}px)`, filter: edge(5), opacity: 1 },
-              { clipPath: `circle(${radius * 0.28}px at ${x}px ${y}px)`, filter: edge(13), offset: 0.28, opacity: 1 },
-              { clipPath: `circle(${radius * 0.72}px at ${x}px ${y}px)`, filter: edge(9), offset: 0.68, opacity: 1 },
-              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: edge(0), opacity: 1 },
+              { clipPath: `circle(${buttonRadius}px at ${x}px ${y}px)`, filter: "none", opacity: 1 },
+              { clipPath: `circle(${radius * 0.28}px at ${x}px ${y}px)`, filter: "none", offset: 0.28, opacity: 1 },
+              { clipPath: `circle(${radius * 0.72}px at ${x}px ${y}px)`, filter: "none", offset: 0.68, opacity: 1 },
+              { clipPath: `circle(${fullRadius}px at ${x}px ${y}px)`, filter: "none", opacity: 1 },
             ]
           : [
               { clipPath: `circle(${buttonRadius}px at ${x}px ${y}px)`, filter: edge(3), opacity: 1 },
               { clipPath: `circle(${radius * 0.18}px at ${x}px ${y}px)`, filter: edge(6), offset: 0.2, opacity: 1 },
               { clipPath: `circle(${radius * 0.48}px at ${x}px ${y}px)`, filter: edge(8), offset: 0.5, opacity: 1 },
               { clipPath: `circle(${radius * 0.78}px at ${x}px ${y}px)`, filter: edge(5), offset: 0.8, opacity: 1 },
-              { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: edge(0), opacity: 1 },
+              { clipPath: `circle(${fullRadius}px at ${x}px ${y}px)`, filter: edge(0), opacity: 1 },
             ];
         const keyframes: Keyframe[] = isLightToDark
           ? [
@@ -122,7 +122,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
           keyframes,
           {
             duration: isLightToDark ? LIGHT_TO_DARK_MS : isMobileTransition ? DARK_TO_LIGHT_MS : LAPTOP_DARK_TO_LIGHT_MS,
-            easing: isLightToDark ? CONTRACT_EASING : isMobileTransition ? EXPAND_EASING : LAPTOP_EXPAND_EASING,
+            easing: isLightToDark ? CONTRACT_EASING : SMOOTH_EXPAND_EASING,
             fill: "forwards",
             pseudoElement: isLightToDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
           },
