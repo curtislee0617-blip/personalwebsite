@@ -132,43 +132,47 @@ export default function ContactPage() {
           </div>
           <div className="contact-cities-art">
             <div className="contact-cities-picture">
-              <Image
-                alt="Daytime pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
-                className="contact-cities-art-image contact-cities-art-light"
-                fill
-                priority
-                sizes="(max-width: 639px) 21rem, (max-width: 899px) 30rem, 40rem"
-                src="/contact-cities-pixel-art-day-from-night-v1.png"
-              />
-              <Image
-                alt="Nighttime pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
-                className="contact-cities-art-image contact-cities-art-dark"
-                fill
-                priority
-                sizes="(max-width: 639px) 21rem, (max-width: 899px) 30rem, 40rem"
-                src="/contact-cities-pixel-art-night-v2.png"
-              />
-              <span className="contact-city-auras" aria-hidden="true" />
-              <span className="contact-london-balance-fill contact-london-balance-fill-light" aria-hidden="true" />
-              <span className="contact-london-balance-fill contact-london-balance-fill-dark" aria-hidden="true" />
-              <span className="contact-london-balanced contact-london-balanced-light" aria-hidden="true" />
-              <span className="contact-london-balanced contact-london-balanced-dark" aria-hidden="true" />
-              <span className="contact-hong-kong-night-lift" aria-hidden="true" />
-              <span className="contact-harbour-clear contact-harbour-clear-light" aria-hidden="true" />
-              <span className="contact-harbour-clear contact-harbour-clear-dark" aria-hidden="true" />
-              <span className="contact-harbour-boat contact-harbour-boat-light" aria-hidden="true" />
-              <span className="contact-harbour-boat contact-harbour-boat-dark" aria-hidden="true" />
-              <div className="contact-london-planes" aria-hidden="true">
-                <PixelPassengerPlane className="contact-london-plane-one" />
-                <PixelPassengerPlane className="contact-london-plane-two" />
+              <span className="contact-city-glow-field" aria-hidden="true" />
+              <div className="contact-cities-scene-frame">
+                <div className="contact-cities-scene">
+                <Image
+                  alt="Daytime pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
+                  className="contact-cities-art-image contact-cities-art-light"
+                  fill
+                  priority
+                  sizes="(max-width: 639px) 21rem, (max-width: 899px) 30rem, 40rem"
+                  src="/contact-cities-pixel-art-day-from-night-v1.png"
+                />
+                <Image
+                  alt="Nighttime pixel art of Hong Kong harbour, Big Ben and Westminster in London, and the Hollywood hills in Los Angeles"
+                  className="contact-cities-art-image contact-cities-art-dark"
+                  fill
+                  priority
+                  sizes="(max-width: 639px) 21rem, (max-width: 899px) 30rem, 40rem"
+                  src="/contact-cities-pixel-art-night-v2.png"
+                />
+                <span className="contact-london-balance-fill contact-london-balance-fill-light" aria-hidden="true" />
+                <span className="contact-london-balance-fill contact-london-balance-fill-dark" aria-hidden="true" />
+                <span className="contact-london-balanced contact-london-balanced-light" aria-hidden="true" />
+                <span className="contact-london-balanced contact-london-balanced-dark" aria-hidden="true" />
+                <span className="contact-hong-kong-night-lift" aria-hidden="true" />
+                <span className="contact-harbour-clear contact-harbour-clear-light" aria-hidden="true" />
+                <span className="contact-harbour-clear contact-harbour-clear-dark" aria-hidden="true" />
+                <span className="contact-harbour-boat contact-harbour-boat-light" aria-hidden="true" />
+                <span className="contact-harbour-boat contact-harbour-boat-dark" aria-hidden="true" />
+                <div className="contact-london-planes" aria-hidden="true">
+                  <PixelPassengerPlane className="contact-london-plane-one" />
+                  <PixelPassengerPlane className="contact-london-plane-two" />
+                </div>
+                <div className="contact-hollywood-spotlights" aria-hidden="true">
+                  <span className="contact-hollywood-beam contact-hollywood-beam-left" />
+                  <span className="contact-hollywood-beam contact-hollywood-beam-right" />
+                  <span className="contact-hollywood-beam contact-hollywood-beam-center" />
+                  <span className="contact-hollywood-glow" />
+                </div>
+                  <ContactCityTimeRow />
+                </div>
               </div>
-              <div className="contact-hollywood-spotlights" aria-hidden="true">
-                <span className="contact-hollywood-beam contact-hollywood-beam-left" />
-                <span className="contact-hollywood-beam contact-hollywood-beam-right" />
-                <span className="contact-hollywood-beam contact-hollywood-beam-center" />
-                <span className="contact-hollywood-glow" />
-              </div>
-              <ContactCityTimeRow />
             </div>
           </div>
         </div>

@@ -531,13 +531,17 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
 .contact-city-chips i { font-style: normal; font-size: 0.75rem; }
-.contact-cities-art { --contact-art-background: 253 250 234; position: relative; align-self: stretch; display: grid; min-height: 13rem; overflow: hidden; align-content: center; justify-items: center; gap: 0; padding: 1.5rem; background: rgb(var(--contact-art-background)); border-color: rgb(var(--contact-art-background)); transition: background-color 360ms ease, border-color 360ms ease; }
-.contact-cities-art::before { content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0; pointer-events: none; transition: opacity 520ms ease; }
-.contact-cities-picture { position: relative; z-index: 1; isolation: isolate; width: min(88%, 38rem); aspect-ratio: 1916 / 821; background: rgb(var(--contact-art-background)); }
-.contact-cities-picture::after { content: ""; position: absolute; inset: -3%; z-index: 6; background: radial-gradient(ellipse 70% 78% at 50% 54%, transparent 0 76%, rgb(var(--contact-art-background) / 0.24) 86%, rgb(var(--contact-art-background)) 100%); opacity: 0; pointer-events: none; transition: opacity 360ms ease; }
+.contact-cities-art { --contact-art-background: 254 250 237; position: relative; align-self: stretch; min-height: 13rem; overflow: hidden; padding: 0; background: linear-gradient(180deg, rgb(253 250 234) 0%, rgb(var(--contact-art-background)) 10%, rgb(var(--contact-art-background)) 90%, rgb(253 249 235) 100%); border-color: rgb(var(--contact-art-background)); transition: background-color 360ms ease, border-color 360ms ease; }
+.contact-cities-picture { position: relative; isolation: isolate; display: grid; width: 100%; min-height: 13rem; height: 100%; place-items: center; overflow: hidden; background: transparent; }
+.contact-cities-scene-frame { position: absolute; inset: 1.5rem; display: flex; align-items: center; justify-content: center; }
+.contact-cities-scene { position: relative; width: min(88%, 38rem); aspect-ratio: 1916 / 821; background: rgb(var(--contact-art-background)); }
+.contact-cities-scene::before,
+.contact-cities-scene::after { content: ""; position: absolute; top: 0; z-index: 0; width: 24%; height: 100%; background: linear-gradient(180deg, rgb(253 250 234) 0%, rgb(254 250 237) 10%, rgb(254 250 237) 90%, rgb(253 249 235) 100%); pointer-events: none; }
+.contact-cities-scene::before { right: 99.5%; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 72%, #000 100%); mask-image: linear-gradient(to right, transparent 0%, #000 72%, #000 100%); }
+.contact-cities-scene::after { left: 99.5%; -webkit-mask-image: linear-gradient(to right, #000 0%, #000 28%, transparent 100%); mask-image: linear-gradient(to right, #000 0%, #000 28%, transparent 100%); }
+.contact-city-glow-field { position: absolute; inset: 0; z-index: 1; opacity: 0; background: radial-gradient(ellipse 27% 44% at 20% 52%, rgb(71 161 255 / 0.16), transparent 78%), radial-gradient(ellipse 25% 30% at 84% 62%, rgb(255 190 111 / 0.15), transparent 76%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
 .contact-cities-art-image { z-index: 0; object-fit: fill; object-position: 50% 50%; image-rendering: crisp-edges; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
 .contact-cities-art-dark,
-.contact-city-auras,
 .contact-hong-kong-night-lift,
 .contact-london-balance-fill-dark,
 .contact-london-balanced-dark,
@@ -550,20 +554,19 @@ body.has-page-cursor * { cursor: inherit; }
 .dark .contact-harbour-clear-light,
 .dark .contact-harbour-boat-light { opacity: 0; }
 .dark .contact-cities-art-dark,
-.dark .contact-city-auras,
 .dark .contact-hong-kong-night-lift,
 .dark .contact-london-balance-fill-dark,
 .dark .contact-london-balanced-dark,
 .dark .contact-harbour-clear-dark,
 .dark .contact-harbour-boat-dark,
 .dark .contact-hollywood-spotlights { opacity: 1; }
-.dark .contact-cities-art { --contact-art-background: 2 21 51; border-color: rgb(var(--contact-art-background)); background: radial-gradient(ellipse 24% 30% at 21% 63%, rgb(0 42 86 / 0.64), transparent 78%), radial-gradient(ellipse 26% 24% at 54% 61%, rgb(21 39 70 / 0.4), transparent 76%), radial-gradient(ellipse 25% 24% at 83% 62%, rgb(34 50 69 / 0.28), transparent 76%), linear-gradient(180deg, rgb(2 19 51) 0%, rgb(1 22 58) 54%, rgb(var(--contact-art-background)) 100%); }
-.dark .contact-cities-art::before { opacity: 1; background: radial-gradient(ellipse 20% 28% at 18% 64%, rgb(71 161 255 / 0.22), transparent 72%), radial-gradient(ellipse 22% 24% at 49% 63%, rgb(255 202 91 / 0.12), transparent 76%), radial-gradient(ellipse 22% 22% at 86% 64%, rgb(255 190 111 / 0.12), transparent 76%); filter: blur(10px); mix-blend-mode: screen; }
-.dark .contact-cities-picture { overflow: visible; background: transparent; -webkit-mask-image: none; mask-image: none; }
-.dark .contact-cities-picture::after { opacity: 0; }
-.dark .contact-cities-art-dark { transform: scale(1.04); transform-origin: 50% 50%; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 91%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%); -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent 0%, #000 4%, #000 91%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%); mask-composite: intersect; }
-.contact-city-auras { position: absolute; inset: -14% -16% -22% -4%; z-index: 1; background: radial-gradient(ellipse 24% 26% at 18% 67%, rgb(71 161 255 / 0.3), transparent 72%), radial-gradient(ellipse 24% 24% at 50% 65%, rgb(255 202 91 / 0.24), transparent 74%), radial-gradient(ellipse 26% 22% at 85% 66%, rgb(255 190 111 / 0.23), transparent 74%); filter: blur(12px); mix-blend-mode: screen; pointer-events: none; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
-.contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 2; background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%); mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%); transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
+.dark .contact-cities-art { --contact-art-background: 1 19 51; border-color: rgb(var(--contact-art-background)); background: linear-gradient(180deg, rgb(2 21 51) 0%, rgb(var(--contact-art-background)) 10%, rgb(var(--contact-art-background)) 90%, rgb(2 22 48) 100%); }
+.dark .contact-city-glow-field { opacity: 1; }
+.dark .contact-cities-picture { background: transparent; }
+.dark .contact-cities-scene::before,
+.dark .contact-cities-scene::after { background: linear-gradient(180deg, rgb(2 21 51) 0%, rgb(1 19 51) 10%, rgb(1 19 51) 90%, rgb(2 22 48) 100%); }
+.dark .contact-cities-art-dark { transform: scale(1.04); transform-origin: 50% 50%; -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 88%, transparent 100%); }
+.contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 2; background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); -webkit-mask-composite: source-in; mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); mask-composite: intersect; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
 .contact-london-balance-fill,
 .contact-london-balanced { position: absolute; inset: 0; pointer-events: none; image-rendering: pixelated; transition: opacity 720ms cubic-bezier(.22, 1, .36, 1); }
 .contact-london-balance-fill { z-index: 2; -webkit-mask-image: radial-gradient(ellipse 8% 40% at 62.6% 58%, #000 0 34%, rgb(0 0 0 / 0.64) 56%, transparent 100%); mask-image: radial-gradient(ellipse 8% 40% at 62.6% 58%, #000 0 34%, rgb(0 0 0 / 0.64) 56%, transparent 100%); }
@@ -623,7 +626,7 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-flip-clock span::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid rgb(0 0 0 / 0.45); }
 .contact-flip-clock i { color: rgb(var(--color-ink) / 0.48); font-style: normal; font-weight: 800; transform: translateY(-0.03rem); }
 .contact-flip-clock b { align-self: center; margin-left: 0.1rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.46rem; font-weight: 800; letter-spacing: 0.1em; line-height: 1; }
-.contact-city-clock-london { --contact-clock-x: 50.7%; display: flex; align-items: center; justify-content: center; gap: 0.42rem; }
+.contact-city-clock-london { --contact-clock-x: 50.7%; top: 0.1rem; display: flex; align-items: center; justify-content: center; gap: 0.42rem; }
 .contact-victorian-clock { position: relative; display: block; width: 2.34rem; aspect-ratio: 1; flex: none; border: 2px solid #5a3b1b; border-radius: 50%; background: radial-gradient(circle, #fbf1d2 0 57%, #d9b878 58% 100%); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.45), 0 4px 10px rgb(69 46 20 / 0.13); }
 .contact-clock-roman { position: absolute; color: #4a3118; font-family: Georgia, "Times New Roman", serif; font-size: 0.32rem; font-weight: 700; line-height: 1; }
 .contact-clock-roman-xii { left: 50%; top: 0.18rem; transform: translateX(-50%); }
@@ -3327,17 +3330,18 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-cities-copy > div > p:last-child { margin-top: 0.5rem; font-size: 0.68rem; line-height: 1.4; }
   .contact-city-chips { margin-top: 0.8rem; }
   .contact-city-chips span { padding: 0.36rem 0.55rem; font-size: 0.58rem; }
-  .contact-cities-art { min-height: 12.35rem; align-content: start; gap: 0; padding: 0.5rem 0.45rem 2.15rem; }
-  .contact-cities-picture { width: min(100%, 21rem); transform: translateY(-0.42rem); }
-  .contact-cities-picture::after { opacity: 0; }
-  .dark .contact-cities-picture::after { opacity: 0; }
+  .contact-cities-art { min-height: 12.35rem; padding: 0; }
+  .contact-cities-picture { width: 100%; min-height: 12.35rem; height: 100%; align-items: start; }
+  .contact-cities-scene-frame { inset: 0.5rem 0.45rem 2.15rem; align-items: flex-start; }
+  .contact-cities-scene { width: min(100%, 21rem); margin-top: -0.42rem; }
+  .contact-city-glow-field { background: radial-gradient(ellipse 28% 34% at 17% 42%, rgb(71 161 255 / 0.16), transparent 78%), radial-gradient(ellipse 26% 26% at 85% 48%, rgb(255 190 111 / 0.15), transparent 76%); }
   .contact-cities-picture img { width: 100%; }
   .contact-city-time-row { inset: auto 0 1.5% 0; width: auto; height: 2.1rem; margin-top: 0; }
   .contact-city-clock-hk { --contact-clock-x: 14.8%; top: 0.2rem; }
   .contact-flip-clock { gap: 0.1rem; font-size: 0.64rem; }
   .contact-flip-clock span { min-width: 1.12rem; height: 1.18rem; border-radius: 0.22rem; }
   .contact-flip-clock b { margin-left: 0.04rem; font-size: 0.32rem; letter-spacing: 0.06em; }
-  .contact-city-clock-london { --contact-clock-x: 50.7%; top: 0.2rem; gap: 0.18rem; }
+  .contact-city-clock-london { --contact-clock-x: 50.7%; top: 0.3rem; gap: 0.18rem; }
   .contact-victorian-clock { width: 1.72rem; border-width: 1px; }
   .contact-clock-roman { font-size: 0.23rem; }
   .contact-victorian-hand-hour { height: 0.42rem; }
