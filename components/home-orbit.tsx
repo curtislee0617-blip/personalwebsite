@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cursorCss, pageCursors } from "@/lib/page-cursors";
+import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
 const orbitLinks = [
   { href: "/about", label: "About" },
@@ -197,6 +198,14 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     return { x: window.innerWidth - 44, y: 44 };
   }
 
+  function prefetchRoute(href: string) {
+    try {
+      router.prefetch(href);
+    } catch {
+      // Prefetch is best-effort; normal navigation still handles failures.
+    }
+  }
+
   useEffect(() => {
     const el = document.documentElement;
     const observer = new MutationObserver(() => setIsDark(el.classList.contains("dark")));
@@ -274,52 +283,23 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
       return;
     }
 
-    const target = menuAnchor();
-    const bubbles = document.querySelectorAll<HTMLElement>(".orbit-link");
+    const selectedBubble = event.currentTarget;
+    const bubbles = Array.from(document.querySelectorAll<HTMLElement>(".orbit-link"));
     const profile = document.querySelector<HTMLElement>(".home-profile");
-    const menuGlyph = document.querySelector<HTMLElement>(".home-menu-glyph");
+    const photoGrid = document.querySelector<HTMLElement>(".home-photo-grid");
+    const themeToggle = document.querySelector<HTMLElement>(".theme-toggle");
 
-    // Batch layout reads before animation writes so the browser calculates layout once.
-    const bubbleGeometry = Array.from(bubbles).map((bubble) => {
-      const box = bubble.getBoundingClientRect();
-      return {
-        bubble,
-        moveX: target.x - (box.left + box.width / 2),
-        moveY: target.y - (box.top + box.height / 2),
-      };
-    });
-
-    const bubbleAnimations = bubbleGeometry.map(({ bubble, moveX, moveY }, index) => {
-      return bubble.animate(
-        [
-          { translate: "0 0", scale: "1", opacity: 1 },
-          { offset: 0.72, translate: `${moveX * 0.9}px ${moveY * 0.9}px`, scale: "0.28", opacity: 0.7 },
-          { translate: `${moveX}px ${moveY}px`, scale: "0", opacity: 0 },
-        ],
-        { duration: 360, delay: index * 12, easing: "cubic-bezier(.4, 0, 1, 1)", fill: "forwards" },
-      );
-    });
-
-    const profileAnimation = profile?.animate(
-      [{ opacity: 1, scale: "1" }, { opacity: 0, scale: "0.9" }],
-      { duration: 240, easing: "ease-in", fill: "forwards" },
-    );
-
-    const menuAnimation = menuGlyph?.animate(
-      [
-        { opacity: 0, scale: "0.2", rotate: "-35deg" },
-        { offset: 0.65, opacity: 1, scale: "1.08", rotate: "2deg" },
-        { opacity: 1, scale: "1", rotate: "0deg" },
+    await runRouteBubbleTransition({
+      href,
+      router,
+      source: selectedBubble,
+      fadeOut: [
+        ...bubbles.filter((bubble) => bubble !== selectedBubble),
+        profile,
+        photoGrid,
+        themeToggle,
       ],
-      { duration: 250, delay: 270, easing: "cubic-bezier(.22, 1, .36, 1)", fill: "forwards" },
-    );
-
-    const animations = [...bubbleAnimations, profileAnimation, menuAnimation].filter(
-      (animation): animation is Animation => Boolean(animation),
-    );
-
-    await Promise.all(animations.map((animation) => animation.finished.catch(() => undefined)));
-    router.push(href);
+    });
   }
 
   return (
@@ -353,7 +333,15 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
         <nav className="home-orbit-nav" aria-label="Explore the website">
           {orbitLinks.map((item) => (
-            <Link className="orbit-link" href={item.href} key={item.href} onClick={(event) => leaveHome(event, item.href)} style={{ cursor: bubbleCursors.get(item.href) }}>
+            <Link
+              className="orbit-link"
+              href={item.href}
+              key={item.href}
+              onClick={(event) => leaveHome(event, item.href)}
+              onFocus={() => prefetchRoute(item.href)}
+              onPointerEnter={() => prefetchRoute(item.href)}
+              style={{ cursor: bubbleCursors.get(item.href) }}
+            >
               <span className="orbit-link-label">{item.label}</span>
               <span className="orbit-arrow" aria-hidden="true">↗</span>
             </Link>

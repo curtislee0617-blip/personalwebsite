@@ -4,8 +4,8 @@ export default function Loading() {
   return (
     <SectionLoading
       variant="tools"
-      title="Calibrating the tools"
-      description="Calculators and references are getting their units straight."
+      title="Adding final touches"
+      description=""
     />
   );
 }

@@ -3,10 +3,11 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { navIconForPath } from "@/lib/page-cursors";
+import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
 const links = [
   ["/", "Home"], ["/about", "About"], ["/projects", "Projects"],
@@ -17,12 +18,48 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const shellRef = useRef<HTMLElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
   const isProjectViewer = pathname.startsWith("/projects/");
+
+  function prefetchRoute(href: string) {
+    try {
+      router.prefetch(href);
+    } catch {
+      // Prefetch is best-effort; normal navigation still handles failures.
+    }
+  }
+
+  function navigateFromMenu(event: MouseEvent<HTMLAnchorElement>, href: string) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+    event.preventDefault();
+    if (pathname === href) {
+      setOpen(false);
+      return;
+    }
+
+    const panel = panelRef.current;
+    void runRouteBubbleTransition({
+      href,
+      router,
+      source: event.currentTarget,
+      mode: href === "/" ? "contract" : "expand",
+      variant: href === "/" ? "bubble" : "menu",
+      beforeNavigate: () => setOpen(false),
+      fadeOut: [panel],
+    });
+  }
 
   useEffect(() => {
     if (pathname !== "/") window.sessionStorage.setItem("home-entry", "menu");
   }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    panelRef.current?.getAnimations().forEach((animation) => animation.cancel());
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -59,9 +96,17 @@ export function SiteHeader() {
         <span /><span /><span />
       </button>
 
-      <div id="site-menu-panel" className={`site-menu-panel ${open ? "is-open" : ""}`} aria-hidden={!open}>
+      <div id="site-menu-panel" className={`site-menu-panel ${open ? "is-open" : ""}`} aria-hidden={!open} ref={panelRef}>
         <div className="mb-5 flex items-center justify-between border-b border-ink/10 pb-4">
-          <Link href="/" className="font-serif text-xl" onClick={() => setOpen(false)}>Curtis Lee</Link>
+          <Link
+            href="/"
+            className="font-serif text-xl"
+            onClick={(event) => navigateFromMenu(event, "/")}
+            onFocus={() => prefetchRoute("/")}
+            onPointerEnter={() => prefetchRoute("/")}
+          >
+            Curtis Lee
+          </Link>
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-ink/40">Explore</span>
         </div>
         <nav className="grid grid-cols-2 gap-2" aria-label="Primary navigation">
@@ -71,7 +116,9 @@ export function SiteHeader() {
               <Link
                 key={href}
                 href={href}
-                onClick={() => setOpen(false)}
+                onClick={(event) => navigateFromMenu(event, href)}
+                onFocus={() => prefetchRoute(href)}
+                onPointerEnter={() => prefetchRoute(href)}
                 tabIndex={open ? 0 : -1}
                 className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm transition ${pathname === href ? "bg-ink text-paper" : "bg-ink/[0.04] text-ink/65 hover:bg-ink/[0.08] hover:text-ink"}`}
               >

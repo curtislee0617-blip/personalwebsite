@@ -143,7 +143,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     return (
       <button
         aria-label="Toggle dark mode"
-        className="col-span-2 flex items-center justify-between rounded-2xl bg-ink/[0.04] px-4 py-3 text-sm text-ink/65 transition hover:bg-ink/[0.08] hover:text-ink"
+        className="theme-toggle-menu-row col-span-2 flex items-center justify-between rounded-2xl bg-ink/[0.04] px-4 py-3 text-sm text-ink/65 transition hover:bg-ink/[0.08] hover:text-ink"
         onClick={toggle}
         type="button"
       >
@@ -156,7 +156,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
   return (
     <button
       aria-label="Toggle dark mode"
-      className="fixed bottom-5 right-5 z-20 grid h-12 w-12 place-items-center rounded-full bg-ink text-paper shadow-[0_12px_30px_rgba(32,35,31,0.2)] transition hover:scale-105"
+      className="theme-toggle fixed bottom-5 right-5 z-20 grid h-12 w-12 place-items-center rounded-full bg-ink text-paper shadow-[0_12px_30px_rgba(32,35,31,0.2)] transition hover:scale-105"
       onClick={toggle}
       type="button"
     >

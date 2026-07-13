@@ -5,7 +5,7 @@ export default function Loading() {
     <SectionLoading
       variant="restaurants"
       title="Setting the table"
-      description="A tiny fork and knife are spinning while the restaurant map and lists arrive."
+      description=""
     />
   );
 }
