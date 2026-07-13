@@ -215,9 +215,8 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      const cameFromMenu = window.sessionStorage.getItem("home-entry") === "menu";
       window.sessionStorage.removeItem("home-entry");
-      setEntryMode(cameFromMenu ? "menu" : "center");
+      setEntryMode("center");
     });
 
     return () => window.cancelAnimationFrame(frame);

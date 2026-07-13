@@ -40,20 +40,27 @@ export function SiteHeader() {
       return;
     }
 
+    if (href === "/") {
+      setOpen(false);
+      window.sessionStorage.removeItem("home-entry");
+      router.push(href);
+      return;
+    }
+
     const panel = panelRef.current;
     void runRouteBubbleTransition({
       href,
       router,
       source: event.currentTarget,
-      mode: href === "/" ? "contract" : "expand",
-      variant: href === "/" ? "bubble" : "menu",
+      mode: "expand",
+      variant: "menu",
       beforeNavigate: () => setOpen(false),
       fadeOut: [panel],
     });
   }
 
   useEffect(() => {
-    if (pathname !== "/") window.sessionStorage.setItem("home-entry", "menu");
+    if (pathname !== "/") window.sessionStorage.removeItem("home-entry");
   }, [pathname]);
 
   useEffect(() => {

@@ -10,7 +10,6 @@ import type { Json } from "@/lib/supabase/database.types";
 const YEARS = [1, 2, 3, 4] as const;
 const TERMS = ["Fall", "Winter", "Spring"] as const;
 type Term = (typeof TERMS)[number];
-const SHARED_REQUIREMENT_MAJOR_IDS: MajorId[] = [];
 
 // A "class" is one real course, placed in one term, that can satisfy several requirement
 // tags at once (a lot of Caltech courses double- or triple-count). Requirements themselves
@@ -22,8 +21,10 @@ type Selection = { type: "requirement" | "class"; id: string } | null;
 type RequirementOwner = { classId: string; className: string; units: number };
 
 const STORAGE_KEY = "caltech-course-planner-v2";
+const LOCAL_MAJORS_STORAGE_KEY = "caltech-course-planner-local-majors-v1";
 const DEFAULT_CLASS_UNITS = 9;
 const DEFAULT_CORE_SCHEDULE_MODE: CoreScheduleMode = "normal";
+const MAX_PROFILE_PROGRAMS = 6;
 const CHEME_TRACK_IDS: MajorId[] = ["cheme-biomolecular", "cheme-sustainability", "cheme-process", "cheme-materials", "cheme-computational"];
 const CHEME_TRACK_ID_SET = new Set<MajorId>(CHEME_TRACK_IDS);
 const EE_TRACK_IDS: MajorId[] = ["ee-circuits", "ee-computer", "ee-intelligent", "ee-medical", "ee-photonics"];
@@ -645,9 +646,13 @@ export function CaltechCoursePlanner() {
   const { classes, customTemplates, coreScheduleMode } = plan;
   const hasLoadedRef = useRef(false);
 
-  // Signed-out selections are only pending profile choices; keep the live planner on
-  // shared Institute requirements so progress does not explode into every option.
-  const selectedMajorIds = identity?.majors ?? SHARED_REQUIREMENT_MAJOR_IDS;
+  // Program choices drive the planner immediately. Signing in only changes where
+  // those choices and the plan are saved; it is not required to view requirements.
+  const selectedMajorIds = loginMajors;
+  const pendingMajorLabels = useMemo(
+    () => (!identity ? loginMajors.map((id) => majors.find((major) => major.id === id)?.label ?? id) : []),
+    [identity, loginMajors],
+  );
   const baseTemplates = useMemo(() => templatesForCoreScheduleMode(templatesForMajors(selectedMajorIds), coreScheduleMode), [selectedMajorIds, coreScheduleMode]);
   const baseCategories = useMemo(() => categoriesForMajors(selectedMajorIds), [selectedMajorIds]);
   const allTemplates = useMemo(() => [...baseTemplates, ...customTemplates], [baseTemplates, customTemplates]);
@@ -669,12 +674,33 @@ export function CaltechCoursePlanner() {
   // (all-unplaced) markup matches on hydration; a client-only external read, not derived render state.
   useEffect(() => {
     const storedIdentity = loadStoredIdentity();
+    let storedLocalMajors: MajorId[] | null = null;
+    if (!storedIdentity) {
+      try {
+        const rawMajors = window.localStorage.getItem(LOCAL_MAJORS_STORAGE_KEY);
+        if (rawMajors) {
+          const parsedMajors = JSON.parse(rawMajors) as unknown;
+          if (Array.isArray(parsedMajors)) {
+            storedLocalMajors = parsedMajors.filter((majorId): majorId is MajorId =>
+              typeof majorId === "string" && majors.some((major) => major.id === majorId),
+            );
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage
+            setLoginMajors(storedLocalMajors);
+          }
+        }
+      } catch {
+        // ignore malformed local program selections
+      }
+    }
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<SavedPlan>;
-        const templates = storedIdentity ? templatesForMajors(storedIdentity.majors) : requirementTemplates;
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage, not a render-time derivation
+        const templates = storedIdentity
+          ? templatesForMajors(storedIdentity.majors)
+          : storedLocalMajors !== null
+            ? templatesForMajors(storedLocalMajors)
+            : requirementTemplates;
         setPlan(sanitizePlan(templates, parsed));
       }
     } catch {
@@ -703,12 +729,17 @@ export function CaltechCoursePlanner() {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
   }, [plan]);
 
+  useEffect(() => {
+    if (!hasLoadedRef.current || identity) return;
+    window.localStorage.setItem(LOCAL_MAJORS_STORAGE_KEY, JSON.stringify(loginMajors));
+  }, [identity, loginMajors]);
+
   // Debounce cloud saves so rapid edits (typing a rename, checking several boxes) coalesce into one write.
   useEffect(() => {
-    if (!hasLoadedRef.current || !identity) return;
+    if (!hasLoadedRef.current || !identity || loginMajors.length === 0) return;
     const timeout = window.setTimeout(() => {
       setSyncStatus("saving");
-      saveCoursePlan(identity, plan as unknown as Json)
+      saveCoursePlan({ ...identity, majors: loginMajors }, plan as unknown as Json)
         .then(() => setSyncStatus("saved"))
         .catch((error: unknown) => {
           console.error("Failed to save course plan", error);
@@ -717,7 +748,7 @@ export function CaltechCoursePlanner() {
         });
     }, 1200);
     return () => window.clearTimeout(timeout);
-  }, [plan, identity]);
+  }, [plan, identity, loginMajors]);
 
   const signIn = useCallback(async () => {
     const firstName = loginFirstName.trim();
@@ -730,30 +761,39 @@ export function CaltechCoursePlanner() {
     setSyncError(null);
     try {
       const row = await fetchCoursePlan(loginKey);
-      // Majors/minors are stored with the account, so a returning profile restores
-      // its saved selection. A brand-new account starts with none and picks them
-      // afterwards via "Update majors / minors".
-      let nextMajors: MajorId[] = [];
+      // Returning profiles restore their saved selections. A name/password
+      // combination with no row is a new account and uses the choices below.
+      let nextMajors: MajorId[];
       let nextPlan: SavedPlan;
       if (row) {
         nextMajors = row.majors.filter((majorId): majorId is MajorId => majors.some((major) => major.id === majorId));
         nextPlan = sanitizePlan(templatesForMajors(nextMajors), row.plan as Partial<SavedPlan> | null);
       } else {
-        nextPlan = { classes: {}, customTemplates: [], coreScheduleMode: DEFAULT_CORE_SCHEDULE_MODE };
+        if (loginMajors.length === 0) {
+          setSyncStatus("error");
+          setSyncError("Choose at least one major, track, or minor to create a new cloud account.");
+          return;
+        }
+        nextMajors = loginMajors;
+        // Creating cloud save should preserve work already made locally.
+        nextPlan = sanitizePlan(templatesForMajors(nextMajors), plan);
       }
-      setPlan(nextPlan);
+
       const nextIdentity: StoredIdentity = { loginKey, displayName, firstName, lastName, majors: nextMajors };
+      // Finish the cloud write before persisting the identity locally, so a
+      // rejected write cannot leave behind a half-created signed-in profile.
+      await saveCoursePlan(nextIdentity, nextPlan as unknown as Json);
+      setPlan(nextPlan);
       setIdentity(nextIdentity);
       setLoginMajors(nextMajors);
       saveStoredIdentity(nextIdentity);
-      await saveCoursePlan(nextIdentity, nextPlan as unknown as Json);
       setSyncStatus("idle");
     } catch (error) {
       console.error("Sign-in failed", error);
       setSyncStatus("error");
       setSyncError("Couldn't reach the database (offline, or cloud save isn't set up yet). Your plan will stay local-only on this device for now.");
     }
-  }, [loginFirstName, loginLastName, loginPassword]);
+  }, [loginFirstName, loginLastName, loginMajors, loginPassword, plan]);
 
   const signOut = useCallback(() => {
     saveStoredIdentity(null);
@@ -766,19 +806,26 @@ export function CaltechCoursePlanner() {
     setLoginMajors([]);
   }, []);
 
-  const updateProfileMajors = useCallback(() => {
-    if (!identity || loginMajors.length === 0) return;
-    const nextTemplates = templatesForCoreScheduleMode(templatesForMajors(loginMajors), coreScheduleMode);
-    const nextIdentity = { ...identity, majors: loginMajors };
+  const updateProfileMajors = useCallback((nextMajors: MajorId[]) => {
+    if (!identity || nextMajors.length === 0) return;
+    const nextTemplates = templatesForCoreScheduleMode(templatesForMajors(nextMajors), coreScheduleMode);
+    const nextIdentity = { ...identity, majors: nextMajors };
     setPlan((currentPlan) => reconcileTakenClassesForMajors(currentPlan, nextTemplates));
     setIdentity(nextIdentity);
     saveStoredIdentity(nextIdentity);
     setSyncStatus("saving");
-  }, [coreScheduleMode, identity, loginMajors]);
+  }, [coreScheduleMode, identity]);
 
   const toggleLoginMajor = useCallback((majorId: MajorId) => {
-    setLoginMajors((prev) => (prev.includes(majorId) ? prev.filter((id) => id !== majorId) : [...prev, majorId]));
-  }, []);
+    const nextMajors = loginMajors.includes(majorId)
+      ? loginMajors.filter((id) => id !== majorId)
+      : loginMajors.length < MAX_PROFILE_PROGRAMS
+        ? [...loginMajors, majorId]
+        : loginMajors;
+    if (nextMajors === loginMajors) return;
+    setLoginMajors(nextMajors);
+    if (identity && nextMajors.length > 0) updateProfileMajors(nextMajors);
+  }, [identity, loginMajors, updateProfileMajors]);
 
   const switchCoreScheduleMode = useCallback((mode: CoreScheduleMode) => {
     setPlan((prev) => {
@@ -1011,14 +1058,18 @@ export function CaltechCoursePlanner() {
             <div>
               <p className="eyebrow">Cloud save</p>
               <p className="mt-2 text-sm text-ink/60">
-                Signed in as <span className="font-semibold text-ink">{identity.displayName}</span> · {formatMajorSummary(identity.majors)}
+                Signed in as <span className="font-semibold text-ink">{identity.displayName}</span> · {loginMajors.length ? formatMajorSummary(loginMajors) : "choose a major, track, or minor"}
               </p>
               <p className="mt-1 text-xs text-ink/45">
-                {syncStatus === "saving" && "Saving…"}
-                {syncStatus === "saved" && "Saved to the cloud."}
-                {syncStatus === "loading" && "Loading your saved plan…"}
-                {syncStatus === "error" && syncError}
-                {syncStatus === "idle" && "Synced with the cloud."}
+                {loginMajors.length === 0 ? "Cloud sync is paused until you choose at least one program." : (
+                  <>
+                    {syncStatus === "saving" && "Saving…"}
+                    {syncStatus === "saved" && "Saved to the cloud."}
+                    {syncStatus === "loading" && "Loading your saved plan…"}
+                    {syncStatus === "error" && syncError}
+                    {syncStatus === "idle" && "Synced with the cloud."}
+                  </>
+                )}
               </p>
             </div>
             <button className="rounded-full border border-ink/20 px-4 py-2 text-xs font-semibold transition hover:border-ink hover:bg-surface" onClick={signOut} type="button">
@@ -1027,59 +1078,68 @@ export function CaltechCoursePlanner() {
             <div className="basis-full rounded-2xl border border-ink/10 bg-paper/45 p-3">
               <p className="text-xs font-semibold text-ink/55">Update majors / minors</p>
               <p className="mt-1 max-w-2xl text-xs leading-5 text-ink/45">
-                Changing these keeps checked-off classes, removes unchecked classes, and tries to retag completed classes against the new requirements.
+                Changes apply immediately and save to the cloud automatically. Checked-off classes are kept and retagged where possible; unchecked classes outside the new requirements are removed.
               </p>
               <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
               <div className="mt-4 border-t border-ink/10 pt-4">
                 {renderCoreScheduleToggle()}
               </div>
-              <button
-                className="mt-3 rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
-                disabled={loginMajors.length === 0 || JSON.stringify([...loginMajors].sort()) === JSON.stringify([...identity.majors].sort())}
-                onClick={updateProfileMajors}
-                type="button"
-              >
-                Update requirements
-              </button>
             </div>
           </div>
         ) : (
           <div>
-            <p className="eyebrow">Cloud save</p>
+            <p className="eyebrow">Planner setup</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">
-              You can use the planner without signing in; it will still save locally in this browser. Sign in only if you want cloud save and access from another device. Just enter your first name, last name, and a small password — your saved major and minor selections come back automatically. New profiles pick their majors/minors after signing in.
+              Choose majors, tracks, or minors to load their requirements into the planner immediately. No account is required, and your choices and plan stay saved in this browser. Cloud save is optional if you want to use the same plan on another device.
             </p>
             <p className="mt-2 text-xs leading-5 text-ink/45">
               Names and schedules are only used for this course scheduler. <a className="font-semibold text-moss hover:text-ink" href="/privacy">Privacy policy</a>
             </p>
             <div className="mt-5 grid gap-4">
-              <div className="grid gap-3 md:grid-cols-[minmax(0,10rem)_minmax(0,10rem)_minmax(0,13rem)]">
-                <label className="text-xs font-medium text-ink/55">
-                  First name
-                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginFirstName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="First name" value={loginFirstName} />
-                </label>
-                <label className="text-xs font-medium text-ink/55">
-                  Last name
-                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginLastName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="Last name" value={loginLastName} />
-                </label>
-                <label className="text-xs font-medium text-ink/55">
-                  Password
-                  <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginPassword(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="Password" type="password" value={loginPassword} />
-                  <span className="mt-1 block text-[0.62rem] leading-4 text-ink/40">
-                    Just separates profiles with the same name.
-                  </span>
-                </label>
+              <div className="rounded-2xl border border-ink/10 bg-paper/45 p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-ink/55">Major(s) / minor(s)</p>
+                  <p className="text-[0.62rem] font-medium text-ink/35">
+                    {loginMajors.length ? `${loginMajors.length} selected` : "Choose to show requirements"} · up to {MAX_PROFILE_PROGRAMS}
+                  </p>
+                </div>
+                <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
+                {pendingMajorLabels.length > 0 && (
+                  <div className="mt-3 rounded-2xl border border-ink/10 bg-surface/55 px-3 py-2 text-[0.68rem] leading-5 text-ink/45">
+                    <span className="font-semibold text-ink/55">Active locally:</span>{" "}
+                    {pendingMajorLabels.join(", ")}. Their requirements are now shown below.
+                  </div>
+                )}
               </div>
 
-              <div className="flex justify-end">
-                <button
-                  className="h-10 rounded-full bg-ink px-5 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
-                  disabled={!loginFirstName.trim() || !loginLastName.trim() || !loginPassword.trim() || syncStatus === "loading"}
-                  onClick={signIn}
-                  type="button"
-                >
-                  {syncStatus === "loading" ? "Loading…" : "Sign in"}
-                </button>
+              <div className="border-t border-ink/10 pt-4">
+                <p className="text-xs font-semibold text-ink/55">Optional cloud save</p>
+                <p className="mt-1 text-xs leading-5 text-ink/45">Enter the same details to reopen an account. A new combination creates a new account with the selections above.</p>
+                <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,10rem)_minmax(0,10rem)_minmax(0,13rem)]">
+                  <label className="text-xs font-medium text-ink/55">
+                    First name
+                    <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginFirstName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="First name" value={loginFirstName} />
+                  </label>
+                  <label className="text-xs font-medium text-ink/55">
+                    Last name
+                    <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginLastName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="Last name" value={loginLastName} />
+                  </label>
+                  <label className="text-xs font-medium text-ink/55">
+                    Password
+                    <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginPassword(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="Password" type="password" value={loginPassword} />
+                    <span className="mt-1 block text-[0.62rem] leading-4 text-ink/40">Just separates profiles with the same name.</span>
+                  </label>
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <button
+                    className="h-10 rounded-full bg-ink px-5 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={!loginFirstName.trim() || !loginLastName.trim() || !loginPassword.trim() || syncStatus === "loading"}
+                    onClick={signIn}
+                    type="button"
+                  >
+                    {syncStatus === "loading" ? "Loading…" : "Sign in / create account"}
+                  </button>
+                </div>
               </div>
             </div>
             {syncStatus === "error" && <p className="mt-3 text-xs text-clay">{syncError}</p>}
@@ -1094,7 +1154,7 @@ export function CaltechCoursePlanner() {
         <div>
           <p className="eyebrow">Progress</p>
           <p className="mt-2 text-sm text-ink/60">
-            {totals.placed} / {totals.total} course requirements satisfied · {totals.done} / {totals.total} checked off as done. Unit-based requirements use actual course units below.
+            {totals.placed} / {totals.total} course requirements satisfied · {totals.done} / {totals.total} checked off as done. Unit-based requirements count each physical class once within a category, even when that class carries several requirement tags.
           </p>
         </div>
 

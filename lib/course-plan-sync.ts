@@ -59,6 +59,11 @@ export async function fetchCoursePlan(loginKey: string) {
   const supabase = createClient();
   const { data, error } = await supabase.rpc("get_course_plan", { p_login_key: loginKey });
   if (error) throw error;
+  // A PostgreSQL function returning a composite row produces an object whose
+  // fields are all null when no row matches, rather than JavaScript `null`.
+  // Normalize that wire shape so a new login combination reaches account
+  // creation instead of being mistaken for an existing profile.
+  if (!data?.login_key || !Array.isArray(data.majors)) return null;
   return data;
 }
 

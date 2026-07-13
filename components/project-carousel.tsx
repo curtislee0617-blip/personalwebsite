@@ -30,7 +30,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
 
           return (
             <Link
-              className="project-card swipe-bubble-card group overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-1 hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto"
+              className="project-card swipe-bubble-card group overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto"
               href={`/projects/${project.slug}`}
               id={project.slug}
               key={project.slug}
