@@ -14,6 +14,7 @@ import {
   getCityCycle,
   getCityCycleAtMinutes,
   getMoonPhase,
+  type CityKey,
   type CityCycle,
 } from "@/lib/contact-city-cycle";
 
@@ -21,8 +22,17 @@ type ContactCycleStyle = CSSProperties & {
   [property: `--${string}`]: string | number;
 };
 
-type CityKey = keyof typeof cityTimeZones;
 type PreviewMinutes = Partial<Record<CityKey, number>>;
+
+export type ContactCityTimeSource =
+  | { kind: "live" }
+  | { kind: "preview"; now: Date | null; scrubbing?: boolean };
+
+type ContactCityArtCycleProps = PropsWithChildren<{
+  timeSource?: ContactCityTimeSource;
+}>;
+
+const liveTimeSource: ContactCityTimeSource = { kind: "live" };
 
 const ContactCityNowContext = createContext<Date | null>(null);
 
@@ -103,30 +113,38 @@ export function useContactCityNow() {
   return useContext(ContactCityNowContext);
 }
 
-export function ContactCityArtCycle({ children }: PropsWithChildren) {
+export function ContactCityArtCycle({
+  children,
+  timeSource = liveTimeSource,
+}: ContactCityArtCycleProps) {
   const [timeState, setTimeState] = useState<{
     now: Date | null;
     previewMinutes: PreviewMinutes | null;
   }>({ now: null, previewMinutes: null });
+  const timeSourceKind = timeSource.kind;
 
   useEffect(() => {
+    if (timeSourceKind === "preview") return;
+
     let previewMinutes: PreviewMinutes | null = null;
     let previewNow: Date | null = null;
 
     if (process.env.NODE_ENV === "development") {
       const search = new URLSearchParams(window.location.search);
-      previewNow = parsePreviewDate(search.get("moonDate"));
-      const shared = parsePreviewTime(search.get("artTime"));
-      const preview: PreviewMinutes = shared === null
-        ? {
-            hongKong: parsePreviewTime(search.get("hkTime")) ?? undefined,
-            london: parsePreviewTime(search.get("londonTime")) ?? undefined,
-            losAngeles: parsePreviewTime(search.get("laTime")) ?? undefined,
-          }
-        : { hongKong: shared, london: shared, losAngeles: shared };
+      if (search.get("debugArtTime") === "1") {
+        previewNow = parsePreviewDate(search.get("moonDate"));
+        const shared = parsePreviewTime(search.get("artTime"));
+        const preview: PreviewMinutes = shared === null
+          ? {
+              hongKong: parsePreviewTime(search.get("hkTime")) ?? undefined,
+              london: parsePreviewTime(search.get("londonTime")) ?? undefined,
+              losAngeles: parsePreviewTime(search.get("laTime")) ?? undefined,
+            }
+          : { hongKong: shared, london: shared, losAngeles: shared };
 
-      if (Object.values(preview).some((value) => value !== undefined)) {
-        previewMinutes = preview;
+        if (Object.values(preview).some((value) => value !== undefined)) {
+          previewMinutes = preview;
+        }
       }
     }
 
@@ -140,30 +158,41 @@ export function ContactCityArtCycle({ children }: PropsWithChildren) {
 
     const interval = window.setInterval(update, 1000);
     return () => window.clearInterval(interval);
-  }, []);
+  }, [timeSourceKind]);
+
+  const now = timeSource.kind === "preview" ? timeSource.now : timeState.now;
+  const previewMinutes = timeSource.kind === "live"
+    ? timeState.previewMinutes
+    : null;
 
   const cycleFor = (city: CityKey) => {
-    const preview = timeState.previewMinutes?.[city];
+    const preview = previewMinutes?.[city];
     return preview === undefined
-      ? getCityCycle(timeState.now, cityTimeZones[city])
-      : getCityCycleAtMinutes(preview);
+      ? getCityCycle(now, cityTimeZones[city], city)
+      : getCityCycleAtMinutes(preview, city);
   };
   const hongKong = cycleFor("hongKong");
   const london = cycleFor("london");
   const losAngeles = cycleFor("losAngeles");
-  const moonPhase = getMoonPhase(timeState.now);
-  const sharedCelestial = getContactCelestial([
+  const moonPhase = getMoonPhase(now);
+  const dailyMoonPhase = getMoonPhase(now
+    ? new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    : null);
+  const moonIllumination = Math.round(dailyMoonPhase.illumination * 100);
+  const celestialCities = [
     { cycle: losAngeles, key: "losAngeles", left: 0, width: 0.307 },
     { cycle: london, key: "london", left: 0.307, width: 0.365 },
     { cycle: hongKong, key: "hongKong", left: 0.672, width: 0.328 },
-  ], moonPhase.visibility);
+  ] satisfies Parameters<typeof getContactCelestial>[0];
+  const sharedSun = getContactCelestial(celestialCities, 0, "sun");
+  const sharedMoon = getContactCelestial(celestialCities, 1, "moon");
   const edgeOverlap = Math.min(losAngeles.daylight, hongKong.daylight)
     * (1 - london.daylight);
   const dualEdgePhase = smoothReveal((edgeOverlap - 0.04) / 0.22);
   const sharedCelestialReveal = 1 - smoothReveal(dualEdgePhase * 2);
   const edgeSunReveal = smoothReveal(dualEdgePhase * 2 - 1);
   const hasDualEdgeSuns = edgeSunReveal > 0.0001;
-  const celestial = hasDualEdgeSuns
+  const primarySun = hasDualEdgeSuns
     ? {
         kind: "sun" as const,
         opacity: losAngeles.sunOpacity * edgeSunReveal,
@@ -173,8 +202,8 @@ export function ContactCityArtCycle({ children }: PropsWithChildren) {
         y: losAngeles.sunY,
       }
     : {
-        ...sharedCelestial,
-        opacity: sharedCelestial.opacity * sharedCelestialReveal,
+        ...sharedSun,
+        opacity: sharedSun.opacity * sharedCelestialReveal,
       };
   const style: ContactCycleStyle = {
     ...cycleVariables("hk", hongKong),
@@ -195,14 +224,29 @@ export function ContactCityArtCycle({ children }: PropsWithChildren) {
       [0, 14, 38],
       losAngeles.night,
     ),
-    "--celestial-color": celestial.kind === "moon"
-      ? "rgb(31 45 66)"
-      : blendRgb([255, 213, 103], [255, 116, 54], celestial.warmth),
-    "--celestial-moon": celestial.kind === "moon" ? 1 : 0,
-    "--celestial-opacity": celestial.opacity.toFixed(4),
-    "--celestial-sun": celestial.kind === "sun" ? 1 : 0,
-    "--celestial-x": `${celestial.x.toFixed(3)}%`,
-    "--celestial-y": `${celestial.y.toFixed(3)}%`,
+    "--travelling-label-color": blendRgb(
+      [82, 74, 59],
+      [218, 231, 248],
+      hongKong.night,
+    ),
+    "--travelling-label-shadow": blendRgb(
+      [255, 251, 239],
+      [0, 14, 38],
+      hongKong.night,
+    ),
+    "--celestial-color": blendRgb(
+      [255, 213, 103],
+      [255, 116, 54],
+      primarySun.warmth,
+    ),
+    "--celestial-moon": 0,
+    "--celestial-opacity": primarySun.opacity.toFixed(4),
+    "--celestial-sun": 1,
+    "--celestial-x": `${primarySun.x.toFixed(3)}%`,
+    "--celestial-y": `${primarySun.y.toFixed(3)}%`,
+    "--moon-celestial-opacity": sharedMoon.opacity.toFixed(4),
+    "--moon-celestial-x": `${sharedMoon.x.toFixed(3)}%`,
+    "--moon-celestial-y": `${sharedMoon.y.toFixed(3)}%`,
     "--secondary-celestial-color": blendRgb(
       [255, 213, 103],
       [255, 116, 54],
@@ -216,26 +260,29 @@ export function ContactCityArtCycle({ children }: PropsWithChildren) {
   };
 
   return (
-    <ContactCityNowContext.Provider value={timeState.now}>
+    <ContactCityNowContext.Provider value={now}>
       <div
         className="contact-cities-picture"
-        data-celestial={celestial.kind}
+        data-celestial="sun"
         data-celestial-mode={hasDualEdgeSuns ? "dual-edge" : "single"}
-        data-celestial-owner={celestial.owner}
+        data-celestial-owner={primarySun.owner}
+        data-light-direction={sharedSun.x < 50 ? "left" : "right"}
+        data-moon-owner={sharedMoon.owner}
         data-moon-phase={moonPhase.label.toLowerCase().replace(/ /g, "-")}
         data-moon-waxing={moonPhase.waxing}
+        data-scrubbing={timeSource.kind === "preview" && timeSource.scrubbing ? "true" : "false"}
+        data-time-source={timeSource.kind}
         style={style}
       >
-        {timeState.now ? (
+        {now ? (
           <span className="contact-moon-phase-label">
-            Moon · {moonPhase.label}
+            Moon · {moonPhase.label} · {moonIllumination}% illuminated
           </span>
         ) : null}
         <div className="contact-cities-backdrop-frame" aria-hidden="true">
           <span className="contact-cities-night-backdrop">
             <span className="contact-cities-night-backdrop-fill contact-city-night-mask" />
           </span>
-          <span className="contact-cities-dawn-backdrop" />
         </div>
         <span className="contact-city-glow-field" aria-hidden="true" />
         {children}

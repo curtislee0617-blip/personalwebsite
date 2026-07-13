@@ -34,6 +34,11 @@ type ContactPresenceContextValue = {
 
 const ContactPresenceContext = createContext<ContactPresenceContextValue | null>(null);
 
+type ContactPresenceProviderProps = PropsWithChildren<{
+  fallbackStatus?: ContactPresenceStatus;
+  readOnly?: boolean;
+}>;
+
 function parseStatus(value: unknown): ContactPresenceStatus {
   if (!value || typeof value !== "object") return emptyContactPresence;
   const candidate = value as { city?: unknown; isTravelling?: unknown; message?: unknown; updatedAt?: unknown };
@@ -46,8 +51,14 @@ function parseStatus(value: unknown): ContactPresenceStatus {
   };
 }
 
-export function ContactPresenceProvider({ children }: PropsWithChildren) {
-  const [status, setStatus] = useState<ContactPresenceStatus>(emptyContactPresence);
+export function ContactPresenceProvider({
+  children,
+  fallbackStatus,
+  readOnly = false,
+}: ContactPresenceProviderProps) {
+  const [status, setStatus] = useState<ContactPresenceStatus>(
+    fallbackStatus ?? emptyContactPresence,
+  );
   const [authenticated, setAuthenticated] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [draftMessage, setDraftMessage] = useState("");
@@ -63,19 +74,25 @@ export function ContactPresenceProvider({ children }: PropsWithChildren) {
     })
       .then((response) => response.json() as Promise<{ status?: unknown }>)
       .then((result) => {
-        const nextStatus = parseStatus(result.status);
+        const parsedStatus = parseStatus(result.status);
+        const nextStatus = parsedStatus.city || parsedStatus.isTravelling
+          ? parsedStatus
+          : fallbackStatus ?? parsedStatus;
         setStatus(nextStatus);
         setDraftMessage((current) => current || nextStatus.message);
       })
       .catch(() => undefined);
 
-    void Promise.all([
-      loadStatus(),
-      fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
-        .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
-        .then((result) => setAuthenticated(result.authenticated === true))
-        .catch(() => undefined),
-    ]);
+    const requests: Promise<unknown>[] = [loadStatus()];
+    if (!readOnly) {
+      requests.push(
+        fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+          .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
+          .then((result) => setAuthenticated(result.authenticated === true))
+          .catch(() => undefined),
+      );
+    }
+    void Promise.all(requests);
 
     // The record lives in Supabase, so every visitor reads the same location.
     // Refresh often enough for an update made on another device to feel live,
@@ -85,7 +102,7 @@ export function ContactPresenceProvider({ children }: PropsWithChildren) {
       controller.abort();
       window.clearInterval(refreshInterval);
     };
-  }, []);
+  }, [fallbackStatus, readOnly]);
 
   async function persist(nextStatus: ContactPresenceStatus) {
     const previousStatus = status;

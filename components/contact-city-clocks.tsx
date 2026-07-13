@@ -99,7 +99,7 @@ export function ContactCityTimeRow() {
   const losAngelesTime = formatDisplayTime(now, cityTimeZones.losAngeles);
 
   return (
-    <div className="contact-city-time-row" aria-label="Current local time in each city">
+    <div className="contact-city-time-row" aria-label="Local time in each city">
       <article className="contact-city-clock contact-city-clock-la">
         <span className="contact-digital-clock" aria-label="Los Angeles local time">
           <span suppressHydrationWarning>{losAngelesTime.hours}</span>

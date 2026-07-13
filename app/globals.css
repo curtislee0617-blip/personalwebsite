@@ -561,37 +561,74 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-chip-icon-sun { width: 0.94rem; height: 0.94rem; }
 .contact-city-chip-icon-umbrella { width: 1.16rem; }
 .contact-city-chip-icon-junk { width: 1.32rem; }
-.contact-cities-art { --contact-art-background: 254 250 237; --contact-art-edge: linear-gradient(180deg, rgb(254 251 237) 0%, rgb(254 250 237) 7%, rgb(254 250 237) 96%, rgb(253 249 235) 100%); position: relative; align-self: stretch; min-height: 13rem; overflow: hidden; padding: 0; background: var(--contact-art-edge); border-color: transparent; }
+.contact-cities-art { --contact-art-background: 254 250 237; --contact-art-edge: linear-gradient(180deg, rgb(254 251 237) 0%, rgb(254 250 237) 7%, rgb(254 250 237) 96%, rgb(253 249 235) 100%); position: relative; width: 100%; min-width: 0; align-self: stretch; min-height: 13rem; aspect-ratio: 1916 / 821; overflow: hidden; padding: 0; background: var(--contact-art-edge); border-color: transparent; container-type: inline-size; }
 .contact-cities-picture {
-  --celestial-color: rgb(255 213 103); --celestial-moon: 0; --celestial-opacity: 0; --celestial-sun: 1; --celestial-x: 50%; --celestial-y: 55%; --city-curve-la-end: 75.5%; --city-curve-london-start: 78.4%; --city-curve-london-end: 86.4%; --city-curve-hk-start: 89.1%; --moon-lit-shape: circle(50%); --moon-phase-label-color: rgb(82 74 59); --moon-phase-label-shadow: rgb(255 251 239); --secondary-celestial-color: rgb(255 213 103); --secondary-celestial-opacity: 0; --secondary-celestial-x: 84%; --secondary-celestial-y: 55%;
+  --celestial-color: rgb(255 213 103); --celestial-moon: 0; --celestial-opacity: 0; --celestial-sun: 1; --celestial-x: 50%; --celestial-y: 55%; --contact-transition-curve: ellipse 69.35194cqw 180cqw at 100cqw calc(50% - 12.8549061cqw); --contact-near-end: 52.5%; --contact-middle-start: 58.5%; --contact-middle-end: 93.5%; --contact-far-start: 99.5%; --moon-celestial-opacity: 0; --moon-celestial-x: 50%; --moon-celestial-y: 55%; --moon-lit-shape: circle(50%); --moon-phase-label-color: rgb(82 74 59); --moon-phase-label-shadow: rgb(255 251 239); --secondary-celestial-color: rgb(255 213 103); --secondary-celestial-opacity: 0; --secondary-celestial-x: 84%; --secondary-celestial-y: 55%; --travelling-label-color: rgb(82 74 59); --travelling-label-shadow: rgb(255 251 239);
   --hk-blue-hour: 0; --hk-city-night: 0; --hk-dawn: 0; --hk-daylight: 1; --hk-golden: 0; --hk-night: 0; --hk-stars: 0; --hk-sunset: 0; --hk-sun-color: rgb(255 210 93); --hk-sun-opacity: 0; --hk-sun-x: 3%; --hk-sun-y: 55%;
   --london-blue-hour: 0; --london-city-night: 0; --london-dawn: 0; --london-daylight: 1; --london-golden: 0; --london-night: 0; --london-stars: 0; --london-sunset: 0; --london-sun-color: rgb(255 210 93); --london-sun-opacity: 0; --london-sun-x: 3%; --london-sun-y: 55%;
   --la-blue-hour: 0; --la-city-night: 0; --la-dawn: 0; --la-daylight: 1; --la-golden: 0; --la-night: 0; --la-stars: 0; --la-sunset: 0; --la-sun-color: rgb(255 210 93); --la-sun-opacity: 0; --la-sun-x: 3%; --la-sun-y: 55%;
   --hk-clock-color: rgb(54 51 44); --hk-clock-muted: rgb(105 99 86); --london-clock-color: rgb(54 51 44); --london-clock-muted: rgb(105 99 86);
   position: relative; isolation: isolate; display: grid; width: 100%; min-height: 13rem; height: 100%; place-items: center; overflow: hidden; background: var(--contact-art-edge);
-  transition: --hk-blue-hour 1s linear, --hk-city-night 1s linear, --hk-dawn 1s linear, --hk-daylight 1s linear, --hk-golden 1s linear, --hk-night 1s linear, --hk-stars 1s linear, --hk-sunset 1s linear, --london-blue-hour 1s linear, --london-city-night 1s linear, --london-dawn 1s linear, --london-daylight 1s linear, --london-golden 1s linear, --london-night 1s linear, --london-stars 1s linear, --london-sunset 1s linear, --la-blue-hour 1s linear, --la-city-night 1s linear, --la-dawn 1s linear, --la-daylight 1s linear, --la-golden 1s linear, --la-night 1s linear, --la-stars 1s linear, --la-sunset 1s linear;
+  transition: --hk-blue-hour 1s linear, --hk-dawn 1s linear, --hk-daylight 1s linear, --hk-golden 1s linear, --hk-night 1s linear, --hk-stars 1s linear, --hk-sunset 1s linear, --london-blue-hour 1s linear, --london-dawn 1s linear, --london-daylight 1s linear, --london-golden 1s linear, --london-night 1s linear, --london-stars 1s linear, --london-sunset 1s linear, --la-blue-hour 1s linear, --la-dawn 1s linear, --la-daylight 1s linear, --la-golden 1s linear, --la-night 1s linear, --la-stars 1s linear, --la-sunset 1s linear;
 }
+.contact-cities-picture[data-light-direction="left"] {
+  --contact-transition-curve: ellipse 69.35194cqw 180cqw at 0cqw calc(50% - 12.8549061cqw);
+  --contact-near-end: 52.5%;
+  --contact-middle-start: 58.5%;
+  --contact-middle-end: 90.5%;
+  --contact-far-start: 96.5%;
+}
+.contact-cities-picture[data-time-source="preview"] { transition-duration: 140ms; }
+.contact-cities-picture[data-time-source="preview"] .contact-city-celestial,
+.contact-cities-picture[data-time-source="preview"] .contact-city-moon-face,
+.contact-cities-picture[data-time-source="preview"] .contact-city-celestial-track::before,
+.contact-cities-picture[data-time-source="preview"] .contact-city-celestial-track::after { transition-duration: 140ms; }
+.contact-cities-picture[data-time-source="preview"][data-scrubbing="true"],
+.contact-cities-picture[data-time-source="preview"][data-scrubbing="true"] .contact-city-celestial,
+.contact-cities-picture[data-time-source="preview"][data-scrubbing="true"] .contact-city-moon-face,
+.contact-cities-picture[data-time-source="preview"][data-scrubbing="true"] .contact-city-celestial-track::before,
+.contact-cities-picture[data-time-source="preview"][data-scrubbing="true"] .contact-city-celestial-track::after { transition: none; }
 .contact-city-night-mask {
   -webkit-mask-image: radial-gradient(
-    ellipse 69.35194% 213.77125% at 100% 8%,
-    rgb(0 0 0 / var(--hk-city-night)) 0%,
-    rgb(0 0 0 / var(--hk-city-night)) 46.5%,
-    rgb(0 0 0 / var(--london-city-night)) 48.3%,
-    rgb(0 0 0 / var(--london-city-night)) 93%,
-    rgb(0 0 0 / var(--la-city-night)) 100%,
-    rgb(0 0 0 / var(--la-city-night)) 148%
+    var(--contact-transition-curve),
+    rgb(0 0 0 / var(--hk-night)) 0%,
+    rgb(0 0 0 / var(--hk-night)) var(--contact-near-end),
+    rgb(0 0 0 / var(--london-night)) var(--contact-middle-start),
+    rgb(0 0 0 / var(--london-night)) var(--contact-middle-end),
+    rgb(0 0 0 / var(--la-night)) var(--contact-far-start),
+    rgb(0 0 0 / var(--la-night)) 148%
   );
   mask-image: radial-gradient(
-    ellipse 69.35194% 213.77125% at 100% 8%,
-    rgb(0 0 0 / var(--hk-city-night)) 0%,
-    rgb(0 0 0 / var(--hk-city-night)) 46.5%,
-    rgb(0 0 0 / var(--london-city-night)) 48.3%,
-    rgb(0 0 0 / var(--london-city-night)) 93%,
-    rgb(0 0 0 / var(--la-city-night)) 100%,
-    rgb(0 0 0 / var(--la-city-night)) 148%
+    var(--contact-transition-curve),
+    rgb(0 0 0 / var(--hk-night)) 0%,
+    rgb(0 0 0 / var(--hk-night)) var(--contact-near-end),
+    rgb(0 0 0 / var(--london-night)) var(--contact-middle-start),
+    rgb(0 0 0 / var(--london-night)) var(--contact-middle-end),
+    rgb(0 0 0 / var(--la-night)) var(--contact-far-start),
+    rgb(0 0 0 / var(--la-night)) 148%
   );
 }
-.contact-cities-backdrop-frame { position: absolute; inset: 0; z-index: 0; display: block; overflow: hidden; background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 0 / 100% 400% no-repeat; pointer-events: none; }
+.contact-cities-picture[data-light-direction="left"] .contact-city-night-mask {
+  -webkit-mask-image: radial-gradient(
+    var(--contact-transition-curve),
+    rgb(0 0 0 / var(--la-night)) 0%,
+    rgb(0 0 0 / var(--la-night)) var(--contact-near-end),
+    rgb(0 0 0 / var(--london-night)) var(--contact-middle-start),
+    rgb(0 0 0 / var(--london-night)) var(--contact-middle-end),
+    rgb(0 0 0 / var(--hk-night)) var(--contact-far-start),
+    rgb(0 0 0 / var(--hk-night)) 148%
+  );
+  mask-image: radial-gradient(
+    var(--contact-transition-curve),
+    rgb(0 0 0 / var(--la-night)) 0%,
+    rgb(0 0 0 / var(--la-night)) var(--contact-near-end),
+    rgb(0 0 0 / var(--london-night)) var(--contact-middle-start),
+    rgb(0 0 0 / var(--london-night)) var(--contact-middle-end),
+    rgb(0 0 0 / var(--hk-night)) var(--contact-far-start),
+    rgb(0 0 0 / var(--hk-night)) 148%
+  );
+}
+.contact-cities-backdrop-frame { position: absolute; inset: 0; z-index: 0; display: block; overflow: hidden; background: var(--contact-art-edge); pointer-events: none; }
 .contact-cities-night-backdrop { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .contact-cities-night-backdrop::before,
 .contact-cities-night-backdrop::after { content: none; }
@@ -599,21 +636,13 @@ body.has-page-cursor * { cursor: inherit; }
   position: absolute;
   inset: 0;
   display: block;
-  background: url('/contact-cities-pixel-art-night-v2.png') 50% 0 / 100% 400% no-repeat;
-  -webkit-mask-image: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(0 0 0 / var(--hk-city-night)) 0% 46.5%, rgb(0 0 0 / var(--london-city-night)) 48.3% 93%, rgb(0 0 0 / var(--la-city-night)) 100% 148%);
-  mask-image: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(0 0 0 / var(--hk-city-night)) 0% 46.5%, rgb(0 0 0 / var(--london-city-night)) 48.3% 93%, rgb(0 0 0 / var(--la-city-night)) 100% 148%);
+  background: linear-gradient(180deg, rgb(2 22 55) 0%, rgb(3 24 58) 46%, rgb(4 22 50) 100%);
 }
-.contact-cities-dawn-backdrop { position: absolute; inset: 0; display: block; width: 100%; background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) 0% 46.5%, rgb(255 163 101 / calc(0.42 * var(--london-dawn))) 48.3% 93%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) 100% 148%); mix-blend-mode: screen; transform: none; }
-.contact-cities-dawn-backdrop::before,
-.contact-cities-dawn-backdrop::after { content: ""; position: absolute; top: 0; width: 100vw; height: 100%; }
-.contact-cities-dawn-backdrop::before { right: 100%; background: rgb(255 151 82 / calc(0.48 * var(--la-dawn))); }
-.contact-cities-dawn-backdrop::after { left: 100%; background: rgb(255 144 78 / calc(0.46 * var(--hk-dawn))); }
-.contact-cities-scene-frame { position: absolute; inset: 0 1.5rem; display: flex; align-items: center; justify-content: center; }
+.contact-cities-scene-frame { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .contact-cities-scene {
   position: relative;
-  width: min(88%, 38rem);
+  width: 100%;
   flex: none;
-  isolation: isolate;
   aspect-ratio: 1916 / 821;
   background: transparent;
 }
@@ -621,15 +650,19 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-cities-scene::after {
   content: none;
 }
-.contact-city-glow-field { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 25% 30% at 14.7% 62%, rgb(255 190 111 / calc(0.15 * var(--la-city-night))), transparent 76%), radial-gradient(ellipse 27% 44% at 87.2% 52%, rgb(71 161 255 / calc(0.16 * var(--hk-city-night))), transparent 78%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); }
+.contact-city-glow-field { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 25% 30% at 14.7% 62%, rgb(255 190 111 / calc(0.15 * var(--la-night))), transparent 76%), radial-gradient(ellipse 27% 44% at 87.2% 52%, rgb(71 161 255 / calc(0.16 * var(--hk-night))), transparent 78%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); }
 .contact-moon-phase-label { position: absolute; left: clamp(0.65rem, 3.5%, 1.1rem); top: clamp(0.55rem, 4%, 0.85rem); z-index: 12; display: inline-block; width: max-content; max-width: calc(100% - 1.3rem); margin: 0; padding: 0; overflow: hidden; background: transparent; color: var(--moon-phase-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 0.72; pointer-events: none; text-overflow: ellipsis; text-shadow: 0 1px 2px var(--moon-phase-label-shadow); text-transform: uppercase; white-space: nowrap; }
 .contact-cities-art-composite { position: absolute; inset: 0; z-index: 0; display: block; }
 .contact-city-art-layer { position: absolute; top: 0; bottom: 0; display: block; background-repeat: no-repeat; image-rendering: crisp-edges; image-rendering: pixelated; }
 .contact-city-art-layer-day { background-image: url('/contact-cities-pixel-art-day-foreground-v1.png'); }
-.contact-city-art-layer-day.contact-city-art-layer-la { opacity: var(--la-daylight); }
-.contact-city-art-layer-day.contact-city-art-layer-london { opacity: var(--london-daylight); }
-.contact-city-art-layer-day.contact-city-art-layer-hk { opacity: var(--hk-daylight); }
+.contact-city-art-layer-day.contact-city-art-layer-la,
+.contact-city-art-layer-day.contact-city-art-layer-london,
+.contact-city-art-layer-day.contact-city-art-layer-hk { opacity: 1; }
+.contact-city-art-layer-day.contact-city-art-layer-hk { background-image: url('/contact-cities-pixel-art-day-foreground-boatless-v1.png'); }
 .contact-city-art-layer-night { background-image: url('/contact-cities-pixel-art-night-foreground-v1.png'); }
+.contact-city-art-layer-night.contact-city-art-layer-la { opacity: var(--la-city-night); -webkit-mask-image: radial-gradient(ellipse 5.6% 4.2% at 46.28% 31.79%, transparent 0 98%, #000 100%); mask-image: radial-gradient(ellipse 5.6% 4.2% at 46.28% 31.79%, transparent 0 98%, #000 100%); }
+.contact-city-art-layer-night.contact-city-art-layer-london { opacity: var(--london-city-night); }
+.contact-city-art-layer-night.contact-city-art-layer-hk { opacity: var(--hk-city-night); background-image: url('/contact-cities-pixel-art-night-foreground-boatless-v1.png'); }
 .contact-city-art-layer-la { left: 0; width: 30.7%; background-position: 100% 50%; background-size: 325.733% 100%; }
 .contact-city-art-layer-london { left: 30.7%; width: 36.5%; background-position: 53.13% 50%; background-size: 273.973% 100%; }
 .contact-city-art-layer-hk { left: 67.2%; width: 32.8%; background-position: 0 50%; background-size: 304.878% 100%; }
@@ -659,44 +692,49 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-celestial-track::after { content: ""; position: absolute; left: var(--secondary-celestial-x); top: var(--secondary-celestial-y); width: clamp(2.5rem, 15%, 4.6rem); aspect-ratio: 1; border-radius: 50%; opacity: calc(0.1 * var(--secondary-celestial-opacity)); background: radial-gradient(circle, rgb(255 236 165 / 0.56) 0%, rgb(255 157 70 / 0.16) 28%, transparent 68%); filter: blur(3px); mix-blend-mode: screen; transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease; }
 .contact-city-celestial { position: absolute; left: var(--celestial-x); top: var(--celestial-y); z-index: 1; display: block; width: clamp(0.48rem, 2.3%, 0.9rem); aspect-ratio: 1; overflow: hidden; opacity: var(--celestial-opacity); background: var(--celestial-color); clip-path: polygon(25% 0, 75% 0, 75% 12.5%, 100% 12.5%, 100% 87.5%, 75% 87.5%, 75% 100%, 25% 100%, 25% 87.5%, 0 87.5%, 0 12.5%, 25% 12.5%); transform: translate(-50%, -50%); transition: left 1s linear, top 1s linear, opacity 550ms ease, background-color 750ms ease; }
 .contact-city-celestial-secondary { --celestial-color: var(--secondary-celestial-color); --celestial-moon: 0; --celestial-opacity: var(--secondary-celestial-opacity); --celestial-sun: 1; --celestial-x: var(--secondary-celestial-x); --celestial-y: var(--secondary-celestial-y); }
+.contact-city-celestial-moon { --celestial-color: rgb(31 45 66); --celestial-moon: 1; --celestial-opacity: var(--moon-celestial-opacity); --celestial-sun: 0; --celestial-x: var(--moon-celestial-x); --celestial-y: var(--moon-celestial-y); width: clamp(0.65rem, 3%, 1.3rem); }
 .contact-city-celestial::before { content: ""; position: absolute; inset: 25%; opacity: var(--celestial-sun); background: #fff1a3; }
 .contact-city-moon-face { position: absolute; inset: 0; display: block; opacity: var(--celestial-moon); background: #d7e2ef; clip-path: var(--moon-lit-shape); transition: clip-path 1s linear, opacity 550ms ease; }
 .contact-city-moon-face::after { content: ""; position: absolute; inset: 0; background: linear-gradient(#8997af 0 0) 24% 28% / 18% 16% no-repeat, linear-gradient(#aab5c8 0 0) 70% 22% / 12% 12% no-repeat, linear-gradient(#7f8da7 0 0) 57% 67% / 20% 16% no-repeat, linear-gradient(#b9c3d2 0 0) 27% 73% / 11% 11% no-repeat; }
-.contact-cities-picture[data-celestial="sun"] .contact-city-celestial { filter: drop-shadow(0 0 2px rgb(255 193 81 / 0.94)) drop-shadow(0 0 7px rgb(255 137 45 / 0.7)); }
-.contact-cities-picture[data-celestial="moon"] .contact-city-celestial { filter: drop-shadow(0 0 2px rgb(223 235 255 / 0.9)) drop-shadow(0 0 7px rgb(142 178 226 / 0.62)); }
-.contact-city-atmosphere { position: absolute; inset: -12% -14%; z-index: 4; display: block; overflow: visible; pointer-events: none; }
+.contact-cities-picture[data-celestial="sun"] .contact-city-celestial-primary,
+.contact-city-celestial-secondary { filter: drop-shadow(0 0 2px rgb(255 193 81 / 0.94)) drop-shadow(0 0 7px rgb(255 137 45 / 0.7)); }
+.contact-city-celestial-moon { filter: drop-shadow(0 0 2px rgb(223 235 255 / 0.9)) drop-shadow(0 0 7px rgb(142 178 226 / 0.62)); }
+.contact-city-atmosphere { position: absolute; inset: 0; z-index: 4; display: block; overflow: hidden; pointer-events: none; }
 .contact-city-atmosphere > span { position: absolute; inset: 0; display: block; }
 .contact-city-atmosphere::before,
 .contact-city-atmosphere::after { content: none; }
 .contact-city-atmosphere-blue {
-  background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(36 58 98 / calc(0.34 * var(--hk-blue-hour) + 0.09 * var(--hk-night))) 0% 46.5%, rgb(50 65 88 / calc(0.32 * var(--london-blue-hour) + 0.08 * var(--london-night))) 48.3% 93%, rgb(45 54 93 / calc(0.36 * var(--la-blue-hour) + 0.09 * var(--la-night))) 100% 148%);
-  mix-blend-mode: soft-light;
+  background: radial-gradient(var(--contact-transition-curve), rgb(36 58 98 / calc(0.18 * var(--hk-blue-hour) + 0.04 * var(--hk-night))) 0% var(--contact-near-end), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) var(--contact-middle-start) var(--contact-middle-end), rgb(45 54 93 / calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night))) var(--contact-far-start) 148%);
 }
 .contact-city-atmosphere-dawn {
-  background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(255 144 78 / calc(0.46 * var(--hk-dawn))) 0% 46.5%, rgb(255 163 101 / calc(0.42 * var(--london-dawn))) 48.3% 93%, rgb(255 151 82 / calc(0.48 * var(--la-dawn))) 100% 148%);
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 144 78 / calc(0.3 * var(--hk-dawn))) 0% var(--contact-near-end), rgb(255 163 101 / calc(0.27 * var(--london-dawn))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 151 82 / calc(0.31 * var(--la-dawn))) var(--contact-far-start) 148%);
   mix-blend-mode: screen;
 }
 .contact-city-atmosphere-golden {
-  background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(255 194 112 / calc(0.21 * var(--hk-golden))) 0% 46.5%, rgb(242 198 139 / calc(0.18 * var(--london-golden))) 48.3% 93%, rgb(255 181 84 / calc(0.26 * var(--la-golden))) 100% 148%);
-  filter: blur(18px);
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 194 112 / calc(0.1 * var(--hk-golden))) 0% var(--contact-near-end), rgb(242 198 139 / calc(0.08 * var(--london-golden))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 181 84 / calc(0.11 * var(--la-golden))) var(--contact-far-start) 148%);
   mix-blend-mode: screen;
-  opacity: 0.28;
-  transform: scale(1.06);
 }
 .contact-city-atmosphere-sunset {
-  background: radial-gradient(ellipse 54.21221% 172.96467% at 89% 16%, rgb(255 122 86 / calc(0.5 * var(--hk-sunset))) 0% 46.5%, rgb(223 137 113 / calc(0.4 * var(--london-sunset))) 48.3% 93%, rgb(255 104 69 / calc(0.56 * var(--la-sunset))) 100% 148%);
-  mix-blend-mode: screen;
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 122 86 / calc(0.24 * var(--hk-sunset))) 0% var(--contact-near-end), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 104 69 / calc(0.26 * var(--la-sunset))) var(--contact-far-start) 148%);
 }
-.contact-hong-kong-night-lift { position: absolute; inset: 0; z-index: 2; opacity: var(--hk-city-night); background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; filter: brightness(1.24) saturate(1.1); transform: translateX(67.2%); pointer-events: none; -webkit-mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); -webkit-mask-composite: source-in; mask-image: radial-gradient(ellipse 27% 48% at 13% 56%, #000 0 50%, rgb(0 0 0 / 0.66) 72%, transparent 100%), linear-gradient(to right, transparent 0%, #000 7%, #000 100%); mask-composite: intersect; }
-.contact-harbour-group { position: absolute; inset: 0; z-index: 4; display: block; transform: translateX(67.2%); pointer-events: none; }
-.contact-harbour-clear,
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue {
+  background: radial-gradient(var(--contact-transition-curve), rgb(45 54 93 / calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night))) 0% var(--contact-near-end), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) var(--contact-middle-start) var(--contact-middle-end), rgb(36 58 98 / calc(0.18 * var(--hk-blue-hour) + 0.04 * var(--hk-night))) var(--contact-far-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-dawn {
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 151 82 / calc(0.31 * var(--la-dawn))) 0% var(--contact-near-end), rgb(255 163 101 / calc(0.27 * var(--london-dawn))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 144 78 / calc(0.3 * var(--hk-dawn))) var(--contact-far-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-golden {
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 181 84 / calc(0.11 * var(--la-golden))) 0% var(--contact-near-end), rgb(242 198 139 / calc(0.08 * var(--london-golden))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 194 112 / calc(0.1 * var(--hk-golden))) var(--contact-far-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-sunset {
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 104 69 / calc(0.26 * var(--la-sunset))) 0% var(--contact-near-end), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 122 86 / calc(0.24 * var(--hk-sunset))) var(--contact-far-start) 148%);
+}
+.contact-harbour-group { position: absolute; inset: 0; display: block; transform: translateX(67.2%); pointer-events: none; }
+.contact-harbour-boat-group { z-index: 3; }
 .contact-harbour-boat { position: absolute; inset: 0; pointer-events: none; image-rendering: pixelated; }
-.contact-harbour-clear { z-index: 2; clip-path: polygon(12% 66%, 12.7% 60%, 14% 60%, 14.6% 55%, 15.8% 62.5%, 16.5% 55.5%, 17.8% 63%, 18.5% 58.5%, 19.7% 64.5%, 20.8% 65.5%, 21.1% 71%, 19.7% 74%, 13.8% 74%, 12.4% 71%); }
-.contact-harbour-clear-light { opacity: 1; background: url('/contact-cities-pixel-art-day-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
-.contact-harbour-clear-dark { opacity: var(--hk-city-night); background: url('/contact-cities-pixel-art-night-boatless-v1.png') 50% 50% / 100% 100% no-repeat; }
-.contact-harbour-boat { z-index: 4; clip-path: polygon(12.3% 66%, 13.1% 62%, 14.1% 62%, 14.7% 56.5%, 15.8% 64%, 16.6% 57%, 17.6% 65%, 18.7% 60%, 19.5% 66%, 20.4% 67%, 20.7% 70%, 19.5% 73%, 14.3% 73%, 13% 70%); animation: harbourBoatCruise 9s ease-in-out infinite alternate; }
-.contact-harbour-boat-light { opacity: 1; background: url('/contact-cities-pixel-art-day-from-night-v1.png') 50% 50% / 100% 100% no-repeat; }
-.contact-harbour-boat-dark { opacity: var(--hk-city-night); background: url('/contact-cities-pixel-art-night-v2.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-boat { z-index: 4; animation: harbourBoatCruise 9s ease-in-out infinite alternate; }
+.contact-harbour-boat-light { opacity: 1; background: url('/contact-harbour-boat-day-v1.png') 50% 50% / 100% 100% no-repeat; }
+.contact-harbour-boat-dark { opacity: var(--hk-city-night); background: url('/contact-harbour-boat-night-v1.png') 50% 50% / 100% 100% no-repeat; }
 .contact-london-planes { position: absolute; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
 .contact-london-plane { position: absolute; left: -12%; width: clamp(0.9rem, 3.2%, 1.55rem); height: auto; overflow: visible; opacity: 0; filter: drop-shadow(1px 1px 0 rgb(255 255 255 / 0.68)); image-rendering: pixelated; animation: citiesPlaneFly 17s linear infinite; }
 .contact-plane-tail,
@@ -767,9 +805,9 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-presence-city-targets[data-editing="true"] .contact-presence-travel-target:hover,
 .contact-presence-city-targets[data-editing="true"] .contact-presence-travel-target[aria-pressed="true"] { border-color: rgb(255 197 45 / 0.98); background: rgb(255 213 83 / 0.13); }
 .contact-presence-travel-target span { position: absolute; right: 0.3rem; top: 0.3rem; padding: 0.18rem 0.38rem; border-radius: 9999px; background: rgb(29 32 35 / 0.78); color: #fff3bf; font-family: var(--font-ui); font-size: 0.48rem; font-weight: 700; letter-spacing: 0.015em; text-rendering: geometricPrecision; white-space: nowrap; -webkit-font-smoothing: antialiased; }
-.contact-travelling-presence { position: absolute; right: clamp(0.75rem, 4.5%, 1.55rem); top: clamp(0.8rem, 6%, 1.2rem); z-index: 8; display: grid; width: clamp(0.52rem, 1vw, 0.63rem); justify-items: center; pointer-events: none; }
+.contact-travelling-presence { position: absolute; right: clamp(0.75rem, 4.5%, 1.55rem); top: clamp(0.8rem, 6%, 1.2rem); z-index: 8; display: grid; width: clamp(0.78rem, 1.5vw, 0.945rem); justify-items: center; pointer-events: none; }
 .contact-travelling-presence-person { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 2px rgb(54 34 0 / 0.2)); image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.contact-travelling-presence-location { position: absolute; left: 50%; top: calc(100% + 0.18rem); display: block; width: max-content; max-width: 7.5rem; padding: 0.14rem 0.34rem; overflow: hidden; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.9); box-shadow: 0 2px 6px rgb(22 28 20 / 0.12); color: rgb(var(--color-ink) / 0.72); font-family: Arial, sans-serif; font-size: clamp(0.6rem, 0.9vw, 0.72rem); font-weight: 700; letter-spacing: 0.01em; line-height: 1.15; text-align: center; text-overflow: ellipsis; text-rendering: auto; text-shadow: none; transform: translateX(-50%); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-travelling-presence-location { position: absolute; right: 0; left: auto; top: calc(100% + 0.18rem); display: block; width: max-content; max-width: min(10rem, calc(100vw - 2rem)); padding: 0; overflow: hidden; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--travelling-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 0.72; text-align: right; text-overflow: ellipsis; text-rendering: geometricPrecision; text-shadow: 0 1px 2px var(--travelling-label-shadow); text-transform: uppercase; transform: none; white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .contact-city-time-row { position: absolute; inset: auto 0 5.2% 0; z-index: 8; height: 2.8rem; color: rgb(var(--color-ink)); pointer-events: none; }
 .contact-city-clock { position: absolute; top: 0; left: var(--contact-clock-x); min-width: 0; text-shadow: none; transform: translateX(-50%); }
 .contact-city-clock-hk { --contact-clock-x: 81.3%; top: 0.31rem; display: grid; justify-items: center; color: var(--hk-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--hk-night))); }
@@ -800,15 +838,15 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-digital-clock span { text-shadow: 1px 1px 0 #9f4f1f, 2px 2px 0 #602c10, 0 0 6px rgb(255 153 48 / 0.34); }
 .contact-digital-clock i { color: rgb(255 207 101 / 0.7); font-style: normal; transform: translateY(-0.03rem); }
 .contact-digital-clock b { margin-left: 0.1rem; color: rgb(255 221 142 / 0.78); font-family: var(--font-ui); font-size: 0.46rem; font-weight: 800; letter-spacing: 0.1em; line-height: 1; }
-.contact-city-presence { position: absolute; z-index: 12; display: block; width: clamp(2rem, 3.9vw, 2.42rem); aspect-ratio: 1881 / 836; filter: drop-shadow(0 2px 2px rgb(54 34 0 / 0.2)); pointer-events: none; }
+.contact-city-presence { position: absolute; z-index: 12; display: block; width: clamp(3.9rem, 7.61vw, 4.72rem); aspect-ratio: 1881 / 836; filter: drop-shadow(0 2px 2px rgb(54 34 0 / 0.2)); pointer-events: none; }
 .contact-city-clock-la > .contact-city-presence,
 .contact-city-clock-hk > .contact-city-presence { bottom: calc(100% - 0.24rem); transform: translateX(-50%) rotate(-1.5deg); }
 .contact-city-clock-la > .contact-city-presence { left: 76%; }
 .contact-city-clock-hk > .contact-city-presence { left: 25%; }
-.contact-city-clock-copy > .contact-city-presence { left: 72%; bottom: 72%; width: clamp(1.86rem, 3.6vw, 2.21rem); transform: translateX(-100%) rotate(-1.5deg); }
+.contact-city-clock-copy > .contact-city-presence { left: 50%; bottom: calc(100% - 0.24rem); width: clamp(3.63rem, 7.02vw, 4.31rem); transform: translateX(-50%) rotate(-1.5deg); }
 .contact-city-presence-person { display: block; width: 100%; height: auto; image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.contact-city-presence-sign { position: absolute; left: 42%; bottom: 63%; display: grid; min-width: 1.2rem; min-height: 0.5rem; padding: 0.08rem 0.13rem; place-items: center; border: 1px solid rgb(149 105 26 / 0.88); border-radius: 0.18rem; background: #fff0b4; box-shadow: 0 1px 2px rgb(92 59 4 / 0.22), 1px 1px 0 rgb(182 124 22 / 0.72); color: #49320b; font-family: var(--font-ui); font-size: 0.3rem; font-weight: 800; letter-spacing: 0; line-height: 1; text-rendering: geometricPrecision; text-shadow: none; transform: translateX(-50%) rotate(-2deg); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.contact-city-presence-sign::after { content: ""; position: absolute; left: 52%; top: 100%; width: 1px; height: 0.23rem; background: #95691a; transform: translateX(-50%); }
+.contact-city-presence-sign { position: absolute; left: 42%; bottom: 63%; display: grid; min-width: 2.16rem; min-height: 0.9rem; padding: 0.144rem 0.234rem; place-items: center; border: 1.8px solid rgb(149 105 26 / 0.88); border-radius: 0.324rem; background: #fff0b4; box-shadow: 0 1.8px 3.6px rgb(92 59 4 / 0.22), 1.8px 1.8px 0 rgb(182 124 22 / 0.72); color: #49320b; font-family: var(--font-ui); font-size: 0.54rem; font-weight: 800; letter-spacing: 0; line-height: 1; text-rendering: geometricPrecision; text-shadow: none; transform: translateX(-50%) rotate(-2deg); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-city-presence-sign::after { content: ""; position: absolute; left: 52%; top: 100%; width: 1.8px; height: 0.414rem; background: #95691a; transform: translateX(-50%); }
 
 .section-loading {
   display: grid;
@@ -1402,10 +1440,10 @@ body.has-page-cursor * { cursor: inherit; }
 }
 
 @keyframes harbourBoatCruise {
-  from { transform: translate3d(-6px, -1px, 0) rotate(-0.2deg); }
-  33% { transform: translate3d(10px, 2px, 0) rotate(0.15deg); }
-  66% { transform: translate3d(27px, -2px, 0) rotate(-0.12deg); }
-  to { transform: translate3d(44px, 1px, 0) rotate(0.2deg); }
+  from { transform: translate3d(-3px, -1px, 0) rotate(-0.2deg); }
+  33% { transform: translate3d(2px, 1px, 0) rotate(0.15deg); }
+  66% { transform: translate3d(6px, -1px, 0) rotate(-0.12deg); }
+  to { transform: translate3d(10px, 1px, 0) rotate(0.2deg); }
 }
 
 @keyframes contactPresenceArrive {
@@ -1459,6 +1497,105 @@ body.has-page-cursor * { cursor: inherit; }
 .project-card-tags span { padding: 0.32rem 0.5rem; border-radius: 9999px; background: rgb(var(--color-ink) / 0.05); color: rgb(var(--color-ink) / 0.5); font-size: 0.56rem; font-weight: 700; }
 
 .project-focus-panel { display: none; }
+
+.creative-projects-section {
+  margin-top: clamp(3.5rem, 8vw, 6rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid rgb(var(--color-ink) / 0.1);
+}
+.creative-projects-heading { margin-bottom: 1.25rem; }
+.creative-projects-heading .section-title { margin-top: 0.55rem; }
+.creative-project-card { overflow: hidden; }
+.creative-project-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+}
+.creative-project-description {
+  max-width: 31rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+.contact-city-timeline-control { margin-top: 1.5rem; }
+.contact-city-timeline-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.contact-city-timeline-heading label {
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.contact-city-timeline-heading output {
+  flex: none;
+  color: rgb(var(--color-moss));
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.contact-city-timeline-date {
+  min-height: 1em;
+  margin-top: 0.35rem;
+  color: rgb(var(--color-ink) / 0.45);
+  font-size: 0.62rem;
+  line-height: 1.4;
+}
+.contact-city-timeline-control input[type="range"] {
+  width: 100%;
+  height: 2.25rem;
+  margin-top: 0.45rem;
+  appearance: none;
+  background: transparent;
+  color: rgb(var(--color-moss));
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+.contact-city-timeline-control input[type="range"]::-webkit-slider-runnable-track {
+  height: 0.22rem;
+  border-radius: 9999px;
+  background: linear-gradient(to right, rgb(var(--color-ink) / 0.12), rgb(var(--color-moss) / 0.54), rgb(var(--color-ink) / 0.12));
+}
+.contact-city-timeline-control input[type="range"]::-webkit-slider-thumb {
+  width: 1rem;
+  height: 1rem;
+  margin-top: -0.39rem;
+  appearance: none;
+  border: 2px solid rgb(var(--color-surface));
+  border-radius: 50%;
+  background: rgb(var(--color-moss));
+  box-shadow: 0 2px 8px rgb(var(--color-ink) / 0.24);
+}
+.contact-city-timeline-control input[type="range"]::-moz-range-track {
+  height: 0.22rem;
+  border-radius: 9999px;
+  background: linear-gradient(to right, rgb(var(--color-ink) / 0.12), rgb(var(--color-moss) / 0.54), rgb(var(--color-ink) / 0.12));
+}
+.contact-city-timeline-control input[type="range"]::-moz-range-thumb {
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid rgb(var(--color-surface));
+  border-radius: 50%;
+  background: rgb(var(--color-moss));
+  box-shadow: 0 2px 8px rgb(var(--color-ink) / 0.24);
+}
+.contact-city-timeline-control input[type="range"]:disabled {
+  cursor: wait;
+  opacity: 0.45;
+}
+.contact-city-timeline-ticks {
+  display: flex;
+  margin-top: -0.28rem;
+  justify-content: space-between;
+  color: rgb(var(--color-ink) / 0.38);
+  font-family: var(--font-code);
+  font-size: 0.52rem;
+}
 
 .section-rail {
   position: fixed;
@@ -3374,6 +3511,13 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 }
 
 @media (max-width: 899px), (max-width: 1366px) and (pointer: coarse) and (hover: none) {
+  .contact-city-clock-la > .contact-city-presence,
+  .contact-city-clock-hk > .contact-city-presence { bottom: calc(100% - 0.18rem); width: 1.86rem; }
+  .contact-city-clock-la > .contact-city-presence { left: 76%; }
+  .contact-city-clock-hk > .contact-city-presence { left: 25%; }
+  .contact-city-clock-copy > .contact-city-presence { left: 50%; bottom: calc(100% - 0.18rem); width: 1.72rem; }
+  .contact-city-presence-sign { left: 42%; bottom: 64%; min-width: 1.08rem; min-height: 0.46rem; padding: 0.07rem 0.11rem; border-width: 1px; border-radius: 0.18rem; box-shadow: 0 1px 2px rgb(92 59 4 / 0.22), 1px 1px 0 rgb(182 124 22 / 0.72); font-size: 0.27rem; }
+  .contact-city-presence-sign::after { width: 1px; height: 0.23rem; }
   .site-menu-panel {
     background: rgb(var(--color-paper));
     -webkit-backdrop-filter: none;
@@ -3504,8 +3648,8 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-cities-copy > div > p:last-child { margin-top: 0.5rem; font-size: 0.68rem; line-height: 1.4; }
   .contact-city-chips { margin-top: 0.8rem; }
   .contact-city-chips span { padding: 0.36rem 0.55rem; font-size: 0.58rem; }
-  .contact-cities-art { min-height: clamp(10rem, calc(48vw + 0.35rem), 12.35rem); overflow: visible; padding: 0; }
-  .contact-cities-picture { width: 100%; min-height: clamp(10rem, calc(48vw + 0.35rem), 12.35rem); height: 100%; align-items: start; overflow: visible; }
+  .contact-cities-art { min-height: 10rem; overflow: hidden; padding: 0; }
+  .contact-cities-picture { width: 100%; min-height: 10rem; height: 100%; overflow: hidden; }
   .contact-moon-phase-label { left: 0.62rem; top: 0.48rem; font-size: 0.4rem; letter-spacing: 0.06em; }
   .contact-presence-controls { right: 0.48rem; top: 0.42rem; max-width: calc(100% - 4.3rem); gap: 0.28rem; }
   .contact-presence-public-note { max-width: 9.5rem; padding: 0.28rem 0.42rem; font-size: 0.43rem; }
@@ -3514,17 +3658,16 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-presence-editor { width: min(16.5rem, calc(100vw - 3rem)); padding: 0.68rem; }
   .contact-presence-editor textarea,
   .contact-presence-editor input { font-size: 16px !important; }
-  .contact-travelling-presence { right: 0.62rem; top: 0.66rem; width: 0.52rem; }
-  .contact-travelling-presence-location { right: 0; left: auto; max-width: min(7rem, calc(100vw - 2rem)); font-size: 0.6rem; transform: none; }
+  .contact-travelling-presence { right: 0.62rem; top: 0.66rem; width: 0.312rem; }
+  .contact-travelling-presence-location { right: 0; left: auto; max-width: min(7rem, calc(100vw - 2rem)); font-size: 0.4rem; letter-spacing: 0.06em; transform: none; }
   .contact-presence-travel-target { right: 0; top: 2%; width: 21%; height: 30%; }
   .contact-presence-city-target-hongKong { top: 38%; }
   .contact-cities-backdrop-frame { inset: 0; }
   .contact-cities-night-backdrop,
   .contact-cities-dawn-backdrop { width: 100%; }
-  .contact-cities-scene-frame { inset: 0 0.45rem; align-items: flex-start; overflow: visible; padding-top: 0.5rem; }
-  .contact-cities-scene { width: min(calc(100% + 0.9rem), 23.5rem); flex: none; margin-top: -0.42rem; }
-  .contact-city-atmosphere { inset: -12% 0; }
-  .contact-city-glow-field { background: radial-gradient(ellipse 26% 26% at 15.7% 48%, rgb(255 190 111 / calc(0.15 * var(--la-city-night))), transparent 76%), radial-gradient(ellipse 28% 34% at 84.2% 42%, rgb(71 161 255 / calc(0.16 * var(--hk-city-night))), transparent 78%); }
+  .contact-cities-scene-frame { inset: 0; align-items: center; overflow: hidden; padding-top: 0; }
+  .contact-cities-scene { width: 100%; flex: none; margin-top: 0; }
+  .contact-city-glow-field { background: radial-gradient(ellipse 26% 26% at 15.7% 48%, rgb(255 190 111 / calc(0.15 * var(--la-night))), transparent 76%), radial-gradient(ellipse 28% 34% at 84.2% 42%, rgb(71 161 255 / calc(0.16 * var(--hk-night))), transparent 78%); }
   .contact-cities-picture img { width: 100%; }
   .contact-city-time-row { inset: auto 0 1.5% 0; width: auto; height: 2.1rem; margin-top: 0; }
   .contact-city-clock-hk { --contact-clock-x: 81.3%; top: 0.2rem; }
@@ -3542,16 +3685,20 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-city-clock-la strong { gap: 0.12rem; font-size: 0.6rem; }
   .contact-city-clock-copy strong span,
   .contact-city-clock-la strong span { font-size: 0.32rem; letter-spacing: 0.06em; }
-  .contact-city-clock-la > .contact-city-presence,
-  .contact-city-clock-hk > .contact-city-presence { bottom: calc(100% - 0.18rem); width: 1.86rem; }
-  .contact-city-clock-la > .contact-city-presence { left: 76%; }
-  .contact-city-clock-hk > .contact-city-presence { left: 25%; }
-  .contact-city-clock-copy > .contact-city-presence { left: 72%; bottom: 76%; width: 1.72rem; }
-  .contact-city-presence-sign { left: 42%; bottom: 64%; min-width: 1.08rem; min-height: 0.46rem; padding: 0.07rem 0.11rem; font-size: 0.27rem; }
   .contact-city-clock-la { --contact-clock-x: 18.2%; top: 0.2rem; }
   .contact-city-clock-la strong { font-size: 0.62rem; }
   .contact-digital-clock { gap: 0.08rem; padding: 0.2rem 0.22rem; border-radius: 0.22rem; font-size: 0.62rem; letter-spacing: 0.02em; }
   .contact-digital-clock b { margin-left: 0.02rem; font-size: 0.32rem; letter-spacing: 0.06em; }
+  .creative-projects-section { margin-top: 3.5rem; padding-top: 2rem; }
+  .creative-projects-heading { margin-bottom: 0.9rem; }
+  .creative-project-card { border-radius: 1.15rem !important; }
+  .creative-project-description { font-size: 0.68rem; line-height: 1.5; }
+  .contact-city-timeline-control { margin-top: 1rem; }
+  .contact-city-timeline-heading label { font-size: 0.55rem; }
+  .contact-city-timeline-heading output { font-size: 0.58rem; }
+  .contact-city-timeline-date { margin-top: 0.25rem; font-size: 0.52rem; }
+  .contact-city-timeline-control input[type="range"] { height: 2.5rem; margin-top: 0.2rem; }
+  .contact-city-timeline-ticks { margin-top: -0.42rem; font-size: 0.46rem; }
   .page-section { padding-top: 2rem !important; padding-bottom: 2rem !important; }
   .display-title { font-size: 1.85rem !important; line-height: 1 !important; }
   .section-title { font-size: 1.25rem !important; }

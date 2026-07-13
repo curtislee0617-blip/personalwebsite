@@ -4,11 +4,19 @@ export const cityTimeZones = {
   losAngeles: "America/Los_Angeles",
 } as const;
 
+export type CityKey = keyof typeof cityTimeZones;
+
 export const cityLightSchedule = {
   sunriseStartsAt: 5 * 60,
   daylightStartsAt: 7 * 60,
   sunsetStartsAt: 18 * 60,
   nightStartsAt: 19.5 * 60,
+} as const;
+
+export const cityArtSwitchSchedule = {
+  losAngelesSunrise: 5.75 * 60,
+  sunrise: 6 * 60,
+  sunset: 18.75 * 60,
 } as const;
 
 export type CityCycle = {
@@ -206,19 +214,36 @@ export function getZonedMinutes(now: Date, timeZone: string) {
   return value("hour") * 60 + value("minute") + value("second") / 60;
 }
 
-export function getCityCycleAtMinutes(minutes: number): CityCycle {
-  const { sunriseStartsAt, daylightStartsAt, sunsetStartsAt, nightStartsAt } = cityLightSchedule;
+export function getCityCycleAtMinutes(minutes: number, city?: CityKey): CityCycle {
+  const {
+    sunriseStartsAt,
+    sunsetStartsAt,
+    nightStartsAt,
+  } = cityLightSchedule;
+  const daylightStartsAt = city === "losAngeles"
+    ? 6.5 * 60
+    : cityLightSchedule.daylightStartsAt;
   const daylight = ramp(minutes, sunriseStartsAt, daylightStartsAt)
     * (1 - ramp(minutes, sunsetStartsAt, nightStartsAt));
   const night = 1 - daylight;
+  const artSunriseSwitchAt = city === "losAngeles"
+    ? cityArtSwitchSchedule.losAngelesSunrise
+    : cityArtSwitchSchedule.sunrise;
+  const cityNight = minutes < artSunriseSwitchAt
+    || minutes >= cityArtSwitchSchedule.sunset
+    ? 1
+    : 0;
   const dawn = band(minutes, sunriseStartsAt, 6 * 60, 6.25 * 60, daylightStartsAt);
   const morningGolden = band(minutes, 5.25 * 60, 6.25 * 60, 6.75 * 60, 8.25 * 60);
   const eveningGolden = band(minutes, 16.5 * 60, 17.75 * 60, 18.25 * 60, nightStartsAt);
   const goldenHour = smoothUnion(morningGolden, eveningGolden);
   const sunset = band(minutes, sunsetStartsAt, 18.75 * 60, 18.83 * 60, nightStartsAt);
-  const blueHour = clamp(
+  const blueHourBase = clamp(
     band(minutes, 4 * 60, sunriseStartsAt, 5.5 * 60, 6.5 * 60)
       + band(minutes, 18.67 * 60, nightStartsAt, 20.25 * 60, 21.25 * 60),
+  );
+  const blueHour = blueHourBase * (
+    1 - 0.72 * Math.max(dawn, sunset)
   );
   const sunProgress = lingerNearMidday(
     (minutes - sunriseStartsAt) / (nightStartsAt - sunriseStartsAt),
@@ -231,28 +256,29 @@ export function getCityCycleAtMinutes(minutes: number): CityCycle {
   const moonDuration = moonSetEndsAt + 24 * 60 - moonRiseStartsAt;
   const moonElapsed = (minutes - moonRiseStartsAt + 24 * 60) % (24 * 60);
   const moonProgress = lingerNearMidday(clamp(moonElapsed / moonDuration));
+  const sunX = 97 - 94 * sunProgress;
 
   return {
     blueHour,
-    cityNight: night,
+    cityNight,
     dawn,
     daylight,
     goldenHour,
     moonOpacity: stars,
-    moonX: 3 + 94 * moonProgress,
-    moonY: 55 - 48 * Math.sin(Math.PI * moonProgress) ** 0.86,
+    moonX: 97 - 94 * moonProgress,
+    moonY: 55 - 32 * Math.sin(Math.PI * moonProgress) ** 0.86,
     night,
     sunset,
     stars,
     sunOpacity: ramp(minutes, sunriseStartsAt, 5.67 * 60)
       * (1 - ramp(minutes, 18.83 * 60, nightStartsAt)),
     sunWarmth: smoothUnion(dawn * 0.92, sunset, goldenHour * 0.42),
-    sunX: 3 + 94 * sunProgress,
-    sunY: 55 - 48 * Math.sin(Math.PI * sunProgress) ** 0.86,
+    sunX,
+    sunY: 55 - 32 * Math.sin(Math.PI * sunProgress) ** 0.86,
   };
 }
 
-export function getCityCycle(now: Date | null, timeZone: string) {
+export function getCityCycle(now: Date | null, timeZone: string, city?: CityKey) {
   if (!now) {
     return {
       blueHour: 0,
@@ -273,7 +299,7 @@ export function getCityCycle(now: Date | null, timeZone: string) {
     } satisfies CityCycle;
   }
 
-  return getCityCycleAtMinutes(getZonedMinutes(now, timeZone));
+  return getCityCycleAtMinutes(getZonedMinutes(now, timeZone), city);
 }
 
 type ContactCelestialCity = {
@@ -299,6 +325,7 @@ export type ContactCelestial = Omit<ContactCelestialCandidate, "cityIndex" | "sc
 export function getContactCelestial(
   cities: ContactCelestialCity[],
   moonVisibility = 1,
+  onlyKind?: ContactCelestialCandidate["kind"],
 ): ContactCelestial {
   const candidates = cities.flatMap(({ cycle, key, left, width }, cityIndex) => {
     const makeCandidate = (
@@ -332,7 +359,10 @@ export function getContactCelestial(
     ];
   });
   const adjacentPairs = [[0, 1], [1, 2]] as const;
-  const groups = (["sun", "moon"] as const).flatMap((kind) =>
+  const kinds: ContactCelestialCandidate["kind"][] = onlyKind
+    ? [onlyKind]
+    : ["sun", "moon"];
+  const groups = kinds.flatMap((kind) =>
     adjacentPairs.map((pair) => {
       const members = candidates.filter(
         (candidate) => candidate.kind === kind
@@ -347,7 +377,9 @@ export function getContactCelestial(
     }),
   ).sort((first, second) => second.score - first.score);
   const winningGroup = groups[0];
-  const competingGroup = groups.find((group) => group.kind !== winningGroup.kind) ?? groups[1];
+  const competingGroup = onlyKind
+    ? undefined
+    : groups.find((group) => group.kind !== winningGroup.kind) ?? groups[1];
   const lead = [...winningGroup.members].sort(
     (first, second) => second.score - first.score,
   )[0];
@@ -362,10 +394,12 @@ export function getContactCelestial(
           (total, candidate) => total + candidate[property] * candidate.score,
           0,
         ) / totalWeight;
-  const handoffMargin = winningGroup.score === 0
+  const handoffMargin = !competingGroup || winningGroup.score === 0
     ? 0
     : (winningGroup.score - competingGroup.score) / winningGroup.score;
-  const handoffOpacity = smootherstep(handoffMargin / 0.035);
+  const handoffOpacity = competingGroup
+    ? smootherstep(handoffMargin / 0.035)
+    : 1;
 
   return {
     kind: winningGroup.kind,
