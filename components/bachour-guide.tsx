@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
+import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
 import { bachourRecipes, type BachourRecipe, type BachourRecipeComponent } from "@/lib/bachour";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 
@@ -117,22 +119,12 @@ function RecipeCard({ recipe, index, open, onToggle }: { recipe: BachourRecipe; 
   const [factorText, setFactorText] = useState("1");
   const parsed = Number.parseFloat(factorText);
   const factor = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-  const ingredientCount = recipe.components.reduce((total, component) => total + component.ingredients.length, 0);
-
   return (
-    <article className="scroll-mt-24 overflow-hidden rounded-[1.45rem] border border-ink/10 bg-paper/72" id={`bachour-${recipe.slug}`}>
-      <button aria-expanded={open} className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-surface/45 sm:px-5" onClick={onToggle} type="button">
-        <span className="w-6 shrink-0 font-mono text-[0.62rem] text-ink/30">{String(index + 1).padStart(2, "0")}</span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold tracking-tight sm:text-[0.95rem]">{recipe.title}</span>
-          <span className="mt-0.5 hidden truncate text-[0.68rem] text-ink/38 sm:block">Yield: {recipe.yield}{recipe.sourceNote ? " · Source title omitted" : ""}</span>
-        </span>
-        <span className="hidden text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-ink/35 sm:block">{recipe.components.length} components · {ingredientCount} ingredients</span>
-        <Chevron open={open} />
-      </button>
+    <article className="cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition" id={`bachour-${recipe.slug}`}>
+      <CookbookRecipeCardSummary description={`Yield: ${recipe.yield}`} fallbackMark="BACHOUR" image={recipe.image} imageAlt={`${recipe.title}, finished pastry`} imagePosition={recipe.imagePosition} index={index} meta={`${recipe.components.length} components`} onToggle={onToggle} open={open} title={recipe.title} />
 
       {open && (
-        <div className="grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
+        <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {recipe.image && (
             <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper">
               <Image alt={`${recipe.title}, finished pastry`} className="object-cover" fill sizes="(max-width: 640px) 88vw, 32rem" src={recipe.image} style={{ objectPosition: recipe.imagePosition ?? "50% 50%" }} />
@@ -179,11 +171,11 @@ export function BachourGuide() {
   }, []);
 
   return (
-    <div>
+    <div className="min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm leading-6 text-ink/55">Ordered from the earliest supplied photograph to the latest.</p>
-          <p className="mt-1 text-xs text-ink/38">Open a compact row for the pastry, component-by-component ingredients, full method and scaling.</p>
+          <p className="mt-1 text-xs text-ink/38">Open an image card for component-by-component ingredients, the full method and scaling.</p>
         </div>
         <label className="relative block sm:w-72">
           <span className="sr-only">Search Antonio Bachour recipes</span>
@@ -192,11 +184,11 @@ export function BachourGuide() {
         </label>
       </div>
 
-      <div className="mt-5 grid gap-2">
+      <CookbookRecipeRail title="Antonio Bachour recipes">
         {filteredRecipes.map((recipe) => (
           <RecipeCard index={bachourRecipes.indexOf(recipe)} key={recipe.slug} onToggle={() => setOpenRecipes((current) => ({ ...current, [recipe.slug]: !current[recipe.slug] }))} open={Boolean(openRecipes[recipe.slug])} recipe={recipe} />
         ))}
-      </div>
+      </CookbookRecipeRail>
       {filteredRecipes.length === 0 && <div className="mt-5 rounded-2xl border border-dashed border-ink/15 px-5 py-8 text-center text-sm text-ink/45">No Bachour recipes match “{query}”.</div>}
     </div>
   );

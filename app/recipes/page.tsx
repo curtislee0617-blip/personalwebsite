@@ -310,11 +310,11 @@ export default async function RecipesPage() {
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
                   <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
                     <Image
-                      alt="Core Apple by Clare Smyth"
+                      alt="Core-teser by Clare Smyth"
                       className="object-cover"
                       fill
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/core-book/dishes/core-apple-1.jpg"
+                      src="/core-book/dishes/core-teser-1-v2.jpg"
                     />
                   </div>
                 </div>

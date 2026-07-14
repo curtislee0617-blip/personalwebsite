@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
+import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
 import { benuRecipes, type BenuRecipe, type BenuRecipeComponent } from "@/lib/benu";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 
@@ -189,30 +191,11 @@ function RecipeCard({ recipe, index, open, onToggle }: { recipe: BenuRecipe; ind
   const ingredientCount = recipe.components.reduce((total, component) => total + component.ingredients.length, 0);
 
   return (
-    <article className="scroll-mt-24 overflow-hidden rounded-[1.45rem] border border-ink/10 bg-paper/72" id={`benu-${recipe.slug}`}>
-      <button
-        aria-expanded={open}
-        className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-surface/45 sm:px-5"
-        onClick={onToggle}
-        type="button"
-      >
-        <span className="w-6 shrink-0 font-mono text-[0.62rem] text-ink/30">{String(index + 1).padStart(2, "0")}</span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold tracking-tight sm:text-[0.95rem]">{recipe.title}</span>
-          {recipe.sourceNote && (
-            <span className="mt-0.5 hidden truncate text-[0.68rem] text-amber-700/70 sm:block">
-              {recipe.components.length === 0 ? "Source sequence incomplete" : "No separate plated photo"}
-            </span>
-          )}
-        </span>
-        <span className="hidden text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-ink/35 sm:block">
-          {recipe.components.length} {recipe.components.length === 1 ? "component" : "components"} · {ingredientCount} ingredients
-        </span>
-        <Chevron open={open} />
-      </button>
+    <article className="cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition" id={`benu-${recipe.slug}`}>
+      <CookbookRecipeCardSummary description={recipe.sourceNote ?? `${ingredientCount} ingredients across ${recipe.components.length} components`} fallbackMark="BENU" image={recipe.image} imageAlt={`${recipe.title}, plated dish`} imagePosition={recipe.imagePosition} index={index} meta={`${recipe.components.length} components`} onToggle={onToggle} open={open} title={recipe.title} />
 
       {open && (
-        <div className="grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
+        <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {recipe.image ? (
             <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper">
               <Image
@@ -287,11 +270,11 @@ export function BenuGuide() {
   }, []);
 
   return (
-    <div>
+    <div className="min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm leading-6 text-ink/55">Ordered from the earliest supplied photograph to the latest.</p>
-          <p className="mt-1 text-xs text-ink/38">Open a compact row for the dish, component-by-component ingredients, full method and scaling.</p>
+          <p className="mt-1 text-xs text-ink/38">Open an image card for component-by-component ingredients, the full method and scaling.</p>
         </div>
         <label className="relative block sm:w-72">
           <span className="sr-only">Search Benu recipes</span>
@@ -306,7 +289,7 @@ export function BenuGuide() {
         </label>
       </div>
 
-      <div className="mt-5 grid gap-2">
+      <CookbookRecipeRail title="Benu recipes">
         {filteredRecipes.map((recipe) => (
           <RecipeCard
             index={benuRecipes.indexOf(recipe)}
@@ -316,7 +299,7 @@ export function BenuGuide() {
             recipe={recipe}
           />
         ))}
-      </div>
+      </CookbookRecipeRail>
 
       {filteredRecipes.length === 0 && (
         <div className="mt-5 rounded-2xl border border-dashed border-ink/15 p-8 text-center text-sm text-ink/45">No Benu recipes match that search.</div>

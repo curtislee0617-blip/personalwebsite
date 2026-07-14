@@ -5031,6 +5031,45 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
 .modernist-linked-entries a:hover { border-color: rgb(var(--color-moss) / 0.45); color: rgb(var(--color-ink)); }
 .modernist-linked-entries small { color: rgb(var(--color-ink) / 0.34); font-family: var(--font-code); font-size: 0.54rem; }
 
+.book-recipe-carousel {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overscroll-behavior-inline: contain;
+  scroll-behavior: smooth;
+  scroll-padding-inline: 0.25rem;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.book-recipe-carousel::-webkit-scrollbar { display: none; }
+.book-recipe-carousel > .mobile-snap-spacer { display: none; }
+.book-recipe-carousel > .mobile-snap-slot {
+  display: block;
+  width: 17.5rem;
+  flex: 0 0 17.5rem;
+  transition: width 320ms var(--ease-standard), flex-basis 320ms var(--ease-standard);
+}
+.book-recipe-carousel > .mobile-snap-slot:has([aria-expanded="true"]) {
+  width: min(70rem, calc(100vw - 6rem));
+  flex-basis: min(70rem, calc(100vw - 6rem));
+}
+.book-recipe-carousel .mobile-snap-depth,
+.book-recipe-carousel .cookbook-rail-card { height: 100%; }
+.book-recipe-section { min-width: 0; max-width: 100%; }
+
+@media (max-width: 639px) {
+  .book-recipe-carousel { --carousel-card-width: 14rem; }
+  .book-recipe-carousel > .mobile-snap-spacer { display: block; }
+  .book-recipe-carousel > .mobile-snap-slot {
+    width: var(--carousel-card-width);
+    flex-basis: var(--carousel-card-width);
+  }
+  .book-recipe-carousel > .mobile-snap-slot:has([aria-expanded="true"]) {
+    width: min(calc(100vw - 2rem), 36rem);
+    flex-basis: min(calc(100vw - 2rem), 36rem);
+  }
+}
+
 .modernist-notes {
   display: grid;
   gap: 0.35rem;

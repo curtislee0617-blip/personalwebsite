@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
+import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 import {
   pollenStreetBasics,
@@ -348,29 +350,12 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
   const [factorText, setFactorText] = useState("1");
   const parsed = Number.parseFloat(factorText);
   const factor = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-  const ingredientCount = dish.sections.reduce((total, section) => total + section.ingredients.length, 0);
-
   return (
-    <article className="overflow-hidden rounded-[1.45rem] border border-ink/10 bg-paper/72" id={`dish-${dish.slug}`}>
-      <button
-        aria-expanded={open}
-        className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-surface/45 sm:px-5"
-        onClick={onToggle}
-        type="button"
-      >
-        <span className="w-6 shrink-0 font-mono text-[0.62rem] text-ink/30">{String(index + 1).padStart(2, "0")}</span>
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-semibold tracking-tight sm:text-[0.95rem]">{dish.title}</span>
-          <span className="mt-0.5 hidden truncate text-[0.68rem] text-ink/43 sm:block">{dish.subtitle}</span>
-        </span>
-        <span className="hidden text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-ink/35 sm:block">
-          {dish.sections.length} {dish.sections.length === 1 ? "component" : "components"} · {ingredientCount} ingredients
-        </span>
-        <Chevron open={open} small />
-      </button>
+    <article className={`cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition ${open ? "col-span-full" : ""}`} id={`dish-${dish.slug}`}>
+      <CookbookRecipeCardSummary description={dish.subtitle} fallbackMark="POLLEN STREET" image={dish.images[0] ?? null} imageAlt={`${dish.title}, plated dish`} index={index} meta={`${dish.sections.length} components`} onToggle={onToggle} open={open} title={dish.title} />
 
       {open && (
-        <div className="grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
+        <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {dish.images.length > 0 ? (
             <div className={`mx-auto grid w-full max-w-lg gap-2.5 overflow-hidden rounded-[1.15rem] ${dish.images.length > 1 ? "sm:grid-cols-2" : ""}`}>
               {dish.images.map((source, imageIndex) => (
@@ -418,6 +403,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
 function DishesPanel() {
   const [query, setQuery] = useState("");
   const [openDishes, setOpenDishes] = useState<Record<string, boolean>>({});
+  const [layout, setLayout] = useState<"categories" | "all">("categories");
   const filteredDishes = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (!needle) return pollenStreetDishes;
@@ -425,6 +411,12 @@ function DishesPanel() {
       `${dish.title} ${dish.subtitle} ${dish.sections.map((section) => section.name).join(" ")}`.toLowerCase().includes(needle),
     );
   }, [query]);
+  const groups = [
+    { title: "Bites", start: 0, end: 2 },
+    { title: "Seafood", start: 3, end: 12 },
+    { title: "Meat", start: 13, end: 21 },
+    { title: "Dessert", start: 22, end: 28 },
+  ];
 
   useEffect(() => {
     const openHashDish = () => {
@@ -442,36 +434,51 @@ function DishesPanel() {
   }, []);
 
   return (
-    <div>
+    <div className="min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm leading-6 text-ink/55">Ordered exactly as photographed, from the earliest image to the latest.</p>
-          <p className="mt-1 text-xs text-ink/38">Open a compact row for the plated dish, components, full method and any called-for Basics.</p>
+          <p className="mt-1 text-xs text-ink/38">Open an image card for the plated dish, components, full method and any called-for Basics.</p>
         </div>
-        <label className="relative block sm:w-72">
-          <span className="sr-only">Search Pollen Street recipes</span>
-          <input
-            className="h-10 w-full rounded-full border border-ink/12 bg-surface/65 px-4 pr-10 text-sm outline-none transition placeholder:text-ink/35 focus:border-ink/30"
-            onChange={(event) => setQuery(event.currentTarget.value)}
-            placeholder="Search dishes or components"
-            type="search"
-            value={query}
-          />
-          <span aria-hidden="true" className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-ink/35">⌕</span>
-        </label>
+        <div className="flex items-center gap-2">
+          <button aria-pressed={layout === "all"} className="hidden h-10 items-center rounded-full border border-ink/12 bg-surface/65 px-4 text-xs font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink sm:inline-flex" onClick={() => setLayout((current) => current === "categories" ? "all" : "categories")} type="button">{layout === "categories" ? "Show all recipes" : "Show categories"}</button>
+          <label className="relative block min-w-0 flex-1 sm:w-72 sm:flex-none">
+            <span className="sr-only">Search Pollen Street recipes</span>
+            <input
+              className="h-10 w-full rounded-full border border-ink/12 bg-surface/65 px-4 pr-10 text-sm outline-none transition placeholder:text-ink/35 focus:border-ink/30"
+              onChange={(event) => setQuery(event.currentTarget.value)}
+              placeholder="Search dishes or components"
+              type="search"
+              value={query}
+            />
+            <span aria-hidden="true" className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-ink/35">⌕</span>
+          </label>
+        </div>
       </div>
 
-      <div className="mt-5 grid gap-2">
-        {filteredDishes.map((dish) => (
-          <DishCard
-            dish={dish}
-            index={pollenStreetDishes.indexOf(dish)}
-            key={dish.slug}
-            onToggle={() => setOpenDishes((current) => ({ ...current, [dish.slug]: !current[dish.slug] }))}
-            open={Boolean(openDishes[dish.slug])}
-          />
-        ))}
-      </div>
+      {layout === "categories" ? <div className="mt-7 grid gap-9">
+        {groups.map((group) => {
+          const dishes = filteredDishes.filter((dish) => {
+            const index = pollenStreetDishes.indexOf(dish);
+            return index >= group.start && index <= group.end;
+          });
+          return (
+            <CookbookRecipeRail key={group.title} title={group.title}>
+              {dishes.map((dish) => (
+                <DishCard
+                  dish={dish}
+                  index={pollenStreetDishes.indexOf(dish)}
+                  key={dish.slug}
+                  onToggle={() => setOpenDishes((current) => ({ ...current, [dish.slug]: !current[dish.slug] }))}
+                  open={Boolean(openDishes[dish.slug])}
+                />
+              ))}
+            </CookbookRecipeRail>
+          );
+        })}
+      </div> : <div className="mt-5 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {filteredDishes.map((dish) => <DishCard dish={dish} index={pollenStreetDishes.indexOf(dish)} key={dish.slug} onToggle={() => setOpenDishes((current) => ({ ...current, [dish.slug]: !current[dish.slug] }))} open={Boolean(openDishes[dish.slug])} />)}
+      </div>}
 
       {filteredDishes.length === 0 && (
         <div className="mt-5 rounded-2xl border border-dashed border-ink/15 p-8 text-center text-sm text-ink/45">No recipes match that search.</div>
@@ -522,12 +529,14 @@ export function PollenStreetGuide() {
       </div>
 
       <div
+        className="min-w-0"
         hidden={view !== "basics"}
         id="pollen-basics-panel"
       >
         {view === "basics" && <BasicsPanel />}
       </div>
       <div
+        className="min-w-0"
         hidden={view !== "recipes"}
         id="pollen-recipes-panel"
       >
