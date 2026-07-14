@@ -79,6 +79,13 @@ function buildRecipeSearchPreview(uploadedRecipes: RecipeCardEntry[]): RecipeSea
   }));
   return [
     {
+      title: "Core by Clare Smyth",
+      context: "Recipe book · Basics and 51 complete dish groups",
+      kind: "Book",
+      href: "/recipes/core-basics",
+      searchText: "core clare smyth basics complete dishes cookbook",
+    },
+    {
       title: "Pollen Street by Jason Atherton",
       context: "Recipe book · 83 recipes",
       kind: "Book",
@@ -296,6 +303,30 @@ export default async function RecipesPage() {
               <p className="section-description mt-2 text-sm text-ink/50">Reference books and their recipe contents.</p>
             </div>
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <Link
+                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                href="/recipes/core-basics"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
+                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                    <Image
+                      alt="Core Apple by Clare Smyth"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+                      src="/core-book/dishes/core-apple-1.jpg"
+                    />
+                  </div>
+                </div>
+                <div className="p-3 pb-4 pt-4">
+                  <p className="eyebrow">Book · Basics + 51 dish groups</p>
+                  <div className="mt-2 flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight">Core by Clare Smyth</h3>
+                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">Core Basics and the complete supplied dishes, rebuilt as searchable, scalable cards while retaining the book&apos;s page flow.</p>
+                </div>
+              </Link>
               <Link
                 className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/pollen-street"

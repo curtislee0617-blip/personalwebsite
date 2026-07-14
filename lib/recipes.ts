@@ -54,15 +54,6 @@ export const recipeEntries: RecipeEntry[] = [
     href: "/recipes/sourdough-guide",
   },
   {
-    slug: "core-basics",
-    kind: "guide",
-    title: "Core basics",
-    description:
-      "Foundational recipes from Core by Clare Smyth, the book from the three Michelin starred restaurant, including powders, stocks and sauces, butters and purees, brines, oils and gels, mousse, pastry, and bakery starters.",
-    status: "published",
-    href: "/recipes/core-basics",
-  },
-  {
     slug: "viennoiserie-guide",
     kind: "guide",
     title: "Viennoiserie guide",

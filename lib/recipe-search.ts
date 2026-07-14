@@ -2,6 +2,7 @@ import modernistContents from "@/imports/modernist-cuisine-volume-6/contents-ind
 import { bachourRecipes } from "@/lib/bachour";
 import { benuRecipes } from "@/lib/benu";
 import { coreCategories, coreRecipes } from "@/lib/core-basics";
+import { coreDishes } from "@/lib/core-dishes";
 import { modernistEntryHref } from "@/lib/modernist-navigation";
 import { pollenStreetBasics, pollenStreetCategories, pollenStreetDishes } from "@/lib/pollen-street";
 import { recipeEntries } from "@/lib/recipes";
@@ -30,6 +31,13 @@ const coreCategoryLabels = new Map(coreCategories.map((category) => [category.id
 const pollenCategoryLabels = new Map(pollenStreetCategories.map((category) => [category.id, category.label]));
 
 export const recipeSearchItems: RecipeSearchItem[] = [
+  {
+    title: "Core by Clare Smyth",
+    context: "Recipe book · Basics and 51 complete dish groups",
+    kind: "Book",
+    href: "/recipes/core-basics",
+    searchText: "core clare smyth basics complete dishes cookbook",
+  },
   {
     title: "Pollen Street by Jason Atherton",
     context: "Recipe book · 83 recipes",
@@ -76,6 +84,13 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     kind: "Core basic",
     href: `/recipes/core-basics#${recipe.slug}`,
     searchText: recipe.ingredients.join(" "),
+  })),
+  ...coreDishes.map((dish): RecipeSearchItem => ({
+    title: dish.title,
+    context: `Core by Clare Smyth${dish.subtitle ? ` · ${dish.subtitle}` : ""}`,
+    kind: "Core dish",
+    href: `/recipes/core-basics#core-dish-${dish.slug}`,
+    searchText: dish.searchText,
   })),
   ...pollenStreetBasics.map((recipe): RecipeSearchItem => ({
     title: recipe.name,
