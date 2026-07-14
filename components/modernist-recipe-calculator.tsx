@@ -1,9 +1,17 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 
-type Ingredient = { name: string; quantity: string; heading?: boolean };
+export type ModernistIngredient = { name: string; quantity: string; heading?: boolean };
+export type ModernistRecipeStep = { number: number; text: string };
+export type ModernistRecipeComponent = {
+  name: string;
+  nameSource?: string;
+  sourceBand?: { top: number; bottom: number };
+  ingredients: ModernistIngredient[];
+  steps: ModernistRecipeStep[];
+};
 
 const FRACTIONS: Record<string, number> = {
   "½": 0.5,
@@ -101,9 +109,26 @@ function ScaleControl({
   );
 }
 
-export function ModernistRecipeCalculator({ ingredients, steps }: { ingredients: Ingredient[]; steps: string[] }) {
+export function ModernistRecipeCalculator({
+  components,
+  ingredients,
+  renderText,
+  steps,
+}: {
+  components?: ModernistRecipeComponent[];
+  ingredients: ModernistIngredient[];
+  renderText?: (text: string) => ReactNode;
+  steps: string[];
+}) {
   const inputId = useId();
   const { factor, factorText, setFactorText } = useRecipeScale();
+  const recipeComponents = components?.length
+    ? components
+    : [{
+        name: "Recipe",
+        ingredients,
+        steps: steps.map((text, index) => ({ number: index + 1, text })),
+      }];
 
   return (
     <div className="modernist-recipe-body">
@@ -116,48 +141,48 @@ export function ModernistRecipeCalculator({ ingredients, steps }: { ingredients:
         setFactorText={setFactorText}
       />
 
-      <section>
-        <p className="modernist-section-label">Ingredients</p>
-        <dl className="modernist-ingredients">
-          {ingredients.map((ingredient, index) => (
-            <div className={ingredient.heading ? "is-heading" : undefined} key={`${ingredient.name}-${index}`}>
-              <dt>{ingredient.name}</dt>
-              <dd>{ingredient.heading ? "" : scaleQuantity(ingredient.quantity, factor) || "—"}</dd>
+      <div className="modernist-components">
+        {recipeComponents.map((component, componentIndex) => (
+          <section className="modernist-component" key={`${component.name}-${componentIndex}`}>
+            <div className="modernist-component-heading">
+              <p>{renderText ? renderText(component.name) : component.name}</p>
+              <span>Component {componentIndex + 1}</span>
             </div>
-          ))}
-        </dl>
-      </section>
+            <div className="modernist-component-grid">
+              <div>
+                <p className="modernist-section-label">Ingredients</p>
+                <dl className="modernist-ingredients">
+                  {component.ingredients.map((ingredient, ingredientIndex) => (
+                    <div
+                      className={ingredient.heading ? "is-heading" : undefined}
+                      key={`${ingredient.name}-${ingredientIndex}`}
+                    >
+                      <dt>{renderText ? renderText(ingredient.name) : ingredient.name}</dt>
+                      <dd>{ingredient.heading ? "" : scaleQuantity(ingredient.quantity, factor) || "—"}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
 
-      <section>
-        <p className="modernist-section-label">Method</p>
-        <ol className="modernist-method">
-          {steps.map((step, index) => (
-            <li key={`${step}-${index}`}>
-              <span>{index + 1}</span>
-              <p>{step}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-    </div>
-  );
-}
-
-export function ModernistFacsimileScaleHelper() {
-  const inputId = useId();
-  const { factor, factorText, setFactorText } = useRecipeScale();
-
-  return (
-    <div className="modernist-facsimile-scaler">
-      <ScaleControl
-        description="Apply this multiplier to every quantity in the page below."
-        factor={factor}
-        factorText={factorText}
-        inputId={inputId}
-        label="Scale printed recipe"
-        setFactorText={setFactorText}
-      />
-      <p className="modernist-factor-readout">Printed quantity × <strong>{factor} = scaled quantity</strong></p>
+              <div>
+                <p className="modernist-section-label">Method for this component</p>
+                {component.steps.length > 0 ? (
+                  <ol className="modernist-method">
+                    {component.steps.map((step) => (
+                      <li key={`${step.number}-${step.text}`}>
+                        <span>{step.number}</span>
+                        <p>{renderText ? renderText(step.text) : step.text}</p>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="modernist-component-empty">No separate method is printed for this ingredient band.</p>
+                )}
+              </div>
+            </div>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }

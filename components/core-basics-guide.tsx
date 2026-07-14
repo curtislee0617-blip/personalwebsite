@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { coreCategories, coreIntro, coreRecipes, coreRecipesByCategory, type CoreRecipe } from "@/lib/core-basics";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 
@@ -214,6 +214,20 @@ export function CoreBasicsGuide() {
     setOpenSections(Object.fromEntries(coreCategories.map((category) => [category.id, value])));
     setOpenRecipes(Object.fromEntries(coreRecipes.map((recipe) => [recipe.slug, value])));
   };
+
+  useEffect(() => {
+    const openHashRecipe = () => {
+      const slug = window.location.hash.slice(1);
+      const recipe = coreRecipes.find((item) => item.slug === slug);
+      if (!recipe) return;
+      setOpenSections((current) => ({ ...current, [recipe.category]: true }));
+      setOpenRecipes((current) => ({ ...current, [slug]: true }));
+      window.requestAnimationFrame(() => document.getElementById(slug)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    };
+    openHashRecipe();
+    window.addEventListener("hashchange", openHashRecipe);
+    return () => window.removeEventListener("hashchange", openHashRecipe);
+  }, []);
 
   return (
     <div className="grid gap-8 sm:gap-10">

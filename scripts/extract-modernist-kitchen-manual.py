@@ -17,8 +17,10 @@ import json
 import unicodedata
 from difflib import SequenceMatcher
 
+import numpy as np
 import pypdf
 import pdfplumber
+from PIL import Image
 
 
 PDF = Path('/tmp/recipe_book_drive.pdf')
@@ -49,7 +51,10 @@ CHAPTERS = [
     ('chapter-12-plant-foods', 'Chapter 12 — Plant Foods', 138, 199),
     ('chapter-13-thickeners', 'Chapter 13 — Thickeners', 200, 231),
     ('chapter-14-gels', 'Chapter 14 — Gels', 232, 295),
-    ('chapter-15-emulsions', 'Chapter 15 — Emulsions', 296, None),
+    ('chapter-15-emulsions', 'Chapter 15 — Emulsions', 296, 311),
+    ('chapter-16-foams', 'Chapter 16 — Foams', 312, 349),
+    ('chapter-18-coffee', 'Chapter 18 — Coffee', 350, 351),
+    ('reference-tables', 'Reference Tables', 352, None),
 ]
 
 
@@ -85,7 +90,7 @@ def isolate_entry(text: str, title: str, later_titles: list[str]) -> str:
     return text[match.start():end].strip()
 
 
-STEP_MARKER = re.compile(r'^(?:CD|\(?[0O®@©J]\)?|[①②③④⑤⑥⑦⑧⑨⑩])\s*')
+STEP_MARKER = re.compile(r'^(?:CD|<D|\[\)|\(!\)|\(?[0O®@©Jj]\)?|[①②③④⑤⑥⑦⑧⑨⑩])\s*')
 QUANTITY = re.compile(
     r'^(.*?)[, ]+((?:\d|[lIO])(?:[\d.,/<>Yz ]*?)(?:kg|mg|mcg|g|ml|mL|L|lb|oz|pieces?|cloves?|sprigs?|eggs?)|as needed|to taste)$',
     re.IGNORECASE,
@@ -170,6 +175,13 @@ def line_text(words: list[dict[str, object]]) -> str:
     return ' '.join(str(word['text']) for word in words).strip()
 
 
+def repair_ocr_number(value: str) -> str:
+    value = re.sub(r'[lIJ]', '1', value)
+    value = re.sub(r'[oO]', '0', value)
+    value = re.sub(r'[sS]', '5', value)
+    return re.sub(r'[bB]', '8', value)
+
+
 def clean_ocr(value: str) -> str:
     value = unicodedata.normalize('NFC', value)
     value = value.replace('\u00ad', '')
@@ -180,14 +192,101 @@ def clean_ocr(value: str) -> str:
     value = re.sub(r'\bfor(?=\d)', 'for ', value, flags=re.I)
     value = re.sub(r'\babout(?=\d)', 'about ', value, flags=re.I)
     value = re.sub(r'\bof(?=\d)', 'of ', value, flags=re.I)
+    value = re.sub(r'\b80i\s*l\b', 'boil', value, flags=re.I)
+    value = re.sub(r'\b5i\s*l\s*ica\b', 'silica', value, flags=re.I)
+    value = re.sub(r'\b5i\s*l\s*icone\b', 'silicone', value, flags=re.I)
+    value = re.sub(r'\b5i\s*l\s*ky\b', 'silky', value, flags=re.I)
+    value = re.sub(r'\b50i\s*l\b', 'soil', value, flags=re.I)
+    value = re.sub(
+        r'\b([0-9lIJSOoB]{2,})\s+([0-9]{2,3})\s*[°º\'”"]?\s*F\b',
+        lambda match: f'{repair_ocr_number(match.group(1))} °C / {match.group(2)} °F',
+        value,
+        flags=re.I,
+    )
+    value = re.sub(
+        r'\b([0-9lIJSOoB]{2,})\s*[°º\'”"]\s*([CF])(?=\b|oil\b)',
+        lambda match: f'{repair_ocr_number(match.group(1))} °{match.group(2).upper()}',
+        value,
+    )
+    value = re.sub(r'(?i)\b(for|about|of|at)l(?=\s*(?:bar|h|min|d|s|kg|mg|mcg|g|ml|l|lb|oz)\b)', r'\1 1', value)
+    value = re.sub(r'(?i)(?<=[a-z])for(?=\d)', ' for ', value)
+    value = re.sub(r'(?i)(?<=[a-z])forl(?=\s*(?:h|min|d)\b)', ' for 1', value)
+    value = re.sub(r'(?i)\b(for|about|at|seal|additional|remaining|fill|layer|four|cylinder|or|heat)(?=\d)', r'\1 ', value)
+    value = re.sub(r'(?i)\badditiona1(?=\d\s*[YV])', 'additional ', value)
+    value = re.sub(r'(?i)\badditiona(?=\d)', 'additional ', value)
+    value = re.sub(r'(?<=\d)(?=(?:min|h|d|s)\b)', ' ', value, flags=re.I)
+    value = re.sub(r'(?<=\d)(?=g\b)', ' ', value, flags=re.I)
+    value = re.sub(r'(?<=\d)(?=(?:psi|bar|cm|mm|mbar|torr|kHz|W)\b)', ' ', value, flags=re.I)
     value = re.sub(r'(?<=\d)\s*(?:[·•°\']|[oO])\s*[cC]\b', ' °C', value)
     value = re.sub(r'(?<=\d)\s*(?:[\'”“°]|[oO])\s*[fF]\b', ' °F', value)
+    value = re.sub(r'(?i)(\d)\s*[YV]\s*2\b', r'\1½', value)
+    value = re.sub(r'(?i)(\d)\s*[YV][.,\'’]?\s+(?=(?:h|in\.?|kg)\b)', r'\1½ ', value)
+    value = re.sub(r'(?<=°C)\s*[1Il]\s*(?=\d+\s*°F\b)', ' / ', value)
+    value = re.sub(r'(?<=\bbar)\s*[1Il]\s*(?=\d+\s*psi\b)', ' / ', value)
+    value = re.sub(
+        r'\b([0-9lIJSOoB]{2,})\s*[°º]\s*([CF])(?=\b|oil\b)',
+        lambda match: f'{repair_ocr_number(match.group(1))} °{match.group(2).upper()}',
+        value,
+    )
     value = re.sub(r'\s+[lI]\s+(?=\d)', ' / ', value)
     value = re.sub(r'(?<=\d)\s+em\b', ' cm', value, flags=re.I)
+    value = re.sub(r'\b21[/\\>]?>?\s*h\b', '2½ h', value)
+    value = re.sub(r'\b1[\]}]<?\s*(?=(?:h|in\.?)\b)', '1¼ ', value)
     value = re.sub(r'\b([0-9]+)\s*[Yy]\s*[zZ]\b', r'\1½', value)
     value = re.sub(r'\b([0-9]+)\s*[Yy]\s*,\b', r'\1½', value)
     value = re.sub(r'\b([0-9]+)\s*[Yy]\s*,(?=\s)', r'\1½', value)
+    value = re.sub(
+        r'(?i)\b([0-9lIJSOoB]*\d[0-9lIJSOoB]*(?:[.,][0-9lIJSOoB]+)?)\s*(kg|mg|mcg|g|ml|mL|L|lb|oz)\b',
+        _repair_quantity_match,
+        value,
+    )
+    value = re.sub(r'(?i)\bSaute\b', 'Sauté', value)
+    value = re.sub(r'(?i)([°º]\s*F)(?=oil\b)', r'\1 ', value)
+    value = re.sub(r'^(?:<D|\[\)|\(!\))\s*', '', value)
     value = repair_broken_words(value)
+    post_repairs = {
+        'alow': 'a low', 'ona': 'on a', 'asa': 'as a', 'apiece': 'a piece',
+        "it'snot": "it's not", 'anda': 'and a', 'goa': 'go a',
+        'Th is': 'This', 'grill- ing': 'grilling', 'compou nds': 'compounds',
+        'Chem ists': 'Chemists', 'temper atures': 'temperatures',
+        'flu id': 'fluid', 'add ing': 'adding',
+        'layerl.5': 'layer 1.5',
+    }
+    for source, target in post_repairs.items():
+        value = re.sub(rf'\b{re.escape(source)}\b', target, value, flags=re.I)
+    value = re.sub(r'(?i)\btoa\b', 'to a', value)
+    value = re.sub(r'(?i)(?<=[a-z])for(?=\s+\d)', ' for', value)
+    value = re.sub(r'\s+in the table below refer.*$', '', value, flags=re.I)
+    value = re.sub(
+        r'(\d+)\s*°C\s*1\s*(\d+)\s*bath to core\s*°F\s*temperature',
+        r'\1 °C / \2 °F bath to core temperature',
+        value,
+        flags=re.I,
+    )
+    value = value.replace('1]4', '1¼').replace('1 Y>', '1½')
+    value = re.sub(r'(?<=\d\s(?:cm|mm))\s*[I1]\s*(?=1¼\b)', ' / ', value)
+    dimension_repairs = {
+        '1 mm I){. in': '1 mm / 1/16 in',
+        '1 mm I ){6 in': '1 mm / 1/16 in',
+        '1 mm I ){ 6 in': '1 mm / 1/16 in',
+        '1 mm I ){, in': '1 mm / 1/16 in',
+        '2 mm I ){, in': '2 mm / 1/16 in',
+        '1.5 mm I ){6 in': '1.5 mm / 1/16 in',
+        "8 mm I '}i'Gin": '8 mm / 5/16 in',
+    }
+    for source, target in dimension_repairs.items():
+        value = value.replace(source, target)
+    value = value.replace('{Brown Ribbon', '(Brown Ribbon').replace('{National Starch', '(National Starch')
+    value = re.sub(r'(?i)([°º]\s*F)(?=oil\b)', r'\1 ', value)
+    value = re.sub(
+        r'(?i)\b(page\s+\d+[·-])([0-9lIJSOoB]+)\b',
+        lambda match: f'{match.group(1)}{repair_ocr_number(match.group(2))}',
+        value,
+    )
+    value = re.sub(r'(?i)\bpage\s+[lI](\d{1,2})\b', lambda match: f'page 1{match.group(1)}', value)
+    value = re.sub(r'(?i)\bpage\s+([1-5])(\d{3})\b', r'page \1·\2', value)
+    value = value.replace('(sweet}', '(sweet)')
+    value = re.sub(r'(?<=[A-Za-z])\(', ' (', value)
     value = re.sub(r'\s+([,.;:!?])', r'\1', value)
     value = re.sub(r'([(“])\s+', r'\1', value)
     value = re.sub(r'\s+', ' ', value).strip()
@@ -208,6 +307,29 @@ def repair_broken_words(value: str) -> str:
         'contin uously': 'continuously', 'emu lsified': 'emulsified',
         'syr upy': 'syrupy', 'leathe ry': 'leathery', 'parchm ent': 'parchment',
         'barbecu- ing': 'barbecuing', 'chaco- late': 'chocolate',
+        'Cand lenuts': 'Candlenuts', 'shal lots': 'shallots',
+        'Neutral 0i l': 'Neutral oil', '0i l': 'oil',
+        'jam6n Ib e rico': 'jamón ibérico',
+        'Shoyusoysauce': 'Shoyu soy sauce',
+        'so us vid e': 'sous vide', 'so us': 'sous', 'vid e': 'vide',
+        'Roasttogethe r': 'Roast together', 'd issolved': 'dissolved',
+        'ge lled': 'gelled', 'air cool ing': 'air cooling',
+        'scorch ing': 'scorching', 'surround ing': 'surrounding',
+        'goa long': 'go a long', 'anda small': 'and a small',
+        'asa seasoning': 'as a seasoning', 'd ilu ted': 'diluted',
+        'Austral ian': 'Australian', 'accept able': 'acceptable',
+        'cal led': 'called', 'rep lace': 'replace', 'a very': 'a very',
+        'abo ut': 'about', 'additiona l': 'additional',
+        'ata frequency': 'at a frequency', 'adry': 'a dry',
+        'ona flaming': 'on a flaming', "it'snot": "it's not",
+        'apiece of meat': 'a piece of meat',
+        'toa boil': 'to a boil', 'fora smoother': 'for a smoother',
+        'avery fine': 'a very fine', 'o i l': 'oil',
+        'fall ing': 'falling', 'w i1 l': 'will',
+        'Av i eel': 'Avicel', 'Avice I': 'Avicel',
+        'de}eunes': 'de Jeunes', 'Gargouil/ou': 'Gargouillou',
+        'alow': 'a low', 'ch icke n': 'chicken',
+        'store- bought': 'store-bought',
     }
     for source, target in repairs.items():
         value = re.sub(rf'\b{re.escape(source)}\b', target, value, flags=re.I)
@@ -250,23 +372,26 @@ def repair_broken_words(value: str) -> str:
 
 def clean_quantity(value: str) -> str:
     value = clean_ocr(value)
-    value = re.sub(r'(?i)\b([0-9lIJSOo]+(?:[.,][0-9lIJSOo]+)?)\s*(kg|mg|mcg|g|ml|mL|L|lb|oz)\b', _repair_quantity_match, value)
+    value = re.sub(
+        r'(?i)\b([0-9lIJSOoB]+(?:[.,][0-9lIJSOoB]+)?)\s*(kg|mg|mcg|g|ml|mL|L|lb|oz)\b',
+        _repair_quantity_match,
+        value,
+    )
     value = re.sub(r'\bas\s+neede\s*d\b', 'as needed', value, flags=re.I)
     value = re.sub(r'\bto\s+tast\s*e\b', 'to taste', value, flags=re.I)
     return re.sub(r'\s+', ' ', value).strip()
 
 
 def _repair_quantity_match(match: re.Match[str]) -> str:
-    number = match.group(1)
-    number = re.sub(r'[lIJ]', '1', number)
-    number = re.sub(r'[oO]', '0', number)
-    number = re.sub(r'[sS]', '5', number)
+    number = repair_ocr_number(match.group(1))
     unit = match.group(2)
     unit = 'mL' if unit.lower() == 'ml' else unit.lower() if unit != 'L' else 'L'
     return f'{number} {unit}'
 
 
 def smart_title(value: str) -> str:
+    value = re.sub(r'^CHAPTER\s*\d+\s*:\s*[A-Z ]+?\s+\d+\s+', '', value, flags=re.I)
+    value = re.sub(r'^REFERENCE TABLES?\s+\d+\s+', '', value, flags=re.I)
     value = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', value)
     value = re.sub(r'\bSO\s+US\b', 'SOUS', value, flags=re.I)
     value = re.sub(r'\bBEEF\]\s*ERKY\b', 'BEEF JERKY', value, flags=re.I)
@@ -279,19 +404,28 @@ def smart_title(value: str) -> str:
     value = re.sub(r'\bA\s+LA\b', 'À LA', value, flags=re.I)
     value = re.sub(r'\bA\s+CHOUX\b', 'À CHOUX', value, flags=re.I)
     value = re.sub(r'\bDE\s+IA\b', 'DE LA', value, flags=re.I)
+    value = re.sub(r'\bBAY\s+LEA£', 'BAY LEAF', value, flags=re.I)
+    value = re.sub(r'\bMAS\s+ALA\b', 'MASALA', value, flags=re.I)
+    value = re.sub(r'\bPASTA\s+VEI1\b', 'PASTA VEIL', value, flags=re.I)
+    value = re.sub(r'\bPEA\s*JUICE\b', 'PEA JUICE', value, flags=re.I)
+    value = re.sub(r'\bPRAWN\s*JUS\b', 'PRAWN JUS', value, flags=re.I)
+    value = re.sub(r'\bVEGETABLE\s*JUS\b', 'VEGETABLE JUS', value, flags=re.I)
+    value = re.sub(r'\bBEEF\s*JUICE\b', 'BEEF JUICE', value, flags=re.I)
+    value = re.sub(r'\bBBQ\s*CARAMELS\b', 'BBQ CARAMELS', value, flags=re.I)
     replacements = {
         'FRAJCHE': 'FRAÎCHE', 'FRALCHE': 'FRAÎCHE', 'FRAICHE': 'FRAÎCHE',
         'CREMEUX': 'CRÉMEUX', 'CREME': 'CRÈME',
         'CONSOMME': 'CONSOMMÉ', 'PUREE': 'PURÉE', 'BECHAMEL': 'BÉCHAMEL',
         'PUREES': 'PURÉES', 'PAVE': 'PAVÉ', 'SOUFFLEES': 'SOUFFLÉES',
         'SOUFFLE': 'SOUFFLÉ', 'BRIILEE': 'BRÛLÉE', 'BRULEE': 'BRÛLÉE',
+        'GELEE': 'GELÉE',
         'PATE': 'PÂTE', 'EPICES': 'ÉPICES', 'GRUYERE': 'GRUYÈRE',
         'REMOULADE': 'RÉMOULADE', 'SABLE': 'SABLÉ',
     }
     for source, target in replacements.items():
         value = re.sub(rf'\b{source}\b', target, value, flags=re.I)
     titled = value.lower().title()
-    for word in ('And', 'Or', 'With', 'For', 'In', 'Of', 'The', 'A', 'An', 'Au', 'De', 'La', 'To'):
+    for word in ('And', 'Or', 'With', 'For', 'In', 'Of', 'On', 'The', 'A', 'An', 'Au', 'De', 'En', 'La', 'To'):
         titled = re.sub(rf'(?<!^)\b{word}\b', word.lower(), titled)
     titled = re.sub(r"([’'])S\b", r"\1s", titled)
     titled = re.sub(r"(?<!^)\bD'", "d'", titled)
@@ -299,6 +433,10 @@ def smart_title(value: str) -> str:
     titled = re.sub(r'\bPh\b', 'pH', titled)
     titled = re.sub(r'\bP H\b', 'pH', titled)
     titled = re.sub(r'\bCvap\b', 'CVap', titled)
+    titled = re.sub(r'\bBbq\b', 'BBQ', titled)
+    titled = re.sub(r'\bKc\b', 'KC', titled)
+    titled = re.sub(r'\bDe(?=\d)', 'DE', titled)
+    titled = re.sub(r'\bDmf\b', 'DMF', titled)
     titled = re.sub(r'\b19Th\b', '19th', titled)
     titled = re.sub(r'\bVin Jaune\b', 'Vin Jaune', titled)
     titled = re.sub(r'(?<!^)\bÀ\b', 'à', titled)
@@ -418,7 +556,18 @@ def assign_headings(entries: list[dict[str, object]], candidates: list[dict[str,
 
 def extract_contents_entries(pdf: pdfplumber.PDF) -> list[dict[str, object]]:
     entries: list[dict[str, object]] = []
-    chapter_ranges = [(8, 2, 5), (10, 6, 63), (11, 64, 137), (12, 138, 199), (13, 200, 231), (14, 232, 295), (15, 296, 999)]
+    chapter_ranges = [
+        ('chapter-08', 2, 5),
+        ('chapter-10', 6, 63),
+        ('chapter-11', 64, 137),
+        ('chapter-12', 138, 199),
+        ('chapter-13', 200, 231),
+        ('chapter-14', 232, 295),
+        ('chapter-15', 296, 311),
+        ('chapter-16', 312, 349),
+        ('chapter-18', 350, 351),
+        ('reference-tables', 352, 999),
+    ]
     for pdf_page in range(6, 13):
         page = pdf.pages[pdf_page - 1]
         for x0, x1 in ((0, page.width / 2), (page.width / 2, page.width)):
@@ -434,12 +583,14 @@ def extract_contents_entries(pdf: pdfplumber.PDF) -> list[dict[str, object]]:
                 match = re.match(r'^(.*?)(?:\.{2,}|\.\s+\.)\s*([0-9lIO]{1,3})\s*$', line)
                 if match:
                     title = re.sub(r'\s+', ' ', ' '.join([*continuation, match.group(1)])).strip(' .,')
+                    title = re.sub(r'^CHAPTER\s*\d+\s*:\s*[A-Z ]+?\s+\d+\s+', '', title, flags=re.I)
+                    title = re.sub(r'^REFERENCE TABLES?\s+\d+\s+', '', title, flags=re.I)
                     continuation = []
                     page_text_value = match.group(2).replace('l', '1').replace('I', '1').replace('O', '0')
                     if not title or not page_text_value.isdigit():
                         continue
                     printed_page = int(page_text_value)
-                    chapter = next((f'chapter-{number:02d}' for number, start, end in chapter_ranges if start <= printed_page <= end), None)
+                    chapter = next((identifier for identifier, start, end in chapter_ranges if start <= printed_page <= end), None)
                     if chapter:
                         entries.append({'chapter': chapter, 'title': title, 'page': printed_page})
                 elif not re.search(r'\.{3,}', line) and len(line) < 100:
@@ -493,9 +644,221 @@ def valid_quantity(value: str) -> bool:
     return bool(re.match(r'^(?:about\s+)?(?:\d|[\u00bc-¾⅐-⅞])', value))
 
 
-def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bottom: float) -> dict[str, object]:
+def plausible_sidebar_note(value: str) -> bool:
+    """Keep complete commentary paragraphs and reject clipped adjacent columns."""
+    if len(value) < 30 or not re.match(r'^[A-Z“"]', value):
+        return False
+    if re.match(r'^[A-Z]\s+[A-Z]\b', value):
+        return False
+    if re.search(r'\b(?:Yields?|INGREDIENT|QUANTITY|PROCEDURE)\b', value, re.I):
+        return False
+    return bool(re.search(r'[.!?”)]$', value))
+
+
+def detect_horizontal_rules(
+    image_path: Path | None,
+    page_width: float,
+    image_top: float,
+    ingredient_x: float,
+    procedure_x: float,
+    procedure_right: float,
+    sidebar_start: float | None,
+    region_top: float,
+    region_bottom: float,
+) -> list[float]:
+    """Read the printed table rules from the raster page crop.
+
+    Each PDF page is a scan with an OCR text layer, so pdfplumber has no vector
+    line objects to inspect. Long, nearly continuous dark runs are instead
+    detected in the recipe-grid span. Text never fills 82% of a wide moving
+    window, while the solid component rules do.
+    """
+    if image_path is None or not image_path.exists():
+        return []
+    try:
+        with Image.open(image_path) as source:
+            gray = np.asarray(source.convert('L'))
+    except (OSError, ValueError):
+        return []
+    if gray.ndim != 2 or gray.shape[0] < 12 or gray.shape[1] < 80:
+        return []
+
+    scale = gray.shape[1] / page_width
+    x0 = max(0, round((ingredient_x - 2) * scale))
+    estimated_right = sidebar_start - 4 if sidebar_start is not None else procedure_right + 4
+    x1 = min(gray.shape[1], round(max(procedure_x + 90, estimated_right) * scale))
+    if x1 - x0 < 80:
+        return []
+
+    dark = gray[:, x0:x1] < 210
+    window = max(30, round(dark.shape[1] * 0.34))
+    cumulative = np.pad(np.cumsum(dark, axis=1), ((0, 0), (1, 0)))
+    window_sums = cumulative[:, window:] - cumulative[:, :-window]
+    density = window_sums.max(axis=1) / window
+    candidate_rows = np.flatnonzero(density >= 0.82).tolist()
+    if not candidate_rows:
+        return []
+
+    groups: list[list[int]] = []
+    for row in candidate_rows:
+        if not groups or row - groups[-1][-1] > 2:
+            groups.append([row])
+        else:
+            groups[-1].append(row)
+
+    rules: list[float] = []
+    for group in groups:
+        row = max(group, key=lambda candidate: float(density[candidate]))
+        page_y = image_top + row / scale
+        if region_top - 4 <= page_y <= region_bottom + 3:
+            rules.append(round(page_y, 2))
+    return rules
+
+
+def public_ingredient(ingredient: dict[str, object]) -> dict[str, object]:
+    return {
+        key: value
+        for key, value in ingredient.items()
+        if not key.startswith('_')
+    }
+
+
+def component_output_name(ingredient_name: str) -> str | None:
+    match = re.match(r'^(.*?)(?:,?\s*\(?from above\)?)(?:\s|$)', ingredient_name, re.I)
+    if not match:
+        return None
+    name = re.sub(r'\s+', ' ', match.group(1)).strip(' ,()')
+    return smart_title(name) if name else None
+
+
+def build_component_groups(
+    title: str,
+    ingredients: list[dict[str, object]],
+    steps: list[dict[str, object]],
+    rules: list[float],
+    region_top: float,
+    region_bottom: float,
+) -> list[dict[str, object]]:
+    """Group ingredient rows and method steps by the printed horizontal rules."""
+    grouped: dict[int, dict[str, object]] = {}
+
+    def row_center(row: dict[str, object]) -> float:
+        if '_anchor' in row:
+            return float(row['_anchor'])
+        top = float(row.get('_top', region_top))
+        return (top + float(row.get('_bottom', top))) / 2
+
+    def group_for(anchor: float) -> dict[str, object]:
+        band = sum(rule < anchor for rule in rules)
+        return grouped.setdefault(band, {'band': band, 'ingredients': [], 'steps': [], '_anchors': []})
+
+    for ingredient in ingredients:
+        anchor = row_center(ingredient)
+        group = group_for(anchor)
+        group['ingredients'].append(public_ingredient(ingredient))  # type: ignore[union-attr]
+        group['_anchors'].append(anchor)  # type: ignore[union-attr]
+    for step in steps:
+        anchor = row_center(step)
+        group = group_for(anchor)
+        group['steps'].append({  # type: ignore[union-attr]
+            'number': int(step.get('number', 0)),
+            'text': str(step.get('text', '')),
+        })
+        group['_anchors'].append(anchor)  # type: ignore[union-attr]
+
+    components = [grouped[key] for key in sorted(grouped) if grouped[key]['ingredients'] or grouped[key]['steps']]
+    for index, component in enumerate(components):
+        component_ingredients = component['ingredients']
+        headings = [
+            str(ingredient.get('name', ''))
+            for ingredient in component_ingredients  # type: ignore[union-attr]
+            if ingredient.get('heading')
+        ]
+        inferred_output = None
+        if index + 1 < len(components):
+            for next_ingredient in components[index + 1]['ingredients']:  # type: ignore[union-attr]
+                inferred_output = component_output_name(str(next_ingredient.get('name', '')))
+                if inferred_output:
+                    break
+        if len(components) == 1:
+            name = smart_title(title)
+            name_source = 'recipe title'
+        elif headings:
+            name = smart_title(headings[0])
+            name_source = 'printed heading'
+        elif inferred_output:
+            name = inferred_output
+            name_source = 'next-band from-above ingredient'
+        elif index == len(components) - 1:
+            name = smart_title(title)
+            name_source = 'recipe title'
+        else:
+            ingredient_labels = [
+                re.sub(r'\s*\([^)]*\)\s*', '', str(ingredient.get('name', '')))
+                .split(',', maxsplit=1)[0]
+                .strip(' ,')
+                for ingredient in component_ingredients  # type: ignore[union-attr]
+                if not ingredient.get('heading')
+            ]
+            ingredient_labels = [label for label in ingredient_labels if label]
+            if ingredient_labels:
+                name = ' + '.join(smart_title(label) for label in ingredient_labels[:2])
+                name_source = 'ingredient band'
+            else:
+                name = f'Component {index + 1}'
+                name_source = 'rule sequence'
+
+        anchors = [float(anchor) for anchor in component.pop('_anchors')]
+        upper_rules = [rule for rule in rules if rule < min(anchors)]
+        lower_rules = [rule for rule in rules if rule > max(anchors)]
+        component['name'] = name
+        component['nameSource'] = name_source
+        component['sourceBand'] = {
+            'top': round(max(upper_rules) if upper_rules else region_top, 2),
+            'bottom': round(min(lower_rules) if lower_rules else region_bottom, 2),
+        }
+        component.pop('band', None)
+    return components
+
+
+def parse_page_geometry(
+    page: pdfplumber.page.Page,
+    title: str,
+    top: float,
+    bottom: float,
+    source_image_path: Path | None = None,
+    source_image_top: float | None = None,
+) -> dict[str, object]:
     words = page.extract_words(x_tolerance=1, y_tolerance=2, keep_blank_chars=False)
-    region = [word for word in words if top <= float(word['top']) < bottom]
+    full_region = [word for word in words if top <= float(word['top']) < bottom]
+    full_lines = group_word_lines(full_region)
+    full_headers = [
+        line for line in full_lines
+        if {'INGREDIENT', 'QUANTITY', 'PROCEDURE'}.issubset({str(word['text']).upper() for word in line})
+    ]
+    sidebar_starts: list[float] = []
+    grid_left = 0.0
+    if len(full_headers) == 1:
+        header_hint = full_headers[0]
+        grid_left = next(
+            float(word['x0']) for word in header_hint if str(word['text']).upper() == 'INGREDIENT'
+        ) - 4
+        procedure_hint = next(
+            float(word['x0']) for word in header_hint if str(word['text']).upper() == 'PROCEDURE'
+        )
+        header_hint_top = min(float(word['top']) for word in header_hint)
+        for line in full_lines:
+            line_start = min(float(word['x0']) for word in line)
+            line_top = min(float(word['top']) for word in line)
+            if line_top > header_hint_top + 5 and line_start > procedure_hint + 100:
+                sidebar_starts.append(line_start)
+    sidebar_start_hint = min(sidebar_starts) if sidebar_starts else None
+    grid_cutoff = sidebar_start_hint - 2 if sidebar_start_hint is not None else float(page.width)
+    region = [word for word in full_region if grid_left <= float(word['x0']) < grid_cutoff]
+    sidebar_region = [
+        word for word in full_region
+        if float(word['x0']) < grid_left or float(word['x0']) >= grid_cutoff
+    ]
     lines = group_word_lines(region)
     headers = [
         line for line in lines
@@ -517,13 +880,14 @@ def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bott
             yield_text = clean_quantity(candidate) if len(candidate) <= 120 else ''
             break
 
-    reference_lines = [clean_ocr(line_text(line)) for line in lines[1:] if line_text(line)]
+    reference_lines = [clean_ocr(line_text(line)) for line in full_lines[1:] if line_text(line)]
     if len(headers) != 1:
         reason = 'no regular recipe grid' if not headers else 'multiple recipe grids'
         return {
             'yield': yield_text,
             'ingredients': [],
             'steps': [],
+            'components': [],
             'notes': [],
             'reference': reference_lines,
             'sourceKind': 'reference',
@@ -543,6 +907,7 @@ def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bott
                     'yield': yield_text,
                     'ingredients': [],
                     'steps': [],
+                    'components': [],
                     'notes': [],
                     'reference': reference_lines,
                     'sourceKind': 'reference',
@@ -559,22 +924,23 @@ def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bott
         (float(word['x0']) for word in header if str(word['text']).upper().startswith('SCAL')),
         procedure_x - 35,
     )
-    right_block_starts = []
-    for line in body_lines:
-        words_at_right = [word for word in line if float(word['x0']) >= procedure_x - 3]
-        if words_at_right:
-            start = min(float(word['x0']) for word in words_at_right)
-            if start > procedure_x + 78:
-                right_block_starts.append(start)
-    sidebar_start = min(right_block_starts) if len(right_block_starts) >= 2 else None
+    sidebar_start = grid_cutoff if sidebar_region else None
     ingredients: list[dict[str, object]] = []
-    steps: list[str] = []
+    step_rows: list[dict[str, object]] = []
     notes: list[str] = []
-    sidebar_notes: list[str] = []
+    sidebar_notes = [
+        clean_ocr(line_text(line))
+        for line in group_word_lines(sidebar_region)
+        if line_text(line)
+    ]
+    pending_references: list[tuple[int, str, float]] = []
     marker_count = 0
     note_mode = False
+    procedure_right = procedure_x + 90
 
     for line in body_lines:
+        line_top = min(float(word['top']) for word in line)
+        line_bottom = max(float(word['bottom']) for word in line)
         raw_line = line_text(line)
         full_line = clean_ocr(raw_line)
         if note_mode:
@@ -606,6 +972,8 @@ def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bott
                     right_sidebar_words = procedure_words[word_index:]
                     procedure_words = procedure_words[:word_index]
                     break
+        if procedure_words:
+            procedure_right = max(procedure_right, max(float(word['x1']) for word in procedure_words))
         sidebar_text = clean_ocr(' '.join(filter(None, [line_text(left_sidebar_words), line_text(right_sidebar_words)])))
         if sidebar_text:
             sidebar_notes.append(sidebar_text)
@@ -615,17 +983,50 @@ def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bott
 
         if ingredient_text:
             if re.match(r'^(?:see|from) page\b', ingredient_text, re.I) and ingredients:
-                ingredients[-1]['name'] = clean_ocr(f"{ingredients[-1]['name']} ({ingredient_text})")
+                pending_references.append((len(ingredients) - 1, ingredient_text, line_top))
             elif quantity_text:
-                ingredients.append({'name': ingredient_text, 'quantity': quantity_text})
+                ingredients.append({
+                    'name': ingredient_text,
+                    'quantity': quantity_text,
+                    '_top': line_top,
+                    '_bottom': line_bottom,
+                    '_anchor': (line_top + line_bottom) / 2,
+                })
+            elif (
+                (ingredient_text[:1].isupper() and STEP_MARKER.match(procedure_text))
+                or normalize_title(ingredient_text) in {'salt', 'pepper', 'black pepper', 'flaky sea salt'}
+            ):
+                ingredients.append({
+                    'name': ingredient_text,
+                    'quantity': '',
+                    '_implicit_quantity': True,
+                    '_top': line_top,
+                    '_bottom': line_bottom,
+                    '_anchor': (line_top + line_bottom) / 2,
+                })
             elif is_ingredient_heading(ingredient_text):
-                ingredients.append({'name': smart_title(ingredient_text), 'quantity': '', 'heading': True})
+                ingredients.append({
+                    'name': smart_title(ingredient_text),
+                    'quantity': '',
+                    'heading': True,
+                    '_top': line_top,
+                    '_bottom': line_bottom,
+                    '_anchor': (line_top + line_bottom) / 2,
+                })
             elif ingredients:
                 ingredients[-1]['name'] = clean_ocr(f"{ingredients[-1]['name']} {ingredient_text}")
+                ingredients[-1]['_bottom'] = line_bottom
             else:
-                ingredients.append({'name': ingredient_text, 'quantity': ''})
+                ingredients.append({
+                    'name': ingredient_text,
+                    'quantity': '',
+                    '_top': line_top,
+                    '_bottom': line_bottom,
+                    '_anchor': (line_top + line_bottom) / 2,
+                })
         elif quantity_text and ingredients:
             ingredients[-1]['quantity'] = clean_quantity(f"{ingredients[-1]['quantity']} {quantity_text}")
+            ingredients[-1]['_bottom'] = line_bottom
 
         if procedure_text:
             marker = STEP_MARKER.match(procedure_text)
@@ -633,19 +1034,58 @@ def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bott
                 marker_count += 1
                 procedure_text = STEP_MARKER.sub('', procedure_text, count=1).strip()
                 if procedure_text:
-                    steps.append(procedure_text)
-            elif steps:
-                steps[-1] = clean_ocr(f'{steps[-1]} {procedure_text}')
+                    step_rows.append({
+                        'number': marker_count,
+                        'text': procedure_text,
+                        '_top': line_top,
+                        '_bottom': line_bottom,
+                        '_anchor': (line_top + line_bottom) / 2,
+                    })
+            elif step_rows:
+                step_rows[-1]['text'] = clean_ocr(f"{step_rows[-1]['text']} {procedure_text}")
+                step_rows[-1]['_bottom'] = line_bottom
             else:
-                steps.append(procedure_text)
+                step_rows.append({
+                    'number': 1,
+                    'text': procedure_text,
+                    '_top': line_top,
+                    '_bottom': line_bottom,
+                    '_anchor': (line_top + line_bottom) / 2,
+                })
+
+    rules = detect_horizontal_rules(
+        source_image_path,
+        float(page.width),
+        source_image_top if source_image_top is not None else top,
+        ingredient_x,
+        procedure_x,
+        procedure_right,
+        sidebar_start,
+        header_top,
+        bottom,
+    )
+
+    for ingredient_index, reference, reference_top in pending_references:
+        ingredient = ingredients[ingredient_index]
+        if re.match(r'^from page\b', reference, re.I):
+            notes.append(reference)
+            continue
+        ingredient_anchor = float(ingredient.get('_anchor', ingredient.get('_top', reference_top)))
+        if any(ingredient_anchor < rule < reference_top for rule in rules):
+            notes.append(reference)
+        else:
+            ingredient['name'] = clean_ocr(f"{ingredient['name']} ({reference})")
 
     if sidebar_notes:
-        notes.append(clean_ocr(' '.join(sidebar_notes)))
+        sidebar_note = clean_ocr(' '.join(sidebar_notes))
+        if plausible_sidebar_note(sidebar_note):
+            notes.append(sidebar_note)
 
     regular_ingredients = [ingredient for ingredient in ingredients if not ingredient.get('heading')]
+    steps = [str(step['text']) for step in step_rows]
     invalid_quantities = [
         str(ingredient.get('quantity', '')) for ingredient in regular_ingredients
-        if not valid_quantity(str(ingredient.get('quantity', '')))
+        if not ingredient.get('_implicit_quantity') and not valid_quantity(str(ingredient.get('quantity', '')))
     ]
     contamination = any(
         re.search(r'\b(?:YIELDS?|INGREDIENT\s+QUANTITY|PROGRAM|STAGE\s+TEMP)\b', value, re.I)
@@ -675,6 +1115,7 @@ def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bott
             'yield': yield_text,
             'ingredients': [],
             'steps': [],
+            'components': [],
             'notes': notes,
             'reference': reference_lines,
             'sourceKind': 'reference',
@@ -685,14 +1126,22 @@ def parse_page_geometry(page: pdfplumber.page.Page, title: str, top: float, bott
 
     return {
         'yield': yield_text,
-        'ingredients': ingredients,
+        'ingredients': [public_ingredient(ingredient) for ingredient in ingredients],
         'steps': steps,
+        'components': build_component_groups(
+            title,
+            ingredients,
+            step_rows,
+            rules,
+            header_top,
+            bottom,
+        ),
         'notes': notes,
         'reference': [],
         'sourceKind': 'recipe',
         'isRecipe': True,
         'layoutKind': 'structured',
-        'layoutReason': 'regular ingredient and procedure grid',
+        'layoutReason': 'rule-aware ingredient and procedure grid',
     }
 
 
@@ -741,10 +1190,14 @@ def main() -> None:
             entry['displayTitle'] = smart_title(str(entry['title']))
             entry['pdfPage'] = printed_page + 11
             entry['headingMatchScore'] = assignments[index].get('matchScore', 0)
-            entry.update(parse_page_geometry(page, str(entry['title']), top, bottom))
             slug = re.sub(r'[^a-z0-9]+', '-', str(entry['displayTitle']).lower()).strip('-')[:72]
             filename = f'p{printed_page:03d}-{index + 1:02d}-{slug}.webp'
             image_path = SOURCE_IMAGES / filename
+            if args.skip_images:
+                existing_crops = sorted(SOURCE_IMAGES.glob(f'p{printed_page:03d}-{index + 1:02d}-*.webp'))
+                if len(existing_crops) == 1:
+                    image_path = existing_crops[0]
+                    filename = image_path.name
             crop_top = max(0, round((top - 7) * image_scale))
             page_image_height = round(float(page.height) * image_scale)
             crop_bottom = min(page_image_height, round((bottom + 4) * image_scale))
@@ -754,6 +1207,14 @@ def main() -> None:
                 crop = page_image.crop((0, crop_top, page_image.width, crop_bottom))
                 crop.save(image_path, 'WEBP', quality=90, method=6)
                 crop_width, crop_height = crop.size
+            entry.update(parse_page_geometry(
+                page,
+                str(entry['title']),
+                top,
+                bottom,
+                image_path,
+                crop_top / image_scale,
+            ))
             entry['sourceImage'] = f'/modernist-cuisine/pages-v3/{filename}'
             entry['sourceImageWidth'] = crop_width
             entry['sourceImageHeight'] = crop_height

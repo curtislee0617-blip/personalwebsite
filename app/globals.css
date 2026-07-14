@@ -4384,6 +4384,133 @@ details.modernist-original-layout > summary::-webkit-details-marker {
   display: none;
 }
 
+.recipe-library-search {
+  position: relative;
+  z-index: 20;
+  width: min(100%, 42rem);
+}
+
+.recipe-library-search-control {
+  display: flex;
+  align-items: center;
+  height: 2.6rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.13);
+  border-radius: 999px;
+  background: rgb(var(--color-surface) / 0.78);
+  box-shadow: 0 8px 24px rgb(var(--color-ink) / 0.04);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.recipe-library-search-control:focus-within {
+  border-color: rgb(var(--color-moss) / 0.48);
+  box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.08), 0 10px 28px rgb(var(--color-ink) / 0.06);
+}
+
+.recipe-library-search-icon {
+  flex: none;
+  padding-left: 0.9rem;
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.9rem;
+}
+
+.recipe-library-search-control input {
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0 0.65rem;
+  color: rgb(var(--color-ink) / 0.78);
+  font-size: 0.76rem;
+}
+
+.recipe-library-search-control input::placeholder { color: rgb(var(--color-ink) / 0.34); }
+
+.recipe-library-search-control button {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  flex: none;
+  place-items: center;
+  margin-right: 0.2rem;
+  border-radius: 999px;
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 1rem;
+}
+
+.recipe-library-search-control button:hover { background: rgb(var(--color-ink) / 0.05); }
+
+.recipe-library-search-results {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-surface) / 0.98);
+  box-shadow: 0 18px 50px rgb(var(--color-ink) / 0.14);
+  backdrop-filter: blur(18px);
+}
+
+.recipe-library-search-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.63rem;
+  font-weight: 650;
+}
+
+.recipe-library-search-status span {
+  color: rgb(var(--color-ink) / 0.3);
+  font-family: var(--font-code);
+  font-size: 0.56rem;
+}
+
+.recipe-library-search-list {
+  max-height: min(30rem, 62vh);
+  overflow-y: auto;
+  padding: 0.35rem;
+}
+
+.recipe-library-search-result {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3.1rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.85rem;
+  transition: background 140ms ease;
+}
+
+.recipe-library-search-result:hover { background: rgb(var(--color-moss) / 0.075); }
+.recipe-library-search-copy { min-width: 0; flex: 1; }
+
+.recipe-library-search-copy strong,
+.recipe-library-search-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recipe-library-search-copy strong { color: rgb(var(--color-ink) / 0.78); font-size: 0.74rem; font-weight: 680; }
+.recipe-library-search-copy small { margin-top: 0.15rem; color: rgb(var(--color-ink) / 0.4); font-size: 0.6rem; }
+
+.recipe-library-search-kind {
+  flex: none;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 999px;
+  padding: 0.18rem 0.45rem;
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.recipe-library-search-arrow { flex: none; color: rgb(var(--color-ink) / 0.28); font-size: 0.7rem; }
+
 .modernist-book-art {
   display: grid;
   grid-template-columns: 4.1rem 1fr;
@@ -4573,6 +4700,61 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   padding: 1.1rem;
 }
 
+.modernist-components {
+  display: grid;
+  gap: 1.15rem;
+}
+
+.modernist-component {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-top: 3px solid rgb(var(--color-ink) / 0.72);
+  border-radius: 0.9rem;
+  background: rgb(var(--color-paper) / 0.38);
+}
+
+.modernist-component-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.64rem 0.75rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  background: rgb(var(--color-ink) / 0.035);
+}
+
+.modernist-component-heading p {
+  color: rgb(var(--color-ink) / 0.78);
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.modernist-component-heading span {
+  color: rgb(var(--color-ink) / 0.36);
+  font-family: var(--font-code);
+  font-size: 0.57rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.modernist-component-grid {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.88fr) minmax(18rem, 1.12fr);
+}
+
+.modernist-component-grid > div {
+  min-width: 0;
+  padding: 0.8rem;
+}
+
+.modernist-component-grid > div + div {
+  border-left: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.modernist-component-grid .modernist-section-label {
+  margin-bottom: 0.5rem;
+}
+
 .modernist-scale-control {
   display: flex;
   align-items: center;
@@ -4734,6 +4916,13 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   font-weight: 700;
 }
 
+.modernist-component-empty {
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.7rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
 .modernist-source-figure {
   display: grid;
   gap: 0.65rem;
@@ -4752,22 +4941,6 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   color: rgb(var(--color-ink) / 0.4);
   font-size: 0.62rem;
   line-height: 1.5;
-}
-
-.modernist-facsimile-scaler {
-  padding: 1rem 1rem 0;
-}
-
-.modernist-factor-readout {
-  padding: 0.55rem 0.2rem 0;
-  color: rgb(var(--color-ink) / 0.42);
-  font-family: var(--font-code);
-  font-size: 0.62rem;
-}
-
-.modernist-factor-readout strong {
-  color: rgb(var(--color-ink) / 0.68);
-  font-weight: 600;
 }
 
 .modernist-original-layout {
@@ -4814,6 +4987,50 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   border-bottom: 0;
 }
 
+.modernist-reference-link {
+  border-bottom: 1px solid rgb(var(--color-moss) / 0.4);
+  color: rgb(var(--color-moss));
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.modernist-reference-link:hover {
+  border-bottom-color: rgb(var(--color-moss));
+  color: rgb(var(--color-ink));
+}
+
+.modernist-linked-entries {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.15rem 1rem 1rem;
+}
+
+.modernist-linked-entries > span {
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.modernist-linked-entries > div { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.modernist-linked-entries a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgb(var(--color-moss) / 0.22);
+  border-radius: 999px;
+  background: rgb(var(--color-moss) / 0.06);
+  padding: 0.32rem 0.6rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.62rem;
+  font-weight: 650;
+}
+
+.modernist-linked-entries a:hover { border-color: rgb(var(--color-moss) / 0.45); color: rgb(var(--color-ink)); }
+.modernist-linked-entries small { color: rgb(var(--color-ink) / 0.34); font-family: var(--font-code); font-size: 0.54rem; }
+
 .modernist-notes {
   display: grid;
   gap: 0.35rem;
@@ -4826,10 +5043,17 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
 }
 
 @media (max-width: 640px) {
+  .recipe-library-search-kind { display: none; }
+  .recipe-library-search-results { width: min(100%, calc(100vw - 2.5rem)); }
   .modernist-recipe-panel { margin-left: 0.75rem; }
   .modernist-sheet-head { flex-direction: column; gap: 0.65rem; }
   .modernist-table { min-width: 38rem; }
   .modernist-recipe-body { padding: 0.9rem; }
+  .modernist-component-grid { grid-template-columns: minmax(0, 1fr); }
+  .modernist-component-grid > div + div {
+    border-top: 1px solid rgb(var(--color-ink) / 0.08);
+    border-left: 0;
+  }
   .modernist-scale-control { align-items: flex-start; flex-direction: column; }
   .modernist-scale-actions { width: 100%; justify-content: space-between; }
   .modernist-entry-kind { display: none; }

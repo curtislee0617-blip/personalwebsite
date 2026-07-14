@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 import {
   pollenStreetBasics,
@@ -31,38 +31,6 @@ const LEADING_QUANTITY = new RegExp(
   String.raw`^((?:about|around|approximately|scant)\s+)?(${QUANTITY_SOURCE})(?:\s*([–-])\s*(${QUANTITY_SOURCE}))?`,
   "i",
 );
-
-// The supplied photographs include generous page space below the plated dish.
-// Translate each image by the requested proportion of its card height so the
-// food sits naturally within the clipped frame on every screen size.
-const DISH_IMAGE_Y_OFFSET_CLASSES: Record<string, readonly string[]> = {
-  "isle-of-mull-langoustine": ["translate-y-[20%]"],
-  "raw-orkney-scallop": ["translate-y-[20%]"],
-  "st-austell-bay-lobster": ["translate-y-[20%]"],
-  "poached-day-netted-south-coast-sea-bass": ["translate-y-[50%]"],
-  "looe-day-boat-turbot": ["translate-y-[20%]"],
-  "poached-south-coast-john-dory": ["translate-y-[20%]"],
-  "brixham-day-boat-brill": ["translate-y-[10%]"],
-  "newlyn-line-caught-sea-bass": ["translate-y-[15%]", "translate-y-[15%]"],
-  "cumbrian-suckling-pig": ["translate-y-[15%]"],
-  "braised-west-country-ox-cheek": ["translate-y-[10%]"],
-  "40-day-dry-aged-lake-district-beef-fillet": ["translate-y-[10%]"],
-  "roasted-squab-pigeon": ["translate-y-[50%]"],
-  "ribble-valley-chicken": ["translate-y-[15%]", "translate-y-[15%]"],
-  "game-pithivier": ["translate-y-[30%]"],
-  "salad-of-wild-duck": ["translate-y-[50%]", "translate-y-[50%]"],
-  "soy-glazed-norfolk-quail": ["translate-y-[25%]"],
-  "pistachio-souffle": ["translate-y-[20%]"],
-  "brogdale-pear": ["translate-y-[50%]"],
-  "bitter-chocolate-pave": ["translate-y-[20%]"],
-  "wild-strawberries": ["translate-y-[20%]"],
-  "clementine-almond-macarons": ["translate-y-[60%]"],
-};
-
-function dishImageYOffsetClass(slug: string, imageIndex: number) {
-  const offsets = DISH_IMAGE_Y_OFFSET_CLASSES[slug];
-  return offsets?.[imageIndex] ?? offsets?.[0] ?? "translate-y-0";
-}
 
 function quantityValue(raw: string) {
   const value = raw.trim();
@@ -231,6 +199,22 @@ function BasicsPanel() {
     setOpenRecipes(Object.fromEntries(pollenStreetBasics.map((recipe) => [recipe.slug, open])));
   };
 
+  useEffect(() => {
+    const openHashRecipe = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash.startsWith("basic-")) return;
+      const slug = hash.slice("basic-".length);
+      const recipe = pollenStreetBasicsBySlug.get(slug);
+      if (!recipe) return;
+      setOpenSections((current) => ({ ...current, [recipe.category]: true }));
+      setOpenRecipes((current) => ({ ...current, [slug]: true }));
+      window.requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    };
+    openHashRecipe();
+    window.addEventListener("hashchange", openHashRecipe);
+    return () => window.removeEventListener("hashchange", openHashRecipe);
+  }, []);
+
   return (
     <div className="grid gap-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -388,14 +372,14 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
       {open && (
         <div className="grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {dish.images.length > 0 ? (
-            <div className={`mx-auto grid w-full max-w-3xl gap-3 overflow-hidden rounded-[1.3rem] ${dish.images.length > 1 ? "sm:grid-cols-2" : ""}`}>
+            <div className={`mx-auto grid w-full max-w-lg gap-2.5 overflow-hidden rounded-[1.15rem] ${dish.images.length > 1 ? "sm:grid-cols-2" : ""}`}>
               {dish.images.map((source, imageIndex) => (
                 <div className="relative aspect-[4/3] overflow-hidden bg-paper" key={source}>
                   <Image
                     alt={`${dish.title}, plated dish${dish.images.length > 1 ? `, view ${imageIndex + 1}` : ""}`}
-                    className={`object-cover ${dishImageYOffsetClass(dish.slug, imageIndex)}`}
+                    className="object-cover"
                     fill
-                    sizes={dish.images.length > 1 ? "(max-width: 640px) 92vw, 24rem" : "(max-width: 1024px) 92vw, 48rem"}
+                    sizes={dish.images.length > 1 ? "(max-width: 640px) 88vw, 16rem" : "(max-width: 640px) 88vw, 32rem"}
                     src={source}
                   />
                 </div>
@@ -442,6 +426,21 @@ function DishesPanel() {
     );
   }, [query]);
 
+  useEffect(() => {
+    const openHashDish = () => {
+      const hash = window.location.hash.slice(1);
+      if (!hash.startsWith("dish-")) return;
+      const slug = hash.slice("dish-".length);
+      if (!pollenStreetDishes.some((dish) => dish.slug === slug)) return;
+      setQuery("");
+      setOpenDishes((current) => ({ ...current, [slug]: true }));
+      window.requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    };
+    openHashDish();
+    window.addEventListener("hashchange", openHashDish);
+    return () => window.removeEventListener("hashchange", openHashDish);
+  }, []);
+
   return (
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -483,6 +482,17 @@ function DishesPanel() {
 
 export function PollenStreetGuide() {
   const [view, setView] = useState<"basics" | "recipes">("basics");
+
+  useEffect(() => {
+    const selectHashView = () => {
+      const hash = window.location.hash;
+      if (hash.startsWith("#dish-")) setView("recipes");
+      if (hash.startsWith("#basic-")) setView("basics");
+    };
+    selectHashView();
+    window.addEventListener("hashchange", selectHashView);
+    return () => window.removeEventListener("hashchange", selectHashView);
+  }, []);
 
   return (
     <div className="grid gap-7">

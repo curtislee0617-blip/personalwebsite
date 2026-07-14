@@ -3,11 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { unstable_cache } from "next/cache";
 import { PageIntro } from "@/components/page-intro";
+import { RecipeLibrarySearch } from "@/components/recipe-library-search";
 import { RecipeCard, type RecipeCardEntry } from "@/components/recipe-card";
 import { RecipeShelf } from "@/components/recipe-shelf";
 import { SectionRail } from "@/components/section-rail";
 import { SnapCarousel } from "@/components/snap-carousel";
 import { recipeEntries, recipeSections, recipesByDate, wishlistEntries } from "@/lib/recipes";
+import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -54,6 +56,60 @@ const getUploadedRecipes = unstable_cache(async () => {
     return [];
   }
 }, ["published-recipes"], { revalidate: 300, tags: ["published-recipes"] });
+
+function buildRecipeSearchPreview(uploadedRecipes: RecipeCardEntry[]): RecipeSearchItem[] {
+  const siteEntries: RecipeSearchItem[] = recipeEntries
+    .filter((entry) => entry.kind === "guide" || entry.status === "published")
+    .map((entry) => ({
+      title: entry.title,
+      context: entry.kind === "guide" ? "Recipe guide" : "Personal recipe",
+      kind: entry.kind === "guide" ? "Guide" : "Recipe",
+      href: entry.kind === "guide" ? entry.href : `/recipes#recipe-${entry.slug}`,
+      searchText: [
+        entry.description,
+        ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),
+      ].join(" "),
+    }));
+  const uploadedEntries: RecipeSearchItem[] = uploadedRecipes.map((entry) => ({
+    title: entry.title,
+    context: "Personal recipe",
+    kind: "Recipe",
+    href: `/recipes#recipe-${entry.slug}`,
+    searchText: entry.description,
+  }));
+  return [
+    {
+      title: "Pollen Street by Jason Atherton",
+      context: "Recipe book · 83 recipes",
+      kind: "Book",
+      href: "/recipes/pollen-street",
+      searchText: "foundation basics complete dishes cookbook",
+    },
+    {
+      title: "Modernist Cuisine recipes",
+      context: "Recipe book · Volume 6 Kitchen Manual",
+      kind: "Book",
+      href: "/recipes/modernist-cuisine",
+      searchText: "modernist cuisine kitchen manual charts techniques cookbook",
+    },
+    {
+      title: "Benu by Corey Lee",
+      context: "Recipe book · 8 supplied dishes",
+      kind: "Book",
+      href: "/recipes/benu",
+      searchText: "benu corey lee cookbook korean chinese fine dining",
+    },
+    {
+      title: "Bachour by Antonio Bachour",
+      context: "Recipe book · 11 supplied pastries",
+      kind: "Book",
+      href: "/recipes/bachour",
+      searchText: "bachour antonio pastry entremet tart choux chocolate cookbook",
+    },
+    ...siteEntries,
+    ...uploadedEntries,
+  ];
+}
 
 const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string; mark: string; tone: string }> = {
   "sourdough-guide": {
@@ -112,6 +168,7 @@ export default async function RecipesPage() {
   const publishedUploadTitles = new Set(uploadedRecipes.map((entry) => entry.title.toLowerCase()));
   const wishlist = wishlistEntries.filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
   const authenticated = await isRecipeAdminAuthenticated();
+  const searchPreview = buildRecipeSearchPreview(uploadedRecipes);
 
   return (
     <>
@@ -120,6 +177,9 @@ export default async function RecipesPage() {
         title="Guides and recipes"
         description="Guides are for deeper walkthroughs, kitchen systems, and the specific complexities within each topic. Recipes are where the finished dishes will live once they are uploaded, and I will always update the recipes whenever I can."
       />
+      <div className="page-shell pt-6 sm:pt-8">
+        <RecipeLibrarySearch initialItems={searchPreview} />
+      </div>
       <SectionRail ariaLabel="Recipe page sections" sections={recipePageSections} />
 
       <section className="page-section pt-12 sm:pt-16">
@@ -244,7 +304,7 @@ export default async function RecipesPage() {
                   <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
                     <Image
                       alt="Cumbrian suckling pig from Pollen Street"
-                      className="translate-y-[15%] object-cover"
+                      className="object-cover"
                       fill
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/pollen-street/cumbrian-suckling-pig.jpg"
@@ -258,6 +318,56 @@ export default async function RecipesPage() {
                     <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">54 foundation recipes and 29 complete dishes, with scaling and called-for Basics built into every card.</p>
+                </div>
+              </Link>
+              <Link
+                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                href="/recipes/benu"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
+                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                    <Image
+                      alt="Thousand-Year-Old Quail Egg from Benu"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+                      src="/benu/thousand-year-old-quail-egg.jpeg"
+                      style={{ objectPosition: "50% 47%" }}
+                    />
+                  </div>
+                </div>
+                <div className="p-3 pb-4 pt-4">
+                  <p className="eyebrow">Book · 8 dishes</p>
+                  <div className="mt-2 flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight">Benu by Corey Lee</h3>
+                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">The supplied dishes rebuilt as searchable, scalable cards, with every ingredient kept beside its corresponding method.</p>
+                </div>
+              </Link>
+              <Link
+                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                href="/recipes/bachour"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
+                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                    <Image
+                      alt="Bachour Piedmont pastry by Antonio Bachour"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+                      src="/bachour/bachour-piedmont.jpeg"
+                      style={{ objectPosition: "50% 56%" }}
+                    />
+                  </div>
+                </div>
+                <div className="p-3 pb-4 pt-4">
+                  <p className="eyebrow">Book · 11 pastries</p>
+                  <div className="mt-2 flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight">Bachour by Antonio Bachour</h3>
+                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">The supplied entremets, tarts, choux and cookies rebuilt as searchable, scalable component-by-component cards.</p>
                 </div>
               </Link>
               <Link
