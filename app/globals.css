@@ -4378,3 +4378,459 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .card-hover { @apply hover:-translate-y-1 hover:border-ink/20 hover:bg-surface hover:shadow-soft; }
   .pill { @apply inline-flex items-center rounded-full border border-ink/15 px-3 py-1.5 text-xs font-medium text-ink/70; }
 }
+details.modernist-chapter > summary::-webkit-details-marker,
+details.modernist-recipe > summary::-webkit-details-marker,
+details.modernist-original-layout > summary::-webkit-details-marker {
+  display: none;
+}
+
+.modernist-book-art {
+  display: grid;
+  grid-template-columns: 4.1rem 1fr;
+  color: #f2eee4;
+  background:
+    radial-gradient(circle at 76% 24%, rgb(255 255 255 / 0.14), transparent 24%),
+    linear-gradient(135deg, #1c2422, #31443d 58%, #18211e);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.modernist-book-spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0.7rem;
+  border-right: 1px solid rgb(255 255 255 / 0.16);
+  background: rgb(0 0 0 / 0.14);
+}
+
+.modernist-book-spine span {
+  font-family: var(--font-code);
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.modernist-book-spine b {
+  font-family: var(--font-code);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.modernist-book-art-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem 1.5rem;
+}
+
+.modernist-book-art-copy span,
+.modernist-book-art-copy small {
+  font-family: var(--font-code);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.66;
+}
+
+.modernist-book-art-copy strong {
+  margin: 0.45rem 0 1rem;
+  font-family: var(--font-technical);
+  font-size: clamp(1.35rem, 4vw, 2.25rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+.modernist-chevron,
+.modernist-row-arrow {
+  transition: transform 160ms ease;
+}
+
+details.modernist-chapter[open] > summary .modernist-chevron,
+details.modernist-recipe[open] > summary .modernist-row-arrow {
+  transform: rotate(90deg);
+}
+
+.modernist-entry-kind {
+  flex: none;
+  min-width: 2.65rem;
+  border: 1px solid rgb(var(--color-ink) / 0.08);
+  border-radius: 999px;
+  padding: 0.12rem 0.35rem;
+  color: rgb(var(--color-ink) / 0.34);
+  font-family: var(--font-code);
+  font-size: 0.52rem;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.modernist-recipe-panel {
+  max-height: 44rem;
+  overflow: auto;
+}
+
+.modernist-sheet {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.15rem;
+  background:
+    linear-gradient(180deg, rgb(var(--color-surface) / 0.88), rgb(var(--color-paper) / 0.72)),
+    repeating-linear-gradient(0deg, transparent 0 27px, rgb(var(--color-ink) / 0.025) 27px 28px);
+  box-shadow: 0 10px 30px rgb(var(--color-ink) / 0.055);
+}
+
+.modernist-sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.1);
+}
+
+.modernist-sheet-head h4 {
+  margin-top: 0.35rem;
+  max-width: 52rem;
+  color: rgb(var(--color-ink));
+  font-family: var(--font-technical);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.modernist-yield {
+  flex: none;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 999px;
+  background: rgb(var(--color-paper) / 0.82);
+  padding: 0.35rem 0.65rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-family: var(--font-code);
+  font-size: 0.62rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.modernist-table-wrap {
+  overflow-x: auto;
+}
+
+.modernist-table {
+  width: 100%;
+  min-width: 42rem;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: rgb(var(--color-ink) / 0.68);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.modernist-table th {
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.12);
+  background: rgb(var(--color-moss) / 0.075);
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.modernist-table th:nth-child(1) { width: 27%; }
+.modernist-table th:nth-child(2) { width: 12%; }
+.modernist-table th:nth-child(3) { width: 10%; }
+.modernist-table th:nth-child(4) { width: 51%; }
+
+.modernist-table td {
+  padding: 0.42rem 0.7rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.055);
+  vertical-align: top;
+}
+
+.modernist-table td:nth-child(2),
+.modernist-table td:nth-child(3) {
+  color: rgb(var(--color-ink) / 0.5);
+  font-family: var(--font-code);
+  font-size: 0.64rem;
+  white-space: nowrap;
+}
+
+.modernist-table td:nth-child(4) {
+  color: rgb(var(--color-ink) / 0.6);
+}
+
+.modernist-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.modernist-recipe-body {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.1rem;
+}
+
+.modernist-scale-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1rem;
+  background: rgb(var(--color-moss) / 0.06);
+}
+
+.modernist-scale-control label {
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.modernist-scale-control p {
+  margin-top: 0.12rem;
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.62rem;
+}
+
+.modernist-scale-actions,
+.modernist-scale-presets {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.modernist-scale-presets button {
+  min-width: 2.2rem;
+  height: 1.9rem;
+  padding: 0 0.5rem;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 999px;
+  background: rgb(var(--color-paper) / 0.72);
+  color: rgb(var(--color-ink) / 0.5);
+  font-family: var(--font-code);
+  font-size: 0.62rem;
+  font-weight: 600;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.modernist-scale-presets button:hover,
+.modernist-scale-presets button[aria-pressed="true"] {
+  border-color: rgb(var(--color-moss) / 0.45);
+  background: rgb(var(--color-moss) / 0.12);
+  color: rgb(var(--color-ink) / 0.78);
+}
+
+.modernist-scale-input {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  height: 1.9rem;
+  border: 1px solid rgb(var(--color-ink) / 0.13);
+  border-radius: 0.65rem;
+  background: rgb(var(--color-paper) / 0.76);
+}
+
+.modernist-scale-input input {
+  width: 3.7rem;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0 0.25rem 0 0.55rem;
+  color: rgb(var(--color-ink) / 0.72);
+  font-family: var(--font-code);
+  font-size: 0.66rem;
+  outline: none;
+}
+
+.modernist-scale-input span {
+  padding-right: 0.5rem;
+  color: rgb(var(--color-ink) / 0.4);
+  font-family: var(--font-code);
+  font-size: 0.62rem;
+}
+
+.modernist-section-label {
+  margin-bottom: 0.7rem;
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.modernist-ingredients {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 0.9rem;
+  background: rgb(var(--color-paper) / 0.56);
+}
+
+.modernist-ingredients > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(4.5rem, auto);
+  gap: 1rem;
+  align-items: start;
+  padding: 0.48rem 0.7rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.06);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.modernist-ingredients > div:last-child { border-bottom: 0; }
+.modernist-ingredients dt { color: rgb(var(--color-ink) / 0.68); }
+.modernist-ingredients dd {
+  color: rgb(var(--color-ink) / 0.5);
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.modernist-ingredients > div.is-heading {
+  display: block;
+  background: rgb(var(--color-moss) / 0.07);
+  padding-block: 0.55rem;
+}
+
+.modernist-ingredients > div.is-heading dt {
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.modernist-ingredients > div.is-heading dd { display: none; }
+
+.modernist-method {
+  display: grid;
+  gap: 0.72rem;
+}
+
+.modernist-method li {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  color: rgb(var(--color-ink) / 0.66);
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.modernist-method li > span {
+  display: grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: none;
+  place-items: center;
+  margin-top: 0.05rem;
+  border: 1px solid rgb(var(--color-ink) / 0.14);
+  border-radius: 999px;
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.modernist-source-figure {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.85rem;
+}
+
+.modernist-source-figure img {
+  width: 100%;
+  height: auto;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 0.75rem;
+  background: white;
+}
+
+.modernist-source-figure figcaption {
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.62rem;
+  line-height: 1.5;
+}
+
+.modernist-facsimile-scaler {
+  padding: 1rem 1rem 0;
+}
+
+.modernist-factor-readout {
+  padding: 0.55rem 0.2rem 0;
+  color: rgb(var(--color-ink) / 0.42);
+  font-family: var(--font-code);
+  font-size: 0.62rem;
+}
+
+.modernist-factor-readout strong {
+  color: rgb(var(--color-ink) / 0.68);
+  font-weight: 600;
+}
+
+.modernist-original-layout {
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.modernist-original-layout > summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.72rem 1.1rem;
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.65rem;
+  font-weight: 650;
+}
+
+.modernist-original-layout > summary span {
+  font-size: 0.72rem;
+  transition: transform 160ms ease;
+}
+
+.modernist-original-layout[open] > summary span { transform: rotate(90deg); }
+.modernist-source-figure.is-compact { padding-top: 0; }
+
+.modernist-reference {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem 1.1rem 1.2rem;
+  color: rgb(var(--color-ink) / 0.64);
+  font-family: var(--font-technical);
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.modernist-reference p {
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.05);
+}
+
+.modernist-reference p:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.modernist-notes {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.75rem 1.1rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+  background: rgb(var(--color-clay) / 0.055);
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.65rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 640px) {
+  .modernist-recipe-panel { margin-left: 0.75rem; }
+  .modernist-sheet-head { flex-direction: column; gap: 0.65rem; }
+  .modernist-table { min-width: 38rem; }
+  .modernist-recipe-body { padding: 0.9rem; }
+  .modernist-scale-control { align-items: flex-start; flex-direction: column; }
+  .modernist-scale-actions { width: 100%; justify-content: space-between; }
+  .modernist-entry-kind { display: none; }
+}

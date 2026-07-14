@@ -17,6 +17,7 @@ const recipePageSections = [
   { id: "recipe-guides", label: "Guides" },
   { id: "recipe-collection", label: "Recipes" },
   { id: "recipe-wishlist", label: "Wishlist" },
+  { id: "recipe-books", label: "Books" },
 ] as const;
 
 function parseUploadedRecipe(draft: { id: string; description: string; recipe_date: string | null; thumbnail_url: string; status: string; categories: string[] | null }): RecipeCardEntry {
@@ -226,6 +227,64 @@ export default async function RecipesPage() {
                 Nothing on the list yet — check back soon.
               </div>
             )}
+          </section>
+
+          <section id="recipe-books">
+            <div>
+              <p className="eyebrow">Books</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipe books</h2>
+              <p className="section-description mt-2 text-sm text-ink/50">Reference books and their recipe contents.</p>
+            </div>
+            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <Link
+                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                href="/recipes/pollen-street"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
+                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                    <Image
+                      alt="Cumbrian suckling pig from Pollen Street"
+                      className="translate-y-[15%] object-cover"
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+                      src="/pollen-street/cumbrian-suckling-pig.jpg"
+                    />
+                  </div>
+                </div>
+                <div className="p-3 pb-4 pt-4">
+                  <p className="eyebrow">Book · 83 recipes</p>
+                  <div className="mt-2 flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight">Pollen Street by Jason Atherton</h3>
+                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">54 foundation recipes and 29 complete dishes, with scaling and called-for Basics built into every card.</p>
+                </div>
+              </Link>
+              <Link
+                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                href="/recipes/modernist-cuisine"
+              >
+                <div className="modernist-book-art aspect-[16/9] overflow-hidden rounded-[1.45rem]">
+                  <div className="modernist-book-spine">
+                    <span>Modernist Cuisine</span>
+                    <b>06</b>
+                  </div>
+                  <div className="modernist-book-art-copy">
+                    <span>Volume 6</span>
+                    <strong>Kitchen Manual</strong>
+                    <small>Recipes · techniques · reference tables</small>
+                  </div>
+                </div>
+                <div className="p-3 pb-4 pt-4">
+                  <p className="eyebrow">Book · 749 entries</p>
+                  <div className="mt-2 flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight">Modernist Cuisine recipes</h3>
+                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">Volume 6, rebuilt from every indexed page with scalable recipe grids and exact source layouts for charts and complex techniques.</p>
+                </div>
+              </Link>
+            </div>
           </section>
 
         </div>
