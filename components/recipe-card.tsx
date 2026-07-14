@@ -8,6 +8,7 @@ export type RecipeCardEntry = {
   status?: "published" | "coming-soon" | string;
   date?: string;
   category?: string;
+  categories?: string[];
   thumbnail?: string;
   ingredientGroups?: Array<{ title: string; items: string[] }>;
   methodGroups?: Array<{ title: string; steps: string[] }>;

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { uploadToR2 } from "@/lib/r2";
 import { clearRecipeAdminCookie, isRecipeAdminAuthenticated, setRecipeAdminCookie } from "@/lib/recipe-admin-auth";
+import { isRecipeCategoryId } from "@/data/recipe-categories";
 
 export async function loginAction(password: string): Promise<{ ok: boolean }> {
   const adminPassword = process.env.RECIPE_ADMIN_PASSWORD;
@@ -24,6 +25,7 @@ export async function submitRecipe(formData: FormData) {
   const description = String(formData.get("description") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
   const publishNow = String(formData.get("publish_now") ?? "") === "1";
+  const categories = formData.getAll("categories").map(String).filter(isRecipeCategoryId);
   const photos = formData.getAll("photos").filter((entry): entry is File => entry instanceof File && entry.size > 0);
   // A YYYY-MM-DD date so old photos can be backdated; null if left blank.
   const rawDate = String(formData.get("recipe_date") ?? "").trim();
@@ -31,6 +33,9 @@ export async function submitRecipe(formData: FormData) {
 
   if (!description || photos.length === 0) {
     redirect("/recipes/admin?error=missing");
+  }
+  if (categories.length === 0) {
+    redirect("/recipes/admin?error=missing-categories");
   }
 
   const draftId = crypto.randomUUID();
@@ -49,6 +54,7 @@ export async function submitRecipe(formData: FormData) {
     image_urls: imageUrls,
     thumbnail_url: imageUrls[0],
     recipe_date: recipeDate,
+    categories: Array.from(new Set(categories)),
     status: publishNow ? "published" : undefined,
   });
   if (error) {

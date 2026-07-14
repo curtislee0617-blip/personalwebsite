@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { wishlistEntries } from "@/lib/recipes";
+import { recipeCategories, recipeCategoryTitle } from "@/data/recipe-categories";
 import { RecipePhotoPicker } from "@/components/recipe-photo-picker";
 import { markProcessed, submitRecipe } from "./actions";
 
@@ -50,6 +51,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
 
       {params.submitted === "1" && <p className="mt-4 rounded-2xl bg-lime/40 px-4 py-3 text-sm text-ink">Saved — the first photo is the thumbnail.</p>}
       {params.error === "missing" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Add at least one photo and a description.</p>}
+      {params.error === "missing-categories" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Choose at least one recipe category.</p>}
       {params.error === "save-failed" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Something went wrong saving that — try again.</p>}
 
       <form action={submitRecipe} className="mt-8 max-w-2xl space-y-6">
@@ -88,6 +90,18 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
             type="date"
           />
         </div>
+        <fieldset>
+          <legend className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50">Categories</legend>
+          <p className="mt-1 text-xs text-ink/45">Select every category where this recipe should appear.</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {recipeCategories.map((category) => (
+              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-ink/10 bg-surface/60 px-4 py-3 text-sm text-ink/70 transition hover:border-ink/25" key={category.id}>
+                <input className="size-4 accent-moss" name="categories" type="checkbox" value={category.id} />
+                <span>{category.title}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <div>
           <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="description">Description</label>
           <textarea
@@ -110,6 +124,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
             <p className="mt-3 text-xs uppercase tracking-[0.1em] text-ink/40">
               {new Date(`${draft.recipe_date ?? draft.created_at.slice(0, 10)}T00:00:00`).toLocaleDateString()} · {draft.status} · {draft.image_urls.length} photo{draft.image_urls.length === 1 ? "" : "s"}
             </p>
+            <p className="mt-2 text-xs font-semibold text-moss">{(draft.categories ?? []).map(recipeCategoryTitle).join(" · ") || "No category selected"}</p>
             <p className="mt-1 text-sm text-ink/70">{truncate(draft.description, 220)}</p>
             {draft.status !== "processed" && (
               <form action={markProcessed} className="mt-3">

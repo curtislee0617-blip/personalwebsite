@@ -1,3 +1,5 @@
+import type { RecipeCategoryId } from "@/data/recipe-categories";
+
 export type RecipeEntry = {
   slug: string;
   kind: "guide" | "recipe";
@@ -5,7 +7,8 @@ export type RecipeEntry = {
   description: string;
   status?: "published" | "coming-soon";
   href: string;
-  category?: "desserts-pastries" | "pasta" | "general";
+  categories?: RecipeCategoryId[];
+  category?: RecipeCategoryId;
   guideSlugs?: string[];
   showInRecipes?: boolean;
   thumbnail?: string;
@@ -37,7 +40,6 @@ const additionalGeneralPlaceholders = Array.from({ length: 5 }, (_, index): Reci
     description: "A compact placeholder for a future recipe, kitchen note, or finished dish.",
     status: "coming-soon",
     href: "/recipes",
-    category: "general",
   };
 });
 
@@ -65,8 +67,8 @@ export const recipeEntries: RecipeEntry[] = [
     kind: "guide",
     title: "Viennoiserie guide",
     description:
-      "A working guide for laminated doughs, proofing, shaping, fillings, and bakes — croissants, pains au chocolat, and related pastries.",
-    status: "coming-soon",
+      "A photo-first guide to croissants, pain au chocolat, and savoury laminated pastries, with the base croissant recipe and shaping references.",
+    status: "published",
     href: "/recipes/viennoiserie-guide",
   },
   {
@@ -180,7 +182,6 @@ export const recipeEntries: RecipeEntry[] = [
     description: "Another placeholder slot so the recipes section already has the intended structure.",
     status: "coming-soon",
     href: "/recipes",
-    category: "general",
     date: "2026-06-15",
   },
   ...additionalDessertPlaceholders,
@@ -200,23 +201,7 @@ export function recipesForGuide(guideSlug: string, entries: RecipeEntry[] = reci
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
 }
 
-export const recipeSections: Array<{ id: NonNullable<RecipeEntry["category"]>; title: string; description: string }> = [
-  {
-    id: "desserts-pastries",
-    title: "Desserts & pastries",
-    description: "Sweet bakes, plated desserts, laminated doughs, cakes, and pastry projects.",
-  },
-  {
-    id: "pasta",
-    title: "Pasta",
-    description: "Fresh pasta doughs, filled shapes, cut pastas, sauces, and cooking notes.",
-  },
-  {
-    id: "general",
-    title: "Other recipes",
-    description: "Everything that does not belong cleanly in desserts and pastries.",
-  },
-];
+export { recipeCategories as recipeSections } from "@/data/recipe-categories";
 
 // "Recipes I would like to make" — a to-cook list. Add entries here as the list grows.
 export type WishlistEntry = {

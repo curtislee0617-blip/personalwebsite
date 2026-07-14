@@ -19,11 +19,12 @@ const recipePageSections = [
   { id: "recipe-wishlist", label: "Wishlist" },
 ] as const;
 
-function parseUploadedRecipe(draft: { id: string; description: string; recipe_date: string | null; thumbnail_url: string; status: string }): RecipeCardEntry {
+function parseUploadedRecipe(draft: { id: string; description: string; recipe_date: string | null; thumbnail_url: string; status: string; categories: string[] | null }): RecipeCardEntry {
   const lines = draft.description.split("\n").map((line) => line.trim()).filter(Boolean);
   const firstLine = lines[0] ?? "Uploaded recipe";
   const title = firstLine.replace(/^#+\s*/, "");
   const description = lines.slice(1).join(" ") || "Uploaded from the recipe admin.";
+  const categories = draft.categories?.length ? draft.categories : ["desserts-pastries"];
 
   return {
     slug: `uploaded-${draft.id}`,
@@ -32,6 +33,7 @@ function parseUploadedRecipe(draft: { id: string; description: string; recipe_da
     status: draft.status,
     date: draft.recipe_date ?? undefined,
     thumbnail: draft.thumbnail_url,
+    categories,
   };
 }
 
@@ -40,7 +42,7 @@ const getUploadedRecipes = unstable_cache(async () => {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("recipe_drafts")
-      .select("id,description,recipe_date,thumbnail_url,status")
+      .select("id,description,recipe_date,thumbnail_url,status,categories")
       .eq("status", "published")
       .order("recipe_date", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false });
@@ -64,7 +66,16 @@ const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string;
     tone: "grain",
   },
   "core-basics": { alt: "Core cooking fundamentals graphic", mark: "CORE", tone: "core" },
-  "viennoiserie-guide": { alt: "Laminated pastry guide graphic", mark: "LAM", tone: "pastry" },
+  "viennoiserie-guide": {
+    srcs: [
+      "/recipes/viennoiserie/Croissants1.jpeg",
+      "/recipes/viennoiserie/Croissant4.jpeg",
+      "/recipes/viennoiserie/Croissants2.jpeg",
+    ],
+    alt: "Croissants and laminated pastries",
+    mark: "LAM",
+    tone: "pastry",
+  },
   "pasta-guide": { alt: "Fresh pasta guide graphic", mark: "PASTA", tone: "pasta" },
   "sushi-guide": { alt: "Sushi guide graphic", mark: "SUSHI", tone: "sushi" },
   "cookbook-guide": { src: "/project-documents/cook-enterprise/book2.jpeg", alt: "Cookbook spread preview", mark: "BOOK", tone: "book" },
@@ -162,12 +173,11 @@ export default async function RecipesPage() {
             </div>
 
             <div className="mt-6 space-y-8">
-              {recipeSections.map((section) => {
-                const sectionRecipes = recipes.filter((entry) => (entry.category ?? "general") === section.id);
-                if (sectionRecipes.length === 0) return null;
+              {recipeSections.map((section, index) => {
+                const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
 
                 return (
-                  <details className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" key={section.id}>
+                  <details className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" key={section.id} open={index === 0}>
                     <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
                       <div>
                         <p className="eyebrow">{section.title}</p>
@@ -178,9 +188,11 @@ export default async function RecipesPage() {
                         +
                       </span>
                     </summary>
-                    <RecipeShelf label={section.title}>
-                      {sectionRecipes.map((entry) => <RecipeCard entry={entry} key={entry.slug} variant="shelf" />)}
-                    </RecipeShelf>
+                    {sectionRecipes.length > 0 ? (
+                      <RecipeShelf label={section.title}>
+                        {sectionRecipes.map((entry) => <RecipeCard entry={entry} key={entry.slug} variant="shelf" />)}
+                      </RecipeShelf>
+                    ) : <div className="mt-6 rounded-2xl border border-dashed border-ink/10 p-5 text-sm text-ink/40">No recipes here yet.</div>}
                   </details>
                 );
               })}
