@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import contents from "@/imports/modernist-cuisine-volume-6/contents-index.json";
 import { ModernistRecipeCalculator } from "@/components/modernist-recipe-calculator";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import type { ModernistRecipeComponent } from "@/components/modernist-recipe-calculator";
 import { modernistEntryId } from "@/lib/modernist-navigation";
 
@@ -171,13 +172,15 @@ function SourceFigure({ entry, compact = false }: { entry: ContentsEntry; compac
 
   return (
     <figure className={`modernist-source-figure ${compact ? "is-compact" : ""}`}>
-      <Image
-        alt={`${title} as printed in Modernist Cuisine`}
-        height={entry.sourceImageHeight || 900}
-        sizes="(max-width: 768px) 90vw, 760px"
-        src={entry.sourceImage}
-        width={entry.sourceImageWidth || 1200}
-      />
+      <RecipeImageViewer alt={`${title} as printed in Modernist Cuisine`} className="w-full" src={entry.sourceImage}>
+        <Image
+          alt={`${title} as printed in Modernist Cuisine`}
+          height={entry.sourceImageHeight || 900}
+          sizes="(max-width: 768px) 90vw, 760px"
+          src={entry.sourceImage}
+          width={entry.sourceImageWidth || 1200}
+        />
+      </RecipeImageViewer>
       <figcaption>
         Original page {entry.page} layout{entry.layoutReason ? ` · ${entry.layoutReason}` : ""}.
       </figcaption>

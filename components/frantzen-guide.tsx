@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
+import { CookbookSearch } from "@/components/cookbook-search";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 import { frantzenBasics, frantzenBasicsBySlug, frantzenPetitFours, frantzenRecipes, frantzenRecipeSequence, frantzenTranscribedRecipeCount, type FrantzenComponent, type FrantzenRecipe } from "@/lib/frantzen";
 
@@ -37,11 +39,10 @@ function Steps({ items }: { items: string[] }) {
 }
 
 function SourceLink({ href, label }: { href: string; label: string }) {
-  return <a className="inline-flex items-center gap-1 text-xs font-semibold text-moss underline decoration-moss/25 underline-offset-4" href={href} rel="noreferrer" target="_blank">View exact source · {label} ↗</a>;
+  return <RecipeImageViewer alt={`Frantzén exact source, ${label}`} className="inline-flex items-center gap-1 text-xs font-semibold text-moss underline decoration-moss/25 underline-offset-4" src={href}>View exact source · {label}</RecipeImageViewer>;
 }
 
-function BasicsPanel() {
-  const [query, setQuery] = useState("");
+function BasicsPanel({ query }: { query: string }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [scales, setScales] = useState<Record<string, string>>({});
   const filtered = useMemo(() => {
@@ -52,7 +53,6 @@ function BasicsPanel() {
     const openHash = () => {
       const slug = window.location.hash.replace("#frantzen-basic-", "");
       if (!window.location.hash.startsWith("#frantzen-basic-") || !frantzenBasicsBySlug.has(slug)) return;
-      setQuery("");
       setOpen((current) => ({ ...current, [slug]: true }));
       window.requestAnimationFrame(() => document.getElementById(`frantzen-basic-${slug}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
     };
@@ -63,7 +63,7 @@ function BasicsPanel() {
 
   return (
     <div>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="max-w-2xl text-sm leading-6 text-ink/55">All supplied Basics pages 301–308, with cross-page recipes joined and the book&apos;s ratio quantities preserved.</p><input aria-label="Search Frantzén Basics" className="h-10 rounded-full border border-ink/12 bg-surface/65 px-4 text-sm outline-none sm:w-72" onChange={(event) => setQuery(event.currentTarget.value)} placeholder="Search Basics" type="search" value={query} /></div>
+      <p className="max-w-2xl text-sm leading-6 text-ink/55">All supplied Basics pages 301–308, with cross-page recipes joined and the book&apos;s ratio quantities preserved.</p>
       <div className="mt-6 gap-3 sm:columns-2 xl:columns-3">{filtered.map((recipe) => {
         const isOpen = Boolean(open[recipe.slug]);
         const value = scales[recipe.slug] ?? "1";
@@ -117,7 +117,12 @@ function RecipeCard({ recipe, index, open, onToggle, compact = false }: { recipe
       {open && (
         <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {recipe.image && (
-            <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper">
+            <RecipeImageViewer
+              alt={`${recipe.title}, plated dish`}
+              className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper"
+              src={recipe.image}
+              viewerImageStyle={{ filter: "brightness(0.78)", transform: recipe.imageRotation ? `rotate(${recipe.imageRotation}deg)` : undefined }}
+            >
               <Image
                 alt={`${recipe.title}, plated dish`}
                 className="object-cover"
@@ -130,7 +135,7 @@ function RecipeCard({ recipe, index, open, onToggle, compact = false }: { recipe
                   transform: recipe.imageRotation ? `rotate(${recipe.imageRotation}deg) scale(1.35)` : undefined,
                 }}
               />
-            </div>
+            </RecipeImageViewer>
           )}
           <header>
             <p className="eyebrow">{compact ? "Frantzén Petit Four" : "Frantzén recipe"}</p>
@@ -157,8 +162,7 @@ function RecipeCard({ recipe, index, open, onToggle, compact = false }: { recipe
   );
 }
 
-function RecipesPanel() {
-  const [query, setQuery] = useState("");
+function RecipesPanel({ query }: { query: string }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [layout, setLayout] = useState<"categories" | "all">("categories");
   const needle = query.trim().toLowerCase();
@@ -188,7 +192,6 @@ function RecipesPanel() {
       if (!hash.startsWith("#frantzen-") || hash.startsWith("#frantzen-basic-")) return;
       const slug = hash.replace("#frantzen-", "");
       if (![...frantzenRecipes, ...frantzenPetitFours].some((recipe) => recipe.slug === slug)) return;
-      setQuery("");
       setOpen((current) => ({ ...current, [slug]: true }));
       window.requestAnimationFrame(() => document.getElementById(`frantzen-${slug}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
     };
@@ -197,16 +200,17 @@ function RecipesPanel() {
     return () => window.removeEventListener("hashchange", openHash);
   }, []);
   const renderRecipe = (recipe: FrantzenRecipe, index: number, compact = false) => <RecipeCard compact={compact} index={index} key={recipe.slug} onToggle={() => setOpen((current) => ({ ...current, [recipe.slug]: !current[recipe.slug] }))} open={Boolean(open[recipe.slug])} recipe={recipe} />;
-  return <div className="min-w-0"><p className="mb-4 rounded-2xl border border-ink/10 bg-paper/65 px-4 py-3 text-sm leading-6 text-ink/58"><strong className="font-semibold text-ink/72">Source coverage:</strong> all {frantzenTranscribedRecipeCount} of {frantzenRecipeSequence.length} confirmed dishes are transcribed and paired with their plated photograph and exact supplied source page.</p><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm leading-6 text-ink/55">Complete dishes are ordered by course, with Petit Fours retained as its own collection.</p><div className="flex items-center gap-2"><button aria-pressed={layout === "all"} className="hidden h-10 items-center rounded-full border border-ink/12 bg-surface/65 px-4 text-xs font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink sm:inline-flex" onClick={() => setLayout((current) => current === "categories" ? "all" : "categories")} type="button">{layout === "categories" ? "Show all recipes" : "Show categories"}</button><input aria-label="Search Frantzén recipes" className="h-10 min-w-0 flex-1 rounded-full border border-ink/12 bg-surface/65 px-4 text-sm outline-none sm:w-72 sm:flex-none" onChange={(event) => setQuery(event.currentTarget.value)} placeholder="Search dishes or components" type="search" value={query} /></div></div>{layout === "categories" ? <div className="mt-7 grid gap-9"><CookbookRecipeRail title="Bites / Canapes / Amuse">{bites.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Starters">{starters.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Seafood">{seafood.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Vegetables">{vegetables.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Meat">{meat.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Dessert">{dessert.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail></div> : <div className="mt-5 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{categorizedRecipes.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</div>}<div className="mt-9"><CookbookRecipeRail compact title="Petit Fours">{petitFours.map((recipe) => renderRecipe(recipe, frantzenPetitFours.indexOf(recipe), true))}</CookbookRecipeRail></div>{dishes.length === 0 && petitFours.length === 0 && <p className="mt-5 rounded-2xl border border-dashed border-ink/15 p-8 text-center text-sm text-ink/45">No Frantzén recipes match that search.</p>}</div>;
+  return <div className="min-w-0"><p className="mb-4 rounded-2xl border border-ink/10 bg-paper/65 px-4 py-3 text-sm leading-6 text-ink/58"><strong className="font-semibold text-ink/72">Source coverage:</strong> all {frantzenTranscribedRecipeCount} of {frantzenRecipeSequence.length} confirmed dishes are transcribed and paired with their plated photograph and exact supplied source page.</p><div className="flex justify-end"><button aria-pressed={layout === "all"} className="hidden h-10 items-center rounded-full border border-ink/12 bg-surface/65 px-4 text-xs font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink sm:inline-flex" onClick={() => setLayout((current) => current === "categories" ? "all" : "categories")} type="button">{layout === "categories" ? "Expand all" : "Collapse all"}</button></div>{layout === "categories" ? <div className="mt-5 grid gap-9"><CookbookRecipeRail title="Bites / Canapes / Amuse">{bites.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Starters">{starters.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Seafood">{seafood.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Vegetables">{vegetables.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Meat">{meat.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail><CookbookRecipeRail title="Dessert">{dessert.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</CookbookRecipeRail></div> : <div className="mt-5 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{categorizedRecipes.map((recipe) => renderRecipe(recipe, frantzenRecipes.indexOf(recipe)))}</div>}<div className="mt-9"><CookbookRecipeRail compact title="Petit Fours">{petitFours.map((recipe) => renderRecipe(recipe, frantzenPetitFours.indexOf(recipe), true))}</CookbookRecipeRail></div>{dishes.length === 0 && petitFours.length === 0 && <p className="mt-5 rounded-2xl border border-dashed border-ink/15 p-8 text-center text-sm text-ink/45">No Frantzén recipes match that search.</p>}</div>;
 }
 
 export function FrantzenGuide() {
   const [view, setView] = useState<"basics" | "recipes">("basics");
+  const [query, setQuery] = useState("");
   useEffect(() => {
     const chooseView = () => setView(window.location.hash.startsWith("#frantzen-") && !window.location.hash.startsWith("#frantzen-basic-") ? "recipes" : "basics");
     chooseView();
     window.addEventListener("hashchange", chooseView);
     return () => window.removeEventListener("hashchange", chooseView);
   }, []);
-  return <div className="grid gap-7"><div className="rounded-[1.5rem] border border-ink/10 bg-surface/48 p-2"><div aria-label="Frantzén collections" className="grid grid-cols-2 gap-2">{(["basics", "recipes"] as const).map((option) => <button aria-pressed={view === option} className={`rounded-[1.1rem] px-4 py-3 text-left transition ${view === option ? "bg-ink text-paper shadow-sm" : "text-ink/55 hover:bg-paper/60 hover:text-ink"}`} key={option} onClick={() => setView(option)} type="button"><span className="block text-sm font-semibold">{option === "basics" ? "Frantzén Basics" : "Frantzén recipes"}</span><span className={`mt-0.5 block text-[0.64rem] ${view === option ? "text-paper/60" : "text-ink/35"}`}>{option === "basics" ? `${frantzenBasics.length} foundation recipes` : `${frantzenRecipes.length} dishes + ${frantzenPetitFours.length} Petit Fours`}</span></button>)}</div></div>{view === "basics" ? <BasicsPanel /> : <RecipesPanel />}</div>;
+  return <div className="grid gap-7"><CookbookSearch bookName="Frantzén" onChange={setQuery} value={query} /><div className="rounded-[1.5rem] border border-ink/10 bg-surface/48 p-2"><div aria-label="Frantzén collections" className="grid grid-cols-2 gap-2">{(["basics", "recipes"] as const).map((option) => <button aria-pressed={view === option} className={`rounded-[1.1rem] px-4 py-3 text-left transition ${view === option ? "bg-ink text-paper shadow-sm" : "text-ink/55 hover:bg-paper/60 hover:text-ink"}`} key={option} onClick={() => setView(option)} type="button"><span className="block text-sm font-semibold">{option === "basics" ? "Frantzén Basics" : "Frantzén recipes"}</span><span className={`mt-0.5 block text-[0.64rem] ${view === option ? "text-paper/60" : "text-ink/35"}`}>{option === "basics" ? `${frantzenBasics.length} foundation recipes` : `${frantzenRecipes.length} dishes + ${frantzenPetitFours.length} Petit Fours`}</span></button>)}</div></div>{query.trim() ? <div className="grid gap-10"><section><p className="eyebrow mb-4">Basics matches</p><BasicsPanel query={query} /></section><section><p className="eyebrow mb-4">Recipe matches</p><RecipesPanel query={query} /></section></div> : view === "basics" ? <BasicsPanel query={query} /> : <RecipesPanel query={query} />}</div>;
 }

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
 import { benuRecipes, type BenuRecipe, type BenuRecipeComponent } from "@/lib/benu";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
@@ -197,7 +198,7 @@ function RecipeCard({ recipe, index, open, onToggle }: { recipe: BenuRecipe; ind
       {open && (
         <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {recipe.image ? (
-            <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper">
+            <RecipeImageViewer alt={`${recipe.title}, plated dish`} className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper" src={recipe.image}>
               <Image
                 alt={`${recipe.title}, plated dish`}
                 className="object-cover"
@@ -206,7 +207,7 @@ function RecipeCard({ recipe, index, open, onToggle }: { recipe: BenuRecipe; ind
                 src={recipe.image}
                 style={{ objectPosition: recipe.imagePosition ?? "50% 50%" }}
               />
-            </div>
+            </RecipeImageViewer>
           ) : (
             <div className="mx-auto grid min-h-36 w-full max-w-lg place-items-center rounded-[1.15rem] border border-dashed border-ink/15 bg-gradient-to-br from-mist/35 to-lime/25 p-5 text-center">
               <div>

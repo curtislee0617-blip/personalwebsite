@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
 import { bachourRecipes, type BachourRecipe, type BachourRecipeComponent } from "@/lib/bachour";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
@@ -126,9 +127,9 @@ function RecipeCard({ recipe, index, open, onToggle }: { recipe: BachourRecipe; 
       {open && (
         <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {recipe.image && (
-            <div className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper">
+            <RecipeImageViewer alt={`${recipe.title}, finished pastry`} className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper" src={recipe.image}>
               <Image alt={`${recipe.title}, finished pastry`} className="object-cover" fill sizes="(max-width: 640px) 88vw, 32rem" src={recipe.image} style={{ objectPosition: recipe.imagePosition ?? "50% 50%" }} />
-            </div>
+            </RecipeImageViewer>
           )}
           <header>
             <p className="eyebrow">Antonio Bachour recipe</p>

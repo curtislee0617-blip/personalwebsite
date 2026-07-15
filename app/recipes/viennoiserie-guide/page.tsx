@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { SectionRail } from "@/components/section-rail";
 import { ViennoiserieScaler } from "@/components/viennoiserie-scaler";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 
 export const metadata: Metadata = {
   title: "Viennoiserie guide",
@@ -43,7 +44,7 @@ function Photo({ file, alt }: { file: string; alt: string }) {
   const thumbSrc = parts[0] === "recipe-steps"
     ? `/recipes/viennoiserie/recipe-steps/thumbs-v2-${encodeURIComponent(parts[1])}`
     : `/recipes/viennoiserie/thumbs/${encodeURIComponent(parts[0])}`;
-  return <a className="viennoiserie-photo-link" href={fullSrc} target="_blank" rel="noreferrer" aria-label={`Open full-size image: ${alt}`}><Image src={thumbSrc} alt={alt} width={900} height={1200} quality={78} sizes="(max-width: 640px) 92vw, (max-width: 1000px) 45vw, 30vw" /></a>;
+  return <RecipeImageViewer alt={alt} className="viennoiserie-photo-link" src={fullSrc}><Image src={thumbSrc} alt={alt} width={900} height={1200} quality={78} sizes="(max-width: 640px) 92vw, (max-width: 1000px) 45vw, 30vw" /></RecipeImageViewer>;
 }
 
 export default function ViennoiserieGuidePage() {

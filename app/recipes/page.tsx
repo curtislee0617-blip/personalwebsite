@@ -107,6 +107,13 @@ function buildRecipeSearchPreview(uploadedRecipes: RecipeCardEntry[]): RecipeSea
       searchText: "benu corey lee cookbook korean chinese fine dining",
     },
     {
+      title: "Frantzén by Björn Frantzén",
+      context: "Recipe book · Basics, dishes and Petit Fours",
+      kind: "Book",
+      href: "/recipes/frantzen",
+      searchText: "frantzen bjorn basics fine dining cookbook petit fours",
+    },
+    {
       title: "Bachour by Antonio Bachour",
       context: "Recipe book · 11 supplied pastries",
       kind: "Book",
@@ -383,12 +390,12 @@ export default async function RecipesPage() {
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
                   <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
                     <Image
-                      alt="Bachour Piedmont pastry by Antonio Bachour"
+                      alt="Coffee Caramel and Gianduja pastry by Antonio Bachour"
                       className="object-cover"
                       fill
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/bachour/bachour-piedmont.jpeg"
-                      style={{ objectPosition: "50% 56%" }}
+                      src="/bachour/coffee-caramel-gianduja.jpeg"
+                      style={{ objectPosition: "50% 50%" }}
                     />
                   </div>
                 </div>

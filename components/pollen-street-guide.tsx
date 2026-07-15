@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
+import { CookbookSearch } from "@/components/cookbook-search";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 import {
   pollenStreetBasics,
@@ -190,11 +192,13 @@ function BasicRecipeCard({ recipe, open, onToggle }: { recipe: PollenStreetBasic
   );
 }
 
-function BasicsPanel() {
+function BasicsPanel({ query }: { query: string }) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     () => Object.fromEntries(pollenStreetCategories.map((category) => [category.id, true])),
   );
   const [openRecipes, setOpenRecipes] = useState<Record<string, boolean>>({});
+  const normalizedQuery = query.trim().toLowerCase();
+  const matchesQuery = (recipe: PollenStreetBasic) => !normalizedQuery || `${recipe.name} ${recipe.yield ?? ""} ${recipe.ingredients.join(" ")}`.toLowerCase().includes(normalizedQuery);
 
   const setAll = (open: boolean) => {
     setOpenSections(Object.fromEntries(pollenStreetCategories.map((category) => [category.id, open])));
@@ -242,7 +246,7 @@ function BasicsPanel() {
       </div>
 
       {pollenStreetCategories.map((category) => {
-        const recipes = pollenStreetBasicsByCategory(category.id);
+        const recipes = pollenStreetBasicsByCategory(category.id).filter(matchesQuery);
         const open = Boolean(openSections[category.id]);
         return (
           <section className="scroll-mt-24" id={`pollen-${category.id}`} key={category.id}>
@@ -351,7 +355,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
   const parsed = Number.parseFloat(factorText);
   const factor = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
   return (
-    <article className={`cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition ${open ? "col-span-full" : ""}`} id={`dish-${dish.slug}`}>
+    <article className="cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition" id={`dish-${dish.slug}`}>
       <CookbookRecipeCardSummary description={dish.subtitle} fallbackMark="POLLEN STREET" image={dish.images[0] ?? null} imageAlt={`${dish.title}, plated dish`} index={index} meta={`${dish.sections.length} components`} onToggle={onToggle} open={open} title={dish.title} />
 
       {open && (
@@ -359,7 +363,12 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
           {dish.images.length > 0 ? (
             <div className={`mx-auto grid w-full max-w-lg gap-2.5 overflow-hidden rounded-[1.15rem] ${dish.images.length > 1 ? "sm:grid-cols-2" : ""}`}>
               {dish.images.map((source, imageIndex) => (
-                <div className="relative aspect-[4/3] overflow-hidden bg-paper" key={source}>
+                <RecipeImageViewer
+                  alt={`${dish.title}, plated dish${dish.images.length > 1 ? `, view ${imageIndex + 1}` : ""}`}
+                  className="relative aspect-[4/3] w-full overflow-hidden bg-paper"
+                  key={source}
+                  src={source}
+                >
                   <Image
                     alt={`${dish.title}, plated dish${dish.images.length > 1 ? `, view ${imageIndex + 1}` : ""}`}
                     className="object-cover"
@@ -367,7 +376,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
                     sizes={dish.images.length > 1 ? "(max-width: 640px) 88vw, 16rem" : "(max-width: 640px) 88vw, 32rem"}
                     src={source}
                   />
-                </div>
+                </RecipeImageViewer>
               ))}
             </div>
           ) : (
@@ -400,8 +409,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
   );
 }
 
-function DishesPanel() {
-  const [query, setQuery] = useState("");
+function DishesPanel({ query }: { query: string }) {
   const [openDishes, setOpenDishes] = useState<Record<string, boolean>>({});
   const [layout, setLayout] = useState<"categories" | "all">("categories");
   const filteredDishes = useMemo(() => {
@@ -424,7 +432,6 @@ function DishesPanel() {
       if (!hash.startsWith("dish-")) return;
       const slug = hash.slice("dish-".length);
       if (!pollenStreetDishes.some((dish) => dish.slug === slug)) return;
-      setQuery("");
       setOpenDishes((current) => ({ ...current, [slug]: true }));
       window.requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" }));
     };
@@ -440,20 +447,7 @@ function DishesPanel() {
           <p className="text-sm leading-6 text-ink/55">Ordered exactly as photographed, from the earliest image to the latest.</p>
           <p className="mt-1 text-xs text-ink/38">Open an image card for the plated dish, components, full method and any called-for Basics.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button aria-pressed={layout === "all"} className="hidden h-10 items-center rounded-full border border-ink/12 bg-surface/65 px-4 text-xs font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink sm:inline-flex" onClick={() => setLayout((current) => current === "categories" ? "all" : "categories")} type="button">{layout === "categories" ? "Show all recipes" : "Show categories"}</button>
-          <label className="relative block min-w-0 flex-1 sm:w-72 sm:flex-none">
-            <span className="sr-only">Search Pollen Street recipes</span>
-            <input
-              className="h-10 w-full rounded-full border border-ink/12 bg-surface/65 px-4 pr-10 text-sm outline-none transition placeholder:text-ink/35 focus:border-ink/30"
-              onChange={(event) => setQuery(event.currentTarget.value)}
-              placeholder="Search dishes or components"
-              type="search"
-              value={query}
-            />
-            <span aria-hidden="true" className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-ink/35">⌕</span>
-          </label>
-        </div>
+        <button aria-pressed={layout === "all"} className="hidden h-10 items-center rounded-full border border-ink/12 bg-surface/65 px-4 text-xs font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink sm:inline-flex" onClick={() => setLayout((current) => current === "categories" ? "all" : "categories")} type="button">{layout === "categories" ? "Expand all" : "Collapse all"}</button>
       </div>
 
       {layout === "categories" ? <div className="mt-7 grid gap-9">
@@ -489,6 +483,7 @@ function DishesPanel() {
 
 export function PollenStreetGuide() {
   const [view, setView] = useState<"basics" | "recipes">("basics");
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const selectHashView = () => {
@@ -503,6 +498,7 @@ export function PollenStreetGuide() {
 
   return (
     <div className="grid gap-7">
+      <CookbookSearch bookName="Pollen Street" onChange={setQuery} value={query} />
       <div className="rounded-[1.5rem] border border-ink/10 bg-surface/48 p-2">
         <div aria-label="Pollen Street collections" className="grid grid-cols-2 gap-2">
           <button
@@ -528,20 +524,7 @@ export function PollenStreetGuide() {
         </div>
       </div>
 
-      <div
-        className="min-w-0"
-        hidden={view !== "basics"}
-        id="pollen-basics-panel"
-      >
-        {view === "basics" && <BasicsPanel />}
-      </div>
-      <div
-        className="min-w-0"
-        hidden={view !== "recipes"}
-        id="pollen-recipes-panel"
-      >
-        {view === "recipes" && <DishesPanel />}
-      </div>
+      {query.trim() ? <div className="grid gap-10"><section id="pollen-basics-panel"><p className="eyebrow mb-4">Basics matches</p><BasicsPanel query={query} /></section><section id="pollen-recipes-panel"><p className="eyebrow mb-4">Recipe matches</p><DishesPanel query={query} /></section></div> : <><div className="min-w-0" hidden={view !== "basics"} id="pollen-basics-panel">{view === "basics" && <BasicsPanel query={query} />}</div><div className="min-w-0" hidden={view !== "recipes"} id="pollen-recipes-panel">{view === "recipes" && <DishesPanel query={query} />}</div></>}
     </div>
   );
 }

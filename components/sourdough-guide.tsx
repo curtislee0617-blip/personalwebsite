@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { useMemo, useState } from "react";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 
@@ -326,9 +327,9 @@ export function SourdoughGuide() {
             },
           ].map((image) => (
             <figure className="overflow-hidden rounded-[1.35rem] border border-ink/10 bg-paper/70" key={image.src}>
-              <div className="relative aspect-[4/5]">
+              <RecipeImageViewer alt={image.alt} className="relative aspect-[4/5] w-full" src={image.src}>
                 <Image alt={image.alt} className="object-cover" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={image.src} />
-              </div>
+              </RecipeImageViewer>
               <figcaption className="px-4 py-3 text-sm leading-6 text-ink/60">{image.caption}</figcaption>
             </figure>
           ))}

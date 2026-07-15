@@ -202,7 +202,7 @@ function RecipeCard({ recipe, open, onToggle }: { recipe: CoreRecipe; open: bool
   );
 }
 
-export function CoreBasicsGuide() {
+export function CoreBasicsGuide({ query = "" }: { query?: string }) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     () => Object.fromEntries(coreCategories.map((category) => [category.id, true])),
   );
@@ -210,6 +210,8 @@ export function CoreBasicsGuide() {
 
   const toggleSection = (id: string) => setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
   const toggleRecipe = (slug: string) => setOpenRecipes((prev) => ({ ...prev, [slug]: !prev[slug] }));
+  const normalizedQuery = query.trim().toLowerCase();
+  const matchesQuery = (recipe: CoreRecipe) => !normalizedQuery || `${recipe.name} ${recipe.ingredients.join(" ")}`.toLowerCase().includes(normalizedQuery);
   const setAll = (value: boolean) => {
     setOpenSections(Object.fromEntries(coreCategories.map((category) => [category.id, value])));
     setOpenRecipes(Object.fromEntries(coreRecipes.map((recipe) => [recipe.slug, value])));
@@ -269,7 +271,7 @@ export function CoreBasicsGuide() {
       </div>
 
       {coreCategories.map((category) => {
-        const recipes = coreRecipesByCategory(category.id);
+        const recipes = coreRecipesByCategory(category.id).filter(matchesQuery);
         if (recipes.length === 0) return null;
         const open = openSections[category.id];
 

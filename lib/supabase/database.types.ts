@@ -93,6 +93,28 @@ export type Database = {
         };
         Relationships: [];
       };
+      website_error_feedback: {
+        Row: {
+          id: string;
+          page_url: string;
+          message: string;
+          submitter_name: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          page_url: string;
+          message: string;
+          submitter_name?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          page_url?: string;
+          message?: string;
+          submitter_name?: string | null;
+        };
+        Relationships: [];
+      };
       course_plans: {
         Row: {
           id: string;

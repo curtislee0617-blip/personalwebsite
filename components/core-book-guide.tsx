@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
+import { CookbookSearch } from "@/components/cookbook-search";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { CoreBasicsGuide } from "@/components/core-basics-guide";
 import { coreRecipes } from "@/lib/core-basics";
 import { coreDishes, type CoreDish, type CoreIngredientLine } from "@/lib/core-dishes";
@@ -114,13 +116,16 @@ function DishCard({ dish, index, open, onToggle }: { dish: CoreDish; index: numb
   const parsed = Number.parseFloat(factorText);
   const factor = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
   return (
-    <article className={`cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition ${open ? "col-span-full" : ""}`} id={`core-dish-${dish.slug}`}>
+    <article className="cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition" id={`core-dish-${dish.slug}`}>
       <CookbookRecipeCardSummary description={dish.subtitle} fallbackMark="CORE" image={dish.images[0] ?? null} imageAlt={`${dish.title}, plated dish`} index={index} meta={`${dish.pages.length} ${dish.pages.length === 1 ? "page" : "pages"}`} onToggle={onToggle} open={open} title={dish.title} zoomImage />
       {open && (
         <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {dish.images.length > 0 ? (
             <div className={`mx-auto grid w-full max-w-md gap-2 overflow-hidden rounded-[1rem] ${dish.images.length > 1 ? "grid-cols-2" : ""}`}>
-              {dish.images.map((source, imageIndex) => <div className="relative aspect-[4/3] overflow-hidden bg-mist/25" key={source}><Image alt={`${dish.title}, plated dish${dish.images.length > 1 ? `, view ${imageIndex + 1}` : ""}`} className="object-cover" fill sizes="(max-width: 640px) 88vw, 28rem" src={source} /></div>)}
+              {dish.images.map((source, imageIndex) => {
+                const alt = `${dish.title}, plated dish${dish.images.length > 1 ? `, view ${imageIndex + 1}` : ""}`;
+                return <RecipeImageViewer alt={alt} className="relative aspect-[4/3] w-full overflow-hidden bg-mist/25" key={source} src={source}><Image alt={alt} className="object-cover" fill sizes="(max-width: 640px) 88vw, 28rem" src={source} /></RecipeImageViewer>;
+              })}
             </div>
           ) : (
             <div className="mx-auto grid min-h-28 w-full max-w-md place-items-center rounded-[1rem] border border-dashed border-ink/15 bg-surface/35 px-5 text-center text-xs leading-5 text-ink/42">
@@ -132,7 +137,10 @@ function DishCard({ dish, index, open, onToggle }: { dish: CoreDish; index: numb
           <div className="grid gap-4">{dish.pages.map((_, pageIndex) => <TranscribedPage dish={dish} factor={factor} key={pageIndex} pageIndex={pageIndex} />)}</div>
           <details className="group overflow-hidden rounded-xl border border-ink/10 bg-paper/70">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:hidden"><span className="text-xs font-semibold uppercase tracking-[0.1em] text-ink/48">Exact source pages</span><span className="text-xs text-ink/35 transition group-open:rotate-45">+</span></summary>
-            <div className="grid gap-3 border-t border-ink/[0.07] p-3">{dish.sourceScans.map((source, sourceIndex) => <Image alt={`${dish.title} source recipe page ${sourceIndex + 1}`} className="h-auto w-full rounded-lg" height={1942} key={source} sizes="(max-width: 900px) 94vw, 60rem" src={source} width={1500} />)}</div>
+            <div className="grid gap-3 border-t border-ink/[0.07] p-3">{dish.sourceScans.map((source, sourceIndex) => {
+              const alt = `${dish.title} source recipe page ${sourceIndex + 1}`;
+              return <RecipeImageViewer alt={alt} className="w-full" key={source} src={source}><Image alt={alt} className="h-auto w-full rounded-lg" height={1942} sizes="(max-width: 900px) 94vw, 60rem" src={source} width={1500} /></RecipeImageViewer>;
+            })}</div>
           </details>
         </div>
       )}
@@ -140,13 +148,12 @@ function DishCard({ dish, index, open, onToggle }: { dish: CoreDish; index: numb
   );
 }
 
-function DishesPanel() {
-  const [query, setQuery] = useState("");
+function DishesPanel({ query }: { query: string }) {
   const [openDishes, setOpenDishes] = useState<Record<string, boolean>>({});
   const [layout, setLayout] = useState<"categories" | "all">("categories");
   const filtered = useMemo(() => { const needle = query.trim().toLowerCase(); return needle ? coreDishes.filter((dish) => `${dish.title} ${dish.subtitle} ${dish.searchText}`.toLowerCase().includes(needle)) : coreDishes; }, [query]);
   useEffect(() => {
-    const openHash = () => { const slug = window.location.hash.replace("#core-dish-", ""); if (!coreDishes.some((dish) => dish.slug === slug)) return; setQuery(""); setOpenDishes((current) => ({ ...current, [slug]: true })); window.requestAnimationFrame(() => document.getElementById(`core-dish-${slug}`)?.scrollIntoView({ behavior: "smooth", block: "start" })); };
+    const openHash = () => { const slug = window.location.hash.replace("#core-dish-", ""); if (!coreDishes.some((dish) => dish.slug === slug)) return; setOpenDishes((current) => ({ ...current, [slug]: true })); window.requestAnimationFrame(() => document.getElementById(`core-dish-${slug}`)?.scrollIntoView({ behavior: "smooth", block: "start" })); };
     openHash(); window.addEventListener("hashchange", openHash); return () => window.removeEventListener("hashchange", openHash);
   }, []);
   const groups = [
@@ -159,11 +166,12 @@ function DishesPanel() {
     { title: "Bread", start: 45, end: 50 },
   ];
   const renderDish = (dish: CoreDish) => <DishCard dish={dish} index={coreDishes.indexOf(dish)} key={dish.slug} onToggle={() => setOpenDishes((current) => ({ ...current, [dish.slug]: !current[dish.slug] }))} open={Boolean(openDishes[dish.slug])} />;
-  return <div className="min-w-0"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p className="max-w-2xl text-sm leading-6 text-ink/55">Complete dishes in supplied book order, arranged into scrollable collections. Open an image card for the scalable ingredient grid, methods, and exact page reference.</p><div className="flex items-center gap-2"><button aria-pressed={layout === "all"} className="hidden h-10 items-center rounded-full border border-ink/12 bg-surface/65 px-4 text-xs font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink sm:inline-flex" onClick={() => setLayout((current) => current === "categories" ? "all" : "categories")} type="button">{layout === "categories" ? "Show all recipes" : "Show categories"}</button><input aria-label="Search Core recipes" className="h-10 min-w-0 flex-1 rounded-full border border-ink/12 bg-surface/65 px-4 text-sm outline-none placeholder:text-ink/35 focus:border-ink/30 sm:w-72 sm:flex-none" onChange={(event) => setQuery(event.currentTarget.value)} placeholder="Search dishes or ingredients" type="search" value={query} /></div></div>{layout === "categories" ? <div className="mt-7 grid gap-9">{groups.map((group) => { const dishes = filtered.filter((dish) => { const index = coreDishes.indexOf(dish); return index >= group.start && index <= group.end; }); return <CookbookRecipeRail key={group.title} title={group.title}>{dishes.map(renderDish)}</CookbookRecipeRail>; })}</div> : <div className="mt-5 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{filtered.map(renderDish)}</div>}{filtered.length === 0 && <p className="mt-5 rounded-2xl border border-dashed border-ink/15 p-8 text-center text-sm text-ink/45">No Core recipes match that search.</p>}</div>;
+  return <div className="min-w-0"><div className="flex items-center justify-end"><button aria-pressed={layout === "all"} className="hidden h-10 items-center rounded-full border border-ink/12 bg-surface/65 px-4 text-xs font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink sm:inline-flex" onClick={() => setLayout((current) => current === "categories" ? "all" : "categories")} type="button">{layout === "categories" ? "Expand all" : "Collapse all"}</button></div>{layout === "categories" ? <div className="mt-5 grid gap-9">{groups.map((group) => { const dishes = filtered.filter((dish) => { const index = coreDishes.indexOf(dish); return index >= group.start && index <= group.end; }); return <CookbookRecipeRail key={group.title} title={group.title}>{dishes.map(renderDish)}</CookbookRecipeRail>; })}</div> : <div className="mt-5 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{filtered.map(renderDish)}</div>}{filtered.length === 0 && <p className="mt-5 rounded-2xl border border-dashed border-ink/15 p-8 text-center text-sm text-ink/45">No Core recipes match that search.</p>}</div>;
 }
 
 export function CoreBookGuide() {
   const [view, setView] = useState<"basics" | "recipes">("basics");
+  const [query, setQuery] = useState("");
   useEffect(() => { const choose = () => setView(window.location.hash.startsWith("#core-dish-") ? "recipes" : "basics"); choose(); window.addEventListener("hashchange", choose); return () => window.removeEventListener("hashchange", choose); }, []);
-  return <div className="grid gap-7"><div className="rounded-[1.5rem] border border-ink/10 bg-surface/48 p-2"><div aria-label="Core collections" className="grid grid-cols-2 gap-2">{(["basics", "recipes"] as const).map((option) => <button aria-pressed={view === option} className={`rounded-[1.1rem] px-4 py-3 text-left transition ${view === option ? "bg-ink text-paper shadow-sm" : "text-ink/55 hover:bg-paper/60 hover:text-ink"}`} key={option} onClick={() => setView(option)} type="button"><span className="block text-sm font-semibold">{option === "basics" ? "Core Basics" : "Core recipes"}</span><span className={`mt-0.5 block text-[0.64rem] ${view === option ? "text-paper/60" : "text-ink/35"}`}>{option === "basics" ? `${coreRecipes.length} foundation recipes` : `${coreDishes.length} complete dish groups`}</span></button>)}</div></div>{view === "basics" ? <CoreBasicsGuide /> : <DishesPanel />}</div>;
+  return <div className="grid gap-7"><CookbookSearch bookName="Core" onChange={setQuery} value={query} /><div className="rounded-[1.5rem] border border-ink/10 bg-surface/48 p-2"><div aria-label="Core collections" className="grid grid-cols-2 gap-2">{(["basics", "recipes"] as const).map((option) => <button aria-pressed={view === option} className={`rounded-[1.1rem] px-4 py-3 text-left transition ${view === option ? "bg-ink text-paper shadow-sm" : "text-ink/55 hover:bg-paper/60 hover:text-ink"}`} key={option} onClick={() => setView(option)} type="button"><span className="block text-sm font-semibold">{option === "basics" ? "Core Basics" : "Core recipes"}</span><span className={`mt-0.5 block text-[0.64rem] ${view === option ? "text-paper/60" : "text-ink/35"}`}>{option === "basics" ? `${coreRecipes.length} foundation recipes` : `${coreDishes.length} complete dish groups`}</span></button>)}</div></div>{query.trim() ? <div className="grid gap-10"><section><p className="eyebrow mb-4">Basics matches</p><CoreBasicsGuide query={query} /></section><section><p className="eyebrow mb-4">Recipe matches</p><DishesPanel query={query} /></section></div> : view === "basics" ? <CoreBasicsGuide /> : <DishesPanel query={query} />}</div>;
 }

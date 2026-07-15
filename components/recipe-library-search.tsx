@@ -86,7 +86,7 @@ export function RecipeLibrarySearch({ initialItems }: { initialItems: RecipeSear
           onKeyDown={(event) => {
             if (event.key === "Escape") setQuery("");
           }}
-          placeholder="Search recipes, ingredients, books or guides"
+          placeholder="Search the entire recipe library"
           type="search"
           value={query}
         />
