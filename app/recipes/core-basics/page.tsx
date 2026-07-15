@@ -1,27 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
-import { CoreBasicsGuide } from "@/components/core-basics-guide";
-import { SectionRail } from "@/components/section-rail";
-import { coreCategories } from "@/lib/core-basics";
+import { CoreBookGuide } from "@/components/core-book-guide";
 
-export const metadata: Metadata = { title: "Core basics" };
-
-const coreBasicsSections = coreCategories.map(({ id, label }) => ({ id, label }));
+export const metadata: Metadata = { title: "Core by Clare Smyth" };
 
 export default function CoreBasicsPage() {
   return (
     <>
       <PageIntro
-        eyebrow="Guide"
-        title="Core basics"
-        description="Foundational recipes from the Core by Clare Smyth book, where I find the recipes very useful — powders, stocks and sauces, butters and purées, brines, oils and gels, mousse, pastry and bakery starters, each written up as a single recipe block and sorted by type."
+        eyebrow="Recipe book"
+        title="Core by Clare Smyth"
+        description="The complete supplied cookbook: Core Basics and 51 complete dish groups in book order. Recipes retain the original ingredient-grid and method flow, with scalable quantities, plated images, and exact source pages for checking dense layouts."
       />
-      <SectionRail ariaLabel="Core basics guide sections" sections={coreBasicsSections} />
 
-      <section className="page-section pt-12 sm:pt-16">
-        <Link className="back-link-bubble mb-6" href="/recipes">← Back to recipes</Link>
-        <CoreBasicsGuide />
+      <section className="page-section pt-10 sm:pt-14">
+        <Link className="back-link-bubble mb-6" href="/recipes#recipe-books">← Back to recipe books</Link>
+        <CoreBookGuide />
       </section>
     </>
   );

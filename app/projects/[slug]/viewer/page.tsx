@@ -7,6 +7,7 @@ import projectPages from "@/data/project-pages.json";
 
 type ProjectViewerPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ from?: string }>;
 };
 
 function getRenderedPages(slug: string) {
@@ -31,8 +32,9 @@ export async function generateMetadata({ params }: ProjectViewerPageProps): Prom
   };
 }
 
-export default async function ProjectViewerPage({ params }: ProjectViewerPageProps) {
+export default async function ProjectViewerPage({ params, searchParams }: ProjectViewerPageProps) {
   const { slug } = await params;
+  const { from } = await searchParams;
   const project = getProjectBySlug(slug);
 
   if (!project) {
@@ -47,12 +49,13 @@ export default async function ProjectViewerPage({ params }: ProjectViewerPagePro
   }
 
   const mode = slug === "tonbridge-food-science" ? "poster" : "book";
+  const backHref = from === "about" ? `/projects/${slug}?from=about` : `/projects#${slug}`;
 
   return (
     <>
       <div className={`fixed left-3 top-4 z-50 sm:left-4 sm:top-4 ${mode === "poster" ? "text-white" : "text-ink"}`}>
-        <Link className="back-link-bubble" href={`/projects#${slug}`}>
-          Back to projects
+        <Link className="back-link-bubble" href={backHref}>
+          ← Back
         </Link>
       </div>
       <div className="pt-12 sm:pt-0">

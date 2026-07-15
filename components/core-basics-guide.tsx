@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { coreCategories, coreIntro, coreRecipes, coreRecipesByCategory, type CoreRecipe } from "@/lib/core-basics";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 
@@ -202,7 +202,7 @@ function RecipeCard({ recipe, open, onToggle }: { recipe: CoreRecipe; open: bool
   );
 }
 
-export function CoreBasicsGuide() {
+export function CoreBasicsGuide({ query = "" }: { query?: string }) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     () => Object.fromEntries(coreCategories.map((category) => [category.id, true])),
   );
@@ -210,10 +210,26 @@ export function CoreBasicsGuide() {
 
   const toggleSection = (id: string) => setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
   const toggleRecipe = (slug: string) => setOpenRecipes((prev) => ({ ...prev, [slug]: !prev[slug] }));
+  const normalizedQuery = query.trim().toLowerCase();
+  const matchesQuery = (recipe: CoreRecipe) => !normalizedQuery || `${recipe.name} ${recipe.ingredients.join(" ")}`.toLowerCase().includes(normalizedQuery);
   const setAll = (value: boolean) => {
     setOpenSections(Object.fromEntries(coreCategories.map((category) => [category.id, value])));
     setOpenRecipes(Object.fromEntries(coreRecipes.map((recipe) => [recipe.slug, value])));
   };
+
+  useEffect(() => {
+    const openHashRecipe = () => {
+      const slug = window.location.hash.slice(1);
+      const recipe = coreRecipes.find((item) => item.slug === slug);
+      if (!recipe) return;
+      setOpenSections((current) => ({ ...current, [recipe.category]: true }));
+      setOpenRecipes((current) => ({ ...current, [slug]: true }));
+      window.requestAnimationFrame(() => document.getElementById(slug)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    };
+    openHashRecipe();
+    window.addEventListener("hashchange", openHashRecipe);
+    return () => window.removeEventListener("hashchange", openHashRecipe);
+  }, []);
 
   return (
     <div className="grid gap-8 sm:gap-10">
@@ -255,7 +271,7 @@ export function CoreBasicsGuide() {
       </div>
 
       {coreCategories.map((category) => {
-        const recipes = coreRecipesByCategory(category.id);
+        const recipes = coreRecipesByCategory(category.id).filter(matchesQuery);
         if (recipes.length === 0) return null;
         const open = openSections[category.id];
 

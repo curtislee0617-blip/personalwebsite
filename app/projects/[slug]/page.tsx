@@ -7,6 +7,7 @@ import { getProjectBySlug, projects } from "@/lib/projects";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ from?: string }>;
 };
 
 export async function generateStaticParams() {
@@ -27,8 +28,9 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   };
 }
 
-export default async function ProjectDetailPage({ params }: ProjectPageProps) {
+export default async function ProjectDetailPage({ params, searchParams }: ProjectPageProps) {
   const { slug } = await params;
+  const { from } = await searchParams;
   const project = getProjectBySlug(slug);
 
   if (!project) {
@@ -38,6 +40,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const availablePreviews = project.previews;
   const availableDocuments = project.documents ?? [];
   const primaryDocument = availableDocuments[0];
+  const cameFromAbout = from === "about";
+  const backHref = cameFromAbout ? "/about#about-projects" : "/projects";
+  const viewerHref = `/projects/${project.slug}/viewer${cameFromAbout ? "?from=about" : ""}`;
 
   return (
     <>
@@ -45,8 +50,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
       <section className="page-section pt-12 sm:pt-16">
         <div className="mb-6 sm:mb-8">
-          <Link className="back-link-bubble" href="/projects">
-            ← Back to projects
+          <Link className="back-link-bubble" href={backHref}>
+            ← Back
           </Link>
         </div>
 
@@ -72,7 +77,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               {availablePreviews.length > 0 ? (
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                   {availablePreviews.map((preview) => (
-                    <Link className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-paper transition hover:-translate-y-0.5 hover:border-ink/20" href={`/projects/${project.slug}/viewer`} key={preview.src}>
+                    <Link className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-paper transition hover:-translate-y-0.5 hover:border-ink/20" href={viewerHref} key={preview.src}>
                       <div className="relative aspect-[4/3]">
                         <Image alt={preview.alt} className="object-cover" fill sizes="(max-width: 640px) 100vw, 50vw" src={preview.src} />
                       </div>
@@ -126,7 +131,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   <div className="mt-5 flex flex-wrap gap-3">
                     <Link
                       className="inline-flex rounded-full border border-ink/15 bg-paper/80 px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-ink/25 hover:bg-surface"
-                      href={`/projects/${project.slug}/viewer`}
+                      href={viewerHref}
                     >
                       Open viewer ↗
                     </Link>

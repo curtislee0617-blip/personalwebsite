@@ -6,18 +6,19 @@ export const cityTimeZones = {
 
 export type CityKey = keyof typeof cityTimeZones;
 
-export const cityLightSchedule = {
-  sunriseStartsAt: 5 * 60,
-  daylightStartsAt: 7 * 60,
-  sunsetStartsAt: 18 * 60,
-  nightStartsAt: 19.5 * 60,
-} as const;
+const cityCoordinates: Record<CityKey, { latitude: number; longitude: number }> = {
+  hongKong: { latitude: 22.3193, longitude: 114.1694 },
+  london: { latitude: 51.5072, longitude: -0.1276 },
+  losAngeles: { latitude: 34.0522, longitude: -118.2437 },
+};
 
-export const cityArtSwitchSchedule = {
-  losAngelesSunrise: 5.75 * 60,
-  sunrise: 6 * 60,
-  sunset: 18.75 * 60,
-} as const;
+type CitySolarTimes = {
+  hasNauticalNight: boolean;
+  nauticalDawn: number;
+  nauticalDusk: number;
+  sunrise: number;
+  sunset: number;
+};
 
 export type CityCycle = {
   blueHour: number;
@@ -214,47 +215,138 @@ export function getZonedMinutes(now: Date, timeZone: string) {
   return value("hour") * 60 + value("minute") + value("second") / 60;
 }
 
-export function getCityCycleAtMinutes(minutes: number, city?: CityKey): CityCycle {
-  const {
-    sunriseStartsAt,
-    sunsetStartsAt,
-    nightStartsAt,
-  } = cityLightSchedule;
-  const daylightStartsAt = city === "losAngeles"
-    ? 6.5 * 60
-    : cityLightSchedule.daylightStartsAt;
-  const daylight = ramp(minutes, sunriseStartsAt, daylightStartsAt)
-    * (1 - ramp(minutes, sunsetStartsAt, nightStartsAt));
-  const night = 1 - daylight;
-  const artSunriseSwitchAt = city === "losAngeles"
-    ? cityArtSwitchSchedule.losAngelesSunrise
-    : cityArtSwitchSchedule.sunrise;
-  const cityNight = minutes < artSunriseSwitchAt
-    || minutes >= cityArtSwitchSchedule.sunset
-    ? 1
-    : 0;
-  const dawn = band(minutes, sunriseStartsAt, 6 * 60, 6.25 * 60, daylightStartsAt);
-  const morningGolden = band(minutes, 5.25 * 60, 6.25 * 60, 6.75 * 60, 8.25 * 60);
-  const eveningGolden = band(minutes, 16.5 * 60, 17.75 * 60, 18.25 * 60, nightStartsAt);
+function getZonedDateKey(now: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone,
+    year: "numeric",
+  }).formatToParts(now);
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
+  return `${value("year")}-${value("month")}-${value("day")}`;
+}
+
+function getSunAltitudeDegrees(now: Date, coordinates: { latitude: number; longitude: number }) {
+  const daysSinceJ2000 = now.valueOf() / millisecondsPerDay - 0.5 + julianDateAtUnixEpoch - daysFromUnixEpochToJ2000;
+  const sun = getSunCoordinates(daysSinceJ2000);
+  const latitude = coordinates.latitude * radians;
+  const longitudeWest = -coordinates.longitude * radians;
+  const siderealTime = radians * (280.16 + 360.9856235 * daysSinceJ2000) - longitudeWest;
+  const hourAngle = siderealTime - sun.rightAscension;
+
+  return Math.asin(
+    Math.sin(latitude) * Math.sin(sun.declination)
+      + Math.cos(latitude) * Math.cos(sun.declination) * Math.cos(hourAngle),
+  ) / radians;
+}
+
+function refineSolarCrossing(start: number, end: number, altitude: number, coordinates: { latitude: number; longitude: number }, rising: boolean) {
+  let lower = start;
+  let upper = end;
+  for (let index = 0; index < 24; index += 1) {
+    const midpoint = (lower + upper) / 2;
+    const aboveTarget = getSunAltitudeDegrees(new Date(midpoint), coordinates) > altitude;
+    if (aboveTarget === rising) upper = midpoint;
+    else lower = midpoint;
+  }
+  return new Date((lower + upper) / 2);
+}
+
+function getSolarCrossings(now: Date, timeZone: string, coordinates: { latitude: number; longitude: number }, altitude: number) {
+  const localDate = getZonedDateKey(now, timeZone);
+  const step = 5 * 60 * 1000;
+  const start = now.valueOf() - 30 * 60 * 60 * 1000;
+  const end = now.valueOf() + 30 * 60 * 60 * 1000;
+  let previousTime = start;
+  let previousAltitude = getSunAltitudeDegrees(new Date(previousTime), coordinates);
+  let rising: Date | null = null;
+  let setting: Date | null = null;
+
+  for (let time = start + step; time <= end; time += step) {
+    const currentAltitude = getSunAltitudeDegrees(new Date(time), coordinates);
+    const crossesUpward = previousAltitude <= altitude && currentAltitude > altitude;
+    const crossesDownward = previousAltitude >= altitude && currentAltitude < altitude;
+
+    if (crossesUpward || crossesDownward) {
+      const event = refineSolarCrossing(previousTime, time, altitude, coordinates, crossesUpward);
+      if (getZonedDateKey(event, timeZone) === localDate) {
+        if (crossesUpward) rising = event;
+        else setting = event;
+      }
+    }
+
+    previousTime = time;
+    previousAltitude = currentAltitude;
+  }
+
+  return { rising, setting };
+}
+
+const solarTimesCache = new Map<string, CitySolarTimes>();
+
+function fallbackSolarTimes(city?: CityKey): CitySolarTimes {
+  const sunrise = city === "losAngeles" ? 5.75 * 60 : 6 * 60;
+  const sunset = 18.75 * 60;
+  return {
+    hasNauticalNight: false,
+    nauticalDawn: sunrise - 80,
+    nauticalDusk: sunset + 80,
+    sunrise,
+    sunset,
+  };
+}
+
+function getCitySolarTimes(now: Date, timeZone: string, city?: CityKey): CitySolarTimes {
+  if (!city) return fallbackSolarTimes();
+  const cacheKey = `${city}:${getZonedDateKey(now, timeZone)}`;
+  const cached = solarTimesCache.get(cacheKey);
+  if (cached) return cached;
+
+  const coordinates = cityCoordinates[city];
+  // −0.833° approximates apparent sunrise/sunset (solar radius plus refraction).
+  const apparent = getSolarCrossings(now, timeZone, coordinates, -0.833);
+  // Nautical twilight (−12°) gives a naturally dark scene without stretching
+  // the transition all the way to astronomical darkness at −18°.
+  const nautical = getSolarCrossings(now, timeZone, coordinates, -12);
+  const fallback = fallbackSolarTimes(city);
+  const sunrise = apparent.rising ? getZonedMinutes(apparent.rising, timeZone) : fallback.sunrise;
+  const sunset = apparent.setting ? getZonedMinutes(apparent.setting, timeZone) : fallback.sunset;
+  const hasNauticalNight = Boolean(nautical.rising && nautical.setting);
+  const result = {
+    hasNauticalNight,
+    nauticalDawn: nautical.rising ? getZonedMinutes(nautical.rising, timeZone) : sunrise - 80,
+    nauticalDusk: nautical.setting ? getZonedMinutes(nautical.setting, timeZone) : sunset + 80,
+    sunrise,
+    sunset,
+  };
+  solarTimesCache.set(cacheKey, result);
+  return result;
+}
+
+function getCityCycleFromSolarTimes(minutes: number, solar: CitySolarTimes): CityCycle {
+  const morningTransition = ramp(minutes, solar.nauticalDawn, solar.sunrise);
+  const eveningTransition = ramp(minutes, solar.sunset, solar.nauticalDusk);
+  const daylight = morningTransition * (1 - eveningTransition);
+  const cityNightBase = Math.max(1 - morningTransition, eveningTransition);
+  // At exceptional latitudes where nautical dusk never occurs, retain a muted
+  // twilight instead of showing a false full-night scene.
+  const cityNight = solar.hasNauticalNight ? cityNightBase : cityNightBase * 0.72;
+  const night = cityNight;
+  const dawnSpan = solar.sunrise - solar.nauticalDawn;
+  const duskSpan = solar.nauticalDusk - solar.sunset;
+  const dawn = band(minutes, solar.nauticalDawn, solar.sunrise - dawnSpan * 0.2, solar.sunrise + 15, solar.sunrise + 75);
+  const morningGolden = band(minutes, solar.sunrise, solar.sunrise + 20, solar.sunrise + 85, solar.sunrise + 140);
+  const eveningGolden = band(minutes, solar.sunset - 115, solar.sunset - 55, solar.sunset - 5, solar.sunset + 15);
   const goldenHour = smoothUnion(morningGolden, eveningGolden);
-  const sunset = band(minutes, sunsetStartsAt, 18.75 * 60, 18.83 * 60, nightStartsAt);
-  const blueHourBase = clamp(
-    band(minutes, 4 * 60, sunriseStartsAt, 5.5 * 60, 6.5 * 60)
-      + band(minutes, 18.67 * 60, nightStartsAt, 20.25 * 60, 21.25 * 60),
-  );
-  const blueHour = blueHourBase * (
-    1 - 0.72 * Math.max(dawn, sunset)
-  );
-  const sunProgress = lingerNearMidday(
-    (minutes - sunriseStartsAt) / (nightStartsAt - sunriseStartsAt),
-  );
-  const stars = minutes < 12 * 60
-    ? 1 - ramp(minutes, 4.5 * 60, 5.75 * 60)
-    : ramp(minutes, 18.75 * 60, nightStartsAt);
-  const moonRiseStartsAt = 18.75 * 60;
-  const moonSetEndsAt = 5.75 * 60;
-  const moonDuration = moonSetEndsAt + 24 * 60 - moonRiseStartsAt;
-  const moonElapsed = (minutes - moonRiseStartsAt + 24 * 60) % (24 * 60);
+  const sunset = band(minutes, solar.sunset - 75, solar.sunset - 15, solar.sunset + 10, solar.nauticalDusk);
+  const blueHour = clamp(
+    band(minutes, solar.nauticalDawn, solar.nauticalDawn + dawnSpan * 0.6, solar.sunrise, solar.sunrise + 25)
+      + band(minutes, solar.sunset - 25, solar.sunset, solar.nauticalDusk - duskSpan * 0.15, solar.nauticalDusk),
+  ) * (1 - 0.72 * Math.max(dawn, sunset));
+  const sunProgress = lingerNearMidday((minutes - solar.sunrise) / (solar.sunset - solar.sunrise));
+  const stars = cityNight;
+  const moonDuration = solar.nauticalDawn + 24 * 60 - solar.nauticalDusk;
+  const moonElapsed = (minutes - solar.nauticalDusk + 24 * 60) % (24 * 60);
   const moonProgress = lingerNearMidday(clamp(moonElapsed / moonDuration));
   const sunX = 97 - 94 * sunProgress;
 
@@ -270,12 +362,16 @@ export function getCityCycleAtMinutes(minutes: number, city?: CityKey): CityCycl
     night,
     sunset,
     stars,
-    sunOpacity: ramp(minutes, sunriseStartsAt, 5.67 * 60)
-      * (1 - ramp(minutes, 18.83 * 60, nightStartsAt)),
+    sunOpacity: ramp(minutes, solar.sunrise, solar.sunrise + 20)
+      * (1 - ramp(minutes, solar.sunset - 20, solar.sunset)),
     sunWarmth: smoothUnion(dawn * 0.92, sunset, goldenHour * 0.42),
     sunX,
     sunY: 55 - 32 * Math.sin(Math.PI * sunProgress) ** 0.86,
   };
+}
+
+export function getCityCycleAtMinutes(minutes: number, city?: CityKey): CityCycle {
+  return getCityCycleFromSolarTimes(minutes, fallbackSolarTimes(city));
 }
 
 export function getCityCycle(now: Date | null, timeZone: string, city?: CityKey) {
@@ -299,7 +395,10 @@ export function getCityCycle(now: Date | null, timeZone: string, city?: CityKey)
     } satisfies CityCycle;
   }
 
-  return getCityCycleAtMinutes(getZonedMinutes(now, timeZone), city);
+  return getCityCycleFromSolarTimes(
+    getZonedMinutes(now, timeZone),
+    getCitySolarTimes(now, timeZone, city),
+  );
 }
 
 type ContactCelestialCity = {
@@ -352,7 +451,9 @@ export function getContactCelestial(
       makeCandidate("sun", cycle.sunOpacity, cycle.sunX, cycle.sunY),
       makeCandidate(
         "moon",
-        cycle.moonOpacity * moonVisibility,
+        cycle.moonOpacity
+          * moonVisibility
+          * smootherstep((55 - cycle.moonY) / 8),
         cycle.moonX,
         cycle.moonY,
       ),

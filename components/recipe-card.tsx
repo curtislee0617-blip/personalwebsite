@@ -23,7 +23,7 @@ export function RecipeCard({ entry, showBackLink = false, variant = "default" }:
   const shelf = variant === "shelf";
 
   return (
-    <details className={`recipe-card rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""}`}>
+    <details className={`recipe-card scroll-mt-24 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""}`} id={`recipe-${entry.slug}`}>
       <summary className="recipe-card-summary recipes-section-summary cursor-pointer list-none marker:hidden">
         <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
           <div className="relative aspect-[4/3]">

@@ -4,6 +4,7 @@ import Script from "next/script";
 import { SiteHeader } from "@/components/site-header";
 import { BackToTopButton } from "@/components/back-to-top-button";
 import { FooterAdminLogin } from "@/components/footer-admin-login";
+import { FooterFeedbackLink } from "@/components/footer-feedback-link";
 import { PageCursor } from "@/components/page-cursor";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <FooterAdminLogin />
               <nav aria-label="Footer" className="flex items-center gap-5">
                 <Link className="footer-link" href="/contact">Say hello</Link>
+                <FooterFeedbackLink />
                 <BackToTopButton />
               </nav>
             </div>
