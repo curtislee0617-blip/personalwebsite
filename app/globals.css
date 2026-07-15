@@ -173,6 +173,48 @@ body.has-page-cursor * { cursor: inherit; }
 
 .footer-link:hover { color: rgb(var(--color-ink)); }
 
+.image-viewer-page {
+  display: grid;
+  min-height: calc(100vh - 8rem);
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.image-viewer-toolbar {
+  position: sticky;
+  top: 1rem;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.image-viewer-frame {
+  display: grid;
+  gap: .8rem;
+  justify-items: center;
+  min-width: 0;
+}
+
+.image-viewer-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100vh - 10rem);
+  border-radius: 1.2rem;
+  object-fit: contain;
+  box-shadow: 0 18px 46px rgb(var(--color-ink) / .12);
+}
+
+.image-viewer-frame figcaption {
+  color: rgb(var(--color-ink) / .55);
+  font-size: .78rem;
+  text-align: center;
+}
+
 /* Viennoiserie guide */
 .viennoiserie-start {
   display: grid;
@@ -1928,6 +1970,8 @@ body.has-page-cursor * { cursor: inherit; }
 .recipe-guide-media.is-pastry .recipe-guide-generated { background: linear-gradient(145deg, #f1dfbd, #dbb77d); }
 .recipe-guide-media.is-pasta .recipe-guide-generated { background: linear-gradient(145deg, #f5e7bd, #d9c078); }
 .recipe-guide-media.is-sushi .recipe-guide-generated { background: linear-gradient(145deg, #d8e4e7, #9cb8b8); }
+.recipe-guide-media.is-sushi .recipe-guide-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.recipe-guide-media.is-sushi .recipe-guide-photo-grid > div:first-child img { object-position: 55% 42%; }
 .recipe-guide-media.is-core .recipe-guide-generated { background: linear-gradient(145deg, #e2e0dc, #b8b5ad); }
 .recipe-guide-copy { padding: 1rem; }
 .recipe-guide-status { padding: 0.28rem 0.48rem; border-radius: 9999px; background: rgb(var(--color-paper) / 0.78); color: rgb(var(--color-ink) / 0.45); font-size: 0.56rem; font-weight: 700; }
@@ -4604,6 +4648,54 @@ details.modernist-original-layout > summary::-webkit-details-marker {
 }
 
 .recipe-library-search-arrow { flex: none; color: rgb(var(--color-ink) / 0.28); font-size: 0.7rem; }
+
+/* Compact recipe guides and keep the library search out of the main reading flow. */
+.guide-page > .page-intro { padding-top: clamp(2rem, 3vw, 3rem); }
+.guide-page > .page-section { padding-top: clamp(1.25rem, 2.5vw, 2rem); }
+.recipe-search-shell { display: flex; justify-content: flex-end; }
+.recipe-search-shell .recipe-library-search { width: min(100%, 26rem); }
+.recipe-content-section { padding-top: 1rem; }
+
+.pasta-collage-section { scroll-margin-top: 7rem; }
+.pasta-collage { display: grid; gap: .85rem; grid-template-columns: repeat(4, 1fr); }
+.pasta-collage figure { overflow: hidden; border-radius: 1.25rem; background: rgb(var(--color-mist) / .34); }
+.pasta-collage img { display: block; width: 100%; height: 16rem; object-fit: cover; transition: transform .45s var(--ease-standard); }
+.pasta-collage figure:hover img { transform: scale(1.035); }
+.pasta-collage .pasta-collage-feature { grid-column: span 2; grid-row: span 2; }
+.pasta-collage .pasta-collage-feature img { height: 32.85rem; }
+.viennoiserie-croissants-section { margin-top: 0; }
+
+.sushi-showcase { display: grid; gap: .85rem; grid-template-columns: repeat(2, minmax(0, 1fr)); scroll-margin-top: 7rem; }
+.sushi-showcase figure { min-height: clamp(24rem, 43vw, 38rem); overflow: hidden; border-radius: 1.5rem; background: rgb(var(--color-mist) / .34); }
+.sushi-showcase img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.sushi-showcase figure:first-child img { object-position: 55% 42%; }
+.sushi-notes-grid { display: grid; gap: 1rem; margin-top: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sushi-note-card { padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.5rem; background: rgb(var(--color-surface) / .58); }
+.sushi-note-card h2 { margin-top: .55rem; font-size: clamp(1.4rem, 2.5vw, 2rem); letter-spacing: -.045em; }
+.sushi-note-card > p:not(.eyebrow) { margin-top: .85rem; color: rgb(var(--color-ink) / .62); font-size: .9rem; line-height: 1.65; }
+.sushi-note-card ul { display: grid; gap: .4rem; margin-top: 1.3rem; list-style: none; color: rgb(var(--color-ink) / .7); font-size: .9rem; }
+.sushi-note-card li { display: grid; gap: .7rem; grid-template-columns: 4.5rem 1fr; }
+.sushi-note-card li span { color: rgb(var(--color-moss)); font-family: var(--font-code); font-size: .74rem; font-weight: 700; }
+
+@media (max-width: 800px) {
+  .recipe-search-shell { justify-content: stretch; }
+  .recipe-search-shell .recipe-library-search { width: 100%; }
+  .pasta-collage { grid-template-columns: repeat(2, 1fr); }
+  .pasta-collage .pasta-collage-feature { grid-column: span 2; }
+  .pasta-collage .pasta-collage-feature img { height: 26rem; }
+  .sushi-showcase, .sushi-notes-grid { grid-template-columns: 1fr; }
+  .sushi-showcase figure { min-height: 25rem; }
+}
+
+@media (max-width: 640px) {
+  .recipe-content-section { padding-top: 2rem; }
+}
+
+@media (max-width: 480px) {
+  .guide-page > .page-intro { padding-top: 1.65rem; }
+  .pasta-collage img { height: 12rem; }
+  .pasta-collage .pasta-collage-feature img { height: 22rem; }
+}
 
 .modernist-book-art {
   display: grid;

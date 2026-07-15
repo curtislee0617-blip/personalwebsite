@@ -162,8 +162,18 @@ const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string;
     mark: "LAM",
     tone: "pastry",
   },
-  "pasta-guide": { alt: "Fresh pasta guide graphic", mark: "PASTA", tone: "pasta" },
-  "sushi-guide": { alt: "Sushi guide graphic", mark: "SUSHI", tone: "sushi" },
+  "pasta-guide": {
+    srcs: ["/recipes/pasta/Capelliti.jpeg", "/recipes/pasta/Stuffedpasta.jpeg", "/recipes/pasta/DSC_6482.jpeg"],
+    alt: "Fresh cappelletti, stuffed pasta, and handmade noodles",
+    mark: "PASTA",
+    tone: "pasta",
+  },
+  "sushi-guide": {
+    srcs: ["/recipes/sushi/IMG_2842.jpeg", "/recipes/sushi/IMG_1653.jpeg"],
+    alt: "Sushi chefs and nigiri",
+    mark: "SUSHI",
+    tone: "sushi",
+  },
   "cookbook-guide": { src: "/project-documents/cook-enterprise/book2.jpeg", alt: "Cookbook spread preview", mark: "BOOK", tone: "book" },
 };
 
@@ -206,12 +216,12 @@ export default async function RecipesPage() {
         title="Guides and recipes"
         description="Guides are for deeper walkthroughs, kitchen systems, and the specific complexities within each topic. Recipes are where the finished dishes will live once they are uploaded, and I will always update the recipes whenever I can."
       />
-      <div className="page-shell pt-6 sm:pt-8">
+      <div className="recipe-search-shell page-shell pt-3 sm:pt-4">
         <RecipeLibrarySearch initialItems={searchPreview} />
       </div>
       <SectionRail ariaLabel="Recipe page sections" sections={recipePageSections} />
 
-      <section className="page-section pt-12 sm:pt-16">
+      <section className="recipe-content-section page-section">
         <div className="space-y-12">
           <section id="recipe-guides">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">

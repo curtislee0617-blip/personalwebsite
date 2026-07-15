@@ -1,73 +1,56 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { SectionRail } from "@/components/section-rail";
 
 export const metadata: Metadata = { title: "Pasta guide" };
 
+const sections = [
+  { id: "pasta", label: "Pasta" },
+  { id: "shapes", label: "Pasta shapes" },
+] as const;
+
+const photos = ["DSC_6482.jpeg", "Stuffedpasta.jpeg", "Capelliti.jpeg", "spaghetti.jpeg", "tortellini.jpeg"] as const;
+
+const shapes = [
+  ["Capelliti.jpeg", "Cappelletti", "Small filled pasta folded into a compact, hat-like shape."],
+  ["spaghetti.jpeg", "Spaghetti", "Roll the sheet thin, dust lightly, and cut into fine strands."],
+  ["Stuffedpasta.jpeg", "Spiralghetti & agnolotti", "A snapshot of contrasting shapes: long spiralled strands and neatly sealed parcels."],
+  ["tortellini.jpeg", "Tortellini", "Folded filled pasta with a rounded belly and a clean, pinched finish."],
+] as const;
+
 export default function PastaGuidePage() {
   return (
-    <>
-      <PageIntro
-        eyebrow="Guide"
-        title="Pasta guide"
-        description="A working home for fresh pasta notes: dough formulas, egg ratios, flour blends, resting, rolling, cutting, shaping, filling, cooking, and photos once they are uploaded."
-      />
+    <div className="guide-page">
+      <PageIntro eyebrow="Guide" title="Pasta guide" />
+      <SectionRail ariaLabel="Pasta guide sections" sections={sections} />
 
-      <section className="page-section pt-12 sm:pt-16">
-        <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[2rem] border border-dashed border-ink/15 bg-surface/40 p-6 text-sm leading-7 text-ink/60 sm:p-8">
-            <p>
-              This guide is being built. The first formula is the basic egg pasta dough, and future notes can expand into rolling thicknesses, cuts, filled shapes, storage, and cooking times.
-            </p>
-            <Link className="back-link-bubble mt-6" href="/recipes">← Back to recipes</Link>
+      <section className="page-section">
+        <Link className="back-link-bubble mb-6" href="/recipes">← Back to recipes</Link>
+
+        <section id="pasta" className="pasta-collage-section">
+          <div className="pasta-collage">
+            {photos.map((file, index) => (
+              <figure className={index === 0 ? "pasta-collage-feature" : ""} key={file}>
+                <Image alt={`Fresh pasta, image ${index + 1}`} src={`/recipes/pasta/${file}`} width={900} height={1200} priority={index === 0} />
+              </figure>
+            ))}
           </div>
+        </section>
 
-          <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 text-sm leading-7 text-ink/60 sm:p-8">
-            <p className="eyebrow">Basic dough</p>
-            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-ink">Egg pasta dough</h2>
-            <p className="mt-5">
-              This is the base dough I like using for fresh egg pasta. The tuorli weight is the total egg and yolk amount, about 21 egg yolks and 1 whole egg.
-            </p>
-          </div>
-        </div>
-
-        <section className="mt-12 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
-          <div>
-            <p className="eyebrow">Formula</p>
-            <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Egg pasta dough</h2>
-            <p className="mt-3 text-sm leading-7 text-ink/60">
-              A simple egg pasta dough built around equal weights of farina and semola, with egg yolks and whole egg measured together as tuorli.
-            </p>
-          </div>
-
-          <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/45">Ingredients</h3>
-              <ul className="mt-4 grid gap-2 text-sm leading-6 text-ink/65">
-                {[
-                  "Egg yolks - 21",
-                  "Whole egg - 1",
-                  "Farina - 270g",
-                  "Semola - 270g",
-                  "Tuorli - 420g",
-                ].map((item) => (
-                  <li className="flex gap-2" key={item}>
-                    <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-ink/30" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-6 border-t border-ink/10 pt-6">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/45">Note</h3>
-              <p className="mt-3 text-sm leading-7 text-ink/65">
-                Tuorli is the amount of egg and egg yolk together, equating to about 21 egg yolks and 1 whole egg.
-              </p>
-            </div>
+        <section id="shapes" className="viennoiserie-photo-section">
+          <div className="viennoiserie-photo-heading"><div><p className="eyebrow">Reference board</p><h2>Pasta shapes</h2></div></div>
+          <div className="viennoiserie-shapes">
+            {shapes.map(([file, title, description]) => (
+              <article key={file}>
+                <Image src={`/recipes/pasta/${file}`} alt={title} width={900} height={1200} />
+                <div><h3>{title}</h3><p>{description}</p></div>
+              </article>
+            ))}
           </div>
         </section>
       </section>
-    </>
+    </div>
   );
 }

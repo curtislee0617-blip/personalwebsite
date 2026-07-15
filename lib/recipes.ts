@@ -68,7 +68,7 @@ export const recipeEntries: RecipeEntry[] = [
     title: "Pasta guide",
     description:
       "A working guide for fresh pasta doughs, flour blends, hydration by egg weight, resting, rolling, cutting, shaping, and cooking.",
-    status: "coming-soon",
+    status: "published",
     href: "/recipes/pasta-guide",
   },
   {
@@ -87,7 +87,7 @@ export const recipeEntries: RecipeEntry[] = [
     description:
       "The cook.enterprise cookbook, presented as a project you can browse page by page or open as the original PDF.",
     status: "published",
-    href: "/projects/cook-enterprise",
+    href: "/projects/cook-enterprise?from=recipes",
   },
   {
     slug: "flan",

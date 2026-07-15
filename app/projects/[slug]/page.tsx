@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/page-intro";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { getProjectBySlug, projects } from "@/lib/projects";
 
 type ProjectPageProps = {
@@ -50,9 +51,7 @@ export default async function ProjectDetailPage({ params, searchParams }: Projec
 
       <section className="page-section pt-12 sm:pt-16">
         <div className="mb-6 sm:mb-8">
-          <Link className="back-link-bubble" href={backHref}>
-            ← Back
-          </Link>
+          <HistoryBackButton fallbackHref={backHref} />
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.95fr)] lg:gap-16">
