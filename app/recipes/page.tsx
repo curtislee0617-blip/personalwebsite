@@ -122,18 +122,18 @@ function buildRecipeSearchPreview(uploadedRecipes: RecipeCardEntry[]): RecipeSea
       searchText: "frantzen bjorn basics fine dining cookbook petit fours",
     },
     {
-      title: "Bachour by Antonio Bachour",
-      context: "Recipe book · 78 pastries and foundations",
-      kind: "Book",
-      href: "/recipes/bachour",
-      searchText: "bachour antonio baker pastry entremet tart choux chocolate croissant brioche cookbook",
-    },
-    {
       title: "Opéra Pâtisserie by Cédric Grolet",
       context: "Recipe book · 22 Basics and 96 recipes",
       kind: "Book",
       href: "/recipes/opera",
       searchText: "opera patisserie cedric grolet pastry breakfast french desserts frozen fruit cookbook",
+    },
+    {
+      title: "Bachour by Antonio Bachour",
+      context: "Recipe book · 78 pastries and foundations",
+      kind: "Book",
+      href: "/recipes/bachour",
+      searchText: "bachour antonio baker pastry entremet tart choux chocolate croissant brioche cookbook",
     },
     ...siteEntries,
     ...uploadedEntries,
@@ -384,7 +384,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card order-7 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-8 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/benu"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -409,7 +409,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card order-6 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-7 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/bachour"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -509,18 +509,18 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card order-8 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-6 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/opera"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-black">
                   <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
                     <Image
-                      alt="Opéra Pâtisserie by Cédric Grolet cover"
+                      alt="Pain au chocolat from Opéra Pâtisserie by Cédric Grolet"
                       className="object-cover"
                       fill
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/opera/pages/page-001.webp"
-                      style={{ objectPosition: "50% 44%" }}
+                      src="/opera/photos/pain-au-chocolat.webp"
+                      style={{ objectPosition: "50% 50%" }}
                     />
                   </div>
                 </div>

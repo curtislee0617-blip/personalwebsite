@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
 import { CookbookSearch } from "@/components/cookbook-search";
-import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import {
   modernistPizzaEntries,
   modernistPizzaHighlights,
@@ -17,14 +17,26 @@ import {
   type ModernistPizzaHighlight,
 } from "@/lib/modernist-pizza";
 
-function SourceLinks({ sources, pages, title }: { sources: string[]; pages: number[]; title: string }) {
+function SourceLinks({ pages, returnId, title }: { pages: number[]; returnId: string; title: string }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {sources.map((source, index) => (
-        <RecipeImageViewer alt={`${title}, exact source PDF page ${pages[index]}`} className="inline-flex items-center rounded-full border border-moss/20 px-2.5 py-1.5 text-[0.68rem] font-semibold text-moss" key={source} src={source}>
-          PDF page {pages[index]}
-        </RecipeImageViewer>
-      ))}
+      {pages.map((page) => {
+        const href = {
+          pathname: "/recipes/modernist-pizza/viewer",
+          query: {
+            from: `/recipes/modernist-pizza#${returnId}`,
+            pages: pages.join(","),
+            title,
+          },
+          hash: `page-${page}`,
+        };
+
+        return (
+          <Link className="inline-flex items-center gap-1.5 rounded-full border border-moss/20 bg-moss/[0.04] px-3 py-2 text-[0.68rem] font-semibold text-moss transition hover:border-moss/40 hover:bg-moss/[0.09]" href={href} key={page} prefetch={false}>
+            Open PDF page {page} in viewer <span aria-hidden="true">↗</span>
+          </Link>
+        );
+      })}
     </div>
   );
 }
@@ -53,7 +65,7 @@ function EntryCard({ entry, index, open, onToggle }: { entry: ModernistPizzaEntr
             <h3 className="mt-2 text-2xl font-semibold tracking-tight">{entry.title}</h3>
           </header>
           <div className="rounded-2xl border border-amber-700/15 bg-amber-100/30 px-4 py-3 text-xs leading-5 text-ink/55">This layout-heavy entry is preserved as an exact source spread. Scaling is intentionally disabled for source-page cutouts.</div>
-          <SourceLinks pages={entry.sourcePages} sources={entry.sourceImages} title={entry.title} />
+          <SourceLinks pages={entry.sourcePages} returnId={id} title={entry.title} />
         </div>
       )}
     </article>
@@ -61,16 +73,16 @@ function EntryCard({ entry, index, open, onToggle }: { entry: ModernistPizzaEntr
 }
 
 function HighlightCard({ highlight }: { highlight: ModernistPizzaHighlight }) {
-  const sources = highlight.sourcePages.map((page) => `/modernist-pizza/pages/page-${String(page).padStart(3, "0")}.webp`);
+  const id = `modernist-pizza-highlight-${highlight.slug}`;
   return (
-    <article className="break-inside-avoid rounded-[1.25rem] border border-ink/10 bg-paper/65 p-4 sm:p-5" id={`modernist-pizza-highlight-${highlight.slug}`}>
+    <article className="break-inside-avoid rounded-[1.25rem] border border-ink/10 bg-paper/65 p-4 sm:p-5" id={id}>
       <p className="eyebrow">{highlight.category}</p>
       <h3 className="mt-2 text-lg font-semibold tracking-tight">{highlight.title}</h3>
       <p className="mt-2 text-sm leading-6 text-ink/55">{highlight.summary}</p>
       <ul className="mt-4 grid gap-2 border-t border-ink/[0.07] pt-3">
         {highlight.points.map((point) => <li className="flex gap-2.5 text-[0.8rem] leading-5 text-ink/62" key={point}><span aria-hidden="true" className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-moss/60" /><span>{point}</span></li>)}
       </ul>
-      <div className="mt-4"><SourceLinks pages={highlight.sourcePages} sources={sources} title={highlight.title} /></div>
+      <div className="mt-4"><SourceLinks pages={highlight.sourcePages} returnId={id} title={highlight.title} /></div>
     </article>
   );
 }
