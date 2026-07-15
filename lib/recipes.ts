@@ -77,7 +77,7 @@ export const recipeEntries: RecipeEntry[] = [
     title: "Pasta guide",
     description:
       "A working guide for fresh pasta doughs, flour blends, hydration by egg weight, resting, rolling, cutting, shaping, and cooking.",
-    status: "coming-soon",
+    status: "published",
     href: "/recipes/pasta-guide",
   },
   {

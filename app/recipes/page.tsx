@@ -76,7 +76,12 @@ const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string;
     mark: "LAM",
     tone: "pastry",
   },
-  "pasta-guide": { alt: "Fresh pasta guide graphic", mark: "PASTA", tone: "pasta" },
+  "pasta-guide": {
+    srcs: ["/recipes/pasta/Capelliti.jpeg", "/recipes/pasta/Stuffedpasta.jpeg"],
+    alt: "Fresh cappelletti and stuffed pasta",
+    mark: "PASTA",
+    tone: "pasta",
+  },
   "sushi-guide": { alt: "Sushi guide graphic", mark: "SUSHI", tone: "sushi" },
   "cookbook-guide": { src: "/project-documents/cook-enterprise/book2.jpeg", alt: "Cookbook spread preview", mark: "BOOK", tone: "book" },
 };
