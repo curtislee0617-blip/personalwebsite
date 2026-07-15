@@ -15,7 +15,7 @@ const sourdoughSections = [
 
 export default function SourdoughGuidePage() {
   return (
-    <>
+    <div className="guide-page">
       <PageIntro
         eyebrow="Guide"
         title="Sourdough guide"
@@ -27,6 +27,6 @@ export default function SourdoughGuidePage() {
         <Link className="back-link-bubble mb-6" href="/recipes">← Back to recipes</Link>
         <SourdoughGuide />
       </section>
-    </>
+    </div>
   );
 }

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { SectionRail } from "@/components/section-rail";
 import { ViennoiserieScaler } from "@/components/viennoiserie-scaler";
-import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 
 export const metadata: Metadata = {
   title: "Viennoiserie guide",
@@ -44,12 +43,13 @@ function Photo({ file, alt }: { file: string; alt: string }) {
   const thumbSrc = parts[0] === "recipe-steps"
     ? `/recipes/viennoiserie/recipe-steps/thumbs-v2-${encodeURIComponent(parts[1])}`
     : `/recipes/viennoiserie/thumbs/${encodeURIComponent(parts[0])}`;
-  return <RecipeImageViewer alt={alt} className="viennoiserie-photo-link" src={fullSrc}><Image src={thumbSrc} alt={alt} width={900} height={1200} quality={78} sizes="(max-width: 640px) 92vw, (max-width: 1000px) 45vw, 30vw" /></RecipeImageViewer>;
+  const viewerHref = `/recipes/viennoiserie-guide/image?src=${encodeURIComponent(fullSrc)}&alt=${encodeURIComponent(alt)}`;
+  return <Link className="viennoiserie-photo-link" href={viewerHref} aria-label={`Open full-size image: ${alt}`}><Image src={thumbSrc} alt={alt} width={900} height={1200} quality={78} sizes="(max-width: 640px) 92vw, (max-width: 1000px) 45vw, 30vw" /></Link>;
 }
 
 export default function ViennoiserieGuidePage() {
   return (
-    <>
+    <div className="guide-page">
       <PageIntro
         eyebrow="Guide · laminated dough"
         title="Viennoiserie guide"
@@ -58,9 +58,9 @@ export default function ViennoiserieGuidePage() {
       <SectionRail ariaLabel="Viennoiserie guide sections" sections={sections} />
 
       <section className="page-section pt-12 sm:pt-16">
-        <Link className="back-link-bubble mb-8" href="/recipes">← Back to recipes</Link>
+        <Link className="back-link-bubble mb-4" href="/recipes">← Back to recipes</Link>
 
-        <section id="croissants" className="viennoiserie-photo-section">
+        <section id="croissants" className="viennoiserie-croissants-section viennoiserie-photo-section">
           <div className="viennoiserie-photo-heading">
             <div><p className="eyebrow">The main event</p><h2>Croissants</h2></div>
             <p>All of the croissant images in one place — from full trays to close-ups of the baked layers.</p>
@@ -137,6 +137,6 @@ export default function ViennoiserieGuidePage() {
           </div>
         </section>
       </section>
-    </>
+    </div>
   );
 }
