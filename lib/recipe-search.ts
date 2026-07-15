@@ -3,6 +3,7 @@ import { bachourRecipes } from "@/lib/bachour";
 import { benuRecipes } from "@/lib/benu";
 import { coreCategories, coreRecipes } from "@/lib/core-basics";
 import { coreDishes } from "@/lib/core-dishes";
+import { frantzenBasics, frantzenPetitFours, frantzenRecipes } from "@/lib/frantzen";
 import { modernistEntryHref } from "@/lib/modernist-navigation";
 import { pollenStreetBasics, pollenStreetCategories, pollenStreetDishes } from "@/lib/pollen-street";
 import { recipeEntries } from "@/lib/recipes";
@@ -66,6 +67,13 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     href: "/recipes/bachour",
     searchText: "bachour antonio pastry entremet tart choux chocolate cookbook",
   },
+  {
+    title: "Frantzén by Björn Frantzén",
+    context: "Recipe book · Basics, dishes and Petit Fours",
+    kind: "Book",
+    href: "/recipes/frantzen",
+    searchText: "frantzen bjorn basics fine dining cookbook petit fours",
+  },
   ...recipeEntries
     .filter((entry) => entry.kind === "guide" || entry.status === "published")
     .map((entry): RecipeSearchItem => ({
@@ -118,6 +126,20 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     context: `Bachour by Antonio Bachour · ${recipe.yield}`,
     kind: "Bachour pastry",
     href: `/recipes/bachour#bachour-${recipe.slug}`,
+    searchText: recipe.components.flatMap((component) => [component.name, ...component.ingredients]).join(" "),
+  })),
+  ...frantzenBasics.map((recipe): RecipeSearchItem => ({
+    title: recipe.name,
+    context: `Frantzén Basics · page ${recipe.page}`,
+    kind: "Frantzén basic",
+    href: `/recipes/frantzen#frantzen-basic-${recipe.slug}`,
+    searchText: recipe.ingredients.join(" "),
+  })),
+  ...[...frantzenRecipes, ...frantzenPetitFours].map((recipe): RecipeSearchItem => ({
+    title: recipe.title,
+    context: `Frantzén by Björn Frantzén · ${recipe.description}`,
+    kind: "Frantzén recipe",
+    href: `/recipes/frantzen#frantzen-${recipe.slug}`,
     searchText: recipe.components.flatMap((component) => [component.name, ...component.ingredients]).join(" "),
   })),
   ...(modernistContents as ModernistSearchEntry[]).map((entry): RecipeSearchItem => ({

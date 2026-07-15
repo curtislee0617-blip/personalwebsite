@@ -5053,6 +5053,10 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   width: min(70rem, calc(100vw - 6rem));
   flex-basis: min(70rem, calc(100vw - 6rem));
 }
+.book-recipe-carousel--compact > .mobile-snap-slot:not(:has([aria-expanded="true"])) {
+  width: 13rem;
+  flex-basis: 13rem;
+}
 .book-recipe-carousel .mobile-snap-depth,
 .book-recipe-carousel .cookbook-rail-card { height: 100%; }
 .book-recipe-section { min-width: 0; max-width: 100%; }
@@ -5067,6 +5071,10 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   .book-recipe-carousel > .mobile-snap-slot:has([aria-expanded="true"]) {
     width: min(calc(100vw - 2rem), 36rem);
     flex-basis: min(calc(100vw - 2rem), 36rem);
+  }
+  .book-recipe-carousel--compact > .mobile-snap-slot:not(:has([aria-expanded="true"])) {
+    width: 12.5rem;
+    flex-basis: 12.5rem;
   }
 }
 

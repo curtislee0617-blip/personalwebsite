@@ -1,7 +1,7 @@
 import { Children, type ReactNode } from "react";
 import { SnapCarousel } from "@/components/snap-carousel";
 
-export function CookbookRecipeRail({ children, title }: { children: ReactNode; title: string }) {
+export function CookbookRecipeRail({ children, title, compact = false }: { children: ReactNode; title: string; compact?: boolean }) {
   const count = Children.count(children);
   if (count === 0) return null;
 
@@ -18,7 +18,7 @@ export function CookbookRecipeRail({ children, title }: { children: ReactNode; t
         </p>
       </div>
       <SnapCarousel
-        className="book-recipe-carousel mobile-snap-carousel -mx-5 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 pt-1 sm:mx-0 sm:px-0"
+        className={`book-recipe-carousel mobile-snap-carousel -mx-5 mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 pt-1 sm:mx-0 sm:px-0 ${compact ? "book-recipe-carousel--compact" : ""}`}
         repeatEdges={false}
       >
         {children}

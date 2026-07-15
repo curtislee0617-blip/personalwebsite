@@ -5,7 +5,9 @@ type CookbookRecipeCardSummaryProps = {
   fallbackMark: string;
   image: string | null;
   imageAlt: string;
+  imageFilter?: string;
   imagePosition?: string;
+  imageRotation?: number;
   index: number;
   meta: string;
   onToggle: () => void;
@@ -19,7 +21,9 @@ export function CookbookRecipeCardSummary({
   fallbackMark,
   image,
   imageAlt,
+  imageFilter,
   imagePosition,
+  imageRotation,
   index,
   meta,
   onToggle,
@@ -38,11 +42,15 @@ export function CookbookRecipeCardSummary({
         {image ? (
           <Image
             alt={imageAlt}
-            className={`object-cover transition duration-500 ${zoomImage ? "scale-[1.08] group-hover/summary:scale-[1.11]" : "group-hover/summary:scale-[1.025]"}`}
+            className={`object-cover transition duration-500 ${imageRotation ? "" : zoomImage ? "scale-[1.08] group-hover/summary:scale-[1.11]" : "group-hover/summary:scale-[1.025]"}`}
             fill
             sizes={open ? "(max-width: 640px) 92vw, 13rem" : "(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 24rem"}
             src={image}
-            style={{ objectPosition: imagePosition ?? "50% 50%" }}
+            style={{
+              filter: imageFilter,
+              objectPosition: imagePosition ?? "50% 50%",
+              transform: imageRotation ? `rotate(${imageRotation}deg) scale(1.35)` : undefined,
+            }}
           />
         ) : (
           <div className="grid h-full place-items-center bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.95),rgba(219,210,191,0.42))] text-sm font-semibold uppercase tracking-[0.14em] text-ink/30">

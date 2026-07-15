@@ -304,7 +304,7 @@ export default async function RecipesPage() {
             </div>
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               <Link
-                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-1 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/core-basics"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -328,7 +328,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-4 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/pollen-street"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -352,7 +352,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-6 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/benu"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -377,7 +377,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-5 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/bachour"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -402,18 +402,19 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-3 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/modernist-cuisine"
               >
-                <div className="modernist-book-art aspect-[16/9] overflow-hidden rounded-[1.45rem]">
-                  <div className="modernist-book-spine">
-                    <span>Modernist Cuisine</span>
-                    <b>06</b>
-                  </div>
-                  <div className="modernist-book-art-copy">
-                    <span>Volume 6</span>
-                    <strong>Kitchen Manual</strong>
-                    <small>Recipes · techniques · reference tables</small>
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-white">
+                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                    <Image
+                      alt="Modernist Cuisine title and authors page"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+                      src="/modernist-cuisine/title-page.jpg"
+                      style={{ objectPosition: "50% 39%" }}
+                    />
                   </div>
                 </div>
                 <div className="p-3 pb-4 pt-4">
@@ -423,6 +424,31 @@ export default async function RecipesPage() {
                     <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">Volume 6, rebuilt from every indexed page with scalable recipe grids and exact source layouts for charts and complex techniques.</p>
+                </div>
+              </Link>
+              <Link
+                className="design-card order-2 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                href="/recipes/frantzen"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
+                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                    <Image
+                      alt="Roasted scallops from Frantzén by Björn Frantzén"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+                      src="/frantzen/dishes/roasted-scallops.jpg"
+                      style={{ objectPosition: "50% 52%" }}
+                    />
+                  </div>
+                </div>
+                <div className="p-3 pb-4 pt-4">
+                  <p className="eyebrow">Book · 64 Basics + 53 dishes + 5 Petit Fours</p>
+                  <div className="mt-2 flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight">Frantzén by Björn Frantzén</h3>
+                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">The supplied Basics, plated dishes and Petit Fours rebuilt as scalable component cards with exact source-page references.</p>
                 </div>
               </Link>
             </div>

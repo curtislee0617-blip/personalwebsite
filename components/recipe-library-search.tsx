@@ -55,7 +55,7 @@ export function RecipeLibrarySearch({ initialItems }: { initialItems: RecipeSear
   const loadFullLibrary = () => {
     if (requestRef.current || libraryState === "loaded") return;
     setLibraryState("loading");
-    requestRef.current = fetch("/api/recipe-search")
+    requestRef.current = fetch("/api/recipe-search", { cache: "no-store" })
       .then((response) => {
         if (!response.ok) throw new Error("Recipe search index could not be loaded");
         return response.json() as Promise<RecipeSearchItem[]>;
