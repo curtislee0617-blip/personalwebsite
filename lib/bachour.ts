@@ -1,3 +1,5 @@
+import bachourPastriesData from "@/lib/bachour-pastries-data.json";
+
 export type BachourRecipeComponent = {
   name: string;
   ingredients: string[];
@@ -13,6 +15,27 @@ export type BachourRecipe = {
   sourceNote?: string;
   components: BachourRecipeComponent[];
 };
+
+export type BachourPastryRecipe = BachourRecipe & {
+  image: string;
+  category: string;
+  pdfPage: number;
+  photoPage: number;
+  sourcePages: number[];
+  sourceImages: string[];
+};
+
+export const bachourPastryRecipes = bachourPastriesData as BachourPastryRecipe[];
+
+export const bachourPastryCategories = [
+  "Foundations",
+  "Puff pastry & breakfast",
+  "Croissants",
+  "Brioche",
+  "Cakes & financiers",
+  "Choux & canelés",
+  "Tarts & cookies",
+] as const;
 
 export const bachourRecipes: BachourRecipe[] = [
   {

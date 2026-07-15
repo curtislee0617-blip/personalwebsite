@@ -1,10 +1,12 @@
 import modernistContents from "@/imports/modernist-cuisine-volume-6/contents-index.json";
-import { bachourRecipes } from "@/lib/bachour";
+import { bachourPastryRecipes, bachourRecipes } from "@/lib/bachour";
 import { benuRecipes } from "@/lib/benu";
 import { coreCategories, coreRecipes } from "@/lib/core-basics";
 import { coreDishes } from "@/lib/core-dishes";
 import { frantzenBasics, frantzenPetitFours, frantzenRecipes } from "@/lib/frantzen";
 import { modernistEntryHref } from "@/lib/modernist-navigation";
+import { modernistPizzaEntries, modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
+import { operaBasics, operaRecipes } from "@/lib/opera";
 import { pollenStreetBasics, pollenStreetCategories, pollenStreetDishes } from "@/lib/pollen-street";
 import { recipeEntries } from "@/lib/recipes";
 
@@ -54,18 +56,25 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     searchText: "modernist cuisine kitchen manual charts techniques cookbook",
   },
   {
+    title: "Modernist Pizza",
+    context: `Recipe book · ${modernistPizzaRecipes.length} recipes and ${modernistPizzaKnowledge.length} technique references`,
+    kind: "Book",
+    href: "/recipes/modernist-pizza",
+    searchText: "modernist pizza dough sauce cheese toppings ovens fermentation shaping baking cookbook kitchen manual",
+  },
+  {
     title: "Benu by Corey Lee",
     context: "Recipe book · 8 supplied dishes",
     kind: "Book",
     href: "/recipes/benu",
     searchText: "benu corey lee cookbook korean chinese fine dining",
   },
-  {
-    title: "Bachour by Antonio Bachour",
-    context: "Recipe book · 11 supplied pastries",
-    kind: "Book",
-    href: "/recipes/bachour",
-    searchText: "bachour antonio pastry entremet tart choux chocolate cookbook",
+    {
+      title: "Bachour by Antonio Bachour",
+      context: "Recipe book · 78 pastries and foundations",
+      kind: "Book",
+      href: "/recipes/bachour",
+      searchText: "bachour antonio baker pastry entremet tart choux chocolate croissant brioche cookbook",
   },
   {
     title: "Frantzén by Björn Frantzén",
@@ -73,6 +82,13 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     kind: "Book",
     href: "/recipes/frantzen",
     searchText: "frantzen bjorn basics fine dining cookbook petit fours",
+  },
+  {
+    title: "Opéra Pâtisserie by Cédric Grolet",
+    context: "Recipe book · 22 Basics and 96 recipes",
+    kind: "Book",
+    href: "/recipes/opera",
+    searchText: "opera patisserie cedric grolet pastry breakfast french desserts frozen fruit cookbook",
   },
   ...recipeEntries
     .filter((entry) => entry.kind === "guide" || entry.status === "published")
@@ -128,6 +144,13 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     href: `/recipes/bachour#bachour-${recipe.slug}`,
     searchText: recipe.components.flatMap((component) => [component.name, ...component.ingredients]).join(" "),
   })),
+  ...bachourPastryRecipes.map((recipe): RecipeSearchItem => ({
+    title: recipe.title,
+    context: `Bachour the Baker · ${recipe.category} · ${recipe.yield}`,
+    kind: "Bachour pastry",
+    href: `/recipes/bachour#bachour-baker-${recipe.slug}`,
+    searchText: recipe.components.flatMap((component) => [component.name, ...component.ingredients]).join(" "),
+  })),
   ...frantzenBasics.map((recipe): RecipeSearchItem => ({
     title: recipe.name,
     context: `Frantzén Basics · page ${recipe.page}`,
@@ -141,6 +164,27 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     kind: "Frantzén recipe",
     href: `/recipes/frantzen#frantzen-${recipe.slug}`,
     searchText: recipe.components.flatMap((component) => [component.name, ...component.ingredients]).join(" "),
+  })),
+  ...operaBasics.map((recipe): RecipeSearchItem => ({
+    title: recipe.name,
+    context: `Opéra Pâtisserie Basics · ${recipe.group}`,
+    kind: "Opéra basic",
+    href: `/recipes/opera#opera-basic-${recipe.slug}`,
+    searchText: recipe.ingredients.join(" "),
+  })),
+  ...operaRecipes.map((recipe): RecipeSearchItem => ({
+    title: recipe.title,
+    context: `Opéra Pâtisserie · ${recipe.category}`,
+    kind: "Opéra recipe",
+    href: `/recipes/opera#opera-${recipe.slug}`,
+    searchText: recipe.components.flatMap((component) => [component.name, ...component.ingredients]).join(" "),
+  })),
+  ...modernistPizzaEntries.map((entry): RecipeSearchItem => ({
+    title: entry.title,
+    context: `Modernist Pizza · ${entry.category} · printed page ${entry.printedPage}`,
+    kind: entry.kind === "recipe" ? "Modernist Pizza recipe" : "Modernist Pizza reference",
+    href: `/recipes/modernist-pizza#modernist-pizza-${entry.kind}-${entry.slug}`,
+    searchText: `${entry.summary} ${entry.aliases.join(" ")} ${entry.searchText}`,
   })),
   ...(modernistContents as ModernistSearchEntry[]).map((entry): RecipeSearchItem => ({
     title: entry.displayTitle || entry.title,

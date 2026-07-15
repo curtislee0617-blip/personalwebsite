@@ -11,6 +11,7 @@ import { SnapCarousel } from "@/components/snap-carousel";
 import { recipeEntries, recipeSections, recipesByDate, wishlistEntries } from "@/lib/recipes";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
+import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Recipes" };
@@ -100,6 +101,13 @@ function buildRecipeSearchPreview(uploadedRecipes: RecipeCardEntry[]): RecipeSea
       searchText: "modernist cuisine kitchen manual charts techniques cookbook",
     },
     {
+      title: "Modernist Pizza",
+      context: `Recipe book · ${modernistPizzaRecipes.length} recipes and ${modernistPizzaKnowledge.length} technique references`,
+      kind: "Book",
+      href: "/recipes/modernist-pizza",
+      searchText: "modernist pizza dough sauce cheese toppings ovens fermentation shaping baking cookbook kitchen manual",
+    },
+    {
       title: "Benu by Corey Lee",
       context: "Recipe book · 8 supplied dishes",
       kind: "Book",
@@ -115,10 +123,17 @@ function buildRecipeSearchPreview(uploadedRecipes: RecipeCardEntry[]): RecipeSea
     },
     {
       title: "Bachour by Antonio Bachour",
-      context: "Recipe book · 11 supplied pastries",
+      context: "Recipe book · 78 pastries and foundations",
       kind: "Book",
       href: "/recipes/bachour",
-      searchText: "bachour antonio pastry entremet tart choux chocolate cookbook",
+      searchText: "bachour antonio baker pastry entremet tart choux chocolate croissant brioche cookbook",
+    },
+    {
+      title: "Opéra Pâtisserie by Cédric Grolet",
+      context: "Recipe book · 22 Basics and 96 recipes",
+      kind: "Book",
+      href: "/recipes/opera",
+      searchText: "opera patisserie cedric grolet pastry breakfast french desserts frozen fruit cookbook",
     },
     ...siteEntries,
     ...uploadedEntries,
@@ -335,7 +350,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card order-4 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-5 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/pollen-street"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -359,7 +374,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card order-6 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-7 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/benu"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -384,7 +399,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
-                className="design-card order-5 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                className="design-card order-6 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/bachour"
               >
                 <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
@@ -400,12 +415,12 @@ export default async function RecipesPage() {
                   </div>
                 </div>
                 <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · 11 pastries</p>
+                  <p className="eyebrow">Book · 78 pastries & foundations</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Bachour by Antonio Bachour</h3>
                     <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">The supplied entremets, tarts, choux and cookies rebuilt as searchable, scalable component-by-component cards.</p>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">Two collections: the supplied entremets and all 67 recipes from Bachour the Baker, rebuilt as searchable, scalable component-by-component cards.</p>
                 </div>
               </Link>
               <Link
@@ -434,6 +449,31 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               <Link
+                className="design-card order-4 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                href="/recipes/modernist-pizza"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-white">
+                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                    <Image
+                      alt="Modernist Pizza title and authors page"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+                      src="/modernist-pizza/cover.webp"
+                      style={{ objectPosition: "50% 24%" }}
+                    />
+                  </div>
+                </div>
+                <div className="p-3 pb-4 pt-4">
+                  <p className="eyebrow">Book · {modernistPizzaRecipes.length} recipes + {modernistPizzaKnowledge.length} references</p>
+                  <div className="mt-2 flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight">Modernist Pizza</h3>
+                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">Volume 4 separated into searchable recipe spreads and a remade practical guide to dough, ovens, baking, service, and troubleshooting.</p>
+                </div>
+              </Link>
+              <Link
                 className="design-card order-2 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
                 href="/recipes/frantzen"
               >
@@ -456,6 +496,31 @@ export default async function RecipesPage() {
                     <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">The supplied Basics, plated dishes and Petit Fours rebuilt as scalable component cards with exact source-page references.</p>
+                </div>
+              </Link>
+              <Link
+                className="design-card order-8 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+                href="/recipes/opera"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-black">
+                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                    <Image
+                      alt="Opéra Pâtisserie by Cédric Grolet cover"
+                      className="object-cover"
+                      fill
+                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+                      src="/opera/pages/page-001.webp"
+                      style={{ objectPosition: "50% 44%" }}
+                    />
+                  </div>
+                </div>
+                <div className="p-3 pb-4 pt-4">
+                  <p className="eyebrow">Book · 22 Basics + 96 recipes</p>
+                  <div className="mt-2 flex items-start justify-between gap-4">
+                    <h3 className="text-xl font-semibold tracking-tight">Opéra Pâtisserie by Cédric Grolet</h3>
+                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-ink/52">Breakfast pastries, French classics, plated desserts, frozen fruit and annex basics rebuilt with scaling and exact source pages.</p>
                 </div>
               </Link>
             </div>
