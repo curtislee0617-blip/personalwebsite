@@ -190,6 +190,9 @@ export type Database = {
           method_groups: Json;
           linked_recipe_keys: string[];
           thumbnail_url: string | null;
+          thumbnail_position: string | null;
+          thumbnail_time_seconds: number | null;
+          media_items: Json;
           created_at: string;
           updated_at: string;
         };
@@ -203,6 +206,9 @@ export type Database = {
           method_groups?: Json;
           linked_recipe_keys?: string[];
           thumbnail_url?: string | null;
+          thumbnail_position?: string | null;
+          thumbnail_time_seconds?: number | null;
+          media_items?: Json;
           created_at?: string;
           updated_at?: string;
         };

@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RecipeLinkPicker } from "@/components/recipe-link-picker";
+import { RecipeThumbnailPositionEditor } from "@/components/recipe-thumbnail-position-editor";
+import { RecipeMediaOrganizer } from "@/components/recipe-media-organizer";
 import { recipeCategories } from "@/data/recipe-categories";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { formatIngredientGroups, formatMethodGroups, getPersonalRecipeCards } from "@/lib/personal-recipes";
@@ -40,11 +42,12 @@ export default async function EditRecipeCardPage({
   const linkedOptions = recipes
     .filter((entry) => entry.recipeKey !== recipe.recipeKey)
     .map((entry) => ({ key: entry.recipeKey, title: entry.title, description: entry.description, thumbnail: entry.thumbnail }));
-  const thumbnailOptions = Array.from(new Set([
-    recipe.thumbnail,
-    ...(recipe.imageUrls ?? []),
-    ...(recipe.media ?? []).flatMap((item) => [item.type === "image" ? item.src : item.poster]),
-  ].filter((value): value is string => Boolean(value))));
+  const thumbnailOptionMap = new Map<string, { src: string; type: "image" | "video"; poster?: string }>();
+  if (recipe.thumbnail) thumbnailOptionMap.set(recipe.thumbnail, { src: recipe.thumbnail, type: /\.(?:mp4|m4v|mov)(?:\?.*)?$/i.test(recipe.thumbnail) ? "video" : "image" });
+  recipe.imageUrls?.forEach((src) => thumbnailOptionMap.set(src, { src, type: "image" }));
+  recipe.media?.forEach((item) => thumbnailOptionMap.set(item.src, { src: item.src, type: item.type, poster: item.poster }));
+  const thumbnailOptions = Array.from(thumbnailOptionMap.values());
+  const recipeMedia = recipe.media ?? (recipe.imageUrls ?? []).map((src) => ({ src, type: "image" as const }));
 
   return (
     <div className="page-shell py-12 sm:py-16">
@@ -84,21 +87,29 @@ export default async function EditRecipeCardPage({
           </label>
         </section>
 
-        {thumbnailOptions.length > 1 && (
+        {thumbnailOptions.length > 0 && (
           <fieldset className="recipe-editor-panel">
             <legend className="sr-only">Recipe thumbnail</legend>
             <div className="recipe-editor-panel-heading">
               <div><p className="eyebrow">Card image</p><h2>Choose thumbnail</h2></div>
             </div>
-            <div className="recipe-editor-thumbnail-grid">
-              {thumbnailOptions.map((src, index) => (
-                <label key={src}>
-                  <input defaultChecked={src === recipe.thumbnail || (!recipe.thumbnail && index === 0)} name="thumbnail_url" type="radio" value={src} />
-                  <img alt={`${recipe.title} thumbnail option ${index + 1}`} src={src} />
-                </label>
-              ))}
-            </div>
+            <RecipeThumbnailPositionEditor
+              currentPosition={recipe.thumbnailPosition}
+              currentThumbnail={recipe.thumbnail}
+              currentTime={recipe.thumbnailTime}
+              options={thumbnailOptions}
+              title={recipe.title}
+            />
           </fieldset>
+        )}
+
+        {recipeMedia.length > 0 && (
+          <section className="recipe-editor-panel">
+            <div className="recipe-editor-panel-heading">
+              <div><p className="eyebrow">Expanded gallery</p><h2>Media order and captions</h2></div>
+            </div>
+            <RecipeMediaOrganizer initialItems={recipeMedia} title={recipe.title} />
+          </section>
         )}
 
         <fieldset className="recipe-editor-panel">

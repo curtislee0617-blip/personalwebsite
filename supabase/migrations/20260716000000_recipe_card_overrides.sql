@@ -16,6 +16,9 @@ create table if not exists public.recipe_card_overrides (
   method_groups jsonb not null default '[]'::jsonb,
   linked_recipe_keys text[] not null default '{}',
   thumbnail_url text,
+  thumbnail_position text,
+  thumbnail_time_seconds numeric,
+  media_items jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -50,6 +53,9 @@ revoke all on public.recipe_card_overrides from anon, authenticated;
 
 -- Keep this migration safe when the table was created by an earlier local run.
 alter table public.recipe_card_overrides add column if not exists thumbnail_url text;
+alter table public.recipe_card_overrides add column if not exists thumbnail_position text;
+alter table public.recipe_card_overrides add column if not exists thumbnail_time_seconds numeric;
+alter table public.recipe_card_overrides add column if not exists media_items jsonb not null default '[]'::jsonb;
 alter table public.recipe_card_overrides drop constraint if exists recipe_card_overrides_description_check;
 alter table public.recipe_card_overrides
   add constraint recipe_card_overrides_description_check

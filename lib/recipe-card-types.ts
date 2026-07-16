@@ -5,6 +5,7 @@ export type RecipeMediaItem = {
   type: "image" | "video";
   alt?: string;
   poster?: string;
+  caption?: string;
 };
 
 export type RecipeCardEntry = {
@@ -17,6 +18,8 @@ export type RecipeCardEntry = {
   category?: string;
   categories?: string[];
   thumbnail?: string;
+  thumbnailPosition?: string;
+  thumbnailTime?: number;
   imageUrls?: string[];
   media?: RecipeMediaItem[];
   ingredientGroups?: RecipeIngredientGroup[];

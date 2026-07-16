@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { RecipeMediaGallery } from "@/components/recipe-media-gallery";
+import { RecipeCardThumbnailMedia } from "@/components/recipe-card-thumbnail-media";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 
 export type { RecipeCardEntry } from "@/lib/recipe-card-types";
@@ -110,7 +110,12 @@ export function RecipeCard({
       <summary className="recipe-card-summary recipes-section-summary cursor-pointer list-none marker:hidden">
         {entry.thumbnail && <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
           <div className="relative aspect-[4/3]">
-            <Image alt="" className="object-cover" fill sizes="(max-width: 768px) 50vw, 22vw" src={entry.thumbnail} />
+            <RecipeCardThumbnailMedia
+              position={entry.thumbnailPosition ?? "50% 50%"}
+              poster={entry.media?.find((item) => item.src === entry.thumbnail)?.poster}
+              src={entry.thumbnail}
+              time={entry.thumbnailTime}
+            />
           </div>
         </div>}
         <div className="recipe-card-copy">

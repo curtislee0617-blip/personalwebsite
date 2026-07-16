@@ -25,6 +25,9 @@ type RecipeOverrideRow = {
   method_groups: Json;
   linked_recipe_keys: string[];
   thumbnail_url: string | null;
+  thumbnail_position: string | null;
+  thumbnail_time_seconds: number | null;
+  media_items: Json;
 };
 
 function isRecord(value: Json): value is { [key: string]: Json | undefined } {
@@ -47,6 +50,22 @@ function methodGroupsFromJson(value: Json): RecipeMethodGroup[] {
     const steps = group.steps.filter((step): step is string => typeof step === "string" && step.trim().length > 0);
     return steps.length > 0 ? [{ title: group.title.trim() || "Method", steps }] : [];
   });
+}
+
+function mediaFromJson(value: Json, fallback?: RecipeCardEntry["media"]): RecipeCardEntry["media"] {
+  if (!Array.isArray(value)) return fallback;
+  const fallbackBySrc = new Map((fallback ?? []).map((item) => [item.src, item]));
+  const parsed = value.flatMap((item) => {
+    if (!isRecord(item) || typeof item.src !== "string" || (item.type !== "image" && item.type !== "video")) return [];
+    const original = fallbackBySrc.get(item.src);
+    if (!original || original.type !== item.type) return [];
+    return [{
+      ...original,
+      caption: typeof item.caption === "string" ? item.caption.slice(0, 200) : undefined,
+    }];
+  });
+  const included = new Set(parsed.map((item) => item.src));
+  return [...parsed, ...(fallback ?? []).filter((item) => !included.has(item.src))];
 }
 
 export function parseUploadedRecipe(draft: UploadedRecipeRow): RecipeCardEntry {
@@ -111,7 +130,7 @@ const getRecipeOverrides = unstable_cache(async (): Promise<RecipeOverrideRow[]>
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("recipe_card_overrides")
-      .select("recipe_key,title,description,recipe_date,categories,ingredient_groups,method_groups,linked_recipe_keys,thumbnail_url");
+      .select("recipe_key,title,description,recipe_date,categories,ingredient_groups,method_groups,linked_recipe_keys,thumbnail_url,thumbnail_position,thumbnail_time_seconds,media_items");
 
     if (error) return [];
     return data;
@@ -133,6 +152,9 @@ function applyOverride(entry: RecipeCardEntry, override?: RecipeOverrideRow): Re
     methodGroups: methodGroupsFromJson(override.method_groups),
     linkedRecipeKeys: override.linked_recipe_keys.filter((key) => key !== entry.recipeKey),
     thumbnail: override.thumbnail_url ?? entry.thumbnail,
+    thumbnailPosition: override.thumbnail_position ?? entry.thumbnailPosition,
+    thumbnailTime: override.thumbnail_time_seconds ?? entry.thumbnailTime,
+    media: mediaFromJson(override.media_items, entry.media),
   };
 }
 

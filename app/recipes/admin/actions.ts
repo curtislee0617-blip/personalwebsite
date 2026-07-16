@@ -9,6 +9,7 @@ import { clearRecipeAdminCookie, isRecipeAdminAuthenticated, setRecipeAdminCooki
 import { isRecipeCategoryId } from "@/data/recipe-categories";
 import { getPersonalRecipeCards, parseIngredientGroupsEditor, parseMethodGroupsEditor } from "@/lib/personal-recipes";
 import type { Json } from "@/lib/supabase/database.types";
+import type { RecipeMediaItem } from "@/lib/recipe-card-types";
 
 export async function loginAction(password: string): Promise<{ ok: boolean }> {
   const adminPassword = process.env.RECIPE_ADMIN_PASSWORD;
@@ -90,6 +91,12 @@ export async function saveRecipeCard(formData: FormData) {
   const ingredientGroups = parseIngredientGroupsEditor(String(formData.get("ingredient_groups") ?? ""));
   const methodGroups = parseMethodGroupsEditor(String(formData.get("method_groups") ?? ""));
   const thumbnailUrl = String(formData.get("thumbnail_url") ?? "").trim() || null;
+  const rawThumbnailPosition = String(formData.get("thumbnail_position") ?? "").trim();
+  const thumbnailPosition = /^\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/.test(rawThumbnailPosition)
+    ? rawThumbnailPosition
+    : "50% 50%";
+  const rawThumbnailTime = Number(formData.get("thumbnail_time_seconds") ?? 0);
+  const thumbnailTime = Number.isFinite(rawThumbnailTime) ? Math.min(3600, Math.max(0, rawThumbnailTime)) : 0;
 
   const recipes = await getPersonalRecipeCards();
   const availableKeys = new Set(recipes.map((recipe) => recipe.recipeKey));
@@ -106,6 +113,22 @@ export async function saveRecipeCard(formData: FormData) {
     ...(recipe?.imageUrls ?? []),
     ...(recipe?.media ?? []).flatMap((item) => [item.src, item.poster]),
   ].filter((value): value is string => Boolean(value)));
+  const originalMedia: RecipeMediaItem[] = recipe?.media ?? (recipe?.imageUrls ?? []).map((src) => ({ src, type: "image" as const }));
+  const originalMediaBySrc = new Map(originalMedia.map((item) => [item.src, item]));
+  let mediaItems = originalMedia;
+  try {
+    const submitted = JSON.parse(String(formData.get("media_items") ?? "[]")) as Array<{ src?: unknown; type?: unknown; caption?: unknown }>;
+    const ordered = submitted.flatMap((item) => {
+      if (typeof item.src !== "string" || (item.type !== "image" && item.type !== "video")) return [];
+      const original = originalMediaBySrc.get(item.src);
+      if (!original || original.type !== item.type) return [];
+      return [{ ...original, caption: typeof item.caption === "string" ? item.caption.trim().slice(0, 200) : undefined }];
+    });
+    const included = new Set(ordered.map((item) => item.src));
+    mediaItems = [...ordered, ...originalMedia.filter((item) => !included.has(item.src))];
+  } catch {
+    mediaItems = originalMedia;
+  }
 
   if (!title || categories.length === 0 || (thumbnailUrl && !permittedThumbnails.has(thumbnailUrl))) {
     redirect(`${editHref}?error=missing`);
@@ -122,6 +145,9 @@ export async function saveRecipeCard(formData: FormData) {
     method_groups: methodGroups as unknown as Json,
     linked_recipe_keys: linkedRecipeKeys,
     thumbnail_url: thumbnailUrl,
+    thumbnail_position: thumbnailPosition,
+    thumbnail_time_seconds: thumbnailTime,
+    media_items: mediaItems as unknown as Json,
   }, { onConflict: "recipe_key" });
 
   if (error) {

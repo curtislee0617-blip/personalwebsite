@@ -30,6 +30,7 @@ function RecipeVideo({ item, title }: { item: RecipeMediaItem; title: string }) 
         src={item.src}
       />
       <button onClick={toggle} type="button">{playing ? "Pause" : "Play"}</button>
+      {item.caption && <figcaption>{item.caption}</figcaption>}
     </figure>
   );
 }
@@ -52,6 +53,7 @@ export function RecipeMediaGallery({ media, title }: { media: RecipeMediaItem[];
           >
             <span className="relative block aspect-[4/3] w-full">
               <Image alt={item.alt ?? `${title}, image ${index + 1}`} className="object-cover" fill sizes="(max-width: 640px) 86vw, 28rem" src={item.src} />
+              {item.caption && <span className="recipe-media-caption">{item.caption}</span>}
             </span>
           </RecipeImageViewer>
         ))}
