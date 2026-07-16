@@ -34,7 +34,7 @@ function applyTheme(isDark: boolean) {
   window.localStorage.setItem("theme", isDark ? "dark" : "light");
 }
 
-export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "menu-row" }) {
+export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "menu-row" | "dashboard" }) {
   const [state, setState] = useState({ mounted: false, isDark: false });
   const transitionInProgress = useRef(false);
 
@@ -147,6 +147,20 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         type="button"
       >
         <span>{isDark ? "Light mode" : "Dark mode"}</span>
+        {isDark ? <SunIcon /> : <MoonIcon />}
+      </button>
+    );
+  }
+
+  if (variant === "dashboard") {
+    return (
+      <button
+        aria-label="Toggle dark mode"
+        className="theme-toggle dashboard-theme-toggle"
+        onClick={toggle}
+        title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        type="button"
+      >
         {isDark ? <SunIcon /> : <MoonIcon />}
       </button>
     );

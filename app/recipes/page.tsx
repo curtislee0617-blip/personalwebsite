@@ -210,14 +210,16 @@ export default async function RecipesPage() {
   const searchPreview = buildRecipeSearchPreview(uploadedRecipes);
 
   return (
-    <>
-      <PageIntro
-        eyebrow="Recipes"
-        title="Guides and recipes"
-        description="Here I’ll upload recipes for dishes I’ve made that I think are worth sharing. Keep in mind that the quantities are mostly estimates of what I added, so they can vary. The guides are a little more precise, and I might yap a bit about the specifics."
-      />
-      <div className="recipe-search-shell page-shell pt-3 sm:pt-4">
-        <RecipeLibrarySearch initialItems={searchPreview} />
+    <div className="recipe-library-page">
+      <div className="recipe-library-hero page-shell">
+        <PageIntro
+          eyebrow="Recipes"
+          title="Guides and recipes"
+          description="Here I’ll upload recipes for dishes I’ve made that I think are worth sharing. Keep in mind that the quantities are mostly estimates of what I added, so they can vary. The guides are a little more precise, and I might yap a bit about the specifics."
+        />
+        <div className="recipe-search-shell">
+          <RecipeLibrarySearch initialItems={searchPreview} />
+        </div>
       </div>
       <SectionRail ariaLabel="Recipe page sections" sections={recipePageSections} />
 
@@ -518,6 +520,6 @@ export default async function RecipesPage() {
 
         </div>
       </section>
-    </>
+    </div>
   );
 }

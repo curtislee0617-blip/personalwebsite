@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
 import { SiteHeader } from "@/components/site-header";
+import { DashboardShell } from "@/components/dashboard-shell";
 import { BackToTopButton } from "@/components/back-to-top-button";
 import { FooterAdminLogin } from "@/components/footer-admin-login";
 import { FooterFeedbackLink } from "@/components/footer-feedback-link";
@@ -14,6 +15,7 @@ import "@fontsource/roboto/700.css";
 import "./globals.css";
 
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");var dark=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(dark)document.documentElement.classList.add("dark");}catch(e){}})();`;
+const DASHBOARD_INIT_SCRIPT = `(function(){try{var w=parseInt(localStorage.getItem("dashboard-sidebar-width")||"",10);if(Number.isFinite(w))document.documentElement.style.setProperty("--dashboard-sidebar-width",Math.min(420,Math.max(220,w))+"px");if(localStorage.getItem("site-layout")==="dashboard"&&window.matchMedia("(min-width:1024px)").matches)document.documentElement.classList.add("dashboard-mode");}catch(e){}})();`;
 
 export const metadata: Metadata = {
   applicationName: "Curtis Lee",
@@ -48,21 +50,24 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html data-scroll-behavior="smooth" lang="en" suppressHydrationWarning>
       <body>
         <Script id="theme-init" strategy="beforeInteractive">{THEME_INIT_SCRIPT}</Script>
+        <Script id="dashboard-init" strategy="beforeInteractive">{DASHBOARD_INIT_SCRIPT}</Script>
         <PageCursor />
-        <div className="flex min-h-screen flex-col">
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-ink/10">
-            <div className="page-shell flex flex-col gap-4 py-8 text-sm text-ink/55 sm:flex-row sm:items-center sm:justify-between">
-              <FooterAdminLogin />
-              <nav aria-label="Footer" className="flex items-center gap-5">
-                <Link className="footer-link" href="/contact">Say hello</Link>
-                <FooterFeedbackLink />
-                <BackToTopButton />
-              </nav>
-            </div>
-          </footer>
-        </div>
+        <DashboardShell>
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <footer className="border-t border-ink/10">
+              <div className="page-shell flex flex-col gap-4 py-8 text-sm text-ink/55 sm:flex-row sm:items-center sm:justify-between">
+                <FooterAdminLogin />
+                <nav aria-label="Footer" className="flex items-center gap-5">
+                  <Link className="footer-link" href="/contact">Say hello</Link>
+                  <FooterFeedbackLink />
+                  <BackToTopButton />
+                </nav>
+              </div>
+            </footer>
+          </div>
+        </DashboardShell>
       </body>
     </html>
   );

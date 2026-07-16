@@ -44,10 +44,10 @@ export default async function RestaurantsPage() {
           Connect with me on Beli to see my scores and rankings <span aria-hidden="true">↗</span>
         </a>
       </div>
-      <section className="page-section restaurant-page-section">
+      <section className="page-section restaurant-page-section" id="restaurant-map">
         <RestaurantExplorer apiKey={apiKey} mapId={mapId} restaurants={savedRestaurants.length ? savedRestaurants : restaurants} />
       </section>
-      <div className="page-shell pb-16 sm:pb-20 lg:pb-24">
+      <div className="page-shell pb-16 sm:pb-20 lg:pb-24" id="restaurant-recommendations">
         <RestaurantRecommendations />
         {isAdmin && (
           <RestaurantRecommendationAdminList

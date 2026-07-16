@@ -134,7 +134,7 @@ export default function ContactPage() {
       />
 
       <section className="page-section pt-12 sm:pt-16">
-        <div className="contact-cities design-panel mb-8 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55">
+        <div className="contact-cities design-panel mb-8 scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" id="contact-cities">
           <ContactPresenceProvider>
             <div className="contact-cities-copy">
               <ContactPresenceControls />
@@ -152,7 +152,7 @@ export default function ContactPage() {
             <ContactCityArtwork editable />
           </ContactPresenceProvider>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid scroll-mt-24 gap-4 sm:grid-cols-2" id="contact-links">
           {contactLinks.map((contact) => (
             <a
               className="design-card group flex min-h-56 flex-col justify-between rounded-[1.75rem] border border-ink/10 bg-surface/45 p-6 sm:p-8"

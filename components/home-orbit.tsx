@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent, type UIEvent } from "react";
+import { dashboardSections, useDashboardMode } from "@/components/dashboard-shell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cursorCss, navIconForPath, pageCursors } from "@/lib/page-cursors";
 import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
@@ -42,7 +43,7 @@ function positionMobileCarousel(scroller: HTMLElement) {
     const arcOffset = 0.45 + Math.max(0, Math.cos(Math.min(distance, 3) * Math.PI / 6)) * 4.9;
     const scale = Math.max(0.82, 1 - distance * 0.075);
     const opacity = Math.max(0.65, 1 - distance * 0.12);
-    const blur = Math.min(0.85, distance * 0.24);
+    const blur = Math.min(0.5, distance * 0.14);
     const link = item.querySelector<HTMLElement>(".home-mobile-link");
 
     link?.style.setProperty("--mobile-arc-x", `${arcOffset}rem`);
@@ -225,6 +226,7 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
 
 export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profilePhoto: string | null }) {
   const router = useRouter();
+  const { enableDashboard } = useDashboardMode();
   const isLeaving = useRef(false);
   const mobileNavRef = useRef<HTMLElement>(null);
   const mobileScrollFrame = useRef(0);
@@ -445,9 +447,83 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     });
   }
 
+  async function enterDashboardMode() {
+    if (!window.matchMedia("(min-width: 1024px)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      enableDashboard();
+      return;
+    }
+
+    const root = document.documentElement;
+    const bubbles = Array.from(document.querySelectorAll<HTMLElement>(".orbit-link"));
+    const profile = document.querySelector<HTMLElement>(".home-profile");
+    const launch = document.querySelector<HTMLElement>(".dashboard-mode-launch");
+    const animations: Animation[] = [];
+
+    root.classList.add("dashboard-target-preview");
+    const targetRows = new Map<string, DOMRect | undefined>(dashboardSections.map((section) => {
+      const target = document.querySelector<HTMLElement>(`.dashboard-sidebar-item[data-dashboard-href="${section.href}"]`);
+      return [section.href, target?.getBoundingClientRect()] as const;
+    }));
+    const profileTarget = document.querySelector<HTMLElement>(".dashboard-sidebar-profile")?.getBoundingClientRect();
+    root.classList.remove("dashboard-target-preview");
+
+    bubbles.forEach((bubble, index) => {
+      const href = bubble.getAttribute("href") ?? "";
+      const target = targetRows.get(href);
+      if (!target) return;
+      const box = bubble.getBoundingClientRect();
+      const moveX = target.left + 24 - (box.left + box.width / 2);
+      const moveY = target.top + 23 - (box.top + box.height / 2);
+
+      animations.push(bubble.animate(
+        [
+          { opacity: 1, rotate: "0deg", scale: "1", translate: "0 0" },
+          { offset: 0.72, opacity: 0.85, rotate: "-3deg", scale: "0.36", translate: `${moveX - 12}px ${moveY + 3}px` },
+          { opacity: 0.08, rotate: "0deg", scale: "0.26", translate: `${moveX}px ${moveY}px` },
+        ],
+        {
+          duration: 680,
+          delay: index * 34,
+          easing: "cubic-bezier(.16, 1, .3, 1)",
+          fill: "forwards",
+        },
+      ));
+    });
+
+    if (profile && profileTarget) {
+      const box = profile.getBoundingClientRect();
+      const moveX = profileTarget.left + profileTarget.width / 2 - (box.left + box.width / 2);
+      const moveY = profileTarget.top + profileTarget.height / 2 - (box.top + box.height / 2);
+      animations.push(profile.animate(
+        [
+          { opacity: 1, scale: "1", translate: "0 0" },
+          { opacity: 0.08, scale: "0.35", translate: `${moveX}px ${moveY}px` },
+        ],
+        { duration: 650, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" },
+      ));
+    }
+
+    if (launch) {
+      animations.push(launch.animate(
+        [{ opacity: 1, translate: "0 0" }, { opacity: 0, translate: "-1rem 0" }],
+        { duration: 260, easing: "ease", fill: "forwards" },
+      ));
+    }
+
+    await Promise.allSettled(animations.map((animation) => animation.finished));
+    enableDashboard();
+    animations.forEach((animation) => animation.cancel());
+  }
+
   return (
     <section id="top" className={`home-orbit home-entry-${entryMode}`}>
       <PhotoGridBackground photos={photos} />
+
+      <button className="dashboard-mode-launch" onClick={enterDashboardMode} type="button">
+        <span aria-hidden="true" className="dashboard-mode-launch-icon"><i /><i /><i /></span>
+        <span><strong>Dashboard mode</strong><small>Switch to a compact workspace</small></span>
+      </button>
 
       <span className="home-menu-glyph" aria-hidden="true">
         <i /><i /><i />
@@ -530,6 +606,28 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
               );
             })}
           </ol>
+        </nav>
+      </div>
+
+      <div className="home-dashboard-panel">
+        <div className="home-dashboard-heading">
+          <div>
+            <p className="eyebrow">Dashboard</p>
+            <h1>Quick access</h1>
+          </div>
+          <p>Everything in one compact workspace.</p>
+        </div>
+        <nav aria-label="Dashboard quick access" className="home-dashboard-grid">
+          {dashboardSections.map((section) => {
+            const icon = navIconForPath(section.href);
+            return (
+              <Link href={section.href} key={section.href}>
+                <span className="home-dashboard-icon">{icon && <img alt="" aria-hidden="true" src={icon} />}</span>
+                <span><strong>{section.label}</strong><small>{section.subtitle}</small></span>
+                <span aria-hidden="true" className="home-dashboard-arrow">↗</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
 

@@ -10,6 +10,37 @@ import {
   type PointerEvent,
 } from "react";
 
+type WavePoint = { x: number; y: number };
+
+function waveXAt(y: number, activeY: number) {
+  const distance = (y - activeY) / 100;
+  const roundedCrest = 17 * Math.exp(-0.5 * (distance / 0.065) ** 2);
+
+  return Math.min(44, Math.max(22, 42 - roundedCrest));
+}
+
+function createSmoothPath(points: WavePoint[]) {
+  return points.slice(0, -1).reduce((path, point, index) => {
+    const previous = points[Math.max(0, index - 1)];
+    const next = points[index + 1];
+    const afterNext = points[Math.min(points.length - 1, index + 2)];
+    const controlOneX = point.x + (next.x - previous.x) / 6;
+    const controlOneY = point.y + (next.y - previous.y) / 6;
+    const controlTwoX = next.x - (afterNext.x - point.x) / 6;
+    const controlTwoY = next.y - (afterNext.y - point.y) / 6;
+
+    return `${path} C ${controlOneX} ${controlOneY}, ${controlTwoX} ${controlTwoY}, ${next.x} ${next.y}`;
+  }, `M ${points[0].x} ${points[0].y}`);
+}
+
+function createWaveGeometry(sectionCount: number, wavePosition: number) {
+  const activeY = ((wavePosition + 0.5) / sectionCount) * 100;
+  const sampleYs = Array.from({ length: 71 }, (_, index) => -20 + index * 2);
+  const points = sampleYs.map((y) => ({ x: waveXAt(y, activeY), y }));
+
+  return createSmoothPath(points);
+}
+
 export type SectionRailItem = {
   id: string;
   label: string;
@@ -23,7 +54,9 @@ type SectionRailProps = {
 export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRailProps) {
   const [activeId, setActiveId] = useState(sections[0]?.id ?? "");
   const [isScrolling, setIsScrolling] = useState(false);
+  const [wavePosition, setWavePosition] = useState(0);
   const activeIdRef = useRef(sections[0]?.id ?? "");
+  const wavePositionRef = useRef(0);
   const scrollEndTimer = useRef<number | null>(null);
   const trackRef = useRef<HTMLOListElement>(null);
   const dragRef = useRef({ active: false, moved: false, index: -1, startY: 0 });
@@ -50,7 +83,9 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
       animationFrame = window.requestAnimationFrame(() => {
         if (dragRef.current.active) return;
 
-        const marker = window.innerHeight * 0.34;
+        const marker = Math.min(88, window.innerHeight * 0.1) + 4;
+        const markerDocumentPosition = window.scrollY + marker;
+        const sectionAnchors = sectionElements.map((section) => section.getBoundingClientRect().top + window.scrollY);
         let closest = sectionElements[0];
         let closestDistance = Number.POSITIVE_INFINITY;
 
@@ -68,6 +103,27 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
           }
         });
 
+        let nextWavePosition = 0;
+        if (markerDocumentPosition >= sectionAnchors[sectionAnchors.length - 1]) {
+          nextWavePosition = sectionAnchors.length - 1;
+        } else if (markerDocumentPosition > sectionAnchors[0]) {
+          const lowerIndex = sectionAnchors.findIndex((anchor, index) => (
+            index < sectionAnchors.length - 1
+            && markerDocumentPosition >= anchor
+            && markerDocumentPosition < sectionAnchors[index + 1]
+          ));
+
+          if (lowerIndex >= 0) {
+            const span = Math.max(1, sectionAnchors[lowerIndex + 1] - sectionAnchors[lowerIndex]);
+            nextWavePosition = lowerIndex + (markerDocumentPosition - sectionAnchors[lowerIndex]) / span;
+          }
+        }
+
+        if (Math.abs(nextWavePosition - wavePositionRef.current) > 0.004) {
+          wavePositionRef.current = nextWavePosition;
+          setWavePosition(nextWavePosition);
+        }
+
         if (closest.id !== activeIdRef.current) {
           activeIdRef.current = closest.id;
           setActiveId(closest.id);
@@ -76,6 +132,9 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
     };
 
     const handleScroll = () => {
+      if (dragRef.current.active && !dragRef.current.moved) {
+        dragRef.current.active = false;
+      }
       setIsScrolling(true);
       updateActiveSection();
 
@@ -99,11 +158,16 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
     const section = document.getElementById(id);
     if (!section) return;
 
+    const sectionIndex = sections.findIndex((item) => item.id === id);
     activeIdRef.current = id;
     setActiveId(id);
+    if (sectionIndex >= 0) {
+      wavePositionRef.current = sectionIndex;
+      setWavePosition(sectionIndex);
+    }
     const top = section.getBoundingClientRect().top + window.scrollY - Math.min(88, window.innerHeight * 0.1);
     window.scrollTo({ behavior, top: Math.max(0, top) });
-  }, []);
+  }, [sections]);
 
   const handleSectionClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     event.preventDefault();
@@ -165,12 +229,14 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
 
   const activeIndex = Math.max(0, sections.findIndex((section) => section.id === activeId));
   const activeLabel = sections[activeIndex]?.label ?? sections[0].label;
+  const wavePath = createWaveGeometry(sections.length, wavePosition);
 
   return (
     <nav
       aria-label={ariaLabel}
       className={`section-rail${isScrolling ? " is-scrolling" : ""}`}
       data-active-section={activeId}
+      data-wave-position={wavePosition.toFixed(3)}
     >
       <p aria-live="polite" className="sr-only">{activeLabel}</p>
       <ol
@@ -180,7 +246,12 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
         onPointerMove={handlePointerMove}
         onPointerUp={finishPointer}
         ref={trackRef}
+        style={{ "--rail-sections": sections.length } as CSSProperties}
       >
+        <svg aria-hidden="true" className="section-rail__wave" preserveAspectRatio="none" viewBox="0 0 48 100">
+          <path className="section-rail__wave-shadow" d={wavePath} />
+          <path className="section-rail__wave-line" d={wavePath} />
+        </svg>
         {sections.map((section, index) => {
           const distance = Math.abs(index - activeIndex);
           const isActive = distance === 0;
@@ -198,6 +269,7 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
               >
                 <span aria-hidden="true" className="section-rail__label">{section.label}</span>
                 <span aria-hidden="true" className="section-rail__bar" />
+                <span aria-hidden="true" className="section-rail__dot" />
                 <span className="sr-only">{section.label}</span>
               </a>
             </li>

@@ -53,6 +53,7 @@ export default function ProjectsPage() {
             </article>
             <ContactCityTimeline />
           </div>
+          <span aria-hidden="true" id="pixel-art-cities" />
         </section>
       </section>
     </>
