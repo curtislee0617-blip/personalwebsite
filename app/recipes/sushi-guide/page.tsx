@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { SectionRail } from "@/components/section-rail";
 
 export const metadata: Metadata = { title: "Sushi guide" };
@@ -22,8 +23,16 @@ export default function SushiGuidePage() {
         <Link className="back-link-bubble mb-6" href="/recipes">← Back to recipes</Link>
 
         <section id="sushi" className="sushi-showcase" aria-label="Sushi guide photographs">
-          <figure><Image alt="Sushi chefs at the counter" src="/recipes/sushi/IMG_2842.jpeg" width={1536} height={2048} priority /></figure>
-          <figure><Image alt="Nigiri served at the counter" src="/recipes/sushi/IMG_1653.jpeg" width={3213} height={5712} /></figure>
+          <figure>
+            <RecipeImageViewer alt="Sushi chefs at the counter" className="w-full" src="/recipes/sushi/IMG_2842.jpeg">
+              <Image alt="Sushi chefs at the counter" height={2048} priority sizes="(max-width: 640px) 92vw, 45vw" src="/recipes/sushi/IMG_2842.jpeg" width={1536} />
+            </RecipeImageViewer>
+          </figure>
+          <figure>
+            <RecipeImageViewer alt="Nigiri served at the counter" className="w-full" src="/recipes/sushi/IMG_1653.jpeg">
+              <Image alt="Nigiri served at the counter" height={5712} sizes="(max-width: 640px) 92vw, 45vw" src="/recipes/sushi/IMG_1653.jpeg" width={3213} />
+            </RecipeImageViewer>
+          </figure>
         </section>
 
         <div className="sushi-notes-grid">

@@ -13,7 +13,7 @@ const toolSections: ToolSection[] = [
   {
     title: "Planning",
     tools: [
-      { href: "/tools/course-planner", title: "Course planner", description: "Drag ChemE, BEM, CS, Math, and institute-core requirements onto a four-year, three-term grid — one class can satisfy several requirements at once.", kind: "planner" },
+      { href: "/tools/course-planner", title: "Course planner", description: "Plan four years at Caltech term by term, arranging course requirements while keeping track of classes that fulfil more than one requirement.", kind: "planner" },
     ],
   },
   {
@@ -35,39 +35,57 @@ const toolSections: ToolSection[] = [
 
 function ToolThumbnail({ kind }: { kind: ToolKind }) {
   if (kind === "planner") {
+    const terms = ["Ma 1a", "Ch 41a", "Ph 1a", "Ma 1b", "Ch 41b", "CS 1", "Ma 1c", "Ch 41c", "Ph 1c", "ChE 15", "BEM 103", "ACM 95"];
     return (
       <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-planner" aria-hidden="true">
-        <span /><span className="is-filled" /><span /><span className="is-filled" /><span /><span /><span /><span className="is-accent" /><span /><span /><span className="is-filled" /><span />
+        <div className="tool-planner-years"><span>Year 1</span><span>Year 2</span><span>Year 3</span><span>Year 4</span></div>
+        <div className="tool-planner-grid">
+          {terms.map((term, index) => <span className={index === 9 ? "is-accent" : index % 3 === 1 ? "is-filled" : ""} key={term}>{term}</span>)}
+        </div>
       </div>
     );
   }
 
-  if (kind === "water" || kind === "compound") {
+  if (kind === "water") {
     return (
-      <div className={`tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-${kind}`} aria-hidden="true">
-        <div className="tool-property-heading"><span>{kind === "water" ? "H₂O state" : "Fluid state"}</span><i /></div>
+      <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-water" aria-hidden="true">
+        <div className="tool-property-heading"><span>Water state</span><small>Steam tables</small></div>
+        <div className="tool-state-inputs"><span><small>Temperature</small><strong>425 K</strong></span><b>+</b><span><small>Pressure</small><strong>2.40 MPa</strong></span></div>
         <div className="tool-property-grid">
-          <span><small>{kind === "water" ? "T" : "Tᵣ"}</small><strong>{kind === "water" ? "425 K" : "1.18"}</strong></span>
-          <span><small>{kind === "water" ? "P" : "Pᵣ"}</small><strong>{kind === "water" ? "2.4 MPa" : "0.74"}</strong></span>
-          <span><small>{kind === "water" ? "v" : "Z"}</small><strong>{kind === "water" ? "0.091" : "0.83"}</strong></span>
+          <span><small>v</small><strong>0.091 m³/kg</strong></span><span><small>h</small><strong>2821 kJ/kg</strong></span><span><small>s</small><strong>6.93 kJ/kg·K</strong></span>
+        </div>
+      </div>
+    );
+  }
+
+  if (kind === "compound") {
+    return (
+      <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-compound" aria-hidden="true">
+        <div className="tool-property-heading"><span>Compound lookup</span><small>Lee–Kesler</small></div>
+        <div className="tool-compound-search"><span><strong>Propane</strong><small>C₃H₈</small></span><b>⌕</b></div>
+        <div className="tool-property-grid">
+          <span><small>Tc</small><strong>369.8 K</strong></span><span><small>Pc</small><strong>4.25 MPa</strong></span><span><small>ω</small><strong>0.152</strong></span>
         </div>
       </div>
     );
   }
 
   const paths: Record<"vle" | "ir" | "nmr", string> = {
-    vle: "M10 75 C30 66 42 38 74 26 C104 15 126 20 150 14 M10 75 C38 73 70 59 95 42 C120 25 138 18 150 14",
-    ir: "M8 23 L22 24 L27 60 L34 25 L57 27 L63 74 L69 28 L91 30 L98 58 L104 31 L129 32 L135 68 L141 32 L152 33",
-    nmr: "M8 72 L31 72 L34 25 L37 72 L63 72 L68 49 L72 72 L95 72 L99 16 L103 72 L126 72 L130 40 L134 72 L152 72",
+    vle: "M12 72 C29 68 43 49 62 33 C83 15 112 13 148 11 M12 72 C34 71 56 63 78 48 C101 31 122 18 148 11",
+    ir: "M10 20 L27 21 L31 63 L35 22 L56 23 L61 73 L66 24 L88 26 L94 59 L99 27 L123 29 L129 68 L134 29 L150 31",
+    nmr: "M10 71 L29 71 L31 30 L33 71 L52 71 L55 52 L58 71 L76 71 L79 18 L82 71 L106 71 L109 43 L112 71 L133 71 L136 58 L139 71 L150 71",
   };
+  const axis = kind === "ir" ? ["4000", "3000", "2000", "1000", "cm⁻¹"] : kind === "nmr" ? ["10", "8", "6", "4", "2", "0 ppm"] : ["0", "0.25", "0.5", "0.75", "1.0", "x₁"];
 
   return (
     <div className={`tool-thumbnail swipe-bubble-media tool-thumbnail-chart is-${kind}`} aria-hidden="true">
-      <div className="tool-chart-toolbar"><span /><span /><span /><i /></div>
+      <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary T–x–y"}</span><i>{kind === "vle" ? "Bubble / dew" : "Sample 01"}</i></div>
       <svg viewBox="0 0 160 90" preserveAspectRatio="none">
         <path className="tool-chart-grid" d="M8 18H152M8 45H152M8 72H152M32 10V80M72 10V80M112 10V80" />
         <path className="tool-chart-line" d={paths[kind]} />
+        {kind === "vle" && <><circle className="tool-chart-point" cx="62" cy="33" r="2" /><circle className="tool-chart-point" cx="78" cy="48" r="2" /></>}
       </svg>
+      <div className="tool-chart-axis">{axis.map((label) => <span key={label}>{label}</span>)}</div>
     </div>
   );
 }
@@ -90,8 +108,8 @@ function ToolCard({ tool }: { tool: Tool }) {
 export default function ToolsPage() {
   return (
     <>
-      <PageIntro title="Tools" description="Engineering calculators and practical references." />
-      <div className="page-section space-y-10 pt-0 sm:pt-0 lg:pt-0">
+      <PageIntro title="Tools" description="Random tools for school, and maybe other things later on." />
+      <div className="tools-page-content page-section space-y-10 pt-8 sm:pt-10 lg:pt-12">
         {toolSections.map((section) => (
           <section key={section.title}>
             <h2 className="section-title">{section.title}</h2>

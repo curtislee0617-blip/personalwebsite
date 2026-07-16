@@ -214,7 +214,7 @@ export default async function RecipesPage() {
       <PageIntro
         eyebrow="Recipes"
         title="Guides and recipes"
-        description="Guides are for deeper walkthroughs, kitchen systems, and the specific complexities within each topic. Recipes are where the finished dishes will live once they are uploaded, and I will always update the recipes whenever I can."
+        description="Here I’ll upload recipes for dishes I’ve made that I think are worth sharing. Keep in mind that the quantities are mostly estimates of what I added, so they can vary. The guides are a little more precise, and I might yap a bit about the specifics."
       />
       <div className="recipe-search-shell page-shell pt-3 sm:pt-4">
         <RecipeLibrarySearch initialItems={searchPreview} />
@@ -230,7 +230,7 @@ export default async function RecipesPage() {
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Reference-style kitchen posts</h2>
                 <div className="recipe-anchor-tabs mt-4 flex flex-wrap gap-1.5">
                   {guides.map((entry) => (
-                    <Link className="recipe-anchor-tab rounded-full border border-ink/10 bg-surface/70 px-2.5 py-1 text-[0.65rem] font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink" href={entry.href} key={entry.slug}>
+                    <Link className="recipe-anchor-tab rounded-full border border-ink/10 bg-surface/70 px-2 py-0.5 text-[0.58rem] font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink" href={entry.href} key={entry.slug}>
                       {entry.title}
                     </Link>
                   ))}
@@ -243,13 +243,9 @@ export default async function RecipesPage() {
                 <Link className="recipe-guide-card swipe-bubble-card w-[20rem] shrink-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" href={entry.href} id={entry.slug} key={entry.slug}>
                   <GuideVisual slug={entry.slug} />
                   <div className="recipe-guide-copy swipe-bubble-copy">
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="eyebrow">Guide</p>
-                      <span className="recipe-guide-status">{entry.status === "coming-soon" ? "Coming soon" : "Published"}</span>
-                    </div>
+                    <p className="eyebrow">Guide</p>
                     <div className="recipe-guide-title-row">
                       <h3>{entry.title}</h3>
-                      <span aria-hidden="true">↗</span>
                     </div>
                     <p className="recipe-guide-description">{entry.description}</p>
                   </div>
@@ -259,12 +255,8 @@ export default async function RecipesPage() {
           </section>
 
           <section id="recipe-collection">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="eyebrow">Recipes</p>
-                <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipes</h2>
-                <p className="section-description mt-2 text-sm text-ink/50">Ordered by date, newest first. Heads up: I do not have precise numbers for most of these — treat quantities as a guide, not gospel.</p>
-              </div>
+            <div className="flex items-end justify-between gap-4">
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Recipes</h2>
               {authenticated && (
                 <Link className="self-start rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss sm:self-auto" href="/recipes/admin">
                   + Upload recipe
@@ -279,11 +271,7 @@ export default async function RecipesPage() {
                 return (
                   <details className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" key={section.id} open={index === 0}>
                     <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
-                      <div>
-                        <p className="eyebrow">{section.title}</p>
-                        <h3 className="mt-3 text-2xl font-semibold tracking-tight">{section.title}</h3>
-                        <p className="section-description mt-2 max-w-2xl text-sm leading-6 text-ink/50">{section.description}</p>
-                      </div>
+                      <h3 className="text-2xl font-semibold tracking-tight">{section.title}</h3>
                       <span className="grid size-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-paper/80 text-lg text-ink/50 transition group-open:rotate-45">
                         +
                       </span>
@@ -354,7 +342,6 @@ export default async function RecipesPage() {
                   <p className="eyebrow">Book · Basics + 51 dish groups</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Core by Clare Smyth</h3>
-                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">Core Basics and the complete supplied dishes, rebuilt as searchable, scalable cards while retaining the book&apos;s page flow.</p>
                 </div>
@@ -378,7 +365,6 @@ export default async function RecipesPage() {
                   <p className="eyebrow">Book · 83 recipes</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Pollen Street by Jason Atherton</h3>
-                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">54 foundation recipes and 29 complete dishes, with scaling and called-for Basics built into every card.</p>
                 </div>
@@ -403,7 +389,6 @@ export default async function RecipesPage() {
                   <p className="eyebrow">Book · 8 dishes</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Benu by Corey Lee</h3>
-                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">The supplied dishes rebuilt as searchable, scalable cards, with every ingredient kept beside its corresponding method.</p>
                 </div>
@@ -428,7 +413,6 @@ export default async function RecipesPage() {
                   <p className="eyebrow">Book · 78 pastries & foundations</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Bachour by Antonio Bachour</h3>
-                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">Two collections: the supplied entremets and all 67 recipes from Bachour the Baker, rebuilt as searchable, scalable component-by-component cards.</p>
                 </div>
@@ -453,7 +437,6 @@ export default async function RecipesPage() {
                   <p className="eyebrow">Book · 749 entries</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Modernist Cuisine recipes</h3>
-                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">Volume 6, rebuilt from every indexed page with scalable recipe grids and exact source layouts for charts and complex techniques.</p>
                 </div>
@@ -478,7 +461,6 @@ export default async function RecipesPage() {
                   <p className="eyebrow">Book · {modernistPizzaRecipes.length} recipes + {modernistPizzaKnowledge.length} references</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Modernist Pizza</h3>
-                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">Volume 4 separated into searchable recipe spreads and a remade practical guide to dough, ovens, baking, service, and troubleshooting.</p>
                 </div>
@@ -503,7 +485,6 @@ export default async function RecipesPage() {
                   <p className="eyebrow">Book · 64 Basics + 53 dishes + 5 Petit Fours</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Frantzén by Björn Frantzén</h3>
-                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">The supplied Basics, plated dishes and Petit Fours rebuilt as scalable component cards with exact source-page references.</p>
                 </div>
@@ -528,7 +509,6 @@ export default async function RecipesPage() {
                   <p className="eyebrow">Book · 22 Basics + 96 recipes</p>
                   <div className="mt-2 flex items-start justify-between gap-4">
                     <h3 className="text-xl font-semibold tracking-tight">Opéra Pâtisserie by Cédric Grolet</h3>
-                    <span aria-hidden="true" className="text-ink/35 transition group-hover:translate-x-0.5">↗</span>
                   </div>
                   <p className="mt-2 text-sm leading-6 text-ink/52">Breakfast pastries, French classics, plated desserts, frozen fruit and annex basics rebuilt with scaling and exact source pages.</p>
                 </div>

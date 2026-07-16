@@ -23,24 +23,15 @@ export function RecipeCard({ entry, showBackLink = false, variant = "default" }:
   const shelf = variant === "shelf";
 
   return (
-    <details className={`recipe-card scroll-mt-24 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""}`} id={`recipe-${entry.slug}`}>
+    <details className={`recipe-card scroll-mt-24 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""} ${!entry.thumbnail ? "recipe-card-text-only" : ""}`} id={`recipe-${entry.slug}`}>
       <summary className="recipe-card-summary recipes-section-summary cursor-pointer list-none marker:hidden">
-        <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
+        {entry.thumbnail && <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
           <div className="relative aspect-[4/3]">
-            {entry.thumbnail ? (
-              <Image alt="" className="object-cover" fill sizes="(max-width: 768px) 50vw, 22vw" src={entry.thumbnail} />
-            ) : (
-              <div className="grid h-full place-items-center bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.95),rgba(219,210,191,0.42))] text-xs font-semibold uppercase tracking-[0.14em] text-ink/35">
-                Photo soon
-              </div>
-            )}
+            <Image alt="" className="object-cover" fill sizes="(max-width: 768px) 50vw, 22vw" src={entry.thumbnail} />
           </div>
-        </div>
+        </div>}
         <div className="recipe-card-copy">
-          <div className="flex items-center justify-between gap-4">
-            <p className="eyebrow mt-4">Recipe</p>
-            <span className="recipe-card-status rounded-full border border-ink/10 bg-paper/80 px-3 py-1 text-xs font-semibold text-ink/50">{entry.status === "published" ? "Published" : "Coming later"}</span>
-          </div>
+          <p className="eyebrow mt-4">Recipe</p>
           <h3 className="mt-3 text-xl font-semibold tracking-tight">{entry.title}</h3>
           {formatDate(entry.date) && <p className="recipe-card-date mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-ink/40">{formatDate(entry.date)}</p>}
           <p className="recipe-card-description mt-3 text-sm leading-6 text-ink/65">{entry.description}</p>
@@ -83,20 +74,7 @@ export function RecipeCard({ entry, showBackLink = false, variant = "default" }:
             </Link>
           )}
         </div>
-      ) : (
-        <div className="mt-6 grid gap-2 border-t border-ink/10 pt-6 text-sm text-ink/45">
-          <p>Title</p>
-          <p>Short headnote</p>
-          <p>Ingredients</p>
-          <p>Method</p>
-          <p>Notes / variations</p>
-          {showBackLink && (
-            <Link className="back-link-bubble mt-3" href="/recipes">
-              Back to recipes
-            </Link>
-          )}
-        </div>
-      )}
+      ) : showBackLink ? <Link className="back-link-bubble mt-6" href="/recipes">Back to recipes</Link> : null}
     </details>
   );
 }

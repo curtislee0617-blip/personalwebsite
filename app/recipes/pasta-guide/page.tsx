@@ -2,23 +2,34 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { SectionRail } from "@/components/section-rail";
 
 export const metadata: Metadata = { title: "Pasta guide" };
 
 const sections = [
   { id: "pasta", label: "Pasta" },
+  { id: "dough", label: "Egg pasta dough" },
   { id: "shapes", label: "Pasta shapes" },
 ] as const;
 
-const photos = ["DSC_6482.jpeg", "Stuffedpasta.jpeg", "Capelliti.jpeg", "spaghetti.jpeg", "tortellini.jpeg"] as const;
+const photos = ["Stuffedpasta.jpeg", "Capelliti.jpeg", "spaghetti.jpeg", "tortellini.jpeg"] as const;
 
 const shapes = [
-  ["Capelliti.jpeg", "Cappelletti", "Small filled pasta folded into a compact, hat-like shape."],
-  ["spaghetti.jpeg", "Spaghetti", "Roll the sheet thin, dust lightly, and cut into fine strands."],
-  ["Stuffedpasta.jpeg", "Spiralghetti & agnolotti", "A snapshot of contrasting shapes: long spiralled strands and neatly sealed parcels."],
-  ["tortellini.jpeg", "Tortellini", "Folded filled pasta with a rounded belly and a clean, pinched finish."],
+  ["Capelliti.jpeg", "Cappelletti", "Cappelletti means “little hats” in Italian—a diminutive of cappello—after the folded pasta’s resemblance to a small hat. The filled pasta is traditional to Romagna and Emilia."],
+  ["spaghetti.jpeg", "Spaghetti", "Spaghetti is the plural of spaghetto, a diminutive of spago, meaning “string” or “twine”—a direct reference to its long, thin form."],
+  ["Stuffedpasta.jpeg", "Long agnolotto", "This coil is a long agnolotto inspired by dishes I’ve seen online."],
+  ["tortellini.jpeg", "Tortellini", "The name follows torta to tortello to tortellino: each ending makes the word smaller, so tortellini are literally very small tortelli. They are closely associated with Emilia-Romagna, particularly Bologna and Modena."],
 ] as const;
+
+function PastaPhoto({ alt, className = "", file, priority = false }: { alt: string; className?: string; file: string; priority?: boolean }) {
+  const src = `/recipes/pasta/${file}`;
+  return (
+    <RecipeImageViewer alt={alt} className={className} src={src}>
+      <Image alt={alt} height={1200} priority={priority} sizes="(max-width: 640px) 92vw, (max-width: 1000px) 45vw, 30vw" src={src} width={900} />
+    </RecipeImageViewer>
+  );
+}
 
 export default function PastaGuidePage() {
   return (
@@ -33,9 +44,39 @@ export default function PastaGuidePage() {
           <div className="pasta-collage">
             {photos.map((file, index) => (
               <figure className={index === 0 ? "pasta-collage-feature" : ""} key={file}>
-                <Image alt={`Fresh pasta, image ${index + 1}`} src={`/recipes/pasta/${file}`} width={900} height={1200} priority={index === 0} />
+                <PastaPhoto alt={`Fresh pasta, image ${index + 1}`} file={file} priority={index === 0} />
               </figure>
             ))}
+          </div>
+        </section>
+
+        <section id="dough" className="viennoiserie-recipe-section">
+          <div className="viennoiserie-photo-heading">
+            <div><p className="eyebrow">Original recipe</p><h2>Egg pasta dough</h2></div>
+            <p>Equal weights of farina and semola with an egg-rich dough.</p>
+          </div>
+          <div className="viennoiserie-recipe-layout">
+            <div className="viennoiserie-recipe-main">
+              <div className="viennoiserie-recipe-card">
+                <p>This is the base dough I like using for fresh egg pasta. Tuorli is the total egg and yolk weight, equivalent to about 21 egg yolks and 1 whole egg.</p>
+                <ul className="viennoiserie-ingredient-list">
+                  <li><span>270 g</span> farina</li>
+                  <li><span>270 g</span> semola</li>
+                  <li><span>420 g</span> tuorli (about 21 egg yolks and 1 whole egg)</li>
+                </ul>
+                <p>Combine the farina and semola, then work in the tuorli until a firm dough forms. Knead until smooth, wrap tightly, and rest before rolling.</p>
+              </div>
+              <div className="viennoiserie-recipe-card">
+                <p className="eyebrow">Working notes</p>
+                <p>Keep the dough covered whenever it is not being rolled. Dust sparingly: excess flour dries the edges and makes sealing harder. For filled shapes, aim for a thin, even sheet and press out the air before closing.</p>
+              </div>
+            </div>
+            <div className="viennoiserie-step-rail">
+              <figure>
+                <PastaPhoto alt="Mushroom filling portioned on a pasta sheet" file="mushroomtortilinifilling.jpeg" />
+                <figcaption>Even portions make even shapes.</figcaption>
+              </figure>
+            </div>
           </div>
         </section>
 
@@ -44,7 +85,7 @@ export default function PastaGuidePage() {
           <div className="viennoiserie-shapes">
             {shapes.map(([file, title, description]) => (
               <article key={file}>
-                <Image src={`/recipes/pasta/${file}`} alt={title} width={900} height={1200} />
+                <PastaPhoto alt={title} file={file} />
                 <div><h3>{title}</h3><p>{description}</p></div>
               </article>
             ))}

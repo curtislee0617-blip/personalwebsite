@@ -18,31 +18,6 @@ export type RecipeEntry = {
   date?: string;
 };
 
-const additionalDessertPlaceholders = Array.from({ length: 5 }, (_, index): RecipeEntry => {
-  const number = index + 2;
-  return {
-    slug: `future-dessert-${number}`,
-    kind: "recipe",
-    title: `Dessert recipe ${number}`,
-    description: "A compact placeholder for a future dessert or pastry recipe.",
-    status: "coming-soon",
-    href: "/recipes",
-    category: "desserts-pastries",
-  };
-});
-
-const additionalGeneralPlaceholders = Array.from({ length: 5 }, (_, index): RecipeEntry => {
-  const number = index + 2;
-  return {
-    slug: `future-other-${number}`,
-    kind: "recipe",
-    title: `Other recipe ${number}`,
-    description: "A compact placeholder for a future recipe, kitchen note, or finished dish.",
-    status: "coming-soon",
-    href: "/recipes",
-  };
-});
-
 export const recipeEntries: RecipeEntry[] = [
   {
     slug: "sourdough-guide",
@@ -156,27 +131,6 @@ export const recipeEntries: RecipeEntry[] = [
       },
     ],
   },
-  {
-    slug: "future-recipe-1",
-    kind: "recipe",
-    title: "Recipe title",
-    description: "Future recipe card scaffold for when you upload the first recipe post.",
-    status: "coming-soon",
-    href: "/recipes",
-    category: "desserts-pastries",
-    date: "2026-07-01",
-  },
-  {
-    slug: "future-recipe-2",
-    kind: "recipe",
-    title: "Another recipe title",
-    description: "Another placeholder slot so the recipes section already has the intended structure.",
-    status: "coming-soon",
-    href: "/recipes",
-    date: "2026-06-15",
-  },
-  ...additionalDessertPlaceholders,
-  ...additionalGeneralPlaceholders,
 ];
 
 // Newest first; entries without a date fall to the end.

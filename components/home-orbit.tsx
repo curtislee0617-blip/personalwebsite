@@ -4,9 +4,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type UIEvent } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { cursorCss, pageCursors } from "@/lib/page-cursors";
+import { cursorCss, navIconForPath, pageCursors } from "@/lib/page-cursors";
 import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
 const orbitLinks = [
@@ -17,6 +17,47 @@ const orbitLinks = [
   { href: "/tools", label: "Tools" },
   { href: "/contact", label: "Contact" },
 ];
+
+const mobileOrbitLinks = [
+  orbitLinks[1],
+  orbitLinks[5],
+  orbitLinks[0],
+  orbitLinks[4],
+  orbitLinks[2],
+  orbitLinks[3],
+];
+
+const mobileAboutIndex = 2;
+
+function positionMobileCarousel(scroller: HTMLElement) {
+  const center = scroller.scrollTop + scroller.clientHeight / 2;
+  const items = Array.from(scroller.querySelectorAll<HTMLElement>("[data-mobile-orbit-item]"));
+  const itemStep = items.length > 1 ? Math.max(1, items[1].offsetTop - items[0].offsetTop) : 68;
+  let closestIndex = 0;
+  let closestDistance = Number.POSITIVE_INFINITY;
+
+  items.forEach((item, index) => {
+    const distanceInPixels = Math.abs(item.offsetTop + item.offsetHeight / 2 - center);
+    const distance = distanceInPixels / itemStep;
+    const arcOffset = 0.45 + Math.max(0, Math.cos(Math.min(distance, 3) * Math.PI / 6)) * 4.9;
+    const scale = Math.max(0.82, 1 - distance * 0.075);
+    const opacity = Math.max(0.65, 1 - distance * 0.12);
+    const blur = Math.min(0.85, distance * 0.24);
+    const link = item.querySelector<HTMLElement>(".home-mobile-link");
+
+    link?.style.setProperty("--mobile-arc-x", `${arcOffset}rem`);
+    link?.style.setProperty("--mobile-bubble-blur", `${blur}px`);
+    link?.style.setProperty("--mobile-bubble-opacity", String(opacity));
+    link?.style.setProperty("--mobile-bubble-scale", String(scale));
+
+    if (distanceInPixels < closestDistance) {
+      closestDistance = distanceInPixels;
+      closestIndex = index;
+    }
+  });
+
+  return closestIndex;
+}
 
 const placeholderColors = [
   ["#d8e4dc", "#94aa9c"], ["#ead8cb", "#c58f74"], ["#dce4ed", "#8fa7bd"],
@@ -185,7 +226,10 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
 export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profilePhoto: string | null }) {
   const router = useRouter();
   const isLeaving = useRef(false);
-  const [entryMode, setEntryMode] = useState<"pending" | "center" | "menu">("pending");
+  const mobileNavRef = useRef<HTMLElement>(null);
+  const mobileScrollFrame = useRef(0);
+  const [entryMode, setEntryMode] = useState<"pending" | "center" | "menu" | "mobile-return">("pending");
+  const [mobileActiveIndex, setMobileActiveIndex] = useState(mobileAboutIndex);
   const [isDark, setIsDark] = useState(
     () => typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
   );
@@ -206,6 +250,17 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     }
   }
 
+  function updateMobileCarousel(event: UIEvent<HTMLElement>) {
+    const scroller = event.currentTarget;
+    window.cancelAnimationFrame(mobileScrollFrame.current);
+    mobileScrollFrame.current = window.requestAnimationFrame(() => {
+      const closestIndex = positionMobileCarousel(scroller);
+      setMobileActiveIndex((current) => current === closestIndex ? current : closestIndex);
+    });
+  }
+
+  useEffect(() => () => window.cancelAnimationFrame(mobileScrollFrame.current), []);
+
   useEffect(() => {
     const el = document.documentElement;
     const observer = new MutationObserver(() => setIsDark(el.classList.contains("dark")));
@@ -215,12 +270,100 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
+      const returnFromMenu = window.sessionStorage.getItem("home-entry") === "mobile-return"
+        && window.matchMedia("(max-width: 639px)").matches;
       window.sessionStorage.removeItem("home-entry");
-      setEntryMode("center");
+      setEntryMode(returnFromMenu ? "mobile-return" : "center");
     });
 
     return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    if (entryMode === "pending") return;
+
+    const mobileQuery = window.matchMedia("(max-width: 639px)");
+    let firstFrame = 0;
+    let secondFrame = 0;
+
+    const centerAbout = () => {
+      if (!mobileQuery.matches) return;
+      firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(() => {
+          const scroller = mobileNavRef.current;
+          const about = scroller?.querySelectorAll<HTMLElement>("[data-mobile-orbit-item]")[mobileAboutIndex];
+          if (!scroller || !about) return;
+
+          scroller.scrollTop = about.offsetTop + about.offsetHeight / 2 - scroller.clientHeight / 2;
+          setMobileActiveIndex(positionMobileCarousel(scroller));
+        });
+      });
+    };
+
+    centerAbout();
+    mobileQuery.addEventListener("change", centerAbout);
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      mobileQuery.removeEventListener("change", centerAbout);
+    };
+  }, [entryMode]);
+
+  useEffect(() => {
+    if (entryMode !== "mobile-return") return;
+
+    let firstFrame = 0;
+    let secondFrame = 0;
+    const animations: Animation[] = [];
+
+    firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        const header = document.querySelector<HTMLElement>(".home-mobile-header");
+        const bubbles = Array.from(document.querySelectorAll<HTMLElement>(".home-mobile-nav-list li"));
+        const elements = [header, ...bubbles].filter((element): element is HTMLElement => Boolean(element));
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          elements.forEach((element) => { element.style.opacity = "1"; });
+          return;
+        }
+
+        const corner = { x: window.innerWidth - 18, y: 14 };
+        elements.forEach((element, index) => {
+          const box = element.getBoundingClientRect();
+          const moveX = corner.x - (box.left + box.width / 2);
+          const moveY = corner.y - (box.top + box.height / 2);
+          const isHeader = element === header;
+
+          animations.push(element.animate(
+            [
+              {
+                opacity: 0,
+                transform: `translate3d(${moveX}px, ${moveY}px, 0) scale(${isHeader ? 0.12 : 0.18}) rotate(-12deg)`,
+              },
+              {
+                offset: 0.68,
+                opacity: 1,
+                transform: "translate3d(-10px, 5px, 0) scale(1.035) rotate(1.5deg)",
+              },
+              { opacity: 1, transform: "translate3d(0, 0, 0) scale(1) rotate(0deg)" },
+            ],
+            {
+              duration: isHeader ? 720 : 660,
+              delay: isHeader ? 30 : 115 + (index - 1) * 62,
+              easing: "cubic-bezier(.16, 1, .3, 1)",
+              fill: "both",
+            },
+          ));
+        });
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      animations.forEach((animation) => animation.cancel());
+    };
+  }, [entryMode]);
 
   useEffect(() => {
     if (entryMode !== "menu") return;
@@ -283,7 +426,8 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     }
 
     const selectedBubble = event.currentTarget;
-    const bubbles = Array.from(document.querySelectorAll<HTMLElement>(".orbit-link"));
+    const bubbles = Array.from(document.querySelectorAll<HTMLElement>(".orbit-link, .home-mobile-link"))
+      .filter((bubble) => bubble.offsetParent !== null);
     const profile = document.querySelector<HTMLElement>(".home-profile");
     const photoGrid = document.querySelector<HTMLElement>(".home-photo-grid");
     const themeToggle = document.querySelector<HTMLElement>(".theme-toggle");
@@ -308,6 +452,18 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
       <span className="home-menu-glyph" aria-hidden="true">
         <i /><i /><i />
       </span>
+
+      <header className="home-mobile-header">
+        <div>
+          <p className="home-mobile-name">Curtis Lee</p>
+          <p className="home-mobile-intro">School, work and life</p>
+        </div>
+        <span
+          aria-label={profilePhoto ? "Curtis Lee profile photo" : "Profile photo placeholder"}
+          className={`home-mobile-portrait ${profilePhoto ? "has-photo" : ""}`}
+          style={profilePhoto ? { backgroundImage: `url("${profilePhoto}")` } : undefined}
+        />
+      </header>
 
       <div className="home-orbit-stage">
         <div className="home-profile">
@@ -345,6 +501,35 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
               <span className="orbit-arrow" aria-hidden="true">↗</span>
             </Link>
           ))}
+        </nav>
+
+        <nav className="home-mobile-nav" aria-label="Explore the website" onScroll={updateMobileCarousel} ref={mobileNavRef}>
+          <h1 className="sr-only">Curtis Lee</h1>
+          <ol className="home-mobile-nav-list">
+            {mobileOrbitLinks.map((item, index) => {
+              const icon = navIconForPath(item.href);
+
+              return (
+                <li data-mobile-orbit-item key={item.href}>
+                  <Link
+                    className="home-mobile-link"
+                    data-active={index === mobileActiveIndex ? "true" : "false"}
+                    href={item.href}
+                    onClick={(event) => leaveHome(event, item.href)}
+                    onFocus={(event) => {
+                      setMobileActiveIndex(index);
+                      event.currentTarget.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
+                    onPointerEnter={() => prefetchRoute(item.href)}
+                    style={{ cursor: bubbleCursors.get(item.href) }}
+                  >
+                    {icon && <img alt="" aria-hidden="true" className="home-mobile-link-icon" src={icon} />}
+                    <span className="home-mobile-link-label">{item.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ol>
         </nav>
       </div>
 

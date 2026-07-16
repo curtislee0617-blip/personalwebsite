@@ -41,8 +41,7 @@ export function RestaurantRecommendations() {
   return (
     <section className="restaurant-recommendations" aria-labelledby="recommendation-title">
       <div>
-        <p className="eyebrow">Your turn</p>
-        <h2 id="recommendation-title">Know somewhere I’m missing?</h2>
+        <h2 id="recommendation-title">Send me your recs!</h2>
         <p>Send a restaurant recommendation. Suggestions are reviewed before appearing on the map.</p>
       </div>
       <form onSubmit={submitRecommendation}>

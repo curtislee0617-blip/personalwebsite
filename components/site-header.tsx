@@ -42,7 +42,11 @@ export function SiteHeader() {
 
     if (href === "/") {
       setOpen(false);
-      window.sessionStorage.removeItem("home-entry");
+      if (window.matchMedia("(max-width: 639px)").matches) {
+        window.sessionStorage.setItem("home-entry", "mobile-return");
+      } else {
+        window.sessionStorage.removeItem("home-entry");
+      }
       router.push(href);
       return;
     }

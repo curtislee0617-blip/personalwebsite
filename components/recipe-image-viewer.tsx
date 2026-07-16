@@ -78,7 +78,7 @@ export function RecipeImageViewer({ alt, children, className = "", src, viewerIm
           <section aria-labelledby={titleId} aria-modal="true" className="recipe-image-viewer-dialog" onKeyDown={keepFocusInViewer} role="dialog">
             <header className="recipe-image-viewer-header">
               <button className="back-link-bubble" onClick={closeViewer} ref={closeButtonRef} type="button">
-                ← Back to recipe
+                ← Back to page
               </button>
               <p id={titleId}>{alt}</p>
             </header>
@@ -87,6 +87,7 @@ export function RecipeImageViewer({ alt, children, className = "", src, viewerIm
                 alt={alt}
                 className="object-contain"
                 fill
+                unoptimized
                 sizes="100vw"
                 src={src}
                 style={viewerImageStyle}

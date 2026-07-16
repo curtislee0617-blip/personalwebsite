@@ -52,14 +52,10 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
               </div>
               <div className="project-card-copy swipe-bubble-copy">
                 <p className="eyebrow">{project.eyebrow}</p>
-                <div className="mt-3 flex items-start justify-between gap-3">
+                <div className="mt-3">
                   <h2>{project.title}</h2>
-                  <span aria-hidden="true">↗</span>
                 </div>
                 <p className="project-card-description">{project.description}</p>
-                <div className="project-card-tags">
-                  {project.tags.slice(0, 2).map((tag) => <span key={tag}>{tag}</span>)}
-                </div>
               </div>
             </Link>
           );
@@ -76,14 +72,13 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
             {activePreview ? (
               <Image alt="" fill sizes="4rem" src={activePreview.src} />
             ) : (
-              <span aria-hidden="true">↗</span>
+              <span aria-hidden="true" />
             )}
           </span>
           <span className="project-focus-preview-copy">
             <small>View project</small>
             <strong>{activeProject.shortTitle ?? activeProject.title}</strong>
           </span>
-          <span aria-hidden="true" className="project-focus-preview-arrow">↗</span>
         </Link>
       </div>
     </div>
