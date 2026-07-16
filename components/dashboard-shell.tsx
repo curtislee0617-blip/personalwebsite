@@ -17,7 +17,20 @@ import {
   type ReactNode,
 } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { recipeCategories } from "@/data/recipe-categories";
 import { navIconForPath } from "@/lib/page-cursors";
+
+type DashboardTreeNode = {
+  href: string;
+  label: string;
+  children?: DashboardTreeNode[];
+};
+
+type DashboardRecipeItem = {
+  title: string;
+  href: string;
+  categories: string[];
+};
 
 export const dashboardSections = [
   {
@@ -47,7 +60,7 @@ export const dashboardSections = [
     href: "/recipes", label: "Recipes", subtitle: "Personal recipes, detailed guides, and transcribed cookbooks.",
     groups: [
       { href: "/recipes#recipe-guides", label: "Guides", items: [{ href: "/recipes/pasta-guide", label: "Pasta" }, { href: "/recipes/sushi-guide", label: "Sushi" }, { href: "/recipes/viennoiserie-guide", label: "Viennoiserie" }, { href: "/recipes/sourdough-guide", label: "Sourdough" }, { href: "/projects/cook-enterprise?from=recipes", label: "Cookbook" }] },
-      { href: "/recipes#recipe-collection", label: "Collections", items: [{ href: "/recipes#recipe-collection", label: "Recipes" }, { href: "/recipes#recipe-wishlist", label: "Wishlist" }, { href: "/recipes#recipe-books", label: "Recipe books" }] },
+      { href: "/recipes#recipe-collection", label: "Collections", items: [{ href: "/recipes#recipe-collection", label: "Recipes", dynamicChildren: "recipe-categories" }, { href: "/recipes#recipe-wishlist", label: "Wishlist" }, { href: "/recipes#recipe-books", label: "Recipe books" }] },
       { href: "/recipes#recipe-books", label: "Cookbooks", items: [{ href: "/recipes/core-basics", label: "Core" }, { href: "/recipes/frantzen", label: "Frantzén" }, { href: "/recipes/modernist-cuisine", label: "Modernist Cuisine" }, { href: "/recipes/pollen-street", label: "Pollen Street" }, { href: "/recipes/opera", label: "Opéra" }, { href: "/recipes/bachour", label: "Bachour" }, { href: "/recipes/benu", label: "Benu" }] },
     ],
   },
@@ -109,6 +122,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const [isDashboard, setIsDashboard] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
+  const [dashboardRecipes, setDashboardRecipes] = useState<DashboardRecipeItem[]>([]);
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
   const sidebarResizerRef = useRef<HTMLDivElement>(null);
   const resizingPointerRef = useRef<number | null>(null);
@@ -130,6 +145,44 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     desktop.addEventListener("change", sync);
     return () => desktop.removeEventListener("change", sync);
   }, []);
+
+  useEffect(() => {
+    if (!isDashboard) return;
+
+    const controller = new AbortController();
+    void fetch("/api/recipe-search", { cache: "no-store", signal: controller.signal })
+      .then((response) => response.json() as Promise<unknown>)
+      .then((result) => {
+        if (!Array.isArray(result)) return;
+        const recipes = result.flatMap((item): DashboardRecipeItem[] => {
+          if (!item || typeof item !== "object") return [];
+          const candidate = item as Record<string, unknown>;
+          if (candidate.kind !== "Recipe" || candidate.context !== "Personal recipe") return [];
+          if (typeof candidate.title !== "string" || typeof candidate.href !== "string") return [];
+          return [{
+            title: candidate.title,
+            href: candidate.href,
+            categories: Array.isArray(candidate.categories)
+              ? candidate.categories.filter((category): category is string => typeof category === "string")
+              : [],
+          }];
+        });
+        setDashboardRecipes(recipes);
+      })
+      .catch(() => undefined);
+
+    return () => controller.abort();
+  }, [isDashboard]);
+
+  const recipeCategoryNodes = useMemo<DashboardTreeNode[]>(() => recipeCategories.flatMap((category) => {
+    const dishes = dashboardRecipes
+      .filter((recipe) => recipe.categories.includes(category.id))
+      .map((recipe) => ({ href: recipe.href, label: recipe.title }));
+
+    return dishes.length > 0
+      ? [{ href: `/recipes#recipe-category-${category.id}`, label: category.title, children: dishes }]
+      : [];
+  }), [dashboardRecipes]);
 
   const activeHref = useMemo(() => {
     return dashboardSections.find((section) => pathname === section.href || pathname.startsWith(`${section.href}/`))?.href;
@@ -216,6 +269,47 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     target.scrollIntoView({ behavior, block: "start" });
   }
 
+  function renderDashboardNode(node: DashboardTreeNode, nodeKey: string): ReactNode {
+    const children = node.children ?? [];
+    const nodePath = hrefPath(node.href);
+    const isActive = pathname === nodePath && !node.href.includes("#");
+
+    if (children.length === 0) {
+      return (
+        <Link
+          className={isActive ? "is-active" : ""}
+          href={node.href}
+          key={nodeKey}
+          onClick={(event) => followDashboardLink(event, node.href)}
+        >
+          {node.label}
+        </Link>
+      );
+    }
+
+    const isExpanded = expandedNodes[nodeKey] ?? false;
+    return (
+      <div className="dashboard-sidebar-tree-node" key={nodeKey}>
+        <div className="dashboard-sidebar-tree-row">
+          <Link className={isActive ? "is-active" : ""} href={node.href} onClick={(event) => followDashboardLink(event, node.href)}>{node.label}</Link>
+          <button
+            aria-expanded={isExpanded}
+            aria-label={`${isExpanded ? "Hide" : "Show"} ${node.label}`}
+            onClick={() => setExpandedNodes((current) => ({ ...current, [nodeKey]: !isExpanded }))}
+            type="button"
+          >
+            <i aria-hidden="true">⌄</i>
+          </button>
+        </div>
+        <div aria-hidden={!isExpanded} className="dashboard-sidebar-tree-children" data-expanded={isExpanded ? "true" : "false"}>
+          <div>
+            {children.map((child, index) => renderDashboardNode(child, `${nodeKey}:${child.href}:${index}`))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DashboardModeContext.Provider value={{ disableDashboard, enableDashboard, isDashboard }}>
       <aside aria-hidden={!isDashboard} className="dashboard-sidebar">
@@ -237,24 +331,27 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             const icon = navIconForPath(section.href);
             const isActive = activeHref === section.href;
             const isExpanded = expanded[section.href] ?? isActive;
+            const canExpand = section.href !== "/contact";
 
             return (
               <div className={`dashboard-sidebar-item ${isActive ? "is-active" : ""}`} data-dashboard-href={section.href} key={section.href}>
-                <div className="dashboard-sidebar-row">
+                <div className={`dashboard-sidebar-row ${canExpand ? "" : "is-link-only"}`}>
                   <Link href={section.href}>
                     {icon && <img alt="" aria-hidden="true" src={icon} />}
                     <span>{section.label}</span>
                   </Link>
-                  <button
-                    aria-expanded={isExpanded}
-                    aria-label={`${isExpanded ? "Hide" : "Show"} ${section.label} description`}
-                    onClick={() => setExpanded((current) => ({ ...current, [section.href]: !isExpanded }))}
-                    type="button"
-                  >
-                    <span aria-hidden="true">⌄</span>
-                  </button>
+                  {canExpand && (
+                    <button
+                      aria-expanded={isExpanded}
+                      aria-label={`${isExpanded ? "Hide" : "Show"} ${section.label} description`}
+                      onClick={() => setExpanded((current) => ({ ...current, [section.href]: !isExpanded }))}
+                      type="button"
+                    >
+                      <span aria-hidden="true">⌄</span>
+                    </button>
+                  )}
                 </div>
-                <div aria-hidden={!isExpanded} className="dashboard-sidebar-subtitle" data-expanded={isExpanded ? "true" : "false"}>
+                {canExpand && <div aria-hidden={!isExpanded} className="dashboard-sidebar-subtitle" data-expanded={isExpanded ? "true" : "false"}>
                   <div className="dashboard-sidebar-subtitle-inner">
                     <p>{section.subtitle}</p>
                     <div className="dashboard-sidebar-groups">
@@ -282,9 +379,13 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                             <div aria-hidden={!groupIsExpanded} className="dashboard-sidebar-leaves" data-expanded={groupIsExpanded ? "true" : "false"}>
                               <div>
                                 {group.items.map((item) => {
-                                  const itemPath = hrefPath(item.href);
-                                  const itemIsActive = pathname === itemPath || (itemPath !== section.href && pathname.startsWith(`${itemPath}/`));
-                                  return <Link className={itemIsActive ? "is-active" : ""} href={item.href} key={`${groupKey}:${item.label}`} onClick={(event) => followDashboardLink(event, item.href)}>{item.label}</Link>;
+                                  const dynamicChildren = "dynamicChildren" in item && item.dynamicChildren === "recipe-categories"
+                                    ? recipeCategoryNodes
+                                    : undefined;
+                                  return renderDashboardNode(
+                                    { href: item.href, label: item.label, children: dynamicChildren },
+                                    `${groupKey}:${item.label}`,
+                                  );
                                 })}
                               </div>
                             </div>
@@ -293,7 +394,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                       })}
                     </div>
                   </div>
-                </div>
+                </div>}
               </div>
             );
           })}

@@ -28,6 +28,7 @@ function RecipeVideo({ item, title }: { item: RecipeMediaItem; title: string }) 
         preload="metadata"
         ref={ref}
         src={item.src}
+        style={{ objectPosition: item.position ?? "50% 50%", transform: `scale(${item.zoom ?? 1})`, transformOrigin: item.position ?? "50% 50%" }}
       />
       <button onClick={toggle} type="button">{playing ? "Pause" : "Play"}</button>
       {item.caption && <figcaption>{item.caption}</figcaption>}
@@ -52,7 +53,14 @@ export function RecipeMediaGallery({ media, title }: { media: RecipeMediaItem[];
             src={item.src}
           >
             <span className="relative block aspect-[4/3] w-full">
-              <Image alt={item.alt ?? `${title}, image ${index + 1}`} className="object-cover" fill sizes="(max-width: 640px) 86vw, 28rem" src={item.src} />
+              <Image
+                alt={item.alt ?? `${title}, image ${index + 1}`}
+                className="object-cover"
+                fill
+                sizes="(max-width: 640px) 44vw, 11rem"
+                src={item.src}
+                style={{ objectPosition: item.position ?? "50% 50%", transform: `scale(${item.zoom ?? 1})`, transformOrigin: item.position ?? "50% 50%" }}
+              />
               {item.caption && <span className="recipe-media-caption">{item.caption}</span>}
             </span>
           </RecipeImageViewer>

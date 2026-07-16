@@ -191,6 +191,7 @@ export type Database = {
           linked_recipe_keys: string[];
           thumbnail_url: string | null;
           thumbnail_position: string | null;
+          thumbnail_zoom: number | null;
           thumbnail_time_seconds: number | null;
           media_items: Json;
           created_at: string;
@@ -207,6 +208,7 @@ export type Database = {
           linked_recipe_keys?: string[];
           thumbnail_url?: string | null;
           thumbnail_position?: string | null;
+          thumbnail_zoom?: number | null;
           thumbnail_time_seconds?: number | null;
           media_items?: Json;
           created_at?: string;

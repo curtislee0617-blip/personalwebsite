@@ -194,15 +194,7 @@ export default async function RecipesPage() {
           <section id="recipe-guides">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="eyebrow">Guides</p>
-                <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Reference-style kitchen posts</h2>
-                <div className="recipe-anchor-tabs mt-4 flex flex-wrap gap-1.5">
-                  {guides.map((entry) => (
-                    <Link className="recipe-anchor-tab rounded-full border border-ink/10 bg-surface/70 px-2 py-0.5 text-[0.58rem] font-semibold text-ink/55 transition hover:border-ink/25 hover:text-ink" href={entry.href} key={entry.slug}>
-                      {entry.title}
-                    </Link>
-                  ))}
-                </div>
+                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Guides</h2>
               </div>
             </div>
 
@@ -232,12 +224,12 @@ export default async function RecipesPage() {
               )}
             </div>
 
-            <div className="mt-6 space-y-8">
+            <div className="recipe-category-list mt-6 space-y-8">
               {recipeSections.map((section, index) => {
                 const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
 
                 return (
-                  <details className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" key={section.id} open={index === 0}>
+                  <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id} open={index === 0}>
                     <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
                       <h3 className="text-2xl font-semibold tracking-tight">{section.title}</h3>
                       <span className="grid size-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-paper/80 text-lg text-ink/50 transition group-open:rotate-45">

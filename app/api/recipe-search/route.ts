@@ -11,6 +11,7 @@ export async function GET() {
     context: "Personal recipe",
     kind: "Recipe",
     href: `/recipes#recipe-${entry.slug}`,
+    categories: entry.categories ?? (entry.category ? [entry.category] : []),
     searchText: [
       entry.description,
       ...(entry.categories ?? []),

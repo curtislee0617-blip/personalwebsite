@@ -98,6 +98,7 @@ export default async function EditRecipeCardPage({
               currentPosition={recipe.thumbnailPosition}
               currentThumbnail={recipe.thumbnail}
               currentTime={recipe.thumbnailTime}
+              currentZoom={recipe.thumbnailZoom}
               options={thumbnailOptions}
               title={recipe.title}
             />

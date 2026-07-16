@@ -50,27 +50,40 @@ function smoothReveal(value: number) {
 }
 
 function createMoonLitClipPath(phase: number) {
-  const steps = 12;
+  const steps = 8;
+  const pixelStep = 6.25;
   const waxing = phase < 0.5;
   const outerSide = waxing ? 1 : -1;
-  const terminatorSide = waxing
+  const rawTerminatorSide = waxing
     ? Math.cos(2 * Math.PI * phase)
     : -Math.cos(2 * Math.PI * phase);
-  const point = (index: number, side: number) => {
-    const progress = index / steps;
+  const terminatorSide = outerSide * rawTerminatorSide > 0.65
+    ? outerSide * 0.65
+    : rawTerminatorSide;
+  const edge = (progress: number, side: number) => {
     const halfWidth = 50 * Math.sin(Math.PI * progress);
-    const x = 50 + side * halfWidth;
-
-    return `${x.toFixed(2)}% ${(progress * 100).toFixed(2)}%`;
+    const rawX = 50 + side * halfWidth;
+    return Math.round(rawX / pixelStep) * pixelStep;
   };
-  const outer = Array.from(
-    { length: steps + 1 },
-    (_, index) => point(index, outerSide),
-  );
-  const terminator = Array.from(
-    { length: steps + 1 },
-    (_, index) => point(steps - index, terminatorSide),
-  );
+  const steppedSide = (side: number, reverse = false) => {
+    const bands = Array.from({ length: steps }, (_, index) => {
+      const band = reverse ? steps - index - 1 : index;
+      const start = band / steps;
+      const end = (band + 1) / steps;
+      const x = edge((start + end) / 2, side);
+      const firstY = reverse ? end : start;
+      const secondY = reverse ? start : end;
+
+      return [
+        `${x.toFixed(2)}% ${(firstY * 100).toFixed(2)}%`,
+        `${x.toFixed(2)}% ${(secondY * 100).toFixed(2)}%`,
+      ];
+    });
+
+    return bands.flat();
+  };
+  const outer = steppedSide(outerSide);
+  const terminator = steppedSide(terminatorSide, true);
 
   return `polygon(${[...outer, ...terminator].join(", ")})`;
 }

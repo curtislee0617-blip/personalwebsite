@@ -5,6 +5,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent, type UIEvent } from "react";
+import { ContactCityArtwork } from "@/components/contact-city-artwork";
+import { ContactPresenceProvider } from "@/components/contact-presence";
 import { dashboardSections, useDashboardMode } from "@/components/dashboard-shell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cursorCss, navIconForPath, pageCursors } from "@/lib/page-cursors";
@@ -624,7 +626,11 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
             <p className="eyebrow">Dashboard</p>
             <h1>Quick access</h1>
           </div>
-          <p>Everything in one compact workspace.</p>
+          <div className="home-dashboard-pixel-art">
+            <ContactPresenceProvider readOnly>
+              <ContactCityArtwork className="home-dashboard-pixel-artwork" />
+            </ContactPresenceProvider>
+          </div>
         </div>
         <nav aria-label="Dashboard quick access" className="home-dashboard-grid">
           {dashboardSections.map((section) => {

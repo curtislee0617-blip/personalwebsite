@@ -95,6 +95,8 @@ export async function saveRecipeCard(formData: FormData) {
   const thumbnailPosition = /^\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/.test(rawThumbnailPosition)
     ? rawThumbnailPosition
     : "50% 50%";
+  const rawThumbnailZoom = Number(formData.get("thumbnail_zoom") ?? 1);
+  const thumbnailZoom = Number.isFinite(rawThumbnailZoom) ? Math.min(4, Math.max(1, rawThumbnailZoom)) : 1;
   const rawThumbnailTime = Number(formData.get("thumbnail_time_seconds") ?? 0);
   const thumbnailTime = Number.isFinite(rawThumbnailTime) ? Math.min(3600, Math.max(0, rawThumbnailTime)) : 0;
 
@@ -117,12 +119,22 @@ export async function saveRecipeCard(formData: FormData) {
   const originalMediaBySrc = new Map(originalMedia.map((item) => [item.src, item]));
   let mediaItems = originalMedia;
   try {
-    const submitted = JSON.parse(String(formData.get("media_items") ?? "[]")) as Array<{ src?: unknown; type?: unknown; caption?: unknown }>;
+    const submitted = JSON.parse(String(formData.get("media_items") ?? "[]")) as Array<{ src?: unknown; type?: unknown; caption?: unknown; position?: unknown; zoom?: unknown }>;
     const ordered = submitted.flatMap((item) => {
       if (typeof item.src !== "string" || (item.type !== "image" && item.type !== "video")) return [];
       const original = originalMediaBySrc.get(item.src);
       if (!original || original.type !== item.type) return [];
-      return [{ ...original, caption: typeof item.caption === "string" ? item.caption.trim().slice(0, 200) : undefined }];
+      const position = typeof item.position === "string" && /^\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/.test(item.position)
+        ? item.position
+        : original.position;
+      const rawZoom = Number(item.zoom ?? original.zoom ?? 1);
+      const zoom = Number.isFinite(rawZoom) ? Math.min(4, Math.max(1, rawZoom)) : 1;
+      return [{
+        ...original,
+        caption: typeof item.caption === "string" ? item.caption.trim().slice(0, 200) : undefined,
+        position,
+        zoom,
+      }];
     });
     const included = new Set(ordered.map((item) => item.src));
     mediaItems = [...ordered, ...originalMedia.filter((item) => !included.has(item.src))];
@@ -161,6 +173,7 @@ export async function saveRecipeCard(formData: FormData) {
     linked_recipe_keys: linkedRecipeKeys,
     thumbnail_url: thumbnailUrl,
     thumbnail_position: thumbnailPosition,
+    thumbnail_zoom: thumbnailZoom,
     thumbnail_time_seconds: thumbnailTime,
     media_items: mediaItems as unknown as Json,
   }, { onConflict: "recipe_key" });

@@ -26,6 +26,7 @@ type RecipeOverrideRow = {
   linked_recipe_keys: string[];
   thumbnail_url: string | null;
   thumbnail_position: string | null;
+  thumbnail_zoom: number | null;
   thumbnail_time_seconds: number | null;
   media_items: Json;
 };
@@ -36,19 +37,49 @@ function isRecord(value: Json): value is { [key: string]: Json | undefined } {
 
 function ingredientGroupsFromJson(value: Json): RecipeIngredientGroup[] {
   if (!Array.isArray(value)) return [];
-  return value.flatMap((group) => {
+  return value.flatMap((group): RecipeIngredientGroup[] => {
     if (!isRecord(group) || typeof group.title !== "string" || !Array.isArray(group.items)) return [];
-    const items = group.items.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
-    return items.length > 0 ? [{ title: group.title.trim() || "Ingredients", items }] : [];
+    const parsed: RecipeIngredientGroup[] = [];
+    let current = { title: group.title.replace(/^#{1,3}\s*/, "").trim() || "Ingredients", items: [] as string[] };
+    const flush = () => {
+      if (current.items.length > 0) parsed.push(current);
+    };
+    for (const item of group.items) {
+      if (typeof item !== "string" || !item.trim()) continue;
+      const heading = item.trim().match(/^#{1,3}\s*(.+)$/);
+      if (heading) {
+        flush();
+        current = { title: heading[1].trim() || "Ingredients", items: [] };
+      } else {
+        current.items.push(item.trim());
+      }
+    }
+    flush();
+    return parsed;
   });
 }
 
 function methodGroupsFromJson(value: Json): RecipeMethodGroup[] {
   if (!Array.isArray(value)) return [];
-  return value.flatMap((group) => {
+  return value.flatMap((group): RecipeMethodGroup[] => {
     if (!isRecord(group) || typeof group.title !== "string" || !Array.isArray(group.steps)) return [];
-    const steps = group.steps.filter((step): step is string => typeof step === "string" && step.trim().length > 0);
-    return steps.length > 0 ? [{ title: group.title.trim() || "Method", steps }] : [];
+    const parsed: RecipeMethodGroup[] = [];
+    let current = { title: group.title.replace(/^#{1,3}\s*/, "").trim() || "Method", steps: [] as string[] };
+    const flush = () => {
+      if (current.steps.length > 0) parsed.push(current);
+    };
+    for (const step of group.steps) {
+      if (typeof step !== "string" || !step.trim()) continue;
+      const heading = step.trim().match(/^#{1,3}\s*(.+)$/);
+      if (heading) {
+        flush();
+        current = { title: heading[1].trim() || "Method", steps: [] };
+      } else {
+        current.steps.push(step.trim());
+      }
+    }
+    flush();
+    return parsed;
   });
 }
 
@@ -65,6 +96,8 @@ function mediaFromJson(value: Json, fallback?: RecipeCardEntry["media"]): Recipe
       alt: typeof item.alt === "string" ? item.alt.slice(0, 200) : original?.alt,
       poster: typeof item.poster === "string" ? item.poster : original?.poster,
       caption: typeof item.caption === "string" ? item.caption.slice(0, 200) : undefined,
+      position: typeof item.position === "string" && /^\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/.test(item.position) ? item.position : original?.position,
+      zoom: typeof item.zoom === "number" && Number.isFinite(item.zoom) ? Math.min(4, Math.max(1, item.zoom)) : original?.zoom,
     });
   }
   const included = new Set(parsed.map((item) => item.src));
@@ -108,7 +141,15 @@ function siteRecipeCards(): RecipeCardEntry[] {
     methodGroups: entry.methodGroups,
     source: "site",
   }));
-  return [...writtenRecipes, ...importedRecipeMediaEntries];
+  const bossamAndJjampong = importedRecipeMediaEntries.find((entry) => entry.recipeKey === "personal-bossam-jjampong");
+  const bossamAndJjampongCopy: RecipeCardEntry[] = bossamAndJjampong ? [{
+    ...bossamAndJjampong,
+    recipeKey: "personal-bossam-jjampong-copy",
+    slug: "personal-bossam-jjampong-copy",
+    title: "Bossam&Jjampong (copy)",
+    media: bossamAndJjampong.media?.map((item) => ({ ...item })),
+  }] : [];
+  return [...writtenRecipes, ...importedRecipeMediaEntries, ...bossamAndJjampongCopy];
 }
 
 const getUploadedRecipes = unstable_cache(async (): Promise<RecipeCardEntry[]> => {
@@ -133,7 +174,7 @@ const getRecipeOverrides = unstable_cache(async (): Promise<RecipeOverrideRow[]>
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("recipe_card_overrides")
-      .select("recipe_key,title,description,recipe_date,categories,ingredient_groups,method_groups,linked_recipe_keys,thumbnail_url,thumbnail_position,thumbnail_time_seconds,media_items");
+      .select("recipe_key,title,description,recipe_date,categories,ingredient_groups,method_groups,linked_recipe_keys,thumbnail_url,thumbnail_position,thumbnail_zoom,thumbnail_time_seconds,media_items");
 
     if (error) return [];
     return data;
@@ -156,6 +197,7 @@ function applyOverride(entry: RecipeCardEntry, override?: RecipeOverrideRow): Re
     linkedRecipeKeys: override.linked_recipe_keys.filter((key) => key !== entry.recipeKey),
     thumbnail: override.thumbnail_url ?? entry.thumbnail,
     thumbnailPosition: override.thumbnail_position ?? entry.thumbnailPosition,
+    thumbnailZoom: override.thumbnail_zoom ?? entry.thumbnailZoom,
     thumbnailTime: override.thumbnail_time_seconds ?? entry.thumbnailTime,
     media: mediaFromJson(override.media_items, entry.media),
   };
@@ -192,7 +234,7 @@ function parseGroupedLines(value: string, fallbackTitle: string) {
   for (const rawLine of value.split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line) continue;
-    const heading = line.match(/^#{1,3}\s+(.+)$/);
+    const heading = line.match(/^#{1,3}\s*(.+)$/);
     if (heading) {
       if (current.lines.length > 0) groups.push(current);
       current = { title: heading[1].trim() || fallbackTitle, lines: [] };

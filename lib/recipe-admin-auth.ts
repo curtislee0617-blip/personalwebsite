@@ -9,6 +9,8 @@ export function recipeAdminSessionToken(password: string) {
 }
 
 export async function isRecipeAdminAuthenticated() {
+  if (process.env.NODE_ENV === "development") return true;
+
   const adminPassword = process.env.RECIPE_ADMIN_PASSWORD;
   if (!adminPassword) return false;
   const cookieStore = await cookies();

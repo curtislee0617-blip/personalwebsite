@@ -115,6 +115,7 @@ export function RecipeCard({
               poster={entry.media?.find((item) => item.src === entry.thumbnail)?.poster}
               src={entry.thumbnail}
               time={entry.thumbnailTime}
+              zoom={entry.thumbnailZoom}
             />
           </div>
         </div>}

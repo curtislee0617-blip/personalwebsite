@@ -6,6 +6,8 @@ export type RecipeMediaItem = {
   alt?: string;
   poster?: string;
   caption?: string;
+  position?: string;
+  zoom?: number;
 };
 
 export type RecipeCardEntry = {
@@ -19,6 +21,7 @@ export type RecipeCardEntry = {
   categories?: string[];
   thumbnail?: string;
   thumbnailPosition?: string;
+  thumbnailZoom?: number;
   thumbnailTime?: number;
   imageUrls?: string[];
   media?: RecipeMediaItem[];
