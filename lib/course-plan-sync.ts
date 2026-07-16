@@ -11,6 +11,7 @@ export type StoredIdentity = {
 };
 
 const IDENTITY_STORAGE_KEY = "caltech-course-planner-identity-v1";
+export const COURSE_PLAN_STORAGE_KEY = "caltech-course-planner-v2";
 
 /** Legacy profile key kept so existing saved plans can be found and migrated without deleting them. */
 export function buildLegacyLoginKey(name: string, majorIds: MajorId[]) {

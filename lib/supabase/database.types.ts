@@ -179,6 +179,36 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["recipe_drafts"]["Insert"]>;
         Relationships: [];
       };
+      recipe_card_overrides: {
+        Row: {
+          recipe_key: string;
+          title: string;
+          description: string;
+          recipe_date: string | null;
+          categories: string[];
+          ingredient_groups: Json;
+          method_groups: Json;
+          linked_recipe_keys: string[];
+          thumbnail_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          recipe_key: string;
+          title: string;
+          description: string;
+          recipe_date?: string | null;
+          categories?: string[];
+          ingredient_groups?: Json;
+          method_groups?: Json;
+          linked_recipe_keys?: string[];
+          thumbnail_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["recipe_card_overrides"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

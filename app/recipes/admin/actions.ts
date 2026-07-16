@@ -7,6 +7,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { uploadToR2 } from "@/lib/r2";
 import { clearRecipeAdminCookie, isRecipeAdminAuthenticated, setRecipeAdminCookie } from "@/lib/recipe-admin-auth";
 import { isRecipeCategoryId } from "@/data/recipe-categories";
+import { getPersonalRecipeCards, parseIngredientGroupsEditor, parseMethodGroupsEditor } from "@/lib/personal-recipes";
+import type { Json } from "@/lib/supabase/database.types";
 
 export async function loginAction(password: string): Promise<{ ok: boolean }> {
   const adminPassword = process.env.RECIPE_ADMIN_PASSWORD;
@@ -55,7 +57,7 @@ export async function submitRecipe(formData: FormData) {
     thumbnail_url: imageUrls[0],
     recipe_date: recipeDate,
     categories: Array.from(new Set(categories)),
-    status: publishNow ? "published" : undefined,
+    status: publishNow ? "published" : "pending",
   });
   if (error) {
     console.error("Failed to save recipe draft", error);
@@ -72,5 +74,62 @@ export async function markProcessed(formData: FormData) {
   const supabase = createAdminClient();
   await supabase.from("recipe_drafts").update({ status: "processed" }).eq("id", id);
   updateTag("published-recipes");
+  updateTag("recipe-card-overrides");
   redirect("/recipes/admin");
+}
+
+export async function saveRecipeCard(formData: FormData) {
+  if (!(await isRecipeAdminAuthenticated())) redirect("/recipes");
+
+  const recipeKey = String(formData.get("recipe_key") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const rawDate = String(formData.get("recipe_date") ?? "").trim();
+  const recipeDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : null;
+  const categories = Array.from(new Set(formData.getAll("categories").map(String).filter(isRecipeCategoryId)));
+  const ingredientGroups = parseIngredientGroupsEditor(String(formData.get("ingredient_groups") ?? ""));
+  const methodGroups = parseMethodGroupsEditor(String(formData.get("method_groups") ?? ""));
+  const thumbnailUrl = String(formData.get("thumbnail_url") ?? "").trim() || null;
+
+  const recipes = await getPersonalRecipeCards();
+  const availableKeys = new Set(recipes.map((recipe) => recipe.recipeKey));
+  if (!availableKeys.has(recipeKey)) redirect("/recipes/admin?error=recipe-not-found");
+
+  const linkedRecipeKeys = Array.from(new Set(formData.getAll("linked_recipes").map(String)))
+    .filter((key) => key !== recipeKey && availableKeys.has(key))
+    .slice(0, 30);
+
+  const editHref = `/recipes/admin/edit/${encodeURIComponent(recipeKey)}`;
+  const recipe = recipes.find((entry) => entry.recipeKey === recipeKey);
+  const permittedThumbnails = new Set([
+    recipe?.thumbnail,
+    ...(recipe?.imageUrls ?? []),
+    ...(recipe?.media ?? []).flatMap((item) => [item.src, item.poster]),
+  ].filter((value): value is string => Boolean(value)));
+
+  if (!title || categories.length === 0 || (thumbnailUrl && !permittedThumbnails.has(thumbnailUrl))) {
+    redirect(`${editHref}?error=missing`);
+  }
+
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("recipe_card_overrides").upsert({
+    recipe_key: recipeKey,
+    title,
+    description,
+    recipe_date: recipeDate,
+    categories,
+    ingredient_groups: ingredientGroups as unknown as Json,
+    method_groups: methodGroups as unknown as Json,
+    linked_recipe_keys: linkedRecipeKeys,
+    thumbnail_url: thumbnailUrl,
+  }, { onConflict: "recipe_key" });
+
+  if (error) {
+    console.error("Failed to update recipe card", error);
+    redirect(`${editHref}?error=save-failed`);
+  }
+
+  updateTag("published-recipes");
+  updateTag("recipe-card-overrides");
+  redirect(`/recipes?updated=1#recipe-${recipeKey}`);
 }

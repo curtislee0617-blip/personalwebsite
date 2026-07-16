@@ -1,0 +1,152 @@
+/* eslint-disable @next/next/no-img-element */
+
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { RecipeLinkPicker } from "@/components/recipe-link-picker";
+import { recipeCategories } from "@/data/recipe-categories";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
+import { formatIngredientGroups, formatMethodGroups, getPersonalRecipeCards } from "@/lib/personal-recipes";
+import { saveRecipeCard } from "../../actions";
+
+export const metadata: Metadata = { title: "Edit recipe", robots: { index: false, follow: false } };
+
+export default async function EditRecipeCardPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ recipeKey: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const authenticated = await isRecipeAdminAuthenticated();
+  const { recipeKey: encodedRecipeKey } = await params;
+  const recipeKey = decodeURIComponent(encodedRecipeKey);
+  const query = await searchParams;
+
+  if (!authenticated) {
+    return (
+      <div className="page-shell py-16 sm:py-20">
+        <h1 className="section-title">Recipe editor</h1>
+        <p className="mt-3 max-w-md text-sm text-ink/60">Log in through the footer before editing recipe cards.</p>
+        <Link className="back-link-bubble mt-6" href="/recipes">← Back to recipes</Link>
+      </div>
+    );
+  }
+
+  const recipes = await getPersonalRecipeCards();
+  const recipe = recipes.find((entry) => entry.recipeKey === recipeKey);
+  if (!recipe) notFound();
+
+  const linkedOptions = recipes
+    .filter((entry) => entry.recipeKey !== recipe.recipeKey)
+    .map((entry) => ({ key: entry.recipeKey, title: entry.title, description: entry.description, thumbnail: entry.thumbnail }));
+  const thumbnailOptions = Array.from(new Set([
+    recipe.thumbnail,
+    ...(recipe.imageUrls ?? []),
+    ...(recipe.media ?? []).flatMap((item) => [item.type === "image" ? item.src : item.poster]),
+  ].filter((value): value is string => Boolean(value))));
+
+  return (
+    <div className="page-shell py-12 sm:py-16">
+      <div className="recipe-editor-heading">
+        <div>
+          <p className="eyebrow">Admin · {recipe.source === "uploaded" ? "Uploaded recipe" : "Site recipe"}</p>
+          <h1 className="section-title mt-3">Edit {recipe.title}</h1>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Link className="back-link-bubble" href="/recipes/admin">Admin list</Link>
+          <Link className="back-link-bubble" href={`/recipes#recipe-${recipe.slug}`}>View card</Link>
+        </div>
+      </div>
+
+      {query.error === "missing" && <p className="recipe-editor-alert">Add a title, at least one category, and choose a valid thumbnail.</p>}
+      {query.error === "save-failed" && <p className="recipe-editor-alert">The update could not be saved. Make sure the latest Supabase migration has been applied.</p>}
+
+      <form action={saveRecipeCard} className="recipe-editor-form">
+        <input name="recipe_key" type="hidden" value={recipe.recipeKey} />
+
+        <section className="recipe-editor-panel recipe-editor-identity">
+          <div className="recipe-editor-panel-heading">
+            <div><p className="eyebrow">Card details</p><h2>Identity and date</h2></div>
+            {recipe.thumbnail && <img alt="" src={recipe.thumbnail} />}
+          </div>
+          <label>
+            <span>Recipe title</span>
+            <input defaultValue={recipe.title} name="title" required type="text" />
+          </label>
+          <label>
+            <span>Date made</span>
+            <input defaultValue={recipe.date ?? ""} name="recipe_date" type="date" />
+          </label>
+          <label className="recipe-editor-wide-field">
+            <span>Card description</span>
+            <textarea defaultValue={recipe.description} name="description" rows={5} />
+          </label>
+        </section>
+
+        {thumbnailOptions.length > 1 && (
+          <fieldset className="recipe-editor-panel">
+            <legend className="sr-only">Recipe thumbnail</legend>
+            <div className="recipe-editor-panel-heading">
+              <div><p className="eyebrow">Card image</p><h2>Choose thumbnail</h2></div>
+            </div>
+            <div className="recipe-editor-thumbnail-grid">
+              {thumbnailOptions.map((src, index) => (
+                <label key={src}>
+                  <input defaultChecked={src === recipe.thumbnail || (!recipe.thumbnail && index === 0)} name="thumbnail_url" type="radio" value={src} />
+                  <img alt={`${recipe.title} thumbnail option ${index + 1}`} src={src} />
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        <fieldset className="recipe-editor-panel">
+          <legend className="sr-only">Recipe categories</legend>
+          <div className="recipe-editor-panel-heading">
+            <div><p className="eyebrow">Placement</p><h2>Recipe categories</h2></div>
+          </div>
+          <p className="recipe-editor-help">Choose every row where this card should appear.</p>
+          <div className="recipe-editor-category-grid">
+            {recipeCategories.map((category) => (
+              <label key={category.id}>
+                <input defaultChecked={recipe.categories?.includes(category.id) || recipe.category === category.id} name="categories" type="checkbox" value={category.id} />
+                <span>{category.title}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <section className="recipe-editor-panel recipe-editor-content-grid">
+          <div className="recipe-editor-panel-heading recipe-editor-wide-field">
+            <div><p className="eyebrow">Recipe content</p><h2>Ingredients and method</h2></div>
+          </div>
+          <label>
+            <span>Ingredient groups</span>
+            <small>Start each component with ##, then put one ingredient on each line.</small>
+            <textarea defaultValue={formatIngredientGroups(recipe.ingredientGroups)} name="ingredient_groups" placeholder={"## Chips\n- Potatoes — 500 g\n- Frying oil — as needed"} rows={16} />
+          </label>
+          <label>
+            <span>Method groups</span>
+            <small>Start each component with ##, then put one step on each line.</small>
+            <textarea defaultValue={formatMethodGroups(recipe.methodGroups)} name="method_groups" placeholder={"## Chips\n1. Cut the potatoes.\n2. Fry until crisp."} rows={16} />
+          </label>
+        </section>
+
+        <section className="recipe-editor-panel" id="linked-recipes">
+          <div className="recipe-editor-panel-heading">
+            <div><p className="eyebrow">Reusable components</p><h2>Linked recipes</h2></div>
+            <span className="recipe-editor-plus" aria-hidden="true">+</span>
+          </div>
+          <p className="recipe-editor-help">Link recipes this dish calls upon. They will expand inside this card like a cookbook Basic.</p>
+          <RecipeLinkPicker options={linkedOptions} selectedKeys={recipe.linkedRecipeKeys ?? []} />
+        </section>
+
+        <div className="recipe-editor-savebar">
+          <p>Only the admin session can save these changes.</p>
+          <button type="submit">Save recipe card</button>
+        </div>
+      </form>
+    </div>
+  );
+}

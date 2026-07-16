@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
@@ -171,12 +171,12 @@ export function BachourGuide() {
   const [view, setView] = useState<"original" | "baker">("original");
   const [query, setQuery] = useState("");
   const [openRecipes, setOpenRecipes] = useState<Record<string, boolean>>({});
-  const matches = (recipe: BachourRecipe) => {
+  const matches = useCallback((recipe: BachourRecipe) => {
     const needle = query.trim().toLocaleLowerCase();
     return !needle || [recipe.title, recipe.yield, ...recipe.components.flatMap((component) => [component.name, ...component.ingredients])].join(" ").toLocaleLowerCase().includes(needle);
-  };
-  const filteredOriginal = useMemo(() => bachourRecipes.filter(matches), [query]);
-  const filteredBaker = useMemo(() => bachourPastryRecipes.filter(matches), [query]);
+  }, [query]);
+  const filteredOriginal = useMemo(() => bachourRecipes.filter(matches), [matches]);
+  const filteredBaker = useMemo(() => bachourPastryRecipes.filter(matches), [matches]);
   const searching = Boolean(query.trim());
 
   useEffect(() => {

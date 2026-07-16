@@ -91,12 +91,12 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     searchText: "opera patisserie cedric grolet pastry breakfast french desserts frozen fruit cookbook",
   },
   ...recipeEntries
-    .filter((entry) => entry.kind === "guide" || entry.status === "published")
+    .filter((entry) => entry.kind === "guide")
     .map((entry): RecipeSearchItem => ({
       title: entry.title,
-      context: entry.kind === "guide" ? "Recipe guide" : "Personal recipe",
-      kind: entry.kind === "guide" ? "Guide" : "Recipe",
-      href: entry.kind === "guide" ? entry.href : `/recipes#recipe-${entry.slug}`,
+      context: "Recipe guide",
+      kind: "Guide",
+      href: entry.href,
       searchText: [
         entry.description,
         ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),

@@ -40,10 +40,10 @@ function positionMobileCarousel(scroller: HTMLElement) {
   items.forEach((item, index) => {
     const distanceInPixels = Math.abs(item.offsetTop + item.offsetHeight / 2 - center);
     const distance = distanceInPixels / itemStep;
-    const arcOffset = 0.45 + Math.max(0, Math.cos(Math.min(distance, 3) * Math.PI / 6)) * 4.9;
-    const scale = Math.max(0.82, 1 - distance * 0.075);
-    const opacity = Math.max(0.65, 1 - distance * 0.12);
-    const blur = Math.min(0.5, distance * 0.14);
+    const arcOffset = (Math.max(0, Math.cos(Math.min(distance, 3) * Math.PI / 6)) - 1) * 4.4;
+    const scale = Math.max(0.86, 1 - distance * 0.06);
+    const opacity = Math.max(0.7, 1 - distance * 0.1);
+    const blur = Math.min(0.38, distance * 0.1);
     const link = item.querySelector<HTMLElement>(".home-mobile-link");
 
     link?.style.setProperty("--mobile-arc-x", `${arcOffset}rem`);
@@ -287,17 +287,25 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     const mobileQuery = window.matchMedia("(max-width: 639px)");
     let firstFrame = 0;
     let secondFrame = 0;
+    let settleTimer = 0;
 
     const centerAbout = () => {
       if (!mobileQuery.matches) return;
+      window.clearTimeout(settleTimer);
+
+      const alignAbout = () => {
+        const scroller = mobileNavRef.current;
+        const about = scroller?.querySelectorAll<HTMLElement>("[data-mobile-orbit-item]")[mobileAboutIndex];
+        if (!scroller || !about) return;
+
+        scroller.scrollTop = about.offsetTop + about.offsetHeight / 2 - scroller.clientHeight / 2;
+        setMobileActiveIndex(positionMobileCarousel(scroller));
+      };
+
       firstFrame = window.requestAnimationFrame(() => {
         secondFrame = window.requestAnimationFrame(() => {
-          const scroller = mobileNavRef.current;
-          const about = scroller?.querySelectorAll<HTMLElement>("[data-mobile-orbit-item]")[mobileAboutIndex];
-          if (!scroller || !about) return;
-
-          scroller.scrollTop = about.offsetTop + about.offsetHeight / 2 - scroller.clientHeight / 2;
-          setMobileActiveIndex(positionMobileCarousel(scroller));
+          alignAbout();
+          settleTimer = window.setTimeout(alignAbout, 160);
         });
       });
     };
@@ -307,6 +315,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     return () => {
       window.cancelAnimationFrame(firstFrame);
       window.cancelAnimationFrame(secondFrame);
+      window.clearTimeout(settleTimer);
       mobileQuery.removeEventListener("change", centerAbout);
     };
   }, [entryMode]);

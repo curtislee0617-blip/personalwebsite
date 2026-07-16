@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { unstable_cache } from "next/cache";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeLibrarySearch } from "@/components/recipe-library-search";
-import { RecipeCard, type RecipeCardEntry } from "@/components/recipe-card";
+import { RecipeCard } from "@/components/recipe-card";
 import { RecipeShelf } from "@/components/recipe-shelf";
 import { SectionRail } from "@/components/section-rail";
 import { SnapCarousel } from "@/components/snap-carousel";
-import { recipeEntries, recipeSections, recipesByDate, wishlistEntries } from "@/lib/recipes";
+import { recipeEntries, recipeSections, wishlistEntries } from "@/lib/recipes";
+import { getPersonalRecipeCards } from "@/lib/personal-recipes";
+import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Recipes" };
 
@@ -23,60 +23,26 @@ const recipePageSections = [
   { id: "recipe-books", label: "Books" },
 ] as const;
 
-function parseUploadedRecipe(draft: { id: string; description: string; recipe_date: string | null; thumbnail_url: string; status: string; categories: string[] | null }): RecipeCardEntry {
-  const lines = draft.description.split("\n").map((line) => line.trim()).filter(Boolean);
-  const firstLine = lines[0] ?? "Uploaded recipe";
-  const title = firstLine.replace(/^#+\s*/, "");
-  const description = lines.slice(1).join(" ") || "Uploaded from the recipe admin.";
-  const categories = draft.categories?.length ? draft.categories : ["desserts-pastries"];
-
-  return {
-    slug: `uploaded-${draft.id}`,
-    title,
-    description,
-    status: draft.status,
-    date: draft.recipe_date ?? undefined,
-    thumbnail: draft.thumbnail_url,
-    categories,
-  };
-}
-
-const getUploadedRecipes = unstable_cache(async () => {
-  try {
-    const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from("recipe_drafts")
-      .select("id,description,recipe_date,thumbnail_url,status,categories")
-      .eq("status", "published")
-      .order("recipe_date", { ascending: false, nullsFirst: false })
-      .order("created_at", { ascending: false });
-
-    if (error) return [];
-    return data.map(parseUploadedRecipe);
-  } catch {
-    return [];
-  }
-}, ["published-recipes"], { revalidate: 300, tags: ["published-recipes"] });
-
-function buildRecipeSearchPreview(uploadedRecipes: RecipeCardEntry[]): RecipeSearchItem[] {
+function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[]): RecipeSearchItem[] {
   const siteEntries: RecipeSearchItem[] = recipeEntries
-    .filter((entry) => entry.kind === "guide" || entry.status === "published")
+    .filter((entry) => entry.kind === "guide")
     .map((entry) => ({
       title: entry.title,
-      context: entry.kind === "guide" ? "Recipe guide" : "Personal recipe",
-      kind: entry.kind === "guide" ? "Guide" : "Recipe",
-      href: entry.kind === "guide" ? entry.href : `/recipes#recipe-${entry.slug}`,
-      searchText: [
-        entry.description,
-        ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),
-      ].join(" "),
+      context: "Recipe guide",
+      kind: "Guide",
+      href: entry.href,
+      searchText: entry.description,
     }));
-  const uploadedEntries: RecipeSearchItem[] = uploadedRecipes.map((entry) => ({
+  const personalEntries: RecipeSearchItem[] = personalRecipes.map((entry) => ({
     title: entry.title,
     context: "Personal recipe",
     kind: "Recipe",
     href: `/recipes#recipe-${entry.slug}`,
-    searchText: entry.description,
+    searchText: [
+      entry.description,
+      ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),
+      ...(entry.methodGroups?.flatMap((group) => [group.title, ...group.steps]) ?? []),
+    ].join(" "),
   }));
   return [
     {
@@ -136,7 +102,7 @@ function buildRecipeSearchPreview(uploadedRecipes: RecipeCardEntry[]): RecipeSea
       searchText: "bachour antonio baker pastry entremet tart choux chocolate croissant brioche cookbook",
     },
     ...siteEntries,
-    ...uploadedEntries,
+    ...personalEntries,
   ];
 }
 
@@ -202,12 +168,12 @@ function GuideVisual({ slug }: { slug: string }) {
 
 export default async function RecipesPage() {
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
-  const uploadedRecipes = await getUploadedRecipes();
-  const recipes = [...recipesByDate(recipeEntries), ...uploadedRecipes];
-  const publishedUploadTitles = new Set(uploadedRecipes.map((entry) => entry.title.toLowerCase()));
+  const recipes = await getPersonalRecipeCards();
+  const recipeByKey = new Map(recipes.map((entry) => [entry.recipeKey, entry]));
+  const publishedUploadTitles = new Set(recipes.filter((entry) => entry.source === "uploaded").map((entry) => entry.title.toLowerCase()));
   const wishlist = wishlistEntries.filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
   const authenticated = await isRecipeAdminAuthenticated();
-  const searchPreview = buildRecipeSearchPreview(uploadedRecipes);
+  const searchPreview = buildRecipeSearchPreview(recipes);
 
   return (
     <div className="recipe-library-page">
@@ -280,7 +246,18 @@ export default async function RecipesPage() {
                     </summary>
                     {sectionRecipes.length > 0 ? (
                       <RecipeShelf label={section.title}>
-                        {sectionRecipes.map((entry) => <RecipeCard entry={entry} key={entry.slug} variant="shelf" />)}
+                        {sectionRecipes.map((entry) => (
+                          <RecipeCard
+                            adminEditHref={authenticated ? `/recipes/admin/edit/${encodeURIComponent(entry.recipeKey)}` : undefined}
+                            entry={entry}
+                            key={entry.slug}
+                            linkedRecipes={(entry.linkedRecipeKeys ?? []).flatMap((key) => {
+                              const linked = recipeByKey.get(key);
+                              return linked ? [linked] : [];
+                            })}
+                            variant="shelf"
+                          />
+                        ))}
                       </RecipeShelf>
                     ) : <div className="mt-6 rounded-2xl border border-dashed border-ink/10 p-5 text-sm text-ink/40">No recipes here yet.</div>}
                   </details>

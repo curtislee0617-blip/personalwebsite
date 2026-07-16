@@ -7,6 +7,7 @@ import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { wishlistEntries } from "@/lib/recipes";
 import { recipeCategories, recipeCategoryTitle } from "@/data/recipe-categories";
 import { RecipePhotoPicker } from "@/components/recipe-photo-picker";
+import { getPersonalRecipeCards } from "@/lib/personal-recipes";
 import { markProcessed, submitRecipe } from "./actions";
 
 export const metadata: Metadata = { title: "Recipe admin", robots: { index: false, follow: false } };
@@ -39,6 +40,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
     .select("*")
     .order("recipe_date", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
+  const editableRecipes = await getPersonalRecipeCards();
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -53,6 +55,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
       {params.error === "missing" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Add at least one photo and a description.</p>}
       {params.error === "missing-categories" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Choose at least one recipe category.</p>}
       {params.error === "save-failed" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Something went wrong saving that — try again.</p>}
+      {params.error === "recipe-not-found" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">That recipe card could not be found.</p>}
 
       <form action={submitRecipe} className="mt-8 max-w-2xl space-y-6">
         {wishlistEntry && (
@@ -115,6 +118,27 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
         </div>
         <button className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-moss" type="submit">Save recipe</button>
       </form>
+
+      <div className="recipe-admin-editable-heading">
+        <div>
+          <p className="eyebrow">Published cards</p>
+          <h2 className="section-title mt-3 text-2xl">Edit recipes ({editableRecipes.length})</h2>
+        </div>
+        <p>Change titles, dates, categories, ingredients, methods, and linked recipes.</p>
+      </div>
+      <div className="recipe-admin-editable-grid">
+        {editableRecipes.map((recipe) => (
+          <article key={recipe.recipeKey}>
+            {recipe.thumbnail ? <img alt="" src={recipe.thumbnail} /> : <div className="recipe-admin-editable-placeholder">Recipe</div>}
+            <div>
+              <p>{recipe.date ? new Date(`${recipe.date}T00:00:00`).toLocaleDateString() : "No date"} · {recipe.source}</p>
+              <h3>{recipe.title}</h3>
+              <small>{(recipe.categories ?? []).map(recipeCategoryTitle).join(" · ") || "No category"}</small>
+            </div>
+            <Link href={`/recipes/admin/edit/${encodeURIComponent(recipe.recipeKey)}`}>Edit</Link>
+          </article>
+        ))}
+      </div>
 
       <h2 className="section-title mt-14 text-2xl">Submitted ({drafts?.length ?? 0})</h2>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

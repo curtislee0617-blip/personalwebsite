@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CoursePlannerThumbnail } from "@/components/course-planner-thumbnail";
 import { PageIntro } from "@/components/page-intro";
 import { SnapCarousel } from "@/components/snap-carousel";
 
@@ -8,6 +9,78 @@ export const metadata: Metadata = { title: "Tools" };
 type ToolKind = "water" | "compound" | "vle" | "ir" | "nmr" | "planner";
 type Tool = { href: string; title: string; description: string; kind: ToolKind };
 type ToolSection = { title: string; tools: Tool[] };
+
+type SpectrumPeak = { position: number; width: number; intensity: number };
+
+function spectrumPath({
+  baseline,
+  direction,
+  domain,
+  peaks,
+  samples = 240,
+}: {
+  baseline: number;
+  direction: "up" | "down";
+  domain: [number, number];
+  peaks: SpectrumPeak[];
+  samples?: number;
+}) {
+  const [start, end] = domain;
+  const points = Array.from({ length: samples }, (_, index) => {
+    const ratio = index / (samples - 1);
+    const position = start + (end - start) * ratio;
+    const signal = peaks.reduce((sum, peak) => {
+      const scaled = (position - peak.position) / peak.width;
+      return sum + peak.intensity / (1 + scaled * scaled);
+    }, 0);
+    const x = 8 + ratio * 144;
+    const y = direction === "up" ? Math.max(12, baseline - signal) : Math.min(76, baseline + signal);
+    return `${index === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`;
+  });
+  return points.join(" ");
+}
+
+// AIST SDBS ethanol liquid-film IR: broad O–H, C–H stretches, bends,
+// and the dominant C–O region. Widths are deliberately softened at card size.
+const ethanolIrPath = spectrumPath({
+  baseline: 20,
+  direction: "down",
+  domain: [4000, 500],
+  peaks: [
+    { position: 3340, width: 250, intensity: 31 },
+    { position: 2975, width: 34, intensity: 18 },
+    { position: 2930, width: 30, intensity: 13 },
+    { position: 2880, width: 30, intensity: 11 },
+    { position: 1460, width: 34, intensity: 17 },
+    { position: 1380, width: 28, intensity: 13 },
+    { position: 1270, width: 24, intensity: 8 },
+    { position: 1090, width: 31, intensity: 25 },
+    { position: 1050, width: 28, intensity: 43 },
+    { position: 880, width: 25, intensity: 15 },
+  ],
+});
+
+// Experimental ethanol ¹H NMR peak list (89.56 MHz, CDCl₃), SDBS/HMDB.
+const ethanolNmrPath = spectrumPath({
+  baseline: 72,
+  direction: "up",
+  domain: [10, 0],
+  samples: 520,
+  peaks: [
+    { position: 3.811, width: 0.018, intensity: 7 },
+    { position: 3.730, width: 0.018, intensity: 27 },
+    { position: 3.652, width: 0.018, intensity: 30 },
+    { position: 3.576, width: 0.018, intensity: 8 },
+    { position: 2.607, width: 0.022, intensity: 11 },
+    { position: 2.599, width: 0.022, intensity: 9 },
+    { position: 1.303, width: 0.017, intensity: 23 },
+    { position: 1.286, width: 0.017, intensity: 2 },
+    { position: 1.226, width: 0.017, intensity: 53 },
+    { position: 1.207, width: 0.017, intensity: 2 },
+    { position: 1.199, width: 0.017, intensity: 2 },
+    { position: 1.146, width: 0.017, intensity: 20 },
+  ],
+});
 
 const toolSections: ToolSection[] = [
   {
@@ -35,15 +108,7 @@ const toolSections: ToolSection[] = [
 
 function ToolThumbnail({ kind }: { kind: ToolKind }) {
   if (kind === "planner") {
-    const terms = ["Ma 1a", "Ch 41a", "Ph 1a", "Ma 1b", "Ch 41b", "CS 1", "Ma 1c", "Ch 41c", "Ph 1c", "ChE 15", "BEM 103", "ACM 95"];
-    return (
-      <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-planner" aria-hidden="true">
-        <div className="tool-planner-years"><span>Year 1</span><span>Year 2</span><span>Year 3</span><span>Year 4</span></div>
-        <div className="tool-planner-grid">
-          {terms.map((term, index) => <span className={index === 9 ? "is-accent" : index % 3 === 1 ? "is-filled" : ""} key={term}>{term}</span>)}
-        </div>
-      </div>
-    );
+    return <CoursePlannerThumbnail />;
   }
 
   if (kind === "water") {
@@ -72,14 +137,14 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
 
   const paths: Record<"vle" | "ir" | "nmr", string> = {
     vle: "M12 72 C29 68 43 49 62 33 C83 15 112 13 148 11 M12 72 C34 71 56 63 78 48 C101 31 122 18 148 11",
-    ir: "M10 20 L27 21 L31 63 L35 22 L56 23 L61 73 L66 24 L88 26 L94 59 L99 27 L123 29 L129 68 L134 29 L150 31",
-    nmr: "M10 71 L29 71 L31 30 L33 71 L52 71 L55 52 L58 71 L76 71 L79 18 L82 71 L106 71 L109 43 L112 71 L133 71 L136 58 L139 71 L150 71",
+    ir: ethanolIrPath,
+    nmr: ethanolNmrPath,
   };
   const axis = kind === "ir" ? ["4000", "3000", "2000", "1000", "cm⁻¹"] : kind === "nmr" ? ["10", "8", "6", "4", "2", "0 ppm"] : ["0", "0.25", "0.5", "0.75", "1.0", "x₁"];
 
   return (
     <div className={`tool-thumbnail swipe-bubble-media tool-thumbnail-chart is-${kind}`} aria-hidden="true">
-      <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary T–x–y"}</span><i>{kind === "vle" ? "Bubble / dew" : "Sample 01"}</i></div>
+      <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary T–x–y"}</span><i>{kind === "vle" ? "Bubble / dew" : kind === "ir" ? "Ethanol · liquid film" : "Ethanol · 89.56 MHz"}</i></div>
       <svg viewBox="0 0 160 90" preserveAspectRatio="none">
         <path className="tool-chart-grid" d="M8 18H152M8 45H152M8 72H152M32 10V80M72 10V80M112 10V80" />
         <path className="tool-chart-line" d={paths[kind]} />

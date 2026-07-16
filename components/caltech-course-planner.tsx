@@ -3,7 +3,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type DragEvent, type MouseEvent } from "react";
 import { categoriesForMajors, integratedCoreRequirementTemplates, majors, requirementCategories, requirementTemplates, templatesForMajors, type MajorId, type RequirementCategory, type RequirementTemplate } from "@/data/caltech-requirements";
 import { scheduledUnitsForCourseLabel } from "@/lib/caltech-course-units";
-import { buildAccountLoginKey, displayNameFor, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
+import { buildAccountLoginKey, COURSE_PLAN_STORAGE_KEY, displayNameFor, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 import type { Json } from "@/lib/supabase/database.types";
 
@@ -20,7 +20,6 @@ type SavedPlan = { classes: Record<string, PlacedClass>; customTemplates: Requir
 type Selection = { type: "requirement" | "class"; id: string } | null;
 type RequirementOwner = { classId: string; className: string; units: number };
 
-const STORAGE_KEY = "caltech-course-planner-v2";
 const LOCAL_MAJORS_STORAGE_KEY = "caltech-course-planner-local-majors-v1";
 const DEFAULT_CLASS_UNITS = 9;
 const DEFAULT_CORE_SCHEDULE_MODE: CoreScheduleMode = "normal";
@@ -693,7 +692,7 @@ export function CaltechCoursePlanner() {
       }
     }
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
+      const raw = window.localStorage.getItem(COURSE_PLAN_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<SavedPlan>;
         const templates = storedIdentity
@@ -726,7 +725,8 @@ export function CaltechCoursePlanner() {
 
   useEffect(() => {
     if (!hasLoadedRef.current) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
+    window.localStorage.setItem(COURSE_PLAN_STORAGE_KEY, JSON.stringify(plan));
+    window.dispatchEvent(new CustomEvent("caltech-course-plan-updated"));
   }, [plan]);
 
   useEffect(() => {
