@@ -29,6 +29,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("source", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--ffmpeg", type=Path)
+    parser.add_argument("--images-only", action="store_true")
     args = parser.parse_args()
 
     grouped: dict[str, list[Path]] = {}
@@ -50,9 +52,18 @@ def main() -> None:
             base = f"{index:02d}-{slugify(source.stem)}"
             if source.suffix.lower() in IMAGE_EXTENSIONS:
                 destination = output_directory / f"{base}.jpg"
-                run("sips", "-Z", "1800", "-s", "format", "jpeg", "-s", "formatOptions", "78", str(source), "--out", str(destination))
+                if args.ffmpeg:
+                    run(
+                        str(args.ffmpeg), "-y", "-i", str(source),
+                        "-vf", "scale='if(gt(iw,ih),min(1800,iw),-2)':'if(gt(iw,ih),-2,min(1800,ih))'",
+                        "-frames:v", "1", "-q:v", "3", "-map_metadata", "-1", str(destination),
+                    )
+                else:
+                    run("sips", "-Z", "1800", "-s", "format", "jpeg", "-s", "formatOptions", "78", str(source), "--out", str(destination))
                 media.append({"src": f"/recipes/personal-import/{recipe_slug}/{destination.name}", "type": "image", "alt": f"{title} — {source.stem}"})
             else:
+                if args.images_only:
+                    continue
                 destination = output_directory / f"{base}.m4v"
                 try:
                     run("avconvert", "--source", str(source), "--preset", "PresetAppleM4V720pHD", "--output", str(destination), "--replace")
