@@ -160,7 +160,7 @@ export type Database = {
           id: string;
           description: string;
           image_urls: string[];
-          thumbnail_url: string;
+          thumbnail_url: string | null;
           status: string;
           recipe_date: string | null;
           categories: string[];
@@ -170,7 +170,7 @@ export type Database = {
           id?: string;
           description: string;
           image_urls: string[];
-          thumbnail_url: string;
+          thumbnail_url?: string | null;
           status?: string;
           recipe_date?: string | null;
           categories?: string[];

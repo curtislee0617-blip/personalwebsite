@@ -3,13 +3,13 @@ import { recipeEntries, recipesByDate } from "@/lib/recipes";
 import { importedRecipeMediaEntries } from "@/data/imported-recipe-media";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
-import type { RecipeCardEntry, RecipeIngredientGroup, RecipeMethodGroup } from "@/lib/recipe-card-types";
+import type { RecipeCardEntry, RecipeIngredientGroup, RecipeMediaItem, RecipeMethodGroup } from "@/lib/recipe-card-types";
 
 type UploadedRecipeRow = {
   id: string;
   description: string;
   recipe_date: string | null;
-  thumbnail_url: string;
+  thumbnail_url: string | null;
   image_urls: string[];
   status: string;
   categories: string[] | null;
@@ -55,15 +55,18 @@ function methodGroupsFromJson(value: Json): RecipeMethodGroup[] {
 function mediaFromJson(value: Json, fallback?: RecipeCardEntry["media"]): RecipeCardEntry["media"] {
   if (!Array.isArray(value)) return fallback;
   const fallbackBySrc = new Map((fallback ?? []).map((item) => [item.src, item]));
-  const parsed = value.flatMap((item) => {
-    if (!isRecord(item) || typeof item.src !== "string" || (item.type !== "image" && item.type !== "video")) return [];
+  const parsed: RecipeMediaItem[] = [];
+  for (const item of value) {
+    if (!isRecord(item) || typeof item.src !== "string" || (item.type !== "image" && item.type !== "video")) continue;
     const original = fallbackBySrc.get(item.src);
-    if (!original || original.type !== item.type) return [];
-    return [{
-      ...original,
+    if (original && original.type !== item.type) continue;
+    parsed.push({
+      ...(original ?? { src: item.src, type: item.type }),
+      alt: typeof item.alt === "string" ? item.alt.slice(0, 200) : original?.alt,
+      poster: typeof item.poster === "string" ? item.poster : original?.poster,
       caption: typeof item.caption === "string" ? item.caption.slice(0, 200) : undefined,
-    }];
-  });
+    });
+  }
   const included = new Set(parsed.map((item) => item.src));
   return [...parsed, ...(fallback ?? []).filter((item) => !included.has(item.src))];
 }
@@ -83,7 +86,7 @@ export function parseUploadedRecipe(draft: UploadedRecipeRow): RecipeCardEntry {
     description,
     status: draft.status,
     date: draft.recipe_date ?? undefined,
-    thumbnail: draft.thumbnail_url,
+    thumbnail: draft.thumbnail_url ?? undefined,
     imageUrls: draft.image_urls,
     categories,
     source: "uploaded",

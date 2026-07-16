@@ -51,8 +51,8 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
         <Link className="back-link-bubble" href="/recipes">← Back to recipes</Link>
       </div>
 
-      {params.submitted === "1" && <p className="mt-4 rounded-2xl bg-lime/40 px-4 py-3 text-sm text-ink">Saved — the first photo is the thumbnail.</p>}
-      {params.error === "missing" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Add at least one photo and a description.</p>}
+      {params.submitted === "1" && <p className="mt-4 rounded-2xl bg-lime/40 px-4 py-3 text-sm text-ink">Saved.</p>}
+      {params.error === "missing" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Add a description.</p>}
       {params.error === "missing-categories" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Choose at least one recipe category.</p>}
       {params.error === "save-failed" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Something went wrong saving that — try again.</p>}
       {params.error === "recipe-not-found" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">That recipe card could not be found.</p>}
@@ -76,7 +76,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
           />
         </div>
         <div>
-          <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50">Photos (first = thumbnail)</label>
+          <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50">Photos (optional; first = thumbnail)</label>
           <div className="mt-2">
             <RecipePhotoPicker name="photos" />
           </div>
@@ -144,7 +144,11 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {drafts?.map((draft) => (
           <div className="rounded-2xl border border-ink/10 bg-surface/60 p-4" key={draft.id}>
-            <img alt="" className="h-40 w-full rounded-xl object-cover" src={draft.thumbnail_url} />
+            {draft.thumbnail_url ? (
+              <img alt="" className="h-40 w-full rounded-xl object-cover" src={draft.thumbnail_url} />
+            ) : (
+              <div className="flex h-40 w-full items-center justify-center rounded-xl bg-mist text-xs font-semibold uppercase tracking-[0.14em] text-ink/35">Text-only recipe</div>
+            )}
             <p className="mt-3 text-xs uppercase tracking-[0.1em] text-ink/40">
               {new Date(`${draft.recipe_date ?? draft.created_at.slice(0, 10)}T00:00:00`).toLocaleDateString()} · {draft.status} · {draft.image_urls.length} photo{draft.image_urls.length === 1 ? "" : "s"}
             </p>

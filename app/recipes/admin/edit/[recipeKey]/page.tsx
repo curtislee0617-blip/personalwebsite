@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { RecipeLinkPicker } from "@/components/recipe-link-picker";
 import { RecipeThumbnailPositionEditor } from "@/components/recipe-thumbnail-position-editor";
 import { RecipeMediaOrganizer } from "@/components/recipe-media-organizer";
+import { RecipePhotoPicker } from "@/components/recipe-photo-picker";
 import { recipeCategories } from "@/data/recipe-categories";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { formatIngredientGroups, formatMethodGroups, getPersonalRecipeCards } from "@/lib/personal-recipes";
@@ -111,6 +112,14 @@ export default async function EditRecipeCardPage({
             <RecipeMediaOrganizer initialItems={recipeMedia} title={recipe.title} />
           </section>
         )}
+
+        <section className="recipe-editor-panel">
+          <div className="recipe-editor-panel-heading">
+            <div><p className="eyebrow">Add later</p><h2>Upload more images</h2></div>
+          </div>
+          <p className="recipe-editor-help">New images are added to the end of the gallery. If this card has no thumbnail, the first new image becomes its thumbnail automatically. Save, then reopen the editor to reorder, caption, or crop them.</p>
+          <RecipePhotoPicker name="new_photos" />
+        </section>
 
         <fieldset className="recipe-editor-panel">
           <legend className="sr-only">Recipe categories</legend>

@@ -34,7 +34,7 @@ export async function submitRecipe(formData: FormData) {
   const rawDate = String(formData.get("recipe_date") ?? "").trim();
   const recipeDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : null;
 
-  if (!description || photos.length === 0) {
+  if (!description) {
     redirect("/recipes/admin?error=missing");
   }
   if (categories.length === 0) {
@@ -55,7 +55,7 @@ export async function submitRecipe(formData: FormData) {
   const { error } = await supabase.from("recipe_drafts").insert({
     description: title ? `${title}\n\n${description}` : description,
     image_urls: imageUrls,
-    thumbnail_url: imageUrls[0],
+    thumbnail_url: imageUrls[0] ?? null,
     recipe_date: recipeDate,
     categories: Array.from(new Set(categories)),
     status: publishNow ? "published" : "pending",
@@ -90,7 +90,7 @@ export async function saveRecipeCard(formData: FormData) {
   const categories = Array.from(new Set(formData.getAll("categories").map(String).filter(isRecipeCategoryId)));
   const ingredientGroups = parseIngredientGroupsEditor(String(formData.get("ingredient_groups") ?? ""));
   const methodGroups = parseMethodGroupsEditor(String(formData.get("method_groups") ?? ""));
-  const thumbnailUrl = String(formData.get("thumbnail_url") ?? "").trim() || null;
+  let thumbnailUrl = String(formData.get("thumbnail_url") ?? "").trim() || null;
   const rawThumbnailPosition = String(formData.get("thumbnail_position") ?? "").trim();
   const thumbnailPosition = /^\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/.test(rawThumbnailPosition)
     ? rawThumbnailPosition
@@ -133,6 +133,21 @@ export async function saveRecipeCard(formData: FormData) {
   if (!title || categories.length === 0 || (thumbnailUrl && !permittedThumbnails.has(thumbnailUrl))) {
     redirect(`${editHref}?error=missing`);
   }
+
+  const newPhotos = formData.getAll("new_photos").filter((entry): entry is File => (
+    entry instanceof File && entry.size > 0 && entry.type.startsWith("image/")
+  )).slice(0, 30);
+  const newMedia: RecipeMediaItem[] = [];
+  for (const photo of newPhotos) {
+    const buffer = Buffer.from(await photo.arrayBuffer());
+    const safeName = photo.name.replace(/[^a-zA-Z0-9.-]+/g, "-").toLowerCase() || "photo.jpg";
+    const safeRecipeKey = recipeKey.replace(/[^a-zA-Z0-9-]+/g, "-").toLowerCase();
+    const key = `recipes/overrides/${safeRecipeKey}/${crypto.randomUUID()}-${safeName}`;
+    const src = await uploadToR2(key, buffer, photo.type);
+    newMedia.push({ src, type: "image" });
+  }
+  mediaItems = [...mediaItems, ...newMedia];
+  thumbnailUrl ??= newMedia[0]?.src ?? null;
 
   const supabase = createAdminClient();
   const { error } = await supabase.from("recipe_card_overrides").upsert({

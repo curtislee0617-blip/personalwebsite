@@ -65,6 +65,40 @@ export const recipeEntries: RecipeEntry[] = [
     href: "/projects/cook-enterprise?from=recipes",
   },
   {
+    slug: "puff-pastry",
+    kind: "recipe",
+    title: "Puff pastry",
+    description: "A classic laminated puff pastry made with T55 flour and dry butter.",
+    status: "published",
+    href: "/recipes",
+    category: "desserts-pastries",
+    guideSlugs: ["viennoiserie-guide"],
+    date: "2026-07-10",
+    ingredientGroups: [
+      {
+        title: "Puff pastry",
+        items: [
+          "Water - 500g",
+          "T55 - 1000g",
+          "Salt - 10g",
+          "Dry butter - 500g",
+        ],
+      },
+    ],
+    methodGroups: [
+      {
+        title: "Puff pastry",
+        steps: [
+          "Mix water, salt, and T55 until it becomes a dough.",
+          "Wrap the dough and keep it in the fridge overnight.",
+          "Laminate the dough with dry butter in 6 times; use a single fold and rest 3-4 hours after 2 folds.",
+          "Extend the puff pastry in the dough machine until 0.5cm thickness.",
+          "Keep it in the freezer.",
+        ],
+      },
+    ],
+  },
+  {
     slug: "flan",
     kind: "recipe",
     title: "Flan",
