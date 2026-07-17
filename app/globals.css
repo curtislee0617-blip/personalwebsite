@@ -4701,7 +4701,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .home-entry-pending .home-mobile-nav { opacity: 0; }
   .home-entry-mobile-return .home-mobile-header,
   .home-entry-mobile-return .home-mobile-nav-list li { opacity: 0; }
-  .home-photo-grid { opacity: 0.55; }
+  .home-photo-grid { display: none; }
   .photo-grid-rail { display: none; }
   .mobile-photo-collage {
     position: absolute;

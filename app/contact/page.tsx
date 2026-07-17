@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ContactCityArtwork } from "@/components/contact-city-artwork";
-import {
-  ContactPresenceControls,
-  ContactPresenceProvider,
-} from "@/components/contact-presence";
+import { ContactPresenceProvider } from "@/components/contact-presence";
 import { PageIntro } from "@/components/page-intro";
 
 export const metadata: Metadata = { title: "Contact" };
@@ -89,42 +86,6 @@ function ContactIcon({ icon }: { icon: (typeof contactLinks)[number]["icon"] }) 
   );
 }
 
-function CityChipIcon({ city }: { city: "hongKong" | "london" | "losAngeles" }) {
-  if (city === "losAngeles") {
-    return (
-      <svg className="contact-city-chip-icon contact-city-chip-icon-sun" fill="none" viewBox="0 0 20 20">
-        <g stroke="#f4bd2e" strokeLinecap="square" strokeWidth="1.7">
-          <path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.6 3.6 5 5M15 15l1.4 1.4M16.4 3.6 15 5M5 15l-1.4 1.4" />
-        </g>
-        <circle cx="10" cy="10" fill="#ffd243" r="4.6" stroke="#e6a91f" strokeWidth="1" />
-      </svg>
-    );
-  }
-
-  if (city === "london") {
-    return (
-      <svg className="contact-city-chip-icon contact-city-chip-icon-umbrella" fill="none" viewBox="0 0 24 20">
-        <path d="M3 9.2C3.7 4.9 7.2 2 12 2s8.3 2.9 9 7.2c-1.4-1.1-3.1-1.1-4.5 0-1.4-1.1-3.1-1.1-4.5 0-1.4-1.1-3.1-1.1-4.5 0-1.4-1.1-3.1-1.1-4.5 0Z" fill="#161616" />
-        <path d="M12 8.5v6.2c0 2.1 3.1 2.1 3.1 0" stroke="#161616" strokeLinecap="round" strokeWidth="1.7" />
-        <path d="m4.8 12.1-.9 1.5h1.8l-.9-1.5Zm15-1.3-.9 1.5h1.8l-.9-1.5Zm-1.6 4.1-1 1.7h2l-1-1.7Z" fill="#3d9de8" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg className="contact-city-chip-icon contact-city-chip-icon-junk" shapeRendering="crispEdges" viewBox="0 0 28 20">
-      <path d="M13 1h2v14h-2z" fill="#4c2d16" />
-      <path d="M12 3h-2v2H8v2H6v3H4v3h8z" fill="#d72927" />
-      <path d="M16 2h2v2h2v2h2v2h2v5h-8z" fill="#e43b32" />
-      <path d="M8 11h12v4H8z" fill="#f3b842" />
-      <path d="M4 13h21v2h-2v2H8v-1H6v-1H4z" fill="#5a3219" />
-      <path d="M8 15h15v2H8z" fill="#2f1b10" />
-      <path d="M2 18h24v1H2z" fill="#45a9d8" />
-      <path d="M1 19h8v1H1zm14 0h12v1H15z" fill="#8ed3ec" />
-    </svg>
-  );
-}
-
 export default function ContactPage() {
   return (
     <>
@@ -136,19 +97,6 @@ export default function ContactPage() {
       <section className="page-section pt-12 sm:pt-16">
         <div className="contact-cities design-panel mb-8 scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" id="contact-cities">
           <ContactPresenceProvider>
-            <div className="contact-cities-copy">
-              <ContactPresenceControls />
-              <div>
-                <p className="eyebrow">Across three cities</p>
-                <h2>Los Angeles, London &amp; Hong Kong</h2>
-                <p>I split my time between sunny hills, rainy streets, and dense harbours — and I am happy to connect wherever I happen to be.</p>
-              </div>
-              <div className="contact-city-chips" aria-label="Cities where Curtis is primarily located">
-                <span><i aria-hidden="true"><CityChipIcon city="losAngeles" /></i> Los Angeles</span>
-                <span><i aria-hidden="true"><CityChipIcon city="london" /></i> London</span>
-                <span><i aria-hidden="true"><CityChipIcon city="hongKong" /></i> Hong Kong</span>
-              </div>
-            </div>
             <ContactCityArtwork editable />
           </ContactPresenceProvider>
         </div>
