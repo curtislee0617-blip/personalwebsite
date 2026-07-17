@@ -120,10 +120,18 @@ export function RecipeCard({
           </div>
         </div>}
         <div className="recipe-card-copy">
-          <p className="eyebrow mt-4">Recipe</p>
           <h3 className="mt-3 text-xl font-semibold tracking-tight">{entry.title}</h3>
           {formatDate(entry.date) && <p className="recipe-card-date mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-ink/40">{formatDate(entry.date)}</p>}
-          {entry.description && <p className="recipe-card-description mt-3 text-sm leading-6 text-ink/65">{entry.description}</p>}
+          {(entry.description || entry.sourceUrl) && (
+            <p className="recipe-card-description mt-3 text-sm leading-6 text-ink/65">
+              {entry.description}
+              {entry.sourceUrl && (
+                <a className="recipe-card-description-source" href={entry.sourceUrl} rel="noreferrer" target="_blank">
+                  Recipe inspiration: {entry.sourceLabel ?? "Source"} ↗
+                </a>
+              )}
+            </p>
+          )}
           {hasExpandedContent && <p className="recipe-card-action mt-5 text-sm font-semibold text-moss">Open recipe ↓</p>}
         </div>
       </summary>

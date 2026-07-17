@@ -31,6 +31,26 @@ type RecipeOverrideRow = {
   media_items: Json;
 };
 
+const legacyImportedRecipeTitles: Record<string, readonly string[]> = {
+  "personal-banhmi": ["BanhMi"],
+  "personal-bolalot": ["BoLaLot"],
+  "personal-bossam-jjampong": ["Bossam&Jjampong"],
+  "personal-bossam-jjampong-copy": ["Bossam&Jjampong (copy)"],
+  "personal-buncha": ["BunCha"],
+  "personal-caneles": ["Caneles"],
+  "personal-chacalan": ["ChaCaLan"],
+  "personal-daikoncake": ["DaikonCake"],
+  "personal-fishandchips": ["FishAndChips"],
+  "personal-friedeelwnuocmam": ["FriedEelWNuocMam"],
+  "personal-gamtaefishnchips": ["GamtaeFishNChips"],
+  "personal-gonchauauhor": ["GonChauAuHor"],
+  "personal-grilledchickenviet": ["GrilledChickenViet"],
+  "personal-hariyali-chicken": ["Hariyali_Chicken"],
+  "personal-muhallebi": ["Muhallebi"],
+  "personal-pho": ["Pho"],
+  "personal-phoschool": ["phoschool"],
+};
+
 function isRecord(value: Json): value is { [key: string]: Json | undefined } {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -146,7 +166,89 @@ function siteRecipeCards(): RecipeCardEntry[] {
     ...bossamAndJjampong,
     recipeKey: "personal-bossam-jjampong-copy",
     slug: "personal-bossam-jjampong-copy",
-    title: "Bossam&Jjampong (copy)",
+    title: "Bossam (보쌈)",
+    description: "Korean boiled pork belly wraps with salted napa cabbage, saewoo-jeot seasoning, and ssamjang, adapted from Serious Eats.",
+    sourceLabel: "Serious Eats",
+    sourceUrl: "https://www.seriouseats.com/bossam-korean-boiled-pork-wraps",
+    categories: ["meat"],
+    ingredientGroups: [
+      {
+        title: "Salted napa cabbage",
+        items: [
+          "Kosher salt, as needed",
+          "Inner leaves from 1/2 napa cabbage",
+        ],
+      },
+      {
+        title: "Pork",
+        items: [
+          "680 g skinless pork belly",
+          "Rice-rinsing water, enough to cover the pork (optional; plain water may be used)",
+          "45 ml doenjang",
+          "1 medium onion, skin left on and quartered",
+          "10 scallions, or 3 Korean large scallions (daepah), cut into short lengths",
+          "1/2 apple, cored and quartered",
+          "1 piece fresh ginger, thinly sliced",
+          "1 cinnamon stick",
+          "10 garlic cloves",
+          "1 tsp whole black peppercorns",
+          "1 bay leaf",
+          "60 ml soju or vodka",
+        ],
+      },
+      {
+        title: "Saewoo-jeot seasoning",
+        items: [
+          "8 ml saewoo jeot (salted fermented shrimp)",
+          "8 ml soju or vodka",
+          "Gochugaru, to taste (optional)",
+          "Toasted sesame seeds, to taste (optional)",
+          "Green Korean chilli, thinly sliced (optional)",
+        ],
+      },
+      {
+        title: "Ssamjang",
+        items: [
+          "15 ml doenjang",
+          "15 ml gochujang",
+          "1/2 tsp toasted sesame seeds",
+          "1 garlic clove, finely grated",
+          "1/8 tsp toasted sesame oil",
+        ],
+      },
+      {
+        title: "To serve",
+        items: [
+          "Mu malaengi muchim (seasoned dried radish), optional",
+          "Thinly sliced raw garlic",
+          "Thinly sliced green Korean chilli",
+        ],
+      },
+    ],
+    methodGroups: [
+      {
+        title: "Salt the cabbage",
+        steps: [
+          "Sprinkle the cabbage leaves evenly with salt, working it between the layers. Leave until softened and pliable, then rinse thoroughly and drain.",
+        ],
+      },
+      {
+        title: "Cook the pork",
+        steps: [
+          "Place the pork in a pot and cover with rice-rinsing water or plain water. Add the doenjang, onion, scallions, apple, ginger, cinnamon, garlic, peppercorns, bay leaf, and soju.",
+          "Bring to a boil, then reduce to a steady simmer. Cook until the pork is tender but still holds its shape, approximately 1 hour, turning it occasionally so it cooks evenly.",
+          "Lift out the pork and rest it briefly. Slice across the grain into pieces about 6 mm thick while still warm.",
+        ],
+      },
+      {
+        title: "Seasonings and assembly",
+        steps: [
+          "Mix the saewoo jeot with the soju. Add gochugaru, sesame seeds, and sliced chilli if using.",
+          "Mix the doenjang, gochujang, sesame seeds, grated garlic, and sesame oil to make the ssamjang.",
+          "Arrange the warm pork with the cabbage, saewoo-jeot seasoning, ssamjang, and optional accompaniments. Wrap the pork and condiments in individual cabbage leaves to eat.",
+        ],
+      },
+    ],
     media: bossamAndJjampong.media?.map((item) => ({ ...item })),
   }] : [];
   return [...writtenRecipes, ...importedRecipeMediaEntries, ...bossamAndJjampongCopy];
@@ -185,15 +287,18 @@ const getRecipeOverrides = unstable_cache(async (): Promise<RecipeOverrideRow[]>
 
 function applyOverride(entry: RecipeCardEntry, override?: RecipeOverrideRow): RecipeCardEntry {
   if (!override) return entry;
+  const legacyTitle = legacyImportedRecipeTitles[entry.recipeKey]?.includes(override.title) ?? false;
+  const ingredientGroups = ingredientGroupsFromJson(override.ingredient_groups);
+  const methodGroups = methodGroupsFromJson(override.method_groups);
   return {
     ...entry,
-    title: override.title,
-    description: override.description,
+    title: legacyTitle ? entry.title : override.title,
+    description: override.description || entry.description,
     date: override.recipe_date ?? undefined,
     category: undefined,
-    categories: override.categories,
-    ingredientGroups: ingredientGroupsFromJson(override.ingredient_groups),
-    methodGroups: methodGroupsFromJson(override.method_groups),
+    categories: legacyTitle ? (entry.categories ?? override.categories) : override.categories,
+    ingredientGroups: ingredientGroups.length > 0 ? ingredientGroups : entry.ingredientGroups,
+    methodGroups: methodGroups.length > 0 ? methodGroups : entry.methodGroups,
     linkedRecipeKeys: override.linked_recipe_keys.filter((key) => key !== entry.recipeKey),
     thumbnail: override.thumbnail_url ?? entry.thumbnail,
     thumbnailPosition: override.thumbnail_position ?? entry.thumbnailPosition,

@@ -15,6 +15,8 @@ export type RecipeCardEntry = {
   slug: string;
   title: string;
   description: string;
+  sourceLabel?: string;
+  sourceUrl?: string;
   status?: "published" | "coming-soon" | string;
   date?: string;
   category?: string;

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeLibrarySearch } from "@/components/recipe-library-search";
 import { RecipeCard } from "@/components/recipe-card";
+import { RecipeChronologyRail } from "@/components/recipe-chronology-rail";
 import { RecipeShelf } from "@/components/recipe-shelf";
 import { SectionRail } from "@/components/section-rail";
 import { SnapCarousel } from "@/components/snap-carousel";
@@ -174,6 +175,12 @@ export default async function RecipesPage() {
   const wishlist = wishlistEntries.filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
   const authenticated = await isRecipeAdminAuthenticated();
   const searchPreview = buildRecipeSearchPreview(recipes);
+  const chronologicalRecipes = [...recipes].sort((a, b) => {
+    if (a.date && b.date) return a.date.localeCompare(b.date) || a.title.localeCompare(b.title);
+    if (a.date) return -1;
+    if (b.date) return 1;
+    return a.title.localeCompare(b.title);
+  });
 
   return (
     <div className="recipe-library-page">
@@ -224,12 +231,23 @@ export default async function RecipesPage() {
               )}
             </div>
 
-            <div className="recipe-category-list mt-6 space-y-8">
-              {recipeSections.map((section, index) => {
+            <div className="recipe-chronology mt-6">
+              <div className="recipe-chronology-heading">
+                <h3>All recipes</h3>
+                <p>Earliest to latest</p>
+              </div>
+              <RecipeChronologyRail recipes={chronologicalRecipes} />
+            </div>
+
+            <div className="recipe-category-heading">
+              <h3>Browse by category</h3>
+            </div>
+            <div className="recipe-category-list mt-4 space-y-8">
+              {recipeSections.map((section) => {
                 const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
 
                 return (
-                  <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id} open={index === 0}>
+                  <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
                     <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
                       <h3 className="text-2xl font-semibold tracking-tight">{section.title}</h3>
                       <span className="grid size-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-paper/80 text-lg text-ink/50 transition group-open:rotate-45">
