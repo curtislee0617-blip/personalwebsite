@@ -16,8 +16,12 @@ import "./globals.css";
 
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");var dark=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(dark)document.documentElement.classList.add("dark");}catch(e){}})();`;
 const DASHBOARD_INIT_SCRIPT = `(function(){try{var w=parseInt(localStorage.getItem("dashboard-sidebar-width")||"",10);if(Number.isFinite(w))document.documentElement.style.setProperty("--dashboard-sidebar-width",Math.min(420,Math.max(220,w))+"px");if(localStorage.getItem("site-layout")==="dashboard"&&window.matchMedia("(min-width:1024px)").matches)document.documentElement.classList.add("dashboard-mode");}catch(e){}})();`;
+const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   applicationName: "Curtis Lee",
   title: {
     default: "My personal website",
@@ -43,13 +47,14 @@ export const metadata: Metadata = {
     title: "My personal website",
     description: "School, work and life.",
     type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Curtis Lee's dashboard-style Quick access menu with Personal and Professional sections." }],
+    url: "/",
+    images: [{ url: "/og-dashboard-v2.png", width: 1200, height: 630, alt: "Curtis Lee's six-button dashboard with Personal and Professional sections." }],
   },
   twitter: {
     card: "summary_large_image",
     title: "My personal website",
     description: "School, work and life.",
-    images: ["/og.png"],
+    images: ["/og-dashboard-v2.png"],
   },
 };
 
