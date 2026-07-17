@@ -104,7 +104,7 @@ export const recipeSearchItems: RecipeSearchItem[] = [
       context: `${book.title} · ${recipe.category} · PDF page ${recipe.sourcePages.join(", ")}`,
       kind: "Cookbook recipe",
       href: `/recipes/${book.id}#${book.id}-${recipe.id}`,
-      searchText: recipe.transcription,
+      searchText: recipe.searchText,
     })),
   ]),
   ...recipeEntries

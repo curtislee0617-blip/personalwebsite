@@ -122,7 +122,7 @@ function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[], instagramR
         context: `${book.title} · ${recipe.category} · PDF page ${recipe.sourcePages.join(", ")}`,
         kind: "Cookbook recipe",
         href: `/recipes/${book.id}#${book.id}-${recipe.id}`,
-        searchText: recipe.transcription,
+        searchText: recipe.searchText,
       })),
     ]),
     ...siteEntries,
@@ -547,7 +547,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
               {importedCookbooks.map((book) => (
-                <Link className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3" href={`/recipes/${book.id}`} key={book.id}>
+                <Link className="design-card order-9 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3" href={`/recipes/${book.id}`} key={book.id}>
                   <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
                     <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
                       <Image alt={`${book.title} cover`} className="object-cover" fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem" src={`/imported-cookbooks/${book.id}.jpg`} />
