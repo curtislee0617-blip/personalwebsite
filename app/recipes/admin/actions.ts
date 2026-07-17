@@ -27,14 +27,15 @@ export async function submitRecipe(formData: FormData) {
 
   const description = String(formData.get("description") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
-  const publishNow = String(formData.get("publish_now") ?? "") === "1";
-  const categories = formData.getAll("categories").map(String).filter(isRecipeCategoryId);
+  const ingredientGroups = parseIngredientGroupsEditor(String(formData.get("ingredient_groups") ?? ""));
+  const methodGroups = parseMethodGroupsEditor(String(formData.get("method_groups") ?? ""));
+  const categories = Array.from(new Set(formData.getAll("categories").map(String).filter(isRecipeCategoryId)));
   const photos = formData.getAll("photos").filter((entry): entry is File => entry instanceof File && entry.size > 0);
   // A YYYY-MM-DD date so old photos can be backdated; null if left blank.
   const rawDate = String(formData.get("recipe_date") ?? "").trim();
   const recipeDate = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : null;
 
-  if (!description) {
+  if (!title || ingredientGroups.length === 0 || methodGroups.length === 0) {
     redirect("/recipes/admin?error=missing");
   }
   if (categories.length === 0) {
@@ -52,20 +53,48 @@ export async function submitRecipe(formData: FormData) {
   }
 
   const supabase = createAdminClient();
-  const { error } = await supabase.from("recipe_drafts").insert({
-    description: title ? `${title}\n\n${description}` : description,
+  const { error: draftError } = await supabase.from("recipe_drafts").insert({
+    id: draftId,
+    description: description ? `${title}\n\n${description}` : title,
     image_urls: imageUrls,
     thumbnail_url: imageUrls[0] ?? null,
     recipe_date: recipeDate,
-    categories: Array.from(new Set(categories)),
-    status: publishNow ? "published" : "pending",
+    categories,
+    status: "published",
   });
-  if (error) {
-    console.error("Failed to save recipe draft", error);
+  if (draftError) {
+    console.error("Failed to save recipe draft", draftError);
     redirect("/recipes/admin?error=save-failed");
   }
-  if (publishNow) updateTag("published-recipes");
-  redirect("/recipes/admin?submitted=1");
+
+  const recipeKey = `uploaded-${draftId}`;
+  const mediaItems: RecipeMediaItem[] = imageUrls.map((src) => ({ src, type: "image" }));
+  const { error: overrideError } = await supabase.from("recipe_card_overrides").upsert({
+    recipe_key: recipeKey,
+    title,
+    description,
+    recipe_date: recipeDate,
+    categories,
+    ingredient_groups: ingredientGroups as unknown as Json,
+    method_groups: methodGroups as unknown as Json,
+    linked_recipe_keys: [],
+    thumbnail_url: imageUrls[0] ?? null,
+    thumbnail_position: "50% 50%",
+    thumbnail_zoom: 1,
+    thumbnail_time_seconds: 0,
+    media_items: mediaItems as unknown as Json,
+    deleted: false,
+  }, { onConflict: "recipe_key" });
+
+  if (overrideError) {
+    console.error("Failed to create published recipe card", overrideError);
+    await supabase.from("recipe_drafts").delete().eq("id", draftId);
+    redirect("/recipes/admin?error=save-failed");
+  }
+
+  updateTag("published-recipes");
+  updateTag("recipe-card-overrides");
+  redirect(`/recipes?published=1#recipe-${recipeKey}`);
 }
 
 export async function markProcessed(formData: FormData) {

@@ -52,8 +52,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
         <Link className="back-link-bubble" href="/recipes">← Back to recipes</Link>
       </div>
 
-      {params.submitted === "1" && <p className="mt-4 rounded-2xl bg-lime/40 px-4 py-3 text-sm text-ink">Saved.</p>}
-      {params.error === "missing" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Add a description.</p>}
+      {params.error === "missing" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Add a title, at least one ingredient, and at least one method step.</p>}
       {params.error === "missing-categories" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Choose at least one recipe category.</p>}
       {params.error === "save-failed" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Something went wrong saving that — try again.</p>}
       {params.error === "recipe-not-found" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">That recipe card could not be found.</p>}
@@ -61,10 +60,12 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
       <form action={submitRecipe} className="mt-8 max-w-2xl space-y-6">
         {wishlistEntry && (
           <div className="rounded-2xl border border-moss/20 bg-lime/25 px-4 py-3 text-sm leading-6 text-ink/65">
-            This will publish <strong className="font-semibold text-ink">{wishlistEntry.title}</strong> into the recipes section after upload.
+            This will publish <strong className="font-semibold text-ink">{wishlistEntry.title}</strong> directly into the recipes section.
           </div>
         )}
-        {wishlistEntry && <input name="publish_now" type="hidden" value="1" />}
+        <p className="rounded-2xl border border-moss/20 bg-lime/20 px-4 py-3 text-sm leading-6 text-ink/65">
+          Recipes publish immediately in the same ingredients-and-method format as the existing cards. You can edit the card or add photos later.
+        </p>
         <div>
           <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="title">Recipe title</label>
           <input
@@ -73,6 +74,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
             id="title"
             name="title"
             placeholder="Recipe title"
+            required
             type="text"
           />
         </div>
@@ -107,17 +109,42 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
           </div>
         </fieldset>
         <div>
-          <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="description">Description</label>
+          <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="description">Short description (optional)</label>
           <textarea
             className="mt-2 w-full rounded-2xl border border-ink/15 bg-surface px-4 py-3 text-sm leading-6"
             id="description"
             name="description"
-            placeholder="Write whatever you want — ingredients, steps, notes, story. I'll format it into a real recipe page later."
-            required
-            rows={16}
+            placeholder="A short note, story, or description shown beneath the title."
+            rows={4}
           />
         </div>
-        <button className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-moss" type="submit">Save recipe</button>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="ingredient_groups">Ingredients</label>
+            <p className="mt-1 text-xs leading-5 text-ink/45">One ingredient per line. Use <strong>## Component name</strong> to split a recipe into components.</p>
+            <textarea
+              className="mt-2 w-full rounded-2xl border border-ink/15 bg-surface px-4 py-3 text-sm leading-6"
+              id="ingredient_groups"
+              name="ingredient_groups"
+              placeholder={"## Pommes purée\n- Potatoes — 500 g\n- Butter — 125 g\n- Milk — as needed\n- Salt — to taste"}
+              required
+              rows={14}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold uppercase tracking-[0.14em] text-ink/50" htmlFor="method_groups">Method</label>
+            <p className="mt-1 text-xs leading-5 text-ink/45">One step per line. Numbering is optional; the card numbers each step automatically.</p>
+            <textarea
+              className="mt-2 w-full rounded-2xl border border-ink/15 bg-surface px-4 py-3 text-sm leading-6"
+              id="method_groups"
+              name="method_groups"
+              placeholder={"## Pommes purée\n1. Cook the potatoes until tender.\n2. Rice and sieve the potatoes.\n3. Beat in the butter and milk."}
+              required
+              rows={14}
+            />
+          </div>
+        </div>
+        <button className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-moss" type="submit">Publish recipe</button>
       </form>
 
       <div className="recipe-admin-editable-heading">
