@@ -12,6 +12,7 @@ import { getInstagramSavedRecipeCards, getPersonalRecipeCards } from "@/lib/pers
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
+import { importedCookbooks } from "@/lib/imported-cookbooks";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 
 export const metadata: Metadata = { title: "Recipes" };
@@ -108,6 +109,22 @@ function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[], instagramR
       href: "/recipes/bachour",
       searchText: "bachour antonio baker pastry entremet tart choux chocolate croissant brioche cookbook",
     },
+    ...importedCookbooks.flatMap((book): RecipeSearchItem[] => [
+      {
+        title: `${book.title} by ${book.author}`,
+        context: `Recipe book · ${book.recipeCountLabel}`,
+        kind: "Book",
+        href: `/recipes/${book.id}`,
+        searchText: `${book.title} ${book.author} cookbook ${book.categories.join(" ")}`,
+      },
+      ...book.recipes.map((recipe) => ({
+        title: recipe.title,
+        context: `${book.title} · ${recipe.category} · PDF page ${recipe.sourcePages.join(", ")}`,
+        kind: "Cookbook recipe",
+        href: `/recipes/${book.id}#${book.id}-${recipe.id}`,
+        searchText: recipe.transcription,
+      })),
+    ]),
     ...siteEntries,
     ...personalEntries,
     ...instagramEntries,
@@ -529,6 +546,20 @@ export default async function RecipesPage() {
                   <p className="mt-2 text-sm leading-6 text-ink/52">Breakfast pastries, French classics, plated desserts, frozen fruit and annex basics rebuilt with scaling and exact source pages.</p>
                 </div>
               </Link>
+              {importedCookbooks.map((book) => (
+                <Link className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3" href={`/recipes/${book.id}`} key={book.id}>
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
+                    <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+                      <Image alt={`${book.title} cover`} className="object-cover" fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem" src={`/imported-cookbooks/${book.id}.jpg`} />
+                    </div>
+                  </div>
+                  <div className="p-3 pb-4 pt-4">
+                    <p className="eyebrow">Book · {book.recipeCountLabel}</p>
+                    <h3 className="mt-2 text-xl font-semibold tracking-tight">{book.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-ink/52">{book.author} · source-linked recipes organized by the book&apos;s original sections.</p>
+                  </div>
+                </Link>
+              ))}
             </div>
           </section>
 

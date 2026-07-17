@@ -1115,7 +1115,7 @@ body.has-page-cursor * { cursor: inherit; }
 }
 
 .contact-cities-copy { position: relative; padding: clamp(1.5rem, 3vw, 3rem); }
-.contact-cities-copy h2 { margin-top: 0.75rem; font-family: var(--font-ui); font-size: clamp(1.7rem, 3vw, 2.8rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; }
+.contact-cities-copy :is(h1, h2) { margin-top: 0.75rem; font-family: var(--font-ui); font-size: clamp(1.7rem, 3vw, 2.8rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; }
 .contact-cities-copy > div > p:last-child { max-width: 28rem; margin-top: 1rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.82rem; line-height: 1.7; }
 .contact-city-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
@@ -4801,7 +4801,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .about-engine-cylinder { border-width: 2px; }
   .contact-cities { overflow: hidden; border-radius: 1.15rem !important; }
   .contact-cities-copy { padding: 1rem; }
-  .contact-cities-copy h2 { margin-top: 0.5rem; font-size: 1.35rem; }
+  .contact-cities-copy :is(h1, h2) { margin-top: 0.5rem; font-size: 1.35rem; }
   .contact-cities-copy > div > p:last-child { margin-top: 0.5rem; font-size: 0.68rem; line-height: 1.4; }
   .contact-city-chips { margin-top: 0.8rem; }
   .contact-city-chips span { padding: 0.36rem 0.55rem; font-size: 0.58rem; }
