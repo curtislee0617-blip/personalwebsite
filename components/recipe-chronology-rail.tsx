@@ -24,7 +24,7 @@ function openRecipe(entry: RecipeCardEntry) {
 
 export function RecipeChronologyRail({ recipes }: { recipes: RecipeCardEntry[] }) {
   return (
-    <div aria-label="All recipes from earliest to latest" className="recipe-chronology-rail" role="region" tabIndex={0}>
+    <div aria-label="All recipes from newest to oldest" className="recipe-chronology-rail" role="region" tabIndex={0}>
       <ol className="recipe-chronology-track">
         {recipes.map((entry) => (
           <li className="recipe-chronology-item" key={entry.recipeKey}>

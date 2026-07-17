@@ -186,7 +186,7 @@ export default async function RecipesPage() {
   const authenticated = await isRecipeAdminAuthenticated();
   const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes);
   const chronologicalRecipes = [...recipes].sort((a, b) => {
-    if (a.date && b.date) return a.date.localeCompare(b.date) || a.title.localeCompare(b.title);
+    if (a.date && b.date) return b.date.localeCompare(a.date) || a.title.localeCompare(b.title);
     if (a.date) return -1;
     if (b.date) return 1;
     return a.title.localeCompare(b.title);
@@ -244,13 +244,13 @@ export default async function RecipesPage() {
             <details className="recipe-all-section design-panel group mt-6">
               <summary className="recipes-section-summary">
                 <span>
-                  <span className="eyebrow">Earliest to latest</span>
+                  <span className="eyebrow">Newest to oldest</span>
                   <h3>All recipes</h3>
                   <small>{chronologicalRecipes.length} recipes</small>
                 </span>
                 <span className="recipe-section-expand-mark">+</span>
               </summary>
-              <RecipeShelf label="All personal recipes, earliest to latest" layout="grid">
+              <RecipeShelf label="All personal recipes, newest to oldest" layout="grid">
                 {chronologicalRecipes.map((entry) => (
                   <RecipeCard
                     adminEditHref={authenticated ? `/recipes/admin/edit/${encodeURIComponent(entry.recipeKey)}` : undefined}
