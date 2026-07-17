@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { HistoryBackButton } from "@/components/history-back-button";
 
 export const metadata: Metadata = {
   title: "Biodiesel from used cooking oil",
@@ -24,8 +25,8 @@ const sections = [
     title: "Synthesis presentation",
     description:
       "A companion presentation focused on the chemistry and feasibility of producing biodiesel from used cooking oil and ethanol, with attention to the greener appeal of ethanol and the processing difficulties it introduces.",
-    preview: "/project-previews/biodiesel-from-used-cooking-oil/lab-synthesis-screenshot.png",
-    previewAlt: "Lab synthesis setup from the biodiesel project",
+    preview: "/project-previews/biodiesel-from-used-cooking-oil/synthesis-presentation-preview.png",
+    previewAlt: "Synthesis presentation preview from the biodiesel project",
     href: "/projects/biodiesel-from-used-cooking-oil/viewer#synthesis-presentation",
     cta: "View presentation ↗",
   },
@@ -41,6 +42,9 @@ export default function BiodieselProjectPage() {
       />
 
       <section className="page-section pt-12 sm:pt-16">
+        <div className="mb-6 sm:mb-8">
+          <HistoryBackButton fallbackHref="/projects" />
+        </div>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.6fr)_minmax(18rem,0.9fr)] lg:gap-16">
           <div className="space-y-8">
             <article className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">

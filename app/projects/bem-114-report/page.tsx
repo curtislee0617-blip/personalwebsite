@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { bem114Sections, bem114Tables } from "@/lib/bem114-report";
 
 export const metadata: Metadata = {
@@ -59,6 +60,9 @@ export default function Bem114ReportPage() {
       />
 
       <section className="page-section pt-10 sm:pt-12">
+        <div className="mb-6 sm:mb-8">
+          <HistoryBackButton fallbackHref="/projects" />
+        </div>
         <div className="flex flex-wrap gap-3">
           <Link className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" href="/projects/bem-114-report/viewer">
             Open report viewer ↗
