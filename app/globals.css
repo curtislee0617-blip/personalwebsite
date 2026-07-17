@@ -315,7 +315,6 @@ body {
   .home-dashboard-grid > a > span:nth-child(2) { display: grid; min-width: 0; gap: 0.22rem; }
   .home-dashboard-grid strong { font-size: 0.82rem; }
   .home-dashboard-grid small { overflow: hidden; color: rgb(var(--color-ink) / 0.44); font-size: 0.58rem; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
-  .home-dashboard-arrow { color: rgb(var(--color-ink) / 0.32); font-size: 0.75rem; }
   .home-dashboard-pixel-art { min-width: 0; overflow: hidden; border: 1px solid rgb(var(--color-ink) / 0.09); border-radius: 0.85rem; background: rgb(var(--color-surface) / 0.72); }
   .home-dashboard-pixel-art > .home-dashboard-pixel-artwork { min-height: 0; }
 }
@@ -3148,18 +3147,6 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   line-height: 1.1;
 }
 
-.orbit-arrow {
-  position: absolute;
-  left: 50%;
-  top: calc(50% + 1rem);
-  font-size: 0.65rem;
-  opacity: 0;
-  transform: translate(-0.7rem, 0.2rem);
-  transition: opacity 200ms ease, transform 200ms ease;
-}
-
-.orbit-link:hover .orbit-arrow { opacity: 0.65; transform: translate(-50%, 0); }
-
 .route-bubble-expander {
   position: fixed !important;
   z-index: 90 !important;
@@ -5398,7 +5385,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .orbit-link, .orbit-arrow, .site-menu-button span, .site-menu-panel { transition: none; }
+  .orbit-link, .site-menu-button span, .site-menu-panel { transition: none; }
   .home-orbit::after,
   .home-orbit::before,
   .photo-grid-rail,

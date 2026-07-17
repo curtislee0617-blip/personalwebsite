@@ -584,7 +584,6 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
               style={{ cursor: bubbleCursors.get(item.href) }}
             >
               <span className="orbit-link-label">{item.label}</span>
-              <span className="orbit-arrow" aria-hidden="true">↗</span>
             </Link>
           ))}
         </nav>
@@ -642,7 +641,6 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
                     <Link href={section.href} key={section.href}>
                       <span className="home-dashboard-icon">{icon && <img alt="" aria-hidden="true" src={icon} />}</span>
                       <span><strong>{section.label}</strong><small>{section.subtitle}</small></span>
-                      <span aria-hidden="true" className="home-dashboard-arrow">↗</span>
                     </Link>
                   );
                 })}
