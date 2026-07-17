@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ContactCityArtwork } from "@/components/contact-city-artwork";
 import { ContactPresenceProvider } from "@/components/contact-presence";
-import { PageIntro } from "@/components/page-intro";
 
 export const metadata: Metadata = { title: "Contact" };
 
@@ -89,17 +88,19 @@ function ContactIcon({ icon }: { icon: (typeof contactLinks)[number]["icon"] }) 
 export default function ContactPage() {
   return (
     <>
-      <PageIntro
-        eyebrow="Contact"
-        title="Let&apos;s keep in touch."
-      />
-
-      <section className="page-section pt-12 sm:pt-16">
-        <div className="contact-cities design-panel mb-8 scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" id="contact-cities">
+      <section className="page-shell grid items-center gap-8 pt-12 sm:pt-14 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(0,1.3fr)] lg:gap-12 lg:pt-16">
+        <div>
+          <p className="eyebrow">Contact</p>
+          <h1 className="display-title mt-3">Let&apos;s keep in touch.</h1>
+        </div>
+        <div className="design-panel scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" id="contact-cities">
           <ContactPresenceProvider>
             <ContactCityArtwork editable />
           </ContactPresenceProvider>
         </div>
+      </section>
+
+      <section className="page-section pt-12 sm:pt-16">
         <div className="grid scroll-mt-24 gap-4 sm:grid-cols-2" id="contact-links">
           {contactLinks.map((contact) => (
             <a
