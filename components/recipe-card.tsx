@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { InstagramPostEmbed } from "@/components/instagram-post-embed";
+import { RecipeDeleteButton } from "@/components/recipe-delete-button";
 import { RecipeMediaGallery } from "@/components/recipe-media-gallery";
 import { RecipeCardThumbnailMedia } from "@/components/recipe-card-thumbnail-media";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
@@ -89,13 +91,17 @@ function LinkedRecipeSection({ adminEditHref, recipes }: { adminEditHref?: strin
 
 export function RecipeCard({
   adminEditHref,
+  adminReturnTo = "/recipes",
   entry,
   linkedRecipes = [],
+  idPrefix,
   showBackLink = false,
   variant = "default",
 }: {
   adminEditHref?: string;
+  adminReturnTo?: string;
   entry: RecipeCardEntry;
+  idPrefix?: string;
   linkedRecipes?: RecipeCardEntry[];
   showBackLink?: boolean;
   variant?: "default" | "shelf";
@@ -103,10 +109,11 @@ export function RecipeCard({
   const shelf = variant === "shelf";
   const hasStructuredContent = Boolean(entry.ingredientGroups?.length || entry.methodGroups?.length);
   const media = entry.media ?? (entry.imageUrls ?? []).map((src) => ({ src, type: "image" as const }));
-  const hasExpandedContent = hasStructuredContent || media.length > 0 || linkedRecipes.length > 0 || Boolean(adminEditHref) || showBackLink;
+  const hasExpandedContent = hasStructuredContent || media.length > 0 || Boolean(entry.instagramPostId) || linkedRecipes.length > 0 || Boolean(adminEditHref) || showBackLink;
+  const cardId = `${idPrefix ? `${idPrefix}-` : ""}recipe-${entry.slug}`;
 
   return (
-    <details className={`recipe-card scroll-mt-24 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""} ${!entry.thumbnail ? "recipe-card-text-only" : ""}`} id={`recipe-${entry.slug}`}>
+    <details className={`recipe-card scroll-mt-24 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""} ${!entry.thumbnail ? "recipe-card-text-only" : ""}`} id={cardId}>
       <summary className="recipe-card-summary recipes-section-summary cursor-pointer list-none marker:hidden">
         {entry.thumbnail && <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
           <div className="relative aspect-[4/3]">
@@ -140,12 +147,14 @@ export function RecipeCard({
         <div className="recipe-card-admin-toolbar">
           <Link href={adminEditHref}>Edit recipe</Link>
           <Link href={`${adminEditHref}#linked-recipes`}>+ Link recipe</Link>
+          <RecipeDeleteButton recipeKey={entry.recipeKey} returnTo={adminReturnTo} title={entry.title} />
         </div>
       )}
 
       {hasExpandedContent && (
         <div className="recipe-card-expanded-content">
           <RecipeMediaGallery media={media} title={entry.title} />
+          {entry.instagramPostId && <InstagramPostEmbed postId={entry.instagramPostId} title={entry.title} />}
           {hasStructuredContent && <StructuredRecipeContent entry={entry} />}
           <LinkedRecipeSection adminEditHref={adminEditHref} recipes={linkedRecipes} />
           {showBackLink && <Link className="back-link-bubble" href="/recipes">Back to recipes</Link>}

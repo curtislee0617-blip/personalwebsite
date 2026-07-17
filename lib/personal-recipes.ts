@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { recipeEntries, recipesByDate } from "@/lib/recipes";
 import { importedRecipeMediaEntries } from "@/data/imported-recipe-media";
+import { instagramSavedRecipes } from "@/data/instagram-saved-recipes";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
 import type { RecipeCardEntry, RecipeIngredientGroup, RecipeMediaItem, RecipeMethodGroup } from "@/lib/recipe-card-types";
@@ -29,6 +30,7 @@ type RecipeOverrideRow = {
   thumbnail_zoom: number | null;
   thumbnail_time_seconds: number | null;
   media_items: Json;
+  deleted: boolean;
 };
 
 const legacyImportedRecipeTitles: Record<string, readonly string[]> = {
@@ -276,7 +278,7 @@ const getRecipeOverrides = unstable_cache(async (): Promise<RecipeOverrideRow[]>
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("recipe_card_overrides")
-      .select("recipe_key,title,description,recipe_date,categories,ingredient_groups,method_groups,linked_recipe_keys,thumbnail_url,thumbnail_position,thumbnail_zoom,thumbnail_time_seconds,media_items");
+      .select("recipe_key,title,description,recipe_date,categories,ingredient_groups,method_groups,linked_recipe_keys,thumbnail_url,thumbnail_position,thumbnail_zoom,thumbnail_time_seconds,media_items,deleted");
 
     if (error) return [];
     return data;
@@ -312,8 +314,25 @@ export async function getPersonalRecipeCards() {
   const [uploaded, overrides] = await Promise.all([getUploadedRecipes(), getRecipeOverrides()]);
   const overrideByKey = new Map(overrides.map((override) => [override.recipe_key, override]));
   return [...siteRecipeCards(), ...uploaded]
+    .filter((entry) => !overrideByKey.get(entry.recipeKey)?.deleted)
     .map((entry) => applyOverride(entry, overrideByKey.get(entry.recipeKey)))
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+}
+
+export async function getInstagramSavedRecipeCards() {
+  const overrides = await getRecipeOverrides();
+  const overrideByKey = new Map(overrides.map((override) => [override.recipe_key, override]));
+  return instagramSavedRecipes
+    .filter((entry) => !overrideByKey.get(entry.recipeKey)?.deleted)
+    .map((entry) => applyOverride(entry, overrideByKey.get(entry.recipeKey)));
+}
+
+export async function getEditableRecipeCards() {
+  const [personal, instagram] = await Promise.all([
+    getPersonalRecipeCards(),
+    getInstagramSavedRecipeCards(),
+  ]);
+  return [...personal, ...instagram];
 }
 
 export function formatIngredientGroups(groups?: RecipeIngredientGroup[]) {

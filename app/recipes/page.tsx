@@ -4,12 +4,11 @@ import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeLibrarySearch } from "@/components/recipe-library-search";
 import { RecipeCard } from "@/components/recipe-card";
-import { RecipeChronologyRail } from "@/components/recipe-chronology-rail";
 import { RecipeShelf } from "@/components/recipe-shelf";
 import { SectionRail } from "@/components/section-rail";
 import { SnapCarousel } from "@/components/snap-carousel";
 import { recipeEntries, recipeSections, wishlistEntries } from "@/lib/recipes";
-import { getPersonalRecipeCards } from "@/lib/personal-recipes";
+import { getInstagramSavedRecipeCards, getPersonalRecipeCards } from "@/lib/personal-recipes";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
@@ -24,7 +23,7 @@ const recipePageSections = [
   { id: "recipe-books", label: "Books" },
 ] as const;
 
-function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[]): RecipeSearchItem[] {
+function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[], instagramRecipes: RecipeCardEntry[]): RecipeSearchItem[] {
   const siteEntries: RecipeSearchItem[] = recipeEntries
     .filter((entry) => entry.kind === "guide")
     .map((entry) => ({
@@ -44,6 +43,13 @@ function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[]): RecipeSea
       ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),
       ...(entry.methodGroups?.flatMap((group) => [group.title, ...group.steps]) ?? []),
     ].join(" "),
+  }));
+  const instagramEntries: RecipeSearchItem[] = instagramRecipes.map((entry) => ({
+    title: entry.title,
+    context: "Instagram saved food",
+    kind: "Wishlist",
+    href: `/recipes/instagram-saved#recipe-${entry.slug}`,
+    searchText: [entry.description, ...(entry.categories ?? []), ...(entry.ingredientGroups?.flatMap((group) => group.items) ?? [])].join(" "),
   }));
   return [
     {
@@ -104,6 +110,7 @@ function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[]): RecipeSea
     },
     ...siteEntries,
     ...personalEntries,
+    ...instagramEntries,
   ];
 }
 
@@ -169,12 +176,15 @@ function GuideVisual({ slug }: { slug: string }) {
 
 export default async function RecipesPage() {
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
-  const recipes = await getPersonalRecipeCards();
+  const [recipes, instagramRecipes] = await Promise.all([
+    getPersonalRecipeCards(),
+    getInstagramSavedRecipeCards(),
+  ]);
   const recipeByKey = new Map(recipes.map((entry) => [entry.recipeKey, entry]));
   const publishedUploadTitles = new Set(recipes.filter((entry) => entry.source === "uploaded").map((entry) => entry.title.toLowerCase()));
   const wishlist = wishlistEntries.filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
   const authenticated = await isRecipeAdminAuthenticated();
-  const searchPreview = buildRecipeSearchPreview(recipes);
+  const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes);
   const chronologicalRecipes = [...recipes].sort((a, b) => {
     if (a.date && b.date) return a.date.localeCompare(b.date) || a.title.localeCompare(b.title);
     if (a.date) return -1;
@@ -231,13 +241,31 @@ export default async function RecipesPage() {
               )}
             </div>
 
-            <div className="recipe-chronology mt-6">
-              <div className="recipe-chronology-heading">
-                <h3>All recipes</h3>
-                <p>Earliest to latest</p>
-              </div>
-              <RecipeChronologyRail recipes={chronologicalRecipes} />
-            </div>
+            <details className="recipe-all-section design-panel group mt-6">
+              <summary className="recipes-section-summary">
+                <span>
+                  <span className="eyebrow">Earliest to latest</span>
+                  <h3>All recipes</h3>
+                  <small>{chronologicalRecipes.length} recipes</small>
+                </span>
+                <span className="recipe-section-expand-mark">+</span>
+              </summary>
+              <RecipeShelf label="All personal recipes, earliest to latest" layout="grid">
+                {chronologicalRecipes.map((entry) => (
+                  <RecipeCard
+                    adminEditHref={authenticated ? `/recipes/admin/edit/${encodeURIComponent(entry.recipeKey)}` : undefined}
+                    entry={entry}
+                    idPrefix="all"
+                    key={`all-${entry.recipeKey}`}
+                    linkedRecipes={(entry.linkedRecipeKeys ?? []).flatMap((key) => {
+                      const linked = recipeByKey.get(key);
+                      return linked ? [linked] : [];
+                    })}
+                    variant="shelf"
+                  />
+                ))}
+              </RecipeShelf>
+            </details>
 
             <div className="recipe-category-heading">
               <h3>Browse by category</h3>
@@ -255,7 +283,7 @@ export default async function RecipesPage() {
                       </span>
                     </summary>
                     {sectionRecipes.length > 0 ? (
-                      <RecipeShelf label={section.title}>
+                      <RecipeShelf label={section.title} layout="grid">
                         {sectionRecipes.map((entry) => (
                           <RecipeCard
                             adminEditHref={authenticated ? `/recipes/admin/edit/${encodeURIComponent(entry.recipeKey)}` : undefined}
@@ -283,9 +311,13 @@ export default async function RecipesPage() {
               <p className="section-description mt-2 text-sm text-ink/50">A running list of dishes I want to cook next.</p>
             </div>
 
-            {wishlist.length > 0 ? (
-              <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {wishlist.map((entry) => (
+            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href="/recipes/instagram-saved">
+                <p className="eyebrow">Instagram saved</p>
+                <h3 className="mt-4 text-xl font-semibold tracking-tight">Saved food inspiration</h3>
+                <p className="mt-3 text-sm leading-7 text-ink/65">{instagramRecipes.length} recipe posts, technique references, carousels, and reels collected into searchable cards.</p>
+              </Link>
+              {wishlist.map((entry) => (
                   <article className="design-panel rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:p-8" key={entry.slug}>
                     <p className="eyebrow">To make</p>
                     <h3 className="mt-4 text-xl font-semibold tracking-tight">{entry.title}</h3>
@@ -296,13 +328,8 @@ export default async function RecipesPage() {
                       </Link>
                     )}
                   </article>
-                ))}
-              </div>
-            ) : (
-              <div className="design-panel mt-6 rounded-[2rem] border border-dashed border-ink/15 bg-surface/30 p-8 text-sm text-ink/45">
-                Nothing on the list yet — check back soon.
-              </div>
-            )}
+              ))}
+            </div>
           </section>
 
           <section id="recipe-books">

@@ -194,6 +194,7 @@ export type Database = {
           thumbnail_zoom: number | null;
           thumbnail_time_seconds: number | null;
           media_items: Json;
+          deleted: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -211,6 +212,7 @@ export type Database = {
           thumbnail_zoom?: number | null;
           thumbnail_time_seconds?: number | null;
           media_items?: Json;
+          deleted?: boolean;
           created_at?: string;
           updated_at?: string;
         };

@@ -17,6 +17,7 @@ export type RecipeCardEntry = {
   description: string;
   sourceLabel?: string;
   sourceUrl?: string;
+  instagramPostId?: string;
   status?: "published" | "coming-soon" | string;
   date?: string;
   category?: string;

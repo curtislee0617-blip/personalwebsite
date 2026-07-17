@@ -7,9 +7,10 @@ import { RecipeLinkPicker } from "@/components/recipe-link-picker";
 import { RecipeThumbnailPositionEditor } from "@/components/recipe-thumbnail-position-editor";
 import { RecipeMediaOrganizer } from "@/components/recipe-media-organizer";
 import { RecipePhotoPicker } from "@/components/recipe-photo-picker";
+import { RecipeDeleteButton } from "@/components/recipe-delete-button";
 import { recipeCategories } from "@/data/recipe-categories";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
-import { formatIngredientGroups, formatMethodGroups, getPersonalRecipeCards } from "@/lib/personal-recipes";
+import { formatIngredientGroups, formatMethodGroups, getEditableRecipeCards } from "@/lib/personal-recipes";
 import { saveRecipeCard } from "../../actions";
 
 export const metadata: Metadata = { title: "Edit recipe", robots: { index: false, follow: false } };
@@ -36,7 +37,7 @@ export default async function EditRecipeCardPage({
     );
   }
 
-  const recipes = await getPersonalRecipeCards();
+  const recipes = await getEditableRecipeCards();
   const recipe = recipes.find((entry) => entry.recipeKey === recipeKey);
   if (!recipe) notFound();
 
@@ -60,6 +61,7 @@ export default async function EditRecipeCardPage({
         <div className="flex flex-wrap gap-2">
           <Link className="back-link-bubble" href="/recipes/admin">Admin list</Link>
           <Link className="back-link-bubble" href={`/recipes#recipe-${recipe.slug}`}>View card</Link>
+          <RecipeDeleteButton recipeKey={recipe.recipeKey} returnTo="/recipes/admin" title={recipe.title} />
         </div>
       </div>
 

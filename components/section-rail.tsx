@@ -12,6 +12,10 @@ import {
 
 type WavePoint = { x: number; y: number };
 
+function pathNumber(value: number) {
+  return Number(value.toFixed(4));
+}
+
 function waveXAt(y: number, activeY: number) {
   const distance = (y - activeY) / 100;
   const roundedCrest = 17 * Math.exp(-0.5 * (distance / 0.065) ** 2);
@@ -29,8 +33,8 @@ function createSmoothPath(points: WavePoint[]) {
     const controlTwoX = next.x - (afterNext.x - point.x) / 6;
     const controlTwoY = next.y - (afterNext.y - point.y) / 6;
 
-    return `${path} C ${controlOneX} ${controlOneY}, ${controlTwoX} ${controlTwoY}, ${next.x} ${next.y}`;
-  }, `M ${points[0].x} ${points[0].y}`);
+    return `${path} C ${pathNumber(controlOneX)} ${pathNumber(controlOneY)}, ${pathNumber(controlTwoX)} ${pathNumber(controlTwoY)}, ${pathNumber(next.x)} ${pathNumber(next.y)}`;
+  }, `M ${pathNumber(points[0].x)} ${pathNumber(points[0].y)}`);
 }
 
 function createWaveGeometry(sectionCount: number, wavePosition: number) {

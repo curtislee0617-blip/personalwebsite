@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { uploadToR2 } from "@/lib/r2";
 import { clearRecipeAdminCookie, isRecipeAdminAuthenticated, setRecipeAdminCookie } from "@/lib/recipe-admin-auth";
 import { isRecipeCategoryId } from "@/data/recipe-categories";
-import { getPersonalRecipeCards, parseIngredientGroupsEditor, parseMethodGroupsEditor } from "@/lib/personal-recipes";
+import { getEditableRecipeCards, parseIngredientGroupsEditor, parseMethodGroupsEditor } from "@/lib/personal-recipes";
 import type { Json } from "@/lib/supabase/database.types";
 import type { RecipeMediaItem } from "@/lib/recipe-card-types";
 
@@ -100,7 +100,7 @@ export async function saveRecipeCard(formData: FormData) {
   const rawThumbnailTime = Number(formData.get("thumbnail_time_seconds") ?? 0);
   const thumbnailTime = Number.isFinite(rawThumbnailTime) ? Math.min(3600, Math.max(0, rawThumbnailTime)) : 0;
 
-  const recipes = await getPersonalRecipeCards();
+  const recipes = await getEditableRecipeCards();
   const availableKeys = new Set(recipes.map((recipe) => recipe.recipeKey));
   if (!availableKeys.has(recipeKey)) redirect("/recipes/admin?error=recipe-not-found");
 
@@ -176,6 +176,7 @@ export async function saveRecipeCard(formData: FormData) {
     thumbnail_zoom: thumbnailZoom,
     thumbnail_time_seconds: thumbnailTime,
     media_items: mediaItems as unknown as Json,
+    deleted: false,
   }, { onConflict: "recipe_key" });
 
   if (error) {
@@ -186,4 +187,41 @@ export async function saveRecipeCard(formData: FormData) {
   updateTag("published-recipes");
   updateTag("recipe-card-overrides");
   redirect(`/recipes?updated=1#recipe-${recipeKey}`);
+}
+
+export async function deleteRecipeCard(formData: FormData) {
+  if (!(await isRecipeAdminAuthenticated())) redirect("/recipes");
+
+  const recipeKey = String(formData.get("recipe_key") ?? "").trim();
+  const returnTo = String(formData.get("return_to") ?? "/recipes").trim();
+  const recipes = await getEditableRecipeCards();
+  const recipe = recipes.find((entry) => entry.recipeKey === recipeKey);
+  if (!recipe) redirect("/recipes/admin?error=recipe-not-found");
+
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("recipe_card_overrides").upsert({
+    recipe_key: recipe.recipeKey,
+    title: recipe.title,
+    description: recipe.description,
+    recipe_date: recipe.date ?? null,
+    categories: recipe.categories ?? (recipe.category ? [recipe.category] : []),
+    ingredient_groups: (recipe.ingredientGroups ?? []) as unknown as Json,
+    method_groups: (recipe.methodGroups ?? []) as unknown as Json,
+    linked_recipe_keys: recipe.linkedRecipeKeys ?? [],
+    thumbnail_url: recipe.thumbnail ?? null,
+    thumbnail_position: recipe.thumbnailPosition ?? "50% 50%",
+    thumbnail_zoom: recipe.thumbnailZoom ?? 1,
+    thumbnail_time_seconds: recipe.thumbnailTime ?? 0,
+    media_items: (recipe.media ?? []) as unknown as Json,
+    deleted: true,
+  }, { onConflict: "recipe_key" });
+
+  if (error) {
+    console.error("Failed to delete recipe card", error);
+    redirect(`/recipes/admin/edit/${encodeURIComponent(recipeKey)}?error=save-failed`);
+  }
+
+  updateTag("published-recipes");
+  updateTag("recipe-card-overrides");
+  redirect(returnTo.startsWith("/recipes") ? returnTo : "/recipes");
 }

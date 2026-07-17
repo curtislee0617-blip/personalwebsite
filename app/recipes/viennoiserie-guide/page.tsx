@@ -12,8 +12,9 @@ export const metadata: Metadata = {
 
 const sections = [
   { id: "croissants", label: "Croissants" },
-  { id: "variations", label: "Croissant variations" },
   { id: "recipe", label: "Recipe" },
+  { id: "old-man-teh-workflow", label: "Old Man Teh workflow" },
+  { id: "variations", label: "Croissant variations" },
 ] as const;
 
 const croissants = ["Croissants.jpeg", "Croissants1.jpeg", "Croissants2.jpeg", "Croissants3.jpeg", "Croissants5.jpeg", "Croissant1.jpeg", "Croissant2.jpeg", "Croissant3.jpeg", "Croissant4.jpeg"] as const;
@@ -45,6 +46,20 @@ function Photo({ file, alt }: { file: string; alt: string }) {
     : `/recipes/viennoiserie/thumbs/${encodeURIComponent(parts[0])}`;
   const viewerHref = `/recipes/viennoiserie-guide/image?src=${encodeURIComponent(fullSrc)}&alt=${encodeURIComponent(alt)}`;
   return <Link className="viennoiserie-photo-link" href={viewerHref} aria-label={`Open full-size image: ${alt}`}><Image src={thumbSrc} alt={alt} width={900} height={1200} quality={78} sizes="(max-width: 640px) 92vw, (max-width: 1000px) 45vw, 30vw" /></Link>;
+}
+
+function OldManTehSourcePage({ page, alt }: { page: number; alt: string }) {
+  const src = `/recipes/viennoiserie/old-man-teh/page-${page}.png`;
+  const viewerHref = `/recipes/viennoiserie-guide/image?src=${encodeURIComponent(src)}&alt=${encodeURIComponent(alt)}`;
+
+  return (
+    <figure>
+      <Link className="viennoiserie-photo-link" href={viewerHref} aria-label={`Open full-size source page ${page}`}>
+        <Image src={src} alt={alt} width={1240} height={1754} quality={75} sizes="(max-width: 640px) 88vw, (max-width: 1000px) 44vw, 24vw" />
+      </Link>
+      <figcaption>Source page {page}</figcaption>
+    </figure>
+  );
 }
 
 export default function ViennoiserieGuidePage() {
@@ -123,6 +138,91 @@ export default function ViennoiserieGuidePage() {
           </div>
 
           <details className="viennoiserie-variation-recipe"><summary>Cocoa détrempe &amp; pain au chocolat</summary><div className="viennoiserie-recipe-card"><p className="eyebrow">Cocoa détrempe</p><ul className="viennoiserie-ingredient-list"><li><span>75 g</span> bread flour</li><li><span>75 g</span> all-purpose flour</li><li><span>22 g</span> sugar</li><li><span>2.2 g</span> salt</li><li><span>75 g</span> whole milk</li><li><span>50 g</span> water</li><li><span>10 g</span> unsalted butter, chilled</li><li><span>7 g</span> fresh yeast</li><li><span>20 g</span> cocoa powder</li></ul><p>In a mixer fitted with the hook attachment, combine the flours, sugar, salt, milk, water, cocoa powder and butter and mix on low speed. After 1 minute, add the yeast and continue to mix on low speed for an additional 7 minutes. Scrape down the sides of the bowl and mix for 7 more minutes on second speed. Pick the dough (a handful) between the hands and stretch. If it does not break and creates a thin elastic dough, it is perfect. Roll the dough in a square shape, wrap in plastic and reserve in the refrigerator overnight. Roll it to the same size as the croissant dough sheet after performing all the turns.</p><p className="eyebrow recipe-subhead">Glaze</p><ul className="viennoiserie-ingredient-list"><li><span>500 g</span> sugar</li><li><span>200 g</span> water</li><li><span>150 g</span> glucose</li></ul><p>Place everything in a pot and bring to a boil.</p><p className="eyebrow recipe-subhead">Lamination</p><p>Laminate the croissant dough as for the Plain croissant and proceed as for the rest of the bicolor viennoiserie. To do this, place the cocoa dough on top of the croissant dough. Laminate to a thickness of 3 mm leaving the cocoa part underneath. Cut strips of bicolor dough of 8x16 cm. Make a few shallow diagonal cuts on the bottom of the strip, turn the cocoa side. Turn the strip so that the cocoa side is facing down, place a chocolate baton at one end and start rolling up. Place a second baton and finish rolling up the strip to form the pain au chocolat (see step-by-step photographs). Spray a sheet pan with non-stick spray, line with parchment paper. Place the pieces on the sheet pan and leave to proof at 28°C for 2 hours.</p></div></details>
+        </section>
+
+        <section id="old-man-teh-workflow" className="viennoiserie-recipe-section old-man-teh-workflow">
+          <div className="viennoiserie-photo-heading">
+            <div><p className="eyebrow">Reference workflow</p><h2>Old Man Teh’s hand-rolled croissant</h2></div>
+            <p>A compact, hand-rolling workflow from mixing through baking.</p>
+          </div>
+
+          <aside className="viennoiserie-source-note">
+            <p className="eyebrow">Source &amp; attribution</p>
+            <p>This formula and workflow are by <strong>Old Man Teh</strong>, transcribed from <cite>OldmanTeh’s Croissant Workflow</cite>. The wording has been lightly arranged for the website while preserving the quantities, dimensions, temperatures and timings in the supplied document.</p>
+          </aside>
+
+          <div className="old-man-teh-overview">
+            <div className="viennoiserie-recipe-card">
+              <p className="eyebrow">Dough · 650 g approximately</p>
+              <ul className="viennoiserie-ingredient-list">
+                <li><span>362 g</span> bread flour</li>
+                <li><span>14 g</span> fresh yeast</li>
+                <li><span>36 g</span> sugar</li>
+                <li><span>7 g</span> salt</li>
+                <li><span>14 g</span> milk powder</li>
+                <li><span>152 g</span> crushed ice</li>
+                <li><span>54 g</span> unsalted butter</li>
+                <li><span>180 g ±</span> lamination butter</li>
+              </ul>
+              <p>The lamination butter is 27–30% of the dough weight. The source calculates every dough ingredient as a proportion of the 362 g bread flour.</p>
+            </div>
+
+            <div className="old-man-teh-parameters">
+              <div><span>Mixing speed</span><strong>Slow → medium</strong></div>
+              <div><span>Mixing time</span><strong>18–22 min</strong></div>
+              <div><span>Dough block</span><strong>34 × 20 cm</strong></div>
+              <div><span>Butter block</span><strong>17 × 20 cm</strong></div>
+              <div><span>Final sheet</span><strong>4 mm</strong></div>
+              <div><span>Triangle width</span><strong>9 cm</strong></div>
+            </div>
+          </div>
+
+          <p className="old-man-teh-source-caveat"><strong>Temperature note:</strong> the source’s parameter box gives a final mixing temperature of 26–28°C, while Step II asks for 24–26°C. Both are retained here so the discrepancy remains visible.</p>
+
+          <div className="old-man-teh-phase-grid">
+            <article className="viennoiserie-recipe-card">
+              <p className="eyebrow">Steps I–II · Mix and rest</p>
+              <ol className="old-man-teh-steps" start={1}>
+                <li>Add the crushed ice first, followed by all the dry ingredients. Mix on slow speed for 3 minutes. Add the fresh yeast; after 30 seconds, incorporate the unsalted butter. Change to second speed and mix for 18–22 minutes.</li>
+                <li>Check that the mixed dough is 24–26°C, then shape it into a ball. Rest for 60 minutes at room temperature, at 26–28°C. Shape into a 34 × 20 cm square and rest in the freezer for 60–90 minutes. The dough can be kept frozen for up to 3 days.</li>
+              </ol>
+            </article>
+
+            <article className="viennoiserie-recipe-card">
+              <p className="eyebrow">Steps III–IV · Lock-in and double fold</p>
+              <ol className="old-man-teh-steps" start={3}>
+                <li>Place the 17 × 20 cm butter block in the middle of the dough. Cut both sides of the dough and place them over the butter. Press gently across the surface with a rolling pin, pinch the sides to seal, then roll to 75 cm long × 18 cm wide.</li>
+                <li>Perform a double fold, also called a book fold. Cut the sides to release tension. With the open end facing you, roll to 45 cm or longer, then rest in the freezer for 10–15 minutes.</li>
+              </ol>
+            </article>
+
+            <article className="viennoiserie-recipe-card">
+              <p className="eyebrow">Steps V–VI · Roll and single fold</p>
+              <ol className="old-man-teh-steps" start={5}>
+                <li>Roll the 45 cm dough to 80 cm long. Wrap and transfer it to the freezer for 10–15 minutes. Remove it and continue rolling in the same direction until it reaches 80 cm.</li>
+                <li>Perform a single fold, also called a letter fold. Rotate the dough so the open end faces you. Roll to 45–48 cm long and at least 35 cm wide, with a final thickness of 4 mm. Rest in the freezer for 30–40 minutes.</li>
+              </ol>
+            </article>
+
+            <article className="viennoiserie-recipe-card">
+              <p className="eyebrow">Steps VII–IX · Divide, proof and bake</p>
+              <ol className="old-man-teh-steps" start={7}>
+                <li>Trim approximately 1 cm from each closed end to expose the layers. Mark 9 cm widths, then trace the midpoint on the opposite side to create alternating triangles. Cut the triangles and shape the croissants.</li>
+                <li>Proof for at least 2 hours at 27–28°C. Apply the first egg wash 1 hour into proofing and the second egg wash 10 minutes before baking.</li>
+                <li>Bake at 165–175°C for 18–22 minutes.</li>
+              </ol>
+            </article>
+          </div>
+
+          <details className="old-man-teh-source-pages">
+            <summary>View the exact source pages</summary>
+            <div className="old-man-teh-source-grid">
+              <OldManTehSourcePage page={2} alt="Old Man Teh croissant ingredients, mixing and first resting steps" />
+              <OldManTehSourcePage page={3} alt="Old Man Teh croissant lock-in and double-fold diagrams" />
+              <OldManTehSourcePage page={4} alt="Old Man Teh croissant rolling and single-fold diagrams" />
+              <OldManTehSourcePage page={5} alt="Old Man Teh croissant dividing, proofing and baking page" />
+            </div>
+          </details>
         </section>
 
         <section id="variations" className="viennoiserie-photo-section">

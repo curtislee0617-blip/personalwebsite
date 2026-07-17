@@ -7,7 +7,8 @@ import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { wishlistEntries } from "@/lib/recipes";
 import { recipeCategories, recipeCategoryTitle } from "@/data/recipe-categories";
 import { RecipePhotoPicker } from "@/components/recipe-photo-picker";
-import { getPersonalRecipeCards } from "@/lib/personal-recipes";
+import { RecipeDeleteButton } from "@/components/recipe-delete-button";
+import { getEditableRecipeCards } from "@/lib/personal-recipes";
 import { markProcessed, submitRecipe } from "./actions";
 
 export const metadata: Metadata = { title: "Recipe admin", robots: { index: false, follow: false } };
@@ -40,7 +41,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
     .select("*")
     .order("recipe_date", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
-  const editableRecipes = await getPersonalRecipeCards();
+  const editableRecipes = await getEditableRecipeCards();
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -136,6 +137,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
               <small>{(recipe.categories ?? []).map(recipeCategoryTitle).join(" · ") || "No category"}</small>
             </div>
             <Link href={`/recipes/admin/edit/${encodeURIComponent(recipe.recipeKey)}`}>Edit</Link>
+            <RecipeDeleteButton recipeKey={recipe.recipeKey} returnTo="/recipes/admin" title={recipe.title} />
           </article>
         ))}
       </div>
