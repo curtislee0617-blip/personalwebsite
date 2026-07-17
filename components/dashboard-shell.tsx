@@ -136,7 +136,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     applySidebarWidth(initialWidth);
     sidebarResizerRef.current?.setAttribute("aria-valuenow", String(initialWidth));
     const sync = () => {
-      const enabled = desktop.matches && window.localStorage.getItem("site-layout") === "dashboard";
+      const enabled = desktop.matches;
       document.documentElement.classList.toggle("dashboard-mode", enabled);
       setIsDashboard(enabled);
     };
@@ -402,10 +402,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
         <div className="dashboard-sidebar-actions">
           <ThemeToggle variant="dashboard" />
-          <button className="dashboard-bubbles-mode" onClick={disableDashboard} type="button">
-            <span aria-hidden="true" className="dashboard-bubbles-icon"><i /><i /><i /></span>
-            <span><strong>Bubbles mode</strong><small>Return to the original layout</small></span>
-          </button>
         </div>
         <div
           aria-label="Resize dashboard sidebar"

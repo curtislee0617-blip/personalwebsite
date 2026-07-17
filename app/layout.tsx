@@ -42,6 +42,13 @@ export const metadata: Metadata = {
     title: "My personal website",
     description: "School, work and life.",
     type: "website",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "A collage of Curtis Lee's CV, projects, recipes, restaurants, tools, and contact pages." }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "My personal website",
+    description: "School, work and life.",
+    images: ["/og.png"],
   },
 };
 

@@ -31,7 +31,12 @@ const mobileOrbitLinks = [
 ];
 
 const mobileAboutIndex = 2;
-const showHomePhotoGrid = false;
+const showHomePhotoGrid = true;
+
+const quickAccessGroups = [
+  { label: "Personal", sections: [dashboardSections[3], dashboardSections[4], dashboardSections[2]] },
+  { label: "Professional", sections: [dashboardSections[0], dashboardSections[1], dashboardSections[5]] },
+] as const;
 
 function positionMobileCarousel(scroller: HTMLElement) {
   const center = scroller.scrollTop + scroller.clientHeight / 2;
@@ -227,7 +232,7 @@ function PhotoGridBackground({ photos }: { photos: string[] }) {
   );
 }
 
-export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profilePhoto: string | null }) {
+export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profilePhoto: string }) {
   const router = useRouter();
   const { enableDashboard } = useDashboardMode();
   const isLeaving = useRef(false);
@@ -547,9 +552,9 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
           <p className="home-mobile-intro">School, work and life</p>
         </div>
         <span
-          aria-label={profilePhoto ? "Curtis Lee profile photo" : "Profile photo placeholder"}
-          className={`home-mobile-portrait ${profilePhoto ? "has-photo" : ""}`}
-          style={profilePhoto ? { backgroundImage: `url("${profilePhoto}")` } : undefined}
+          aria-label="Curtis Lee profile photo"
+          className="home-mobile-portrait has-photo"
+          style={{ backgroundImage: 'url("/profile.webp")' }}
         />
       </header>
 
@@ -557,18 +562,11 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
         <div className="home-profile">
           <h1 className="home-name">Curtis Lee</h1>
 
-          <div className="home-portrait" aria-label={profilePhoto ? "Curtis Lee profile photo" : "Profile photo placeholder"}>
+          <div className="home-portrait" aria-label="Curtis Lee profile photo">
             <div
-              className={`home-portrait-inner ${profilePhoto ? "has-photo" : ""}`}
-              style={profilePhoto ? { backgroundImage: `url("${profilePhoto}")` } : undefined}
-            >
-              {!profilePhoto && (
-                <>
-                  <span className="text-3xl font-light" aria-hidden="true">+</span>
-                  <span className="mt-2 text-xs font-semibold uppercase tracking-[0.18em]">Your photo</span>
-                </>
-              )}
-            </div>
+              className="home-portrait-inner has-photo"
+              style={{ backgroundImage: `url("${profilePhoto}")` }}
+            />
           </div>
 
           <p className="home-intro">School, work and life</p>
@@ -633,17 +631,24 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
             </ContactPresenceProvider>
           </div>
         </div>
-        <nav aria-label="Dashboard quick access" className="home-dashboard-grid">
-          {dashboardSections.map((section) => {
-            const icon = navIconForPath(section.href);
-            return (
-              <Link href={section.href} key={section.href}>
-                <span className="home-dashboard-icon">{icon && <img alt="" aria-hidden="true" src={icon} />}</span>
-                <span><strong>{section.label}</strong><small>{section.subtitle}</small></span>
-                <span aria-hidden="true" className="home-dashboard-arrow">↗</span>
-              </Link>
-            );
-          })}
+        <nav aria-label="Dashboard quick access" className="home-dashboard-groups">
+          {quickAccessGroups.map((group) => (
+            <div className="home-dashboard-group" key={group.label}>
+              <h2>{group.label}</h2>
+              <div className="home-dashboard-grid">
+                {group.sections.map((section) => {
+                  const icon = navIconForPath(section.href);
+                  return (
+                    <Link href={section.href} key={section.href}>
+                      <span className="home-dashboard-icon">{icon && <img alt="" aria-hidden="true" src={icon} />}</span>
+                      <span><strong>{section.label}</strong><small>{section.subtitle}</small></span>
+                      <span aria-hidden="true" className="home-dashboard-arrow">↗</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </div>
 
