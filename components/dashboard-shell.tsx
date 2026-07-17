@@ -34,7 +34,7 @@ type DashboardRecipeItem = {
 
 export const dashboardSections = [
   {
-    href: "/about", label: "About", subtitle: "Education, experience, interests, and life beyond the lab.",
+    href: "/about", label: "CV", subtitle: "Education, experience, interests, and life beyond the lab.",
     groups: [
       { href: "/about#about-education", label: "Background", items: [{ href: "/about#about-education", label: "Education" }, { href: "/about#about-experience", label: "Experience" }] },
       { href: "/about#about-awards", label: "Profile", items: [{ href: "/about#about-awards", label: "Awards" }, { href: "/about#about-beyond", label: "Beyond the lab" }, { href: "/about#about-languages", label: "Languages" }, { href: "/about#about-skills", label: "Skills" }] },

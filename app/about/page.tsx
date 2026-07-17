@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AboutSectionRail } from "@/components/about-section-rail";
 import { PageIntro } from "@/components/page-intro";
 
-export const metadata: Metadata = { title: "About" };
+export const metadata: Metadata = { title: "CV" };
 
 type LogoMeta = {
   src?: string;
@@ -164,7 +164,7 @@ export default function AboutPage() {
   return (
     <div className="about-page">
       <PageIntro
-        eyebrow="About"
+        eyebrow="CV"
         title="Chemical engineering, food science, and kitchens."
         description={
           <>
@@ -277,6 +277,21 @@ export default function AboutPage() {
                 <p className="mt-3 text-sm leading-6 text-ink/60">{item.summary}</p>
               </Link>
             ))}
+          </div>
+        </section>
+
+        <section className="about-contact-cta mt-20 border-t border-ink/10 pt-12" aria-labelledby="cv-contact-title">
+          <div className="design-panel flex flex-col gap-6 rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div>
+              <p className="eyebrow">Contact</p>
+              <h2 className="section-title mt-3" id="cv-contact-title">Want to get in touch?</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/60">
+                Visit the contact page to send me a message, find my links, or see where I am.
+              </p>
+            </div>
+            <Link className="shrink-0 self-start rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss sm:self-auto" href="/contact">
+              Go to contact →
+            </Link>
           </div>
         </section>
       </section>

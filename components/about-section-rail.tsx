@@ -11,5 +11,5 @@ const sections = [
 ] as const;
 
 export function AboutSectionRail() {
-  return <SectionRail ariaLabel="About page sections" sections={sections} />;
+  return <SectionRail ariaLabel="CV page sections" sections={sections} />;
 }

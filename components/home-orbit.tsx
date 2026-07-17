@@ -13,7 +13,7 @@ import { cursorCss, navIconForPath, pageCursors } from "@/lib/page-cursors";
 import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
 const orbitLinks = [
-  { href: "/about", label: "About" },
+  { href: "/about", label: "CV" },
   { href: "/projects", label: "Projects" },
   { href: "/recipes", label: "Recipes" },
   { href: "/restaurants", label: "Restaurants" },
@@ -31,6 +31,7 @@ const mobileOrbitLinks = [
 ];
 
 const mobileAboutIndex = 2;
+const showHomePhotoGrid = false;
 
 function positionMobileCarousel(scroller: HTMLElement) {
   const center = scroller.scrollTop + scroller.clientHeight / 2;
@@ -529,7 +530,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
   return (
     <section id="top" className={`home-orbit home-entry-${entryMode}`}>
-      <PhotoGridBackground photos={photos} />
+      {showHomePhotoGrid && <PhotoGridBackground photos={photos} />}
 
       <button className="dashboard-mode-launch" onClick={enterDashboardMode} type="button">
         <span aria-hidden="true" className="dashboard-mode-launch-icon"><i /><i /><i /></span>

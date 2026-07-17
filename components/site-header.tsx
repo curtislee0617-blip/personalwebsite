@@ -10,7 +10,7 @@ import { navIconForPath } from "@/lib/page-cursors";
 import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
 const links = [
-  ["/", "Home"], ["/about", "About"], ["/projects", "Projects"],
+  ["/", "Home"], ["/about", "CV"], ["/projects", "Projects"],
   ["/recipes", "Recipes"], ["/restaurants", "Restaurants"],
   ["/tools", "Tools"], ["/contact", "Contact"],
 ] as const;
