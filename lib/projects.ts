@@ -40,12 +40,12 @@ export const projects: ProjectEntry[] = [
     tags: ["Chemical engineering", "Process design", "Biodiesel", "Used cooking oil"],
     previews: [
       {
-        src: "/project-previews/biodiesel-from-used-cooking-oil/synthesis-presentation-preview.png",
-        alt: "Synthesis presentation preview from the biodiesel project",
+        src: "/project-previews/biodiesel-from-used-cooking-oil/lab-synthesis-screenshot.png",
+        alt: "Biodiesel synthesis in the laboratory",
       },
       {
-        src: "/project-previews/biodiesel-from-used-cooking-oil/lab-synthesis-screenshot.png",
-        alt: "Lab synthesis setup from the biodiesel project",
+        src: "/project-previews/biodiesel-from-used-cooking-oil/process-flow-screenshot.png",
+        alt: "Process flow diagram from the biodiesel design report",
       },
     ],
     documents: [

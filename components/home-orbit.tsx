@@ -22,11 +22,11 @@ const orbitLinks = [
 ];
 
 const mobileOrbitLinks = [
+  orbitLinks[0],
   orbitLinks[1],
   orbitLinks[5],
-  orbitLinks[0],
-  orbitLinks[4],
   orbitLinks[2],
+  orbitLinks[4],
   orbitLinks[3],
 ];
 
@@ -534,7 +534,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
   }
 
   return (
-    <section id="top" className={`home-orbit home-entry-${entryMode}`}>
+    <section id="top" className={`home-orbit home-entry-${entryMode} home-mobile-focus-${mobileOrbitLinks[mobileActiveIndex]?.href.slice(1) ?? "contact"}`}>
       {showHomePhotoGrid && <PhotoGridBackground photos={photos} />}
 
       <button className="dashboard-mode-launch" onClick={enterDashboardMode} type="button">

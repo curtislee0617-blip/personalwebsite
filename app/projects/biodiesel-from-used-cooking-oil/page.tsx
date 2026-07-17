@@ -25,8 +25,8 @@ const sections = [
     title: "Synthesis presentation",
     description:
       "A companion presentation focused on the chemistry and feasibility of producing biodiesel from used cooking oil and ethanol, with attention to the greener appeal of ethanol and the processing difficulties it introduces.",
-    preview: "/project-previews/biodiesel-from-used-cooking-oil/synthesis-presentation-preview.png",
-    previewAlt: "Synthesis presentation preview from the biodiesel project",
+    preview: "/project-previews/biodiesel-from-used-cooking-oil/lab-synthesis-screenshot.png",
+    previewAlt: "Biodiesel synthesis in the laboratory",
     href: "/projects/biodiesel-from-used-cooking-oil/viewer#synthesis-presentation",
     cta: "View presentation ↗",
   },

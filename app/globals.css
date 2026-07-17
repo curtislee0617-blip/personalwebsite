@@ -4702,6 +4702,45 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .home-entry-mobile-return .home-mobile-header,
   .home-entry-mobile-return .home-mobile-nav-list li { opacity: 0; }
   .home-photo-grid { display: none; }
+  .home-orbit[class*="home-mobile-focus-"]::before {
+    inset: 4.75rem 0 0;
+    animation: none;
+    background-position: center top;
+    background-size: 88% auto;
+    background-repeat: no-repeat;
+    filter: blur(4px) saturate(0.78);
+    opacity: 0.68;
+    transform: none;
+    will-change: auto;
+  }
+  .home-orbit.home-mobile-focus-about::before {
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/about-light.png");
+  }
+  .home-orbit.home-mobile-focus-projects::before {
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/projects-light.png");
+  }
+  .home-orbit.home-mobile-focus-contact::before {
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/contact-light.png");
+  }
+  .home-orbit.home-mobile-focus-recipes::before {
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/recipes-light.png");
+  }
+  .home-orbit.home-mobile-focus-tools::before {
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/tools-light.png");
+  }
+  .home-orbit.home-mobile-focus-restaurants::before {
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/restaurants-light.png");
+  }
+  .dark .home-orbit[class*="home-mobile-focus-"]::before {
+    filter: blur(4px) saturate(0.72);
+    opacity: 0.68;
+  }
+  .dark .home-orbit.home-mobile-focus-about::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/about-dark.png"); }
+  .dark .home-orbit.home-mobile-focus-projects::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/projects-dark.png"); }
+  .dark .home-orbit.home-mobile-focus-contact::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/contact-dark.png"); }
+  .dark .home-orbit.home-mobile-focus-recipes::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/recipes-dark.png"); }
+  .dark .home-orbit.home-mobile-focus-tools::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/tools-dark.png"); }
+  .dark .home-orbit.home-mobile-focus-restaurants::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/restaurants-dark.png"); }
   .photo-grid-rail { display: none; }
   .mobile-photo-collage {
     position: absolute;

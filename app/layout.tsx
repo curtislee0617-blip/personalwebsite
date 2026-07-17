@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
   icons: {
     icon: [
+      { url: "/favicon.png", sizes: "64x64", type: "image/png" },
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     title: "My personal website",
     description: "School, work and life.",
     type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "A collage of Curtis Lee's CV, projects, recipes, restaurants, tools, and contact pages." }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Curtis Lee's dashboard-style Quick access menu with Personal and Professional sections." }],
   },
   twitter: {
     card: "summary_large_image",

@@ -76,7 +76,7 @@ export default function BiodieselProjectViewerPage() {
                 <div className="mt-6 space-y-4">
                   {document.pages.map((page, index) => (
                     <figure className="overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface shadow-[0_20px_45px_rgba(32,35,31,0.06)]" key={page}>
-                      <div className="relative aspect-[1/1.414]">
+                      <div className={document.id === "synthesis-presentation" ? "relative aspect-video" : "relative aspect-[1/1.414]"}>
                         <Image
                           alt={`${document.title} page ${index + 1}`}
                           className="object-contain object-top"
