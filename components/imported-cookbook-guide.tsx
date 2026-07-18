@@ -133,7 +133,8 @@ function RecipeCard({
 
   return (
     <article
-      className="cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition"
+      className={`cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition ${open ? "cookbook-rail-card--open" : ""}`}
+      data-open={open}
       id={`${cookbook.id}-${recipe.id}`}
     >
       <CookbookRecipeCardSummary
@@ -278,14 +279,14 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
       <CookbookSearch bookName={cookbook.title} onChange={setQuery} scope="recipe titles, ingredients and methods" value={query} />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <p className="max-w-3xl text-sm leading-6 text-ink/55">{cookbook.description}</p>
-        <div className="hidden items-center gap-2 sm:flex">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             aria-pressed={layout === "all"}
             className="rounded-full border border-ink/12 px-4 py-2 text-xs font-semibold text-ink/55"
             onClick={() => setLayout((current) => current === "categories" ? "all" : "categories")}
             type="button"
           >
-            {layout === "categories" ? "Expand all" : "Category rows"}
+            {layout === "categories" ? "All recipe cards" : "Category rows"}
           </button>
           <button
             className="rounded-full border border-ink/12 px-4 py-2 text-xs font-semibold text-ink/55"
@@ -295,7 +296,7 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
             }))}
             type="button"
           >
-            {allOpen ? "Collapse recipes" : "Open recipes"}
+            {allOpen ? "Collapse all" : "Expand all"}
           </button>
         </div>
       </div>

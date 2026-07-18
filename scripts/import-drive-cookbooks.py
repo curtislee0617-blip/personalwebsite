@@ -256,7 +256,10 @@ def ingredient_groups(lines: Iterable[str]) -> list[dict[str, Any]]:
 
 
 def category_for(page: int, categories: list[tuple[int, str]]) -> str:
-    return max((category for first, category in categories if page >= first), default=categories[0][1])
+    return next(
+        (category for first, category in reversed(categories) if page >= first),
+        categories[0][1],
+    )
 
 
 def unique_ids(recipes: list[dict[str, Any]]) -> None:
@@ -1231,54 +1234,38 @@ def thai_title_groups(page: Any, x0: float, x1: float) -> list[tuple[float, floa
 
 
 def import_thailand() -> dict[str, Any]:
-    pdf_path = PDF_ROOT / "thailand-the-cookbook.pdf"
+    source_path = ROOT / "scripts" / "data" / "thailand-recipes.json"
+    source_records = json.loads(source_path.read_text())
     recipes: list[dict[str, Any]] = []
-    with pdfplumber.open(pdf_path) as pdf:
-        for page_number in range(28, 508):
-            page = pdf.pages[page_number - 1]
-            for x0, x1 in ((25, 198), (198, 385)):
-                titles = thai_title_groups(page, x0, x1)
-                for index, (top, bottom, title) in enumerate(titles):
-                    end = titles[index + 1][0] - 8 if index + 1 < len(titles) else 555
-                    lines = page_lines(page, (x0, bottom + 2, x1, end))
-                    if not lines:
-                        continue
-                    normalized_lines = [fuzzy_thai_meta(line.text) for line in lines]
-                    method_pos = next(
-                        (i for i, line in enumerate(normalized_lines) if starts_method(line)),
-                        len(lines),
-                    )
-                    meta_end = 0
-                    for i, line in enumerate(normalized_lines[:method_pos]):
-                        if line in {"Origin", "Preparation time", "Cooking time", "Serves", "Makes"}:
-                            meta_end = i + 1
-                    ingredients = normalized_lines[meta_end:method_pos]
-                    raw_meta = [line.text for line in lines[:meta_end]]
-                    yield_text, prep, cook = extract_meta(raw_meta)
-                    steps = paragraph_groups(lines[method_pos:], gap=15)
-                    # Discard obvious section ornaments or photo captions that have
-                    # no ingredient/method body.
-                    if len(ingredients) < 1 or not steps:
-                        continue
-                    recipes.append(
-                        recipe_record(
-                            title=title,
-                            category=category_for(page_number, THAILAND_CATEGORIES),
-                            source_pages=[page_number],
-                            ingredients=ingredients,
-                            steps=steps,
-                            yield_text=yield_text,
-                            prep_time=prep,
-                            cook_time=cook,
-                        )
-                    )
+    for source in source_records:
+        source_pages = source.get("sourcePages") or []
+        if not source_pages or not source.get("ingredients") or not source.get("steps"):
+            continue
+        category = source.get("category") or category_for(
+            int(source_pages[0]), THAILAND_CATEGORIES
+        )
+        recipes.append(
+            recipe_record(
+                title=source["title"],
+                subtitle=re.sub(
+                    r"^Origin\s*", "", source.get("origin") or "", flags=re.I
+                ),
+                category=category,
+                source_pages=[int(page) for page in source_pages],
+                ingredients=source["ingredients"],
+                steps=source["steps"],
+                yield_text=source.get("yield"),
+                prep_time=source.get("prepTime"),
+                cook_time=source.get("cookTime"),
+            )
+        )
     unique_ids(recipes)
     categories = [category for _, category in THAILAND_CATEGORIES]
     return {
         "id": "thailand-the-cookbook",
         "title": "Thailand: The Cookbook",
         "author": "Jean-Pierre Gabriel",
-        "description": "Recipe-only transcription separated visually by column and the book's printed contents.",
+        "description": "Recipe-only transcription rebuilt from the rendered source pages, with the book's contents used for section boundaries and exact PDF pages retained for checking.",
         "recipeCountLabel": f"{len(recipes)} recipes",
         "categories": categories,
         "recipes": recipes,

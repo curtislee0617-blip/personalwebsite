@@ -234,7 +234,7 @@ body {
   html.dashboard-mode .site-menu-shell { display: none; }
   html.dashboard-mode .site-app-shell > div { border-left: 0; background: rgb(var(--color-paper)); }
   html.dashboard-mode .site-app-shell main { font-size: 0.94rem; }
-  html.dashboard-mode .page-shell { max-width: 72rem; padding-right: 1.6rem; padding-left: 1.6rem; }
+  html.dashboard-mode .page-shell { max-width: none; padding-right: 1.6rem; padding-left: 1.6rem; }
   html.dashboard-mode .page-intro { padding-top: 1.4rem !important; }
   html.dashboard-mode .page-intro-title { font-size: clamp(2.35rem, 4vw, 3.85rem); }
   html.dashboard-mode .page-intro-description { max-width: 36rem; margin-top: 0.5rem !important; font-size: 0.75rem !important; line-height: 1.5 !important; }
@@ -5474,7 +5474,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 }
 
 @layer components {
-  .page-shell { @apply mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10 xl:max-w-[90rem] xl:px-12 2xl:max-w-[100rem] 2xl:px-14; }
+  .page-shell { @apply mx-auto w-full max-w-6xl px-5 sm:px-8 lg:max-w-none lg:px-[clamp(2.5rem,4vw,6rem)]; }
   .page-section { @apply page-shell py-16 sm:py-20 lg:py-24; }
   .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.24em] text-moss; }
   .display-title { @apply font-serif text-5xl font-medium leading-[0.98] tracking-[-0.035em] sm:text-6xl lg:text-7xl; }
@@ -6326,6 +6326,7 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
 }
 .book-recipe-carousel .mobile-snap-depth,
 .book-recipe-carousel .cookbook-rail-card { height: 100%; }
+.cookbook-rail-card--open { grid-column: 1 / -1; }
 .book-recipe-section { min-width: 0; max-width: 100%; }
 
 @media (max-width: 639px) {
