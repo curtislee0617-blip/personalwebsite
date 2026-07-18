@@ -2,6 +2,8 @@ import { unstable_cache } from "next/cache";
 import { recipeEntries, recipesByDate } from "@/lib/recipes";
 import { importedRecipeMediaEntries } from "@/data/imported-recipe-media";
 import { instagramSavedRecipes } from "@/data/instagram-saved-recipes";
+import { instagramHighlightRecipeMetadata } from "@/data/instagram-highlight-recipe-metadata";
+import { personalRecipeCategories } from "@/data/personal-recipe-categories";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
 import type { RecipeCardEntry, RecipeIngredientGroup, RecipeMediaItem, RecipeMethodGroup } from "@/lib/recipe-card-types";
@@ -163,16 +165,32 @@ function siteRecipeCards(): RecipeCardEntry[] {
     methodGroups: entry.methodGroups,
     source: "site",
   }));
-  const bossamAndJjampong = importedRecipeMediaEntries.find((entry) => entry.recipeKey === "personal-bossam-jjampong");
+  const importedWithHighlightMetadata: RecipeCardEntry[] = importedRecipeMediaEntries.map((entry) => {
+    const recipeEntry: RecipeCardEntry = entry;
+    const metadata = instagramHighlightRecipeMetadata[recipeEntry.recipeKey];
+    const categories = personalRecipeCategories[recipeEntry.recipeKey];
+    if (!metadata && !categories) return recipeEntry;
+    const storyText = metadata?.storyText?.trim();
+    return {
+      ...recipeEntry,
+      date: metadata?.date ?? recipeEntry.date,
+      categories: categories ? [...categories] : recipeEntry.categories,
+      description: [recipeEntry.description.trim(), storyText ? `Instagram story note: ${storyText}` : ""]
+        .filter(Boolean)
+        .join(" "),
+    };
+  });
+  const bossamAndJjampong = importedWithHighlightMetadata.find((entry) => entry.recipeKey === "personal-bossam-jjampong");
   const bossamAndJjampongCopy: RecipeCardEntry[] = bossamAndJjampong ? [{
     ...bossamAndJjampong,
     recipeKey: "personal-bossam-jjampong-copy",
     slug: "personal-bossam-jjampong-copy",
     title: "Bossam (보쌈)",
     description: "Korean boiled pork belly wraps with salted napa cabbage, saewoo-jeot seasoning, and ssamjang, adapted from Serious Eats.",
+    date: instagramHighlightRecipeMetadata["personal-bossam-jjampong-copy"]?.date,
     sourceLabel: "Serious Eats",
     sourceUrl: "https://www.seriouseats.com/bossam-korean-boiled-pork-wraps",
-    categories: ["meat"],
+    categories: [...personalRecipeCategories["personal-bossam-jjampong-copy"]],
     ingredientGroups: [
       {
         title: "Salted napa cabbage",
@@ -253,7 +271,7 @@ function siteRecipeCards(): RecipeCardEntry[] {
     ],
     media: bossamAndJjampong.media?.map((item) => ({ ...item })),
   }] : [];
-  return [...writtenRecipes, ...importedRecipeMediaEntries, ...bossamAndJjampongCopy];
+  return [...writtenRecipes, ...importedWithHighlightMetadata, ...bossamAndJjampongCopy];
 }
 
 const getUploadedRecipes = unstable_cache(async (): Promise<RecipeCardEntry[]> => {
@@ -296,7 +314,7 @@ function applyOverride(entry: RecipeCardEntry, override?: RecipeOverrideRow): Re
     ...entry,
     title: legacyTitle ? entry.title : override.title,
     description: override.description || entry.description,
-    date: override.recipe_date ?? undefined,
+    date: override.recipe_date ?? entry.date,
     category: undefined,
     categories: legacyTitle ? (entry.categories ?? override.categories) : override.categories,
     ingredientGroups: ingredientGroups.length > 0 ? ingredientGroups : entry.ingredientGroups,
