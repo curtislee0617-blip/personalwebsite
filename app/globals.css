@@ -587,12 +587,35 @@ body.has-page-cursor * { cursor: inherit; }
 .old-man-teh-phase-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .old-man-teh-steps { display: grid; gap: .9rem; margin: 1.1rem 0 0; padding-left: 1.35rem; color: rgb(var(--color-ink) / .68); font-size: .88rem; line-height: 1.7; }
 .old-man-teh-steps li::marker { color: rgb(var(--color-moss)); font-family: var(--font-code); font-size: .75rem; font-weight: 700; }
+.old-man-teh-inline-diagram { overflow: hidden; margin-top: 1.25rem; border: 1px solid rgb(var(--color-ink) / .09); border-radius: 1.1rem; background: #fff; }
+.old-man-teh-inline-diagram img { display: block; width: 100%; height: auto; }
+.old-man-teh-inline-diagram figcaption { padding: .7rem .85rem .8rem; border-top: 1px solid rgb(var(--color-ink) / .08); color: #555; font-size: .7rem; }
 .old-man-teh-source-pages { overflow: hidden; border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.5rem; background: rgb(var(--color-surface) / .42); }
 .old-man-teh-source-pages summary { cursor: pointer; padding: 1.15rem 1.4rem; font-weight: 700; }
 .old-man-teh-source-grid { display: grid; gap: .85rem; padding: 0 1rem 1rem; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .old-man-teh-source-grid figure { overflow: hidden; border-radius: 1rem; background: rgb(var(--color-mist) / .35); }
 .old-man-teh-source-grid img { display: block; width: 100%; height: auto; }
 .old-man-teh-source-grid figcaption { padding: .6rem .75rem .7rem; color: rgb(var(--color-ink) / .58); font-size: .7rem; }
+.artisan-crust-recipe { display: grid; gap: 1.25rem; }
+.artisan-crust-recipe .viennoiserie-photo-heading,
+.artisan-crust-recipe .viennoiserie-source-note { margin-top: 0; }
+.artisan-crust-recipe .viennoiserie-source-note a { color: rgb(var(--color-moss)); font-weight: 700; }
+.artisan-crust-overview { display: grid; gap: 1rem; align-items: stretch; grid-template-columns: minmax(0, 1.15fr) minmax(16rem, .85fr); }
+.artisan-crust-table-wrap { overflow-x: auto; margin-top: 1rem; }
+.artisan-crust-formula-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.artisan-crust-formula-table th,
+.artisan-crust-formula-table td { padding: .7rem .55rem; border-bottom: 1px solid rgb(var(--color-ink) / .09); text-align: left; }
+.artisan-crust-formula-table th { color: rgb(var(--color-ink) / .48); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; }
+.artisan-crust-formula-table th:nth-child(n + 2),
+.artisan-crust-formula-table td:nth-child(n + 2) { white-space: nowrap; font-family: var(--font-code); font-size: .74rem; }
+.artisan-crust-formula-table tbody tr:last-child td { border-bottom: 0; }
+.artisan-crust-batch { display: grid; overflow: hidden; border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.5rem; background: rgb(var(--color-mist) / .25); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.artisan-crust-batch div { display: grid; gap: .35rem; align-content: center; min-height: 7rem; padding: 1rem 1.15rem; border-right: 1px solid var(--line-subtle); border-bottom: 1px solid var(--line-subtle); }
+.artisan-crust-batch div:nth-child(2n) { border-right: 0; }
+.artisan-crust-batch div:nth-last-child(-n + 2) { border-bottom: 0; }
+.artisan-crust-batch span { color: rgb(var(--color-ink) / .5); font-size: .67rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.artisan-crust-batch strong { font-size: .95rem; }
+.artisan-crust-method-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 @media (max-width: 800px) {
   .viennoiserie-scaler-heading { align-items: start; flex-direction: column; }
@@ -601,7 +624,9 @@ body.has-page-cursor * { cursor: inherit; }
   .viennoiserie-step-rail { position: static; grid-template-columns: repeat(3, 1fr); }
   .viennoiserie-step-rail img { height: auto; }
   .old-man-teh-overview,
-  .old-man-teh-phase-grid { grid-template-columns: 1fr; }
+  .old-man-teh-phase-grid,
+  .artisan-crust-overview { grid-template-columns: 1fr; }
+  .artisan-crust-method-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .old-man-teh-source-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -609,6 +634,10 @@ body.has-page-cursor * { cursor: inherit; }
   .viennoiserie-step-rail { grid-template-columns: 1fr; }
   .viennoiserie-step-rail img { height: auto; }
   .old-man-teh-source-grid { grid-template-columns: 1fr; }
+  .artisan-crust-batch,
+  .artisan-crust-method-grid { grid-template-columns: 1fr; }
+  .artisan-crust-batch div { border-right: 0; }
+  .artisan-crust-batch div:nth-last-child(2) { border-bottom: 1px solid var(--line-subtle); }
 }
 
 .viennoiserie-photo-section { margin-top: clamp(3.5rem, 8vw, 7rem); scroll-margin-top: 7rem; }

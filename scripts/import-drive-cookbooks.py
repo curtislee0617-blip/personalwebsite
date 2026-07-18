@@ -858,57 +858,238 @@ def import_science_of_spice() -> dict[str, Any]:
     }
 
 
-OPEN_CRUMB_STARTS = [62, 66, 70, 74, 78, 82, 86, 90, 94]
-OPEN_CRUMB_TITLES = [
-    "The Parmesan Core-Shaker Sourdough",
-    "With-a-Touch-of-Soft-Wheat Sourdough",
-    "The Egg and Cocoa, Less-Salt-More-Drama Sourdough",
-    "Hard White Wheat Sourdough",
-    "The Special Blend Sourdough",
-    "High-Hydration Dinner Rolls",
-    "The Chanel Nº5 of Sourdoughs",
-    "Whole-Grain Sourdough",
-    "Artisan Low-Protein Sourdough",
+OPEN_CRUMB_FORMULAS = [
+    {
+        "start": 62,
+        "title": "The Parmesan Core-Shaker Sourdough",
+        "subtitle": "Durum and Parmesan at 85% hydration.",
+        "source_pages": [62, 64],
+        "ingredients": [
+            "262.5g bread flour (12.5% protein, Bob’s Red Mill Artisan Bread Flour)",
+            "87.5g durum flour (Central Milling Fancy Durum)",
+            "297.5g water (85% hydration)",
+            "70g strong and active starter or levain",
+            "7g salt",
+            "Finely grated Parmesan, to taste",
+        ],
+        "steps": [
+            "Build a levain with 25g bathed starter, 25g flour and 25g water (1:1:1). Keep it at 81°F (27°C), stir it with mini stretch-and-folds after 1-2 hours, and use it at peak activity, about 6 hours in the author’s conditions.",
+            "Autolyse the flours and water for 2 hours. A longer autolyse of up to 6 hours may also be used.",
+            "Add the levain and mix by hand with the Rubaud method for 1-2 minutes. Rest for 5-7 minutes, then mix for another 1-2 minutes.",
+            "Rest for 30 minutes, add the salt, and rest for another 30 minutes.",
+            "Laminate the dough and sprinkle over the Parmesan. Transfer it to a bulking dish. Keep the dough around 74-76°F (23-25°C); the author moved it from a 72°F (22°C) room into a 74-75°F (23-24°C) proofer after lamination.",
+            "Perform three coil folds: the first two 45 minutes apart, then the third after 60 minutes. Add another fold only if the dough remains slack and cannot hold its structure.",
+            "Bulk-ferment for about 8 hours in total, counted from adding the levain, using the dough’s volume, strength and activity as the final cues.",
+            "Shape and cold-proof for 8 hours at 38-40°F (3-4°C).",
+            "Bake in a preheated cast-iron vessel for 20 minutes covered at 500°F (260°C), then about 20 minutes uncovered at 430°F (220°C). Bake longer for a darker crust; for an especially thick crust, leave the loaf in the switched-off oven or at 170°F (77°C) for 35-40 minutes.",
+        ],
+    },
+    {
+        "start": 66,
+        "title": "With-a-Touch-of-Soft-Wheat Sourdough",
+        "subtitle": "Soft wheat, overnight autolyse and long fermentation.",
+        "source_pages": [66, 68],
+        "ingredients": [
+            "262.5g bread flour (12.5% protein, Bob’s Red Mill Artisan Bread Flour)",
+            "87.5g soft wheat flour (Petra 1)",
+            "259g water (74% hydration)",
+            "70g levain",
+            "7g salt",
+        ],
+        "steps": [
+            "The night before, build a levain with 18g active starter, 126g flour and 126g water (1:7:7). Keep it at 75°F (24°C) and stir it with mini stretch-and-folds after 1-2 hours. The author used it after 12 hours.",
+            "At the same time, combine the flours and water and autolyse overnight for 12 hours at 67-68°F (19-20°C).",
+            "Add 70g mature levain and mix gently for 1-2 minutes, only until incorporated; the long autolyse has already developed the gluten.",
+            "After 30 minutes, add the salt gently. Wait another 30 minutes, then laminate.",
+            "Perform five coil folds. Space the first four by 45 minutes and the final fold by 60 minutes.",
+            "Bulk-ferment for about 11.5 hours from the addition of the levain. Keep the dough at about 72°F (22°C) until lamination, then 74-75°F (23-24°C), with a target dough temperature of 74-76°F (23-25°C).",
+            "Shape and cold-proof for 15 hours at 38°F (3°C).",
+            "Bake in a preheated cast-iron vessel for 20 minutes covered at 500°F (260°C), then about 20 minutes uncovered at 430°F (220°C). Optionally extend the bake or dry the loaf in the switched-off oven for a darker, thicker crust.",
+        ],
+    },
+    {
+        "start": 70,
+        "title": "The Egg and Cocoa, Less-Salt-More-Drama Sourdough",
+        "subtitle": "Cocoa, egg and reduced salt balanced for a softer open crumb.",
+        "source_pages": [70, 72],
+        "ingredients": [
+            "350g bread flour (12.5% protein, Bob’s Red Mill Artisan Bread Flour)",
+            "15g cocoa powder",
+            "258g water plus 50g from one egg (308g total; 88% hydration)",
+            "70g starter",
+            "5g salt (about 1.5%)",
+        ],
+        "steps": [
+            "Mix the flour and cocoa with the water and egg, then autolyse for 1 hour 10 minutes.",
+            "Add 70g mature egg-yolk-and-sugar starter. The author’s starter was 14.5 hours old and based on a 10:60:60 feed with 6g egg yolk and 9g sugar.",
+            "After 30 minutes, add the salt. Wait another 30 minutes, then laminate.",
+            "Perform four coil folds, spaced 45 minutes apart.",
+            "Let the dough finish fermenting after the last fold. The author’s total bulk was 10 hours at 74-75°F (23-24°C), with a dough temperature of 74-76°F (23-25°C). The dough stayed at 72°F (22°C) until lamination and then moved to a 74-75°F (23-24°C) proofer.",
+            "Shape and cold-proof for 12.5 hours at 38-40°F (3-4°C).",
+            "Bake in a preheated cast-iron vessel for 20 minutes covered at 500°F (260°C), then about 20 minutes uncovered at 430°F (220°C). Optionally extend the bake or dry the loaf in the switched-off oven for a darker, thicker crust.",
+        ],
+    },
+    {
+        "start": 74,
+        "title": "The All-White But Not Boring Sourdough",
+        "subtitle": "Hard white wheat with an overnight autolyse.",
+        "source_pages": [74, 76],
+        "ingredients": [
+            "280g bread flour (12.5% protein, Bob’s Red Mill Artisan Bread Flour)",
+            "70g Palouse hard white wheat bread flour",
+            "280g water (80% hydration)",
+            "70g starter",
+            "7g salt",
+        ],
+        "steps": [
+            "Combine the flours and water and autolyse for 13.5 hours at 67-69°F (19-21°C), allowing the coarse flour and bran to hydrate and soften.",
+            "Add a strong 14-hour starter; the author used starter that had received a sugar bath the night before. Mix gently for 1-2 minutes.",
+            "After 30 minutes, add the salt and dimple it in gently for 1-2 minutes.",
+            "Wait 30 minutes, then laminate. Follow with five coil folds spaced 30 minutes apart, adjusting the interval if the dough relaxes sooner or later.",
+            "Bulk-ferment for about 10 hours at 72-75°F (22-24°C). The author kept the dough at 72°F (22°C) until lamination, then at 74-75°F (23-24°C), with a dough temperature of 72-76°F (22-25°C).",
+            "Shape and cold-proof for 13 hours at 38-40°F (3-4°C).",
+            "Bake in a preheated cast-iron vessel for 20 minutes covered at 500°F (260°C), then about 20 minutes uncovered at 430°F (220°C). Optionally extend the bake or dry the loaf in the switched-off oven for a darker, thicker crust.",
+        ],
+    },
+    {
+        "start": 78,
+        "title": "The Special Blend Sourdough",
+        "subtitle": "A whole-grain and durum blend designed for deep flavour and a crisp crust.",
+        "source_pages": [78, 80],
+        "ingredients": [
+            "245g bread flour (12.5% protein, Bob’s Red Mill Artisan Bread Flour)",
+            "105g Barrio Grains flour (Hayden Flour Mills)",
+            "280g water (80% hydration)",
+            "70g starter",
+            "7g salt",
+        ],
+        "steps": [
+            "Combine the flours and water and autolyse for 13.5 hours at 67-69°F (19-21°C).",
+            "Add 70g mature starter. The author used a 14-hour egg-yolk-and-sugar starter based on a 10:60:60 feed with 6g egg yolk and 9g sugar.",
+            "After 30 minutes, add the salt, incorporating both starter and salt gently.",
+            "Laminate, then perform four coil folds spaced 45 minutes apart.",
+            "Bulk-ferment for about 10 hours at 72-75°F (22-24°C), maintaining a dough temperature of 72-76°F (22-25°C).",
+            "Shape and cold-proof immediately for 14 hours at 38-40°F (3-4°C).",
+            "Bake in a preheated cast-iron vessel for 20 minutes covered at 500°F (260°C), then about 20 minutes uncovered at 430°F (220°C). Optionally extend the bake or dry the loaf in the switched-off oven for a darker, thicker crust.",
+        ],
+    },
+    {
+        "start": 82,
+        "title": "The Very Special Rustic Dinner Rolls",
+        "subtitle": "Low-salt soft-wheat rolls with a long, cool bulk and no shaping.",
+        "source_pages": [82, 84, 85],
+        "ingredients": [
+            "245g bread flour (12.5% protein, Bob’s Red Mill Artisan Bread Flour)",
+            "105g soft wheat flour (Molino Pasini Tipo 2)",
+            "290.5g water (83% hydration)",
+            "50g starter",
+            "3.5g salt (1%)",
+        ],
+        "steps": [
+            "Build a levain with 15g bathed starter, 30g flour and 30g water (1:2:2). Keep it at 81-82°F (27-28°C); the author’s levain peaked in about 6.5 hours.",
+            "Combine the flours and water and autolyse for 2.5 hours.",
+            "Add 50g levain. After 30 minutes, add the salt and mix for about 1 minute. The lower inoculation and salt are intended to suit the very long bulk.",
+            "Laminate, then perform five coil folds. The fifth fold supplies extra structure because the dough will ferment untouched for many hours and the rolls are not shaped.",
+            "Keep the dough near 72°F (22°C) until lamination. The author’s dough ran at 70-72°F (21-22°C) and bulk-fermented for 14 hours at 68-72°F (20-22°C), resting overnight at about 68°F (20°C) after the folds. A 16-hour bulk was also tested.",
+            "Turn the fully fermented dough onto a well-floured counter and cut it into small square pieces without shaping.",
+            "Transfer the rolls to parchment and bake two at a time in a preheated cast-iron vessel for 20 minutes covered at 500°F (260°C). Leave them in the switched-off hot oven for another 30 minutes to harden the crust.",
+        ],
+    },
+    {
+        "start": 86,
+        "title": "The Chanel No. 5 of Sourdoughs",
+        "subtitle": "A classic whole-wheat formula for repeated practice.",
+        "source_pages": [86, 88],
+        "ingredients": [
+            "262.5g bread flour (12.5% protein, Bob’s Red Mill Artisan Bread Flour)",
+            "87.5g whole wheat flour (Palouse hard red winter berry)",
+            "290.5g water",
+            "70g starter",
+            "7g salt",
+        ],
+        "steps": [
+            "Combine the flours and water and autolyse for 2 hours.",
+            "Add 70g mature starter. The author used a 14.5-hour egg-yolk-and-sugar starter. Mix for 2-3 minutes to incorporate.",
+            "After 30 minutes, add the salt and mix for 2-3 minutes.",
+            "Laminate, then perform four coil folds spaced 45 minutes apart.",
+            "Keep the dough at 72°F (22°C) until lamination, then at 74-75°F (23-24°C). Bulk-ferment for about 9 hours 15 minutes, maintaining a dough temperature of roughly 72-75°F (22-24°C).",
+            "Shape and cold-proof for 12 hours at 38-40°F (3-4°C).",
+            "Bake using the standard method: 20 minutes covered at 500°F (260°C), then about 20 minutes uncovered at 430°F (220°C).",
+        ],
+    },
+    {
+        "start": 90,
+        "title": "50% Whole Meal Open Crumb Sourdough",
+        "subtitle": "Half whole meal flour at 90% hydration.",
+        "source_pages": [90, 92, 93],
+        "ingredients": [
+            "175g bread flour (12.5% protein, Bob’s Red Mill Artisan Bread Flour)",
+            "175g whole meal flour (Petra 9)",
+            "315g water (90% hydration)",
+            "70g starter",
+            "7g salt",
+        ],
+        "steps": [
+            "Combine the flours and water and autolyse for 40 minutes. The author recommends a longer autolyse when possible so the coarse bran fully hydrates and softens; reserve some water for bassinage if the hydration feels difficult.",
+            "Add the starter, then add the salt 30 minutes later.",
+            "Laminate and perform three coil folds. This particular flour was strong enough that more folding would have made the dough too elastic.",
+            "Bulk-ferment for about 9 hours at 72-75°F (22-24°C), watching the dough rather than assuming whole meal must finish earlier.",
+            "Shape, place in a banneton, and leave for another 45 minutes at 75°F (24°C) to finish fermenting.",
+            "Cold-proof for 14 hours at 38-40°F (3-4°C).",
+            "Bake using the standard method: 20 minutes covered at 500°F (260°C), then about 20 minutes uncovered at 430°F (220°C).",
+        ],
+    },
+    {
+        "start": 94,
+        "title": "The Artisan Low-Protein Sourdough",
+        "subtitle": "Open crumb made with an 11.5% protein bread flour.",
+        "source_pages": [94],
+        "ingredients": [
+            "245g bread flour (11.5% protein, Central Milling Artisan Bakers Craft)",
+            "105g Type 80 flour (Central Milling)",
+            "280g water (80% hydration)",
+            "70g starter",
+            "7g salt",
+        ],
+        "steps": [
+            "Combine the flours and water and autolyse for 30 minutes.",
+            "Add 70g mature starter. The author used a 15-hour egg-yolk-and-sugar starter.",
+            "After 30 minutes, add the salt and mix by hand until incorporated.",
+            "Laminate, then perform four coil folds spaced 45 minutes apart.",
+            "Bulk-ferment for about 9 hours at 72-75°F (22-24°C), judging the end of bulk from the dough rather than its lower protein percentage.",
+            "Shape and cold-proof for 14.5 hours at 38-40°F (3-4°C).",
+            "Bake using the standard method: 20 minutes covered at 500°F (260°C), then about 20 minutes uncovered at 430°F (220°C).",
+        ],
+    },
 ]
 
 
 def import_open_crumb() -> dict[str, Any]:
     pdf_path = PDF_ROOT / "secrets-of-open-crumb.pdf"
     recipes: list[dict[str, Any]] = []
-    with pdfplumber.open(pdf_path) as pdf:
-        for start, title in zip(OPEN_CRUMB_STARTS, OPEN_CRUMB_TITLES, strict=True):
-            page = pdf.pages[start - 1]
-            ingredients = [
-                line.text
-                for line in page_lines(page, (45, 160, 250, 760))
-                if not re.match(r"^Ingredients", line.text, re.I)
-            ]
-            method_lines = page_lines(page, (250, 150, 590, 770))
-            continuation_page = start + 2
-            if continuation_page <= len(pdf.pages):
-                method_lines.extend(page_lines(pdf.pages[continuation_page - 1], (40, 60, 590, 770)))
-            steps = paragraph_groups(method_lines, gap=18)
-            image = detect_photo_page(
-                pdf_path,
-                start + 1,
-                IMAGE_ROOT / "secrets-of-open-crumb" / f"{slugify(title)}.webp",
+    for formula in OPEN_CRUMB_FORMULAS:
+        image = detect_photo_page(
+            pdf_path,
+            formula["start"] + 1,
+            IMAGE_ROOT / "secrets-of-open-crumb" / f"{slugify(formula['title'])}.webp",
+        )
+        recipes.append(
+            recipe_record(
+                title=formula["title"],
+                subtitle=formula["subtitle"],
+                category="Sourdough formulas",
+                source_pages=formula["source_pages"],
+                ingredients=[{"heading": "Ingredients", "lines": formula["ingredients"]}],
+                steps=formula["steps"],
+                image=image,
             )
-            recipes.append(
-                recipe_record(
-                    title=title,
-                    category="Sourdough formulas",
-                    source_pages=[start, continuation_page],
-                    ingredients=ingredients,
-                    steps=steps,
-                    image=image,
-                )
-            )
+        )
     unique_ids(recipes)
     return {
         "id": "secrets-of-open-crumb",
         "title": "Secrets of Open Crumb",
-        "author": "Adelina Roberts",
-        "description": "Nine complete sourdough formulas with the narrative converted into chronological method steps.",
+        "author": "Adelina (Addie) Roberts · Bread Stalker",
+        "description": "Nine formulas by Adelina (Addie) Roberts, known as Bread Stalker, condensed into chronological working methods with full source credit.",
         "recipeCountLabel": f"{len(recipes)} formulas",
         "categories": ["Sourdough formulas"],
         "recipes": recipes,

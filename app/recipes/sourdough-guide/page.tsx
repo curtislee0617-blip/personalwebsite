@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { SectionRail } from "@/components/section-rail";
 import { SourdoughGuide } from "@/components/sourdough-guide";
+import { getImportedCookbook } from "@/lib/imported-cookbooks";
 
 export const metadata: Metadata = { title: "Sourdough guide" };
 
@@ -10,10 +11,16 @@ const sourdoughSections = [
   { id: "sourdough-calculator", label: "Calculator" },
   { id: "sourdough-timeline", label: "Timeline" },
   { id: "sourdough-gallery", label: "Gallery" },
-  { id: "sourdough-notes", label: "Notes" },
+  { id: "sourdough-notes", label: "My ingredient notes" },
+  { id: "sourdough-open-crumb-summary", label: "Open crumb summary" },
+  { id: "sourdough-open-crumb-recipes", label: "Bread Stalker recipes" },
 ] as const;
 
 export default function SourdoughGuidePage() {
+  const openCrumbCookbook = getImportedCookbook("secrets-of-open-crumb");
+
+  if (!openCrumbCookbook) return null;
+
   return (
     <div className="guide-page">
       <PageIntro
@@ -25,7 +32,7 @@ export default function SourdoughGuidePage() {
 
       <section className="page-section pt-12 sm:pt-16">
         <Link className="back-link-bubble mb-6" href="/recipes">← Back to recipes</Link>
-        <SourdoughGuide />
+        <SourdoughGuide openCrumbCookbook={openCrumbCookbook} />
       </section>
     </div>
   );
