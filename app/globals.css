@@ -2202,7 +2202,7 @@ body.has-page-cursor * { cursor: inherit; }
 
 .section-rail {
   position: fixed;
-  right: max(0.12rem, env(safe-area-inset-right));
+  left: max(0.12rem, env(safe-area-inset-left));
   top: 50%;
   z-index: 18;
   display: flex;
@@ -2212,7 +2212,7 @@ body.has-page-cursor * { cursor: inherit; }
 }
 .section-rail__label {
   position: absolute;
-  right: 2.95rem;
+  left: 2.95rem;
   top: 50%;
   max-width: 8rem;
   overflow: hidden;
@@ -2221,11 +2221,11 @@ body.has-page-cursor * { cursor: inherit; }
   font-weight: 700;
   line-height: 1;
   opacity: 0;
-  text-align: right;
+  text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transform: translate(0.45rem, -50%) scaleX(0.08);
-  transform-origin: right center;
+  transform: translate(-0.45rem, -50%) scaleX(0.08);
+  transform-origin: left center;
   transition: opacity 140ms ease, transform 280ms var(--ease-standard);
 }
 .section-rail.is-scrolling .section-rail__item.is-active .section-rail__label,
@@ -2240,7 +2240,7 @@ body.has-page-cursor * { cursor: inherit; }
   height: min(56svh, 29rem);
   min-height: 18rem;
   margin: 0;
-  padding: 0.65rem 0.08rem 0.65rem 0.35rem;
+  padding: 0.65rem 0.35rem 0.65rem 0.08rem;
   align-content: stretch;
   gap: 0;
   grid-template-rows: repeat(var(--rail-sections), minmax(0, 1fr));
@@ -2251,7 +2251,7 @@ body.has-page-cursor * { cursor: inherit; }
 }
 .section-rail__wave {
   position: absolute;
-  inset: 0.65rem 0.08rem 0.65rem 0.35rem;
+  inset: 0.65rem 0.35rem 0.65rem 0.08rem;
   z-index: 0;
   display: block;
   width: calc(100% - 0.43rem);
@@ -2277,14 +2277,14 @@ body.has-page-cursor * { cursor: inherit; }
   height: 100%;
   min-height: 2.2rem;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   pointer-events: auto;
 }
 .section-rail__item:focus-visible { outline: none; }
 .section-rail__bar { display: none; }
 .section-rail__dot {
   position: absolute;
-  right: 0.08rem;
+  left: 0.08rem;
   top: 50%;
   display: block;
   width: 0.18rem;
@@ -4600,7 +4600,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     --radius-panel: 1.25rem;
   }
   body { font-size: 0.78rem; }
-  .section-rail { right: max(0.08rem, env(safe-area-inset-right)); }
+  .section-rail { left: max(0.08rem, env(safe-area-inset-left)); }
   .course-plan-mobile .course-plan-class-card { padding: 0.38rem 0.45rem; border-radius: 0.65rem; box-shadow: none; }
   .course-plan-mobile .course-plan-class-card textarea { line-height: 1.1rem; }
   .course-plan-mobile-terms > div { scrollbar-width: none; }
@@ -6320,6 +6320,10 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   width: min(48rem, calc(100vw - 5rem));
   flex-basis: min(48rem, calc(100vw - 5rem));
 }
+.book-recipe-carousel > .mobile-snap-slot:has(.cookbook-rail-card--text):not(:has([aria-expanded="true"])) {
+  width: 13rem;
+  flex-basis: 13rem;
+}
 .book-recipe-carousel--compact > .mobile-snap-slot:not(:has([aria-expanded="true"])) {
   width: 13rem;
   flex-basis: 13rem;
@@ -6327,6 +6331,7 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
 .book-recipe-carousel .mobile-snap-depth,
 .book-recipe-carousel .cookbook-rail-card { height: 100%; }
 .cookbook-rail-card--open { grid-column: 1 / -1; }
+.cookbook-rail-card--text { padding: 0 !important; }
 .book-recipe-section { min-width: 0; max-width: 100%; }
 
 @media (max-width: 639px) {
@@ -6339,6 +6344,10 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   .book-recipe-carousel > .mobile-snap-slot:has([aria-expanded="true"]) {
     width: min(calc(100vw - 3.5rem), 30rem);
     flex-basis: min(calc(100vw - 3.5rem), 30rem);
+  }
+  .book-recipe-carousel > .mobile-snap-slot:has(.cookbook-rail-card--text):not(:has([aria-expanded="true"])) {
+    width: 11.5rem;
+    flex-basis: 11.5rem;
   }
   .book-recipe-carousel--compact > .mobile-snap-slot:not(:has([aria-expanded="true"])) {
     width: 12.5rem;

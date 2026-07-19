@@ -19,8 +19,9 @@ function pathNumber(value: number) {
 function waveXAt(y: number, activeY: number) {
   const distance = (y - activeY) / 100;
   const roundedCrest = 17 * Math.exp(-0.5 * (distance / 0.065) ** 2);
+  const rightRailX = Math.min(44, Math.max(22, 42 - roundedCrest));
 
-  return Math.min(44, Math.max(22, 42 - roundedCrest));
+  return 48 - rightRailX;
 }
 
 function createSmoothPath(points: WavePoint[]) {

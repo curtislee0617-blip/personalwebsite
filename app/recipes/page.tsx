@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { MobileDefaultOpenDetails } from "@/components/mobile-default-open-details";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeLibrarySearch } from "@/components/recipe-library-search";
 import { RecipeCard } from "@/components/recipe-card";
@@ -14,6 +15,7 @@ import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { importedCookbooks } from "@/lib/imported-cookbooks";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
+import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
 
 export const metadata: Metadata = { title: "Recipes" };
 
@@ -193,13 +195,15 @@ function GuideVisual({ slug }: { slug: string }) {
 
 export default async function RecipesPage() {
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
-  const [recipes, instagramRecipes] = await Promise.all([
+  const [recipes, instagramRecipes, savedCookbookRecipes] = await Promise.all([
     getPersonalRecipeCards(),
     getInstagramSavedRecipeCards(),
+    getRecipeWishlistEntries(),
   ]);
   const recipeByKey = new Map(recipes.map((entry) => [entry.recipeKey, entry]));
   const publishedUploadTitles = new Set(recipes.filter((entry) => entry.source === "uploaded").map((entry) => entry.title.toLowerCase()));
-  const wishlist = wishlistEntries.filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
+  const wishlist = [...savedCookbookRecipes, ...wishlistEntries]
+    .filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
   const authenticated = await isRecipeAdminAuthenticated();
   const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes);
   const chronologicalRecipes = [...recipes].sort((a, b) => {
@@ -292,7 +296,7 @@ export default async function RecipesPage() {
                 const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
 
                 return (
-                  <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
+                  <MobileDefaultOpenDetails className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
                     <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
                       <h3 className="text-2xl font-semibold tracking-tight">{section.title}</h3>
                       <span className="grid size-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-paper/80 text-lg text-ink/50 transition group-open:rotate-45">
@@ -315,7 +319,7 @@ export default async function RecipesPage() {
                         ))}
                       </RecipeShelf>
                     ) : <div className="mt-6 rounded-2xl border border-dashed border-ink/10 p-5 text-sm text-ink/40">No recipes here yet.</div>}
-                  </details>
+                  </MobileDefaultOpenDetails>
                 );
               })}
             </div>
@@ -336,11 +340,21 @@ export default async function RecipesPage() {
               </Link>
               {wishlist.map((entry) => (
                   <article className="design-panel rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:p-8" key={entry.slug}>
-                    <p className="eyebrow">To make</p>
+                    {entry.image && (
+                      <div className="relative mb-5 aspect-[16/9] overflow-hidden rounded-[1.25rem] bg-mist/30">
+                        <Image alt={entry.title} className="object-cover" fill sizes="(max-width: 768px) 90vw, 24rem" src={entry.image} />
+                      </div>
+                    )}
+                    <p className="eyebrow">{entry.bookTitle ? `From ${entry.bookTitle}` : "To make"}</p>
                     <h3 className="mt-4 text-xl font-semibold tracking-tight">{entry.title}</h3>
                     {entry.note && <p className="mt-3 text-sm leading-7 text-ink/65">{entry.note}</p>}
+                    {entry.href && (
+                      <Link className="mt-5 inline-flex rounded-full border border-moss/20 bg-lime/25 px-4 py-2 text-xs font-semibold text-moss transition hover:border-moss/35" href={entry.href}>
+                        Open recipe in book
+                      </Link>
+                    )}
                     {authenticated && (
-                      <Link className="mt-5 inline-flex rounded-full border border-ink/15 bg-paper/75 px-4 py-2 text-xs font-semibold text-ink/55 transition hover:border-ink/30 hover:text-ink" href={`/recipes/admin?wishlist=${entry.slug}`}>
+                      <Link className="ml-2 mt-5 inline-flex rounded-full border border-ink/15 bg-paper/75 px-4 py-2 text-xs font-semibold text-ink/55 transition hover:border-ink/30 hover:text-ink" href={`/recipes/admin?wishlist=${encodeURIComponent(entry.slug)}`}>
                         Upload made dish
                       </Link>
                     )}

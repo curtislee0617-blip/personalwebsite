@@ -9,6 +9,7 @@ import { recipeCategories, recipeCategoryTitle } from "@/data/recipe-categories"
 import { RecipePhotoPicker } from "@/components/recipe-photo-picker";
 import { RecipeDeleteButton } from "@/components/recipe-delete-button";
 import { getEditableRecipeCards } from "@/lib/personal-recipes";
+import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
 import { markProcessed, submitRecipe } from "./actions";
 
 export const metadata: Metadata = { title: "Recipe admin", robots: { index: false, follow: false } };
@@ -21,7 +22,8 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
   const params = await searchParams;
   const authenticated = await isRecipeAdminAuthenticated();
   const wishlistSlug = typeof params.wishlist === "string" ? params.wishlist : "";
-  const wishlistEntry = wishlistEntries.find((entry) => entry.slug === wishlistSlug);
+  const savedCookbookRecipes = authenticated ? await getRecipeWishlistEntries() : [];
+  const wishlistEntry = [...savedCookbookRecipes, ...wishlistEntries].find((entry) => entry.slug === wishlistSlug);
 
   if (!authenticated) {
     return (

@@ -187,6 +187,9 @@ export type WishlistEntry = {
   slug: string;
   title: string;
   note?: string;
+  href?: string;
+  image?: string;
+  bookTitle?: string;
 };
 
 export const wishlistEntries: WishlistEntry[] = [];

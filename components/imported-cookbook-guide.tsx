@@ -110,13 +110,21 @@ function ScaleControl({ onChange, value }: { onChange: (value: string) => void; 
 function RecipeCard({
   cookbook,
   index,
+  isAdmin,
+  isWishlistPending,
+  isWishlisted,
   onToggle,
+  onToggleWishlist,
   open,
   recipe,
 }: {
   cookbook: ImportedCookbook;
   index: number;
+  isAdmin: boolean;
+  isWishlistPending: boolean;
+  isWishlisted: boolean;
   onToggle: () => void;
+  onToggleWishlist: () => void;
   open: boolean;
   recipe: ImportedCookbookRecipe;
 }) {
@@ -130,25 +138,66 @@ function RecipeCard({
     recipe.prepTime ? `Prep ${recipe.prepTime}` : null,
     recipe.cookTime ? `Cook ${recipe.cookTime}` : null,
   ].filter(Boolean).join(" · ");
+  const ingredientCount = recipe.ingredientGroups.reduce((count, group) => count + group.lines.length, 0);
+  const hasImage = Boolean(recipe.image);
 
   return (
     <article
-      className={`cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition ${open ? "cookbook-rail-card--open" : ""}`}
+      className={`cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden border border-ink/10 transition ${
+        hasImage
+          ? "rounded-[1.5rem] bg-surface/55 p-3"
+          : "cookbook-rail-card--text rounded-[1.2rem] bg-paper/70"
+      } ${open ? "cookbook-rail-card--open" : ""}`}
       data-open={open}
       id={`${cookbook.id}-${recipe.id}`}
     >
-      <CookbookRecipeCardSummary
-        description={recipe.subtitle ?? ""}
-        fallbackMark={cookbook.title.slice(0, 3).toUpperCase()}
-        image={recipe.image ?? null}
-        imageAlt={`${recipe.title}, from ${cookbook.title}`}
-        index={index}
-        meta={recipe.yield ?? (timing || sourceLabel)}
-        onToggle={onToggle}
-        open={open}
-        title={recipe.title}
-        zoomImage={Boolean(recipe.image)}
-      />
+      {hasImage ? (
+        <CookbookRecipeCardSummary
+          description={recipe.subtitle ?? ""}
+          fallbackMark={cookbook.title.slice(0, 3).toUpperCase()}
+          image={recipe.image ?? null}
+          imageAlt={`${recipe.title}, from ${cookbook.title}`}
+          index={index}
+          meta={recipe.yield ?? (timing || sourceLabel)}
+          onToggle={onToggle}
+          open={open}
+          title={recipe.title}
+          zoomImage
+        />
+      ) : (
+        <button
+          aria-expanded={open}
+          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-surface/40 sm:px-5 sm:py-4"
+          onClick={onToggle}
+          type="button"
+        >
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold leading-snug tracking-tight sm:text-base">{recipe.title}</span>
+            {recipe.subtitle && <span className="mt-1 line-clamp-2 block text-[0.68rem] leading-5 text-ink/48">{recipe.subtitle}</span>}
+            <span className="mt-1.5 block text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-ink/35">
+              {ingredientCount} {ingredientCount === 1 ? "ingredient" : "ingredients"} · {recipe.yield ?? sourceLabel}
+            </span>
+          </span>
+          <span aria-hidden="true" className={`shrink-0 text-base text-ink/35 transition ${open ? "rotate-45" : ""}`}>+</span>
+        </button>
+      )}
+      {isAdmin && (
+        <div className={`flex justify-end ${hasImage ? "mt-2 px-1" : "border-t border-ink/[0.06] px-3 py-2"}`}>
+          <button
+            aria-pressed={isWishlisted}
+            className={`rounded-full border px-3 py-1.5 text-[0.66rem] font-semibold transition disabled:cursor-wait disabled:opacity-50 ${
+              isWishlisted
+                ? "border-moss/25 bg-lime/35 text-moss"
+                : "border-ink/12 bg-paper/70 text-ink/50 hover:border-moss/30 hover:text-moss"
+            }`}
+            disabled={isWishlistPending}
+            onClick={onToggleWishlist}
+            type="button"
+          >
+            {isWishlistPending ? "Saving…" : isWishlisted ? "✓ In wishlist" : "+ Move to wishlist"}
+          </button>
+        </div>
+      )}
       {open && (
         <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {recipe.image && (
@@ -167,12 +216,16 @@ function RecipeCard({
             </RecipeImageViewer>
           )}
 
-          <header>
-            <p className="eyebrow">{recipe.yield ?? sourceLabel}</p>
-            <h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{recipe.title}</h3>
-            {recipe.subtitle && <p className="mt-2 text-sm leading-6 text-ink/55">{recipe.subtitle}</p>}
-            {timing && <p className="mt-2 text-xs font-semibold text-ink/42">{timing}</p>}
-          </header>
+          {hasImage ? (
+            <header>
+              <p className="eyebrow">{recipe.yield ?? sourceLabel}</p>
+              <h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{recipe.title}</h3>
+              {recipe.subtitle && <p className="mt-2 text-sm leading-6 text-ink/55">{recipe.subtitle}</p>}
+              {timing && <p className="mt-2 text-xs font-semibold text-ink/42">{timing}</p>}
+            </header>
+          ) : (
+            timing && <p className="text-xs font-semibold text-ink/42">{timing}</p>
+          )}
 
           <ScaleControl onChange={setFactorText} value={factorText} />
 
@@ -237,6 +290,9 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [layout, setLayout] = useState<"categories" | "all">("categories");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [wishlistedRecipeIds, setWishlistedRecipeIds] = useState<Set<string>>(new Set());
+  const [pendingWishlistIds, setPendingWishlistIds] = useState<Set<string>>(new Set());
   const filtered = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase();
     if (!needle) return cookbook.recipes;
@@ -261,14 +317,65 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
     return () => window.removeEventListener("hashchange", openHash);
   }, [cookbook.id, cookbook.recipes]);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(`/api/recipe-admin/cookbook-wishlist?cookbookId=${encodeURIComponent(cookbook.id)}`, { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data: { authenticated?: boolean; recipeIds?: string[] } | null) => {
+        if (cancelled || !data?.authenticated) return;
+        setIsAdmin(true);
+        setWishlistedRecipeIds(new Set(data.recipeIds ?? []));
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [cookbook.id]);
+
+  const toggleWishlist = async (recipeId: string) => {
+    const inWishlist = wishlistedRecipeIds.has(recipeId);
+    setPendingWishlistIds((current) => new Set(current).add(recipeId));
+
+    try {
+      const response = await fetch("/api/recipe-admin/cookbook-wishlist", {
+        body: JSON.stringify({
+          action: inWishlist ? "remove" : "add",
+          cookbookId: cookbook.id,
+          recipeId,
+        }),
+        headers: { "content-type": "application/json" },
+        method: "POST",
+      });
+      if (!response.ok) return;
+      setWishlistedRecipeIds((current) => {
+        const next = new Set(current);
+        if (inWishlist) next.delete(recipeId);
+        else next.add(recipeId);
+        return next;
+      });
+    } finally {
+      setPendingWishlistIds((current) => {
+        const next = new Set(current);
+        next.delete(recipeId);
+        return next;
+      });
+    }
+  };
+
   const recipeIds = filtered.map((recipe) => recipe.id);
   const allOpen = recipeIds.length > 0 && recipeIds.every((id) => open[id]);
   const renderRecipe = (recipe: ImportedCookbookRecipe) => (
     <RecipeCard
       cookbook={cookbook}
       index={cookbook.recipes.indexOf(recipe)}
+      isAdmin={isAdmin}
+      isWishlistPending={pendingWishlistIds.has(recipe.id)}
+      isWishlisted={wishlistedRecipeIds.has(recipe.id)}
       key={recipe.id}
       onToggle={() => setOpen((current) => ({ ...current, [recipe.id]: !current[recipe.id] }))}
+      onToggleWishlist={() => toggleWishlist(recipe.id)}
       open={Boolean(open[recipe.id])}
       recipe={recipe}
     />

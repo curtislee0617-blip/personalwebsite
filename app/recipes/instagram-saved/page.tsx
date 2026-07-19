@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { InstagramSavedSearch } from "@/components/instagram-saved-search";
+import { MobileDefaultOpenDetails } from "@/components/mobile-default-open-details";
 import { RecipeCard } from "@/components/recipe-card";
 import { RecipeShelf } from "@/components/recipe-shelf";
 import { SectionRail } from "@/components/section-rail";
@@ -74,7 +75,7 @@ export default async function InstagramSavedRecipesPage() {
             <h2>Categories</h2>
           </div>
           {populatedCategories.map((category) => (
-              <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`instagram-category-${category.id}`} key={category.id}>
+              <MobileDefaultOpenDetails className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`instagram-category-${category.id}`} key={category.id}>
                 <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
                   <span>
                     <h2 className="text-2xl font-semibold tracking-tight">{category.title}</h2>
@@ -93,7 +94,7 @@ export default async function InstagramSavedRecipesPage() {
                     />
                   ))}
                 </RecipeShelf>
-              </details>
+              </MobileDefaultOpenDetails>
           ))}
         </div>
       </main>

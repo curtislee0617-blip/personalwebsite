@@ -219,6 +219,32 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["recipe_card_overrides"]["Insert"]>;
         Relationships: [];
       };
+      recipe_wishlist_entries: {
+        Row: {
+          source_key: string;
+          title: string;
+          note: string | null;
+          href: string;
+          image_url: string | null;
+          cookbook_id: string | null;
+          recipe_id: string | null;
+          book_title: string | null;
+          created_at: string;
+        };
+        Insert: {
+          source_key: string;
+          title: string;
+          note?: string | null;
+          href: string;
+          image_url?: string | null;
+          cookbook_id?: string | null;
+          recipe_id?: string | null;
+          book_title?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["recipe_wishlist_entries"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
