@@ -18,6 +18,7 @@ const cityLabels: Record<ContactPresenceCity, string> = {
 
 type ContactPresenceContextValue = {
   authenticated: boolean;
+  customLocationDraftOpen: boolean;
   draftMessage: string;
   editorOpen: boolean;
   error: string;
@@ -26,7 +27,7 @@ type ContactPresenceContextValue = {
   publishMessage: () => Promise<void>;
   clearPresence: () => Promise<void>;
   selectCity: (city: ContactPresenceCity) => Promise<void>;
-  selectTravelling: () => Promise<void>;
+  selectTravelling: () => void;
   setDraftMessage: (message: string) => void;
   status: ContactPresenceStatus;
   toggleEditor: () => void;
@@ -61,6 +62,7 @@ export function ContactPresenceProvider({
   );
   const [authenticated, setAuthenticated] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
+  const [customLocationDraftOpen, setCustomLocationDraftOpen] = useState(false);
   const [draftMessage, setDraftMessage] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -151,19 +153,23 @@ export function ContactPresenceProvider({
   async function selectCity(city: ContactPresenceCity) {
     if (!authenticated || pending) return;
     if (await persist({ ...status, city, isTravelling: false })) {
+      setCustomLocationDraftOpen(false);
       setEditorOpen(false);
     }
   }
 
-  async function selectTravelling() {
+  function selectTravelling() {
     if (!authenticated || pending) return;
+    setDraftMessage(status.isTravelling ? status.message : "");
+    setCustomLocationDraftOpen(true);
+    setError("");
     setEditorOpen(true);
-    await persist({ ...status, city: null, isTravelling: true });
   }
 
   async function clearPresence() {
     if (!authenticated || pending) return;
     if (await persist({ ...status, city: null, isTravelling: false })) {
+      setCustomLocationDraftOpen(false);
       setEditorOpen(false);
     }
   }
@@ -171,15 +177,22 @@ export function ContactPresenceProvider({
   async function publishMessage() {
     if (!authenticated || pending) return;
     const message = draftMessage.trim().replace(/\s+/g, " ");
-    if (await persist({ ...status, message })) {
+    if (!message) {
+      setError("Enter the location you want to display.");
+      return;
+    }
+    if (await persist({ ...status, city: null, isTravelling: true, message })) {
+      setCustomLocationDraftOpen(false);
       setEditorOpen(false);
     }
   }
 
   function toggleEditor() {
+    const nextOpen = !editorOpen;
     setDraftMessage(status.message);
+    setCustomLocationDraftOpen(nextOpen && status.isTravelling);
     setError("");
-    setEditorOpen((open) => !open);
+    setEditorOpen(nextOpen);
   }
 
   return (
@@ -187,6 +200,7 @@ export function ContactPresenceProvider({
       value={{
         authenticated,
         clearPresence,
+        customLocationDraftOpen,
         draftMessage,
         editorOpen,
         error,
@@ -215,6 +229,7 @@ export function ContactPresenceControls() {
   const {
     authenticated,
     clearPresence,
+    customLocationDraftOpen,
     draftMessage,
     editorOpen,
     error,
@@ -260,7 +275,9 @@ export function ContactPresenceControls() {
                 <div>
                   <span>Current location</span>
                   <strong>
-                    {status.city
+                    {customLocationDraftOpen
+                      ? draftMessage.trim() || "Elsewhere"
+                      : status.city
                       ? cityLabels[status.city]
                       : status.isTravelling
                         ? status.message || "Travelling elsewhere"
@@ -272,7 +289,7 @@ export function ContactPresenceControls() {
                 </button>
               </div>
               <p className="contact-presence-editor-hint">Tap a city, or tap the suitcase corner for somewhere else.</p>
-              {status.isTravelling ? (
+              {customLocationDraftOpen ? (
                 <form onSubmit={handlePublish}>
                   <label htmlFor="contact-presence-message">Location beneath the traveller</label>
                   <input
@@ -286,7 +303,7 @@ export function ContactPresenceControls() {
                   />
                   <div className="contact-presence-editor-actions">
                     <span>{draftMessage.length}/140</span>
-                    <button disabled={pending} type="submit">{pending ? "Saving…" : "Publish"}</button>
+                    <button disabled={pending || !draftMessage.trim()} type="submit">{pending ? "Saving…" : "Publish"}</button>
                   </div>
                 </form>
               ) : (
@@ -315,7 +332,15 @@ export function ContactPresenceControls() {
 }
 
 export function ContactPresenceCityTargets() {
-  const { authenticated, editorOpen, pending, selectCity, selectTravelling, status } = useContactPresence();
+  const {
+    authenticated,
+    customLocationDraftOpen,
+    editorOpen,
+    pending,
+    selectCity,
+    selectTravelling,
+    status,
+  } = useContactPresence();
   if (!authenticated) return null;
 
   return (
@@ -335,10 +360,10 @@ export function ContactPresenceCityTargets() {
       ))}
       <button
         aria-label="Set current location to somewhere else"
-        aria-pressed={status.isTravelling}
+        aria-pressed={customLocationDraftOpen || status.isTravelling}
         className="contact-presence-travel-target"
         disabled={pending}
-        onClick={() => void selectTravelling()}
+        onClick={selectTravelling}
         type="button"
       >
         {editorOpen ? <span>Elsewhere</span> : null}

@@ -7,6 +7,7 @@ import {
 import { ContactCityTimeRow } from "@/components/contact-city-clocks";
 import {
   ContactPresenceCityTargets,
+  ContactPresenceControls,
   ContactTravellingPresence,
 } from "@/components/contact-presence";
 
@@ -53,6 +54,7 @@ export function ContactCityArtwork({
       <link as="image" href="/contact-harbour-boat-day-v1.png" rel="preload" />
       <link as="image" href="/contact-harbour-boat-night-v1.png" rel="preload" />
       <div className={["contact-cities-art", className].filter(Boolean).join(" ")}>
+        {editable ? <ContactPresenceControls /> : null}
         <ContactCityArtCycle timeSource={timeSource}>
           <ContactTravellingPresence />
           <div className="contact-cities-scene-frame">

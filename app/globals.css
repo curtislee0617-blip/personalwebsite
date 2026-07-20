@@ -1402,13 +1402,13 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-travelling-presence-location { position: absolute; right: 0; left: auto; top: calc(100% + 0.18rem); display: block; width: max-content; max-width: min(10rem, calc(100vw - 2rem)); padding: 0; overflow: hidden; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--travelling-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 0.72; text-align: right; text-overflow: ellipsis; text-rendering: geometricPrecision; text-shadow: 0 1px 2px var(--travelling-label-shadow); text-transform: uppercase; transform: none; white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .contact-city-time-row { position: absolute; inset: auto 0 5.2% 0; z-index: 8; height: 2.8rem; color: rgb(var(--color-ink)); pointer-events: none; }
 .contact-city-clock { position: absolute; top: 0; left: var(--contact-clock-x); min-width: 0; text-shadow: none; transform: translateX(-50%); }
-.contact-city-clock-hk { --contact-clock-x: 81.3%; top: 0.31rem; display: grid; justify-items: center; color: var(--hk-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--hk-night))); }
+.contact-city-clock-hk { --contact-clock-x: 83.4%; top: 0.31rem; display: grid; justify-items: center; color: var(--hk-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--hk-night))); }
 .contact-flip-clock { display: flex; align-items: center; min-height: 1.72rem; gap: 0.16rem; font-family: var(--font-ui); font-size: clamp(0.78rem, 1.5vw, 1rem); font-weight: 700; letter-spacing: 0.02em; }
 .contact-flip-clock span { position: relative; display: grid; min-width: 1.62rem; height: 1.55rem; place-items: center; overflow: hidden; border-radius: 0.34rem; background: linear-gradient(to bottom, #20201f 0 48%, #151514 48% 52%, #2b2b29 52% 100%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16); color: #f7ead3; }
 .contact-flip-clock span::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid rgb(0 0 0 / 0.45); }
 .contact-flip-clock i { color: var(--hk-clock-muted); font-style: normal; font-weight: 800; transform: translateY(-0.03rem); }
 .contact-flip-clock b { align-self: center; margin-left: 0.1rem; color: var(--hk-clock-muted); font-size: 0.46rem; font-weight: 800; letter-spacing: 0.1em; line-height: 1; }
-.contact-city-clock-london { --contact-clock-x: 48.7%; top: 0; display: flex; align-items: center; justify-content: center; gap: 0.42rem; color: var(--london-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--london-night))); }
+.contact-city-clock-london { --contact-clock-x: 50.6%; top: 0; display: flex; align-items: center; justify-content: center; gap: 0.42rem; color: var(--london-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--london-night))); }
 .contact-victorian-clock { position: relative; display: block; width: 2.34rem; aspect-ratio: 1; flex: none; border: 2px solid #5a3b1b; border-radius: 50%; background: radial-gradient(circle, #fbf1d2 0 57%, #d9b878 58% 100%); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.45), 0 4px 10px rgb(69 46 20 / 0.13), 0 0 13px rgb(255 205 102 / calc(0.22 * var(--london-night))); }
 .contact-clock-roman { position: absolute; color: #4a3118; font-family: Georgia, "Times New Roman", serif; font-size: 0.32rem; font-weight: 700; line-height: 1; }
 .contact-clock-roman-xii { left: 50%; top: 0.18rem; transform: translateX(-50%); }
@@ -1424,7 +1424,7 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-clock-la strong { display: inline-flex; align-items: baseline; gap: 0.24rem; font-size: 0.9rem; font-weight: 700; line-height: 1; }
 .contact-city-clock-copy strong span { color: var(--london-clock-muted); font-size: 0.48rem; font-weight: 800; letter-spacing: 0.1em; }
 .contact-city-clock-la strong span { color: rgb(var(--color-ink) / 0.56); font-size: 0.48rem; font-weight: 800; letter-spacing: 0.1em; }
-.contact-city-clock-la { --contact-clock-x: 18.2%; top: 0.31rem; display: grid; justify-items: center; color: rgb(var(--color-ink)); }
+.contact-city-clock-la { --contact-clock-x: 18.2%; top: -0.1rem; display: grid; justify-items: center; color: rgb(var(--color-ink)); }
 .contact-city-clock-la strong { position: relative; font-family: var(--font-ui); font-size: clamp(0.86rem, 1.7vw, 1.1rem); letter-spacing: 0.01em; }
 .contact-digital-clock { display: inline-flex; min-height: 1.72rem; align-items: center; gap: 0.14rem; padding: 0.24rem 0.34rem; border-radius: 0.28rem; background: linear-gradient(180deg, #303238 0%, #181b1f 56%, #0f1215 100%); box-shadow: inset 0 1px 0 rgb(255 233 179 / 0.16), inset 0 -2px 0 rgb(0 0 0 / 0.42), 0 0 12px rgb(255 205 102 / calc(0.14 * var(--la-night))), 0 7px 12px rgb(25 28 32 / 0.18); color: #ffcf65; font-family: var(--font-mono); font-size: clamp(0.82rem, 1.55vw, 1.04rem); font-weight: 750; letter-spacing: 0.04em; line-height: 1; }
 .contact-digital-clock span { text-shadow: 1px 1px 0 #9f4f1f, 2px 2px 0 #602c10, 0 0 6px rgb(255 153 48 / 0.34); }
@@ -4880,11 +4880,11 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-city-glow-field { background: radial-gradient(ellipse 26% 26% at 15.7% 48%, rgb(255 190 111 / calc(0.15 * var(--la-night))), transparent 76%), radial-gradient(ellipse 28% 34% at 84.2% 42%, rgb(71 161 255 / calc(0.16 * var(--hk-night))), transparent 78%); }
   .contact-cities-picture img { width: 100%; }
   .contact-city-time-row { inset: auto 0 1.5% 0; width: auto; height: 2.1rem; margin-top: 0; }
-  .contact-city-clock-hk { --contact-clock-x: 81.3%; top: 0.2rem; }
+  .contact-city-clock-hk { --contact-clock-x: 83.4%; top: 0.2rem; }
   .contact-flip-clock { gap: 0.1rem; font-size: 0.64rem; }
   .contact-flip-clock span { min-width: 1.12rem; height: 1.18rem; border-radius: 0.22rem; }
   .contact-flip-clock b { margin-left: 0.04rem; font-size: 0.32rem; letter-spacing: 0.06em; }
-  .contact-city-clock-london { --contact-clock-x: 48.7%; top: 0.2rem; gap: 0.18rem; }
+  .contact-city-clock-london { --contact-clock-x: 50.6%; top: 0.2rem; gap: 0.18rem; }
   .contact-victorian-clock { width: 1.72rem; border-width: 1px; }
   .contact-clock-roman { font-size: 0.23rem; }
   .contact-victorian-hand-hour { height: 0.42rem; }
@@ -4895,7 +4895,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .contact-city-clock-la strong { gap: 0.12rem; font-size: 0.6rem; }
   .contact-city-clock-copy strong span,
   .contact-city-clock-la strong span { font-size: 0.32rem; letter-spacing: 0.06em; }
-  .contact-city-clock-la { --contact-clock-x: 18.2%; top: 0.2rem; }
+  .contact-city-clock-la { --contact-clock-x: 18.2%; top: -0.18rem; }
   .contact-city-clock-la strong { font-size: 0.62rem; }
   .contact-digital-clock { gap: 0.08rem; padding: 0.2rem 0.22rem; border-radius: 0.22rem; font-size: 0.62rem; letter-spacing: 0.02em; }
   .contact-digital-clock b { margin-left: 0.02rem; font-size: 0.32rem; letter-spacing: 0.06em; }
