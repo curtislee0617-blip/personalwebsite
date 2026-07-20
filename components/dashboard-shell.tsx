@@ -60,7 +60,16 @@ export const dashboardSections = [
     href: "/recipes", label: "Recipes", subtitle: "Personal recipes, detailed guides, and transcribed cookbooks.",
     groups: [
       { href: "/recipes#recipe-guides", label: "Guides", items: [{ href: "/recipes/pasta-guide", label: "Pasta" }, { href: "/recipes/sushi-guide", label: "Sushi" }, { href: "/recipes/viennoiserie-guide", label: "Viennoiserie" }, { href: "/recipes/sourdough-guide", label: "Sourdough" }, { href: "/projects/cook-enterprise?from=recipes", label: "Cookbook" }] },
-      { href: "/recipes#recipe-collection", label: "Collections", items: [{ href: "/recipes#recipe-collection", label: "Recipes", dynamicChildren: "recipe-categories" }, { href: "/recipes#recipe-wishlist", label: "Wishlist", items: [{ href: "/recipes/instagram-saved", label: "Instagram saved food" }] }, { href: "/recipes#recipe-books", label: "Recipe books" }] },
+      {
+        href: "/recipes#recipe-collection",
+        label: "Collections",
+        items: [
+          { href: "/recipes#recipe-collection", label: "Recipes", dynamicChildren: "recipe-categories" },
+          { href: "/recipes#recipe-media-saved", label: "Media saved recipes", items: [{ href: "/recipes/instagram-saved", label: "Instagram" }] },
+          { href: "/recipes#recipe-wishlist", label: "Wishlist" },
+          { href: "/recipes#recipe-books", label: "Recipe books" },
+        ],
+      },
       { href: "/recipes#recipe-books", label: "Cookbooks", items: [{ href: "/recipes/core-basics", label: "Core" }, { href: "/recipes/frantzen", label: "Frantzén" }, { href: "/recipes/modernist-cuisine", label: "Modernist Cuisine" }, { href: "/recipes/pollen-street", label: "Pollen Street" }, { href: "/recipes/opera", label: "Opéra" }, { href: "/recipes/bachour", label: "Bachour" }, { href: "/recipes/benu", label: "Benu" }] },
     ],
   },
@@ -382,8 +391,11 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                                   const dynamicChildren = "dynamicChildren" in item && item.dynamicChildren === "recipe-categories"
                                     ? recipeCategoryNodes
                                     : undefined;
+                                  const staticChildren = "items" in item
+                                    ? item.items.map((child) => ({ href: child.href, label: child.label }))
+                                    : undefined;
                                   return renderDashboardNode(
-                                    { href: item.href, label: item.label, children: dynamicChildren },
+                                    { href: item.href, label: item.label, children: dynamicChildren ?? staticChildren },
                                     `${groupKey}:${item.label}`,
                                   );
                                 })}

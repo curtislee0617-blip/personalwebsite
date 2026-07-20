@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { InstagramPostEmbed } from "@/components/instagram-post-embed";
+import { MediaSavedWishlistButton } from "@/components/media-saved-wishlist";
 import { RecipeDeleteButton } from "@/components/recipe-delete-button";
 import { RecipeMediaGallery } from "@/components/recipe-media-gallery";
 import { RecipeCardThumbnailMedia } from "@/components/recipe-card-thumbnail-media";
@@ -91,6 +92,7 @@ function LinkedRecipeSection({ adminEditHref, recipes }: { adminEditHref?: strin
 
 export function RecipeCard({
   adminEditHref,
+  adminMediaWishlist = false,
   adminReturnTo = "/recipes",
   entry,
   linkedRecipes = [],
@@ -99,6 +101,7 @@ export function RecipeCard({
   variant = "default",
 }: {
   adminEditHref?: string;
+  adminMediaWishlist?: boolean;
   adminReturnTo?: string;
   entry: RecipeCardEntry;
   idPrefix?: string;
@@ -143,11 +146,16 @@ export function RecipeCard({
         </div>
       </summary>
 
-      {adminEditHref && (
+      {(adminEditHref || adminMediaWishlist) && (
         <div className="recipe-card-admin-toolbar">
-          <Link href={adminEditHref}>Edit recipe</Link>
-          <Link href={`${adminEditHref}#linked-recipes`}>+ Link recipe</Link>
-          <RecipeDeleteButton recipeKey={entry.recipeKey} returnTo={adminReturnTo} title={entry.title} />
+          {adminMediaWishlist && <MediaSavedWishlistButton recipeKey={entry.recipeKey} />}
+          {adminEditHref && (
+            <>
+              <Link href={adminEditHref}>Edit recipe</Link>
+              <Link href={`${adminEditHref}#linked-recipes`}>+ Link recipe</Link>
+              <RecipeDeleteButton recipeKey={entry.recipeKey} returnTo={adminReturnTo} title={entry.title} />
+            </>
+          )}
         </div>
       )}
 

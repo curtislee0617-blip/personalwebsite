@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { recipeEntries, recipesByDate } from "@/lib/recipes";
 import { importedRecipeMediaEntries } from "@/data/imported-recipe-media";
 import { instagramSavedRecipes } from "@/data/instagram-saved-recipes";
+import { instagramSavedReelAnalysis } from "@/data/instagram-saved-reel-analysis";
 import { instagramHighlightRecipeMetadata } from "@/data/instagram-highlight-recipe-metadata";
 import { personalRecipeCategories } from "@/data/personal-recipe-categories";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -342,6 +343,10 @@ export async function getInstagramSavedRecipeCards() {
   const overrideByKey = new Map(overrides.map((override) => [override.recipe_key, override]));
   return instagramSavedRecipes
     .filter((entry) => !overrideByKey.get(entry.recipeKey)?.deleted)
+    .map((entry) => ({
+      ...entry,
+      ...(instagramSavedReelAnalysis[entry.recipeKey] ?? {}),
+    }))
     .map((entry) => applyOverride(entry, overrideByKey.get(entry.recipeKey)));
 }
 

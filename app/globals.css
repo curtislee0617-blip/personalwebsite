@@ -2483,15 +2483,39 @@ body.has-page-cursor * { cursor: inherit; }
   display: flex;
   padding: 0.65rem 0.8rem;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.45rem;
   border-top: 1px solid rgb(var(--color-ink) / 0.08);
   background: rgb(var(--color-moss) / 0.055);
 }
-.recipe-card-admin-toolbar a { color: rgb(var(--color-moss)); font-size: 0.6rem; font-weight: 750; transition: color 180ms ease; }
-.recipe-card-admin-toolbar a:hover { color: rgb(var(--color-ink)); }
-.recipe-card-delete-button { color: rgb(var(--color-clay)); font-size: 0.6rem; font-weight: 750; transition: color 180ms ease; }
-.recipe-card-delete-button:hover { color: rgb(var(--color-ink)); }
+.recipe-card-admin-toolbar > a,
+.recipe-card-admin-toolbar > button,
+.recipe-card-admin-toolbar > form > button {
+  display: inline-flex;
+  min-height: 1.85rem;
+  padding: 0.38rem 0.65rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 9999px;
+  background: rgb(var(--color-paper) / 0.72);
+  font-size: 0.6rem;
+  font-weight: 750;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease;
+}
+.recipe-card-admin-toolbar > a,
+.recipe-card-wishlist-button { color: rgb(var(--color-moss)); }
+.recipe-card-admin-toolbar > a:hover,
+.recipe-card-wishlist-button:hover { border-color: rgb(var(--color-moss) / 0.28); color: rgb(var(--color-ink)); }
+.recipe-card-wishlist-button[aria-pressed="true"] { border-color: rgb(var(--color-moss) / 0.24); background: rgb(var(--color-lime) / 0.28); }
+.recipe-card-wishlist-button:disabled { cursor: wait; opacity: 0.5; }
+.recipe-card-admin-toolbar > form { display: flex; margin-left: auto; }
+.recipe-card-delete-button { color: rgb(var(--color-clay)); }
+.recipe-card-delete-button:hover { border-color: rgb(var(--color-clay) / 0.3); color: rgb(var(--color-ink)); }
+.recipe-shelf-card:not([open]) > .recipe-card-admin-toolbar { display: none; }
 .recipe-card-expanded-content {
   display: grid;
   margin-top: 1.25rem;

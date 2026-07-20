@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { MobileDefaultOpenDetails } from "@/components/mobile-default-open-details";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeLibrarySearch } from "@/components/recipe-library-search";
 import { RecipeCard } from "@/components/recipe-card";
@@ -22,6 +21,7 @@ export const metadata: Metadata = { title: "Recipes" };
 const recipePageSections = [
   { id: "recipe-guides", label: "Guides" },
   { id: "recipe-collection", label: "Recipes" },
+  { id: "recipe-media-saved", label: "Media saved" },
   { id: "recipe-wishlist", label: "Wishlist" },
   { id: "recipe-books", label: "Books" },
 ] as const;
@@ -49,8 +49,8 @@ function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[], instagramR
   }));
   const instagramEntries: RecipeSearchItem[] = instagramRecipes.map((entry) => ({
     title: entry.title,
-    context: "Instagram saved food",
-    kind: "Wishlist",
+    context: "Media saved recipes · Instagram",
+    kind: "Media saved",
     href: `/recipes/instagram-saved#recipe-${entry.slug}`,
     searchText: [entry.description, ...(entry.categories ?? []), ...(entry.ingredientGroups?.flatMap((group) => group.items) ?? [])].join(" "),
   }));
@@ -262,7 +262,7 @@ export default async function RecipesPage() {
               )}
             </div>
 
-            <details className="recipe-all-section design-panel group mt-6">
+            <details className="recipe-all-section design-panel group mt-6" open>
               <summary className="recipes-section-summary">
                 <span>
                   <span className="eyebrow">Newest to oldest</span>
@@ -296,7 +296,7 @@ export default async function RecipesPage() {
                 const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
 
                 return (
-                  <MobileDefaultOpenDetails className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
+                  <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
                     <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
                       <h3 className="text-2xl font-semibold tracking-tight">{section.title}</h3>
                       <span className="grid size-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-paper/80 text-lg text-ink/50 transition group-open:rotate-45">
@@ -319,9 +319,29 @@ export default async function RecipesPage() {
                         ))}
                       </RecipeShelf>
                     ) : <div className="mt-6 rounded-2xl border border-dashed border-ink/10 p-5 text-sm text-ink/40">No recipes here yet.</div>}
-                  </MobileDefaultOpenDetails>
+                  </details>
                 );
               })}
+            </div>
+          </section>
+
+          <section id="recipe-media-saved">
+            <div>
+              <p className="eyebrow">Media saved recipes</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipes saved from media</h2>
+              <p className="section-description mt-2 text-sm text-ink/50">
+                Recipes and ideas collected from social media, kept separate until I move individual dishes into the wishlist.
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href="/recipes/instagram-saved">
+                <p className="eyebrow">Instagram</p>
+                <h3 className="mt-4 text-xl font-semibold tracking-tight">Instagram saved recipes</h3>
+                <p className="mt-3 text-sm leading-7 text-ink/65">
+                  {instagramRecipes.length} saved posts, with recipe details transcribed from captions, on-screen text, and reels where available.
+                </p>
+              </Link>
             </div>
           </section>
 
@@ -333,11 +353,6 @@ export default async function RecipesPage() {
             </div>
 
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href="/recipes/instagram-saved">
-                <p className="eyebrow">Instagram saved</p>
-                <h3 className="mt-4 text-xl font-semibold tracking-tight">Saved food inspiration</h3>
-                <p className="mt-3 text-sm leading-7 text-ink/65">{instagramRecipes.length} recipe posts, technique references, carousels, and reels collected into searchable cards.</p>
-              </Link>
               {wishlist.map((entry) => (
                   <article className="design-panel rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:p-8" key={entry.slug}>
                     {entry.image && (
@@ -348,18 +363,27 @@ export default async function RecipesPage() {
                     <p className="eyebrow">{entry.bookTitle ? `From ${entry.bookTitle}` : "To make"}</p>
                     <h3 className="mt-4 text-xl font-semibold tracking-tight">{entry.title}</h3>
                     {entry.note && <p className="mt-3 text-sm leading-7 text-ink/65">{entry.note}</p>}
-                    {entry.href && (
-                      <Link className="mt-5 inline-flex rounded-full border border-moss/20 bg-lime/25 px-4 py-2 text-xs font-semibold text-moss transition hover:border-moss/35" href={entry.href}>
-                        Open recipe in book
-                      </Link>
-                    )}
-                    {authenticated && (
-                      <Link className="ml-2 mt-5 inline-flex rounded-full border border-ink/15 bg-paper/75 px-4 py-2 text-xs font-semibold text-ink/55 transition hover:border-ink/30 hover:text-ink" href={`/recipes/admin?wishlist=${encodeURIComponent(entry.slug)}`}>
-                        Upload made dish
-                      </Link>
+                    {(entry.href || authenticated) && (
+                      <div className="mt-5 flex flex-wrap items-center gap-2">
+                        {entry.href && (
+                          <Link className="inline-flex rounded-full border border-moss/20 bg-lime/25 px-4 py-2 text-xs font-semibold text-moss transition hover:border-moss/35" href={entry.href}>
+                            Open saved recipe
+                          </Link>
+                        )}
+                        {authenticated && (
+                          <Link className="inline-flex rounded-full border border-ink/15 bg-paper/75 px-4 py-2 text-xs font-semibold text-ink/55 transition hover:border-ink/30 hover:text-ink" href={`/recipes/admin?wishlist=${encodeURIComponent(entry.slug)}`}>
+                            Upload made dish
+                          </Link>
+                        )}
+                      </div>
                     )}
                   </article>
               ))}
+              {wishlist.length === 0 && (
+                <p className="rounded-[1.5rem] border border-dashed border-ink/15 p-6 text-sm leading-6 text-ink/45">
+                  No recipes have been moved into the wishlist yet.
+                </p>
+              )}
             </div>
           </section>
 

@@ -4,6 +4,74 @@ import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 // Local thumbnails preserve a durable preview; embeds retain original attribution and carousel/reel context.
 export const instagramSavedRecipes: RecipeCardEntry[] = [
   {
+    "recipeKey": "instagram-saved-Da_glhdBoVB",
+    "slug": "instagram-saved-da_glhdbovb",
+    "title": "Arugula Salad with Anchovy Parmesan Panko",
+    "description": "A peppery arugula salad with lemon-Dijon vinaigrette, grated egg, and crisp anchovy-Parmesan breadcrumbs, transcribed from the creator’s Instagram caption.",
+    "sourceLabel": "Instagram",
+    "sourceUrl": "https://www.instagram.com/p/Da_glhdBoVB/",
+    "instagramPostId": "Da_glhdBoVB",
+    "category": "vegetables",
+    "categories": [
+      "vegetables",
+      "seafood",
+      "condiments"
+    ],
+    "ingredientGroups": [
+      {
+        "title": "Salad",
+        "items": [
+          "5 oz baby arugula",
+          "1 hard-boiled egg",
+          "3/4 cup freshly grated Parmigiano Reggiano, plus more for serving",
+          "Freshly cracked black pepper"
+        ]
+      },
+      {
+        "title": "Lemon-Dijon vinaigrette",
+        "items": [
+          "3 tbsp extra-virgin olive oil",
+          "1 tbsp fresh lemon juice",
+          "1 tsp Dijon mustard",
+          "1 tsp lemon zest",
+          "1 small garlic clove, finely grated",
+          "Salt and freshly cracked black pepper"
+        ]
+      },
+      {
+        "title": "Anchovy-Parmesan panko",
+        "items": [
+          "1/2 cup panko breadcrumbs",
+          "2 tbsp extra-virgin olive oil",
+          "3 anchovy fillets, finely minced",
+          "2 tbsp finely grated Parmigiano Reggiano",
+          "Freshly cracked black pepper"
+        ]
+      }
+    ],
+    "methodGroups": [
+      {
+        "title": "Method",
+        "steps": [
+          "Whisk the olive oil, lemon juice, Dijon mustard, lemon zest, garlic, salt, and pepper until emulsified.",
+          "Heat the olive oil for the panko in a skillet over medium heat. Add the anchovies and cook for about 30 seconds, stirring, until they melt into the oil.",
+          "Add the panko and stir often until golden, about 5 minutes. Remove from the heat and immediately stir in the Parmesan and black pepper.",
+          "Lightly dress the arugula with the vinaigrette and transfer it to a plate.",
+          "Grate the hard-boiled egg over the salad. Sprinkle over the anchovy-Parmesan panko and finish with more grated Parmigiano Reggiano."
+        ]
+      }
+    ],
+    "source": "site",
+    "thumbnail": "/recipes/instagram-saved/Da_glhdBoVB.jpg",
+    "media": [
+      {
+        "src": "/recipes/instagram-saved/Da_glhdBoVB.jpg",
+        "type": "image",
+        "alt": "Arugula Salad with Anchovy Parmesan Panko — Instagram preview"
+      }
+    ]
+  },
+  {
     "recipeKey": "instagram-saved-DaiY-_dIFXX",
     "slug": "instagram-saved-daiy-_difxx",
     "title": "Episode 7: The real reason your caramel fails And how",
@@ -1105,24 +1173,93 @@ export const instagramSavedRecipes: RecipeCardEntry[] = [
   {
     "recipeKey": "instagram-saved-DZG8yTlzz_h",
     "slug": "instagram-saved-dzg8ytlzz_h",
-    "title": "食譜 超詳細家庭版",
-    "description": "Saved food inspiration. Open the original Instagram post below to view its full carousel, reel, caption, and creator credit.",
-    "sourceLabel": "Instagram",
+    "title": "Glass-Crisp Chicken Wings (玻璃脆皮雞翅)",
+    "description": "A detailed home version translated into English from Tony Ong's Mandarin reel. This version uses his water brine and three thin coats of egg-white crisp batter, followed by the fully specified air-fryer method.",
+    "sourceLabel": "Tony Ong · Instagram",
     "sourceUrl": "https://www.instagram.com/p/DZG8yTlzz_h/",
     "instagramPostId": "DZG8yTlzz_h",
-    "category": "inspiration",
+    "category": "meat",
     "categories": [
-      "inspiration"
+      "meat"
     ],
-    "ingredientGroups": [],
-    "methodGroups": [],
+    "ingredientGroups": [
+      {
+        "title": "Chicken wings and water brine",
+        "items": [
+          "400g chicken wings (about 10)",
+          "2 chunks fresh ginger",
+          "1 head garlic",
+          "1/2 onion",
+          "15g salt",
+          "15g white sugar",
+          "15g salt-baked chicken seasoning powder (鹽焗雞粉)",
+          "1000ml water"
+        ]
+      },
+      {
+        "title": "Crisp batter",
+        "items": [
+          "5g plain flour",
+          "10g cornstarch",
+          "5g glutinous rice flour",
+          "5g crispy frying powder",
+          "5g baking powder",
+          "15g wheat starch (澄面)",
+          "135g egg whites (about 4–5 eggs)",
+          "15g maltose",
+          "A very small dash of dark soy sauce"
+        ]
+      },
+      {
+        "title": "To finish",
+        "items": [
+          "Neutral cooking-oil spray, as needed"
+        ]
+      }
+    ],
+    "methodGroups": [
+      {
+        "title": "Brine the wings",
+        "steps": [
+          "Blend the ginger, garlic and onion into a coarse aromatic paste.",
+          "Put the paste in a bowl and add the salt, sugar, salt-baked chicken seasoning powder and water. Stir until evenly combined.",
+          "Submerge the chicken wings, cover and refrigerate overnight, about 8 hours."
+        ]
+      },
+      {
+        "title": "Make the crisp batter",
+        "steps": [
+          "Combine the plain flour, cornstarch, glutinous rice flour, crispy frying powder, baking powder and wheat starch.",
+          "Combine the egg whites and maltose, warming the maltose with your hands until it dissolves. Add a very small dash of dark soy sauce.",
+          "Add the dry mixture to the egg-white mixture. Blend for about 20 seconds using a blender, food processor or by pressing it through a fine strainer, until you have a thin, smooth batter.",
+          "Cover and refrigerate for 2–3 hours. The batter will separate while resting, so stir it thoroughly and skim off the surface foam immediately before use."
+        ]
+      },
+      {
+        "title": "Prepare the wings",
+        "steps": [
+          "Rinse the brined wings clean.",
+          "Pour boiling water over the skin to scald it briefly, then dry the wings very thoroughly with kitchen paper."
+        ]
+      },
+      {
+        "title": "Air-fryer method",
+        "steps": [
+          "Dry the wings in the air fryer at 50°C for 20 minutes, or until the surface is dry. Air-fryer power varies, so judge this by the skin rather than the clock alone.",
+          "Brush a thin coat of crisp batter over both sides and dry at 50°C for 10 minutes.",
+          "Apply a second thin coat and dry at 50°C for another 10 minutes.",
+          "Apply the third and final coat and dry at 50°C for 30 minutes. The drier the coating becomes at this stage, the crisper the finished wings will be.",
+          "Spray the surface evenly with oil. Cook at 100°C for 10 minutes, then 150°C for 10 minutes, and finally 200°C for 5 minutes to crisp and colour."
+        ]
+      }
+    ],
     "source": "site",
     "thumbnail": "/recipes/instagram-saved/DZG8yTlzz_h.jpg",
     "media": [
       {
         "src": "/recipes/instagram-saved/DZG8yTlzz_h.jpg",
         "type": "image",
-        "alt": "食譜 超詳細家庭版 — Instagram preview"
+        "alt": "Glass-crisp chicken wings by Tony Ong — Instagram preview"
       }
     ]
   },
