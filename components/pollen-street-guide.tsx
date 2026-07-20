@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-summary";
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
 import { CookbookSearch } from "@/components/cookbook-search";
@@ -63,6 +63,57 @@ function scaleIngredient(line: string, factor: number) {
   return `${prefix}${formatQuantity(first * factor)}${range}${line.slice(match[0].length)}`;
 }
 
+type PollenDishTextReference = {
+  end: number;
+  start: number;
+  target: PollenStreetDish;
+};
+
+function pollenDishTextReferences(text: string, currentDishSlug?: string) {
+  const normalized = text.toLocaleLowerCase();
+  const references: PollenDishTextReference[] = [];
+
+  for (const target of [...pollenStreetDishes].sort((a, b) => b.title.length - a.title.length)) {
+    if (target.slug === currentDishSlug || target.title.length < 7) continue;
+    const title = target.title.toLocaleLowerCase();
+    let start = normalized.indexOf(title);
+    while (start >= 0) {
+      references.push({ end: start + target.title.length, start, target });
+      start = normalized.indexOf(title, start + title.length);
+    }
+  }
+
+  return references
+    .sort((a, b) => a.start - b.start || b.end - a.end)
+    .filter((reference, index, all) =>
+      !all.slice(0, index).some((earlier) => reference.start < earlier.end)
+    );
+}
+
+function LinkedPollenText({ currentDishSlug, text }: { currentDishSlug?: string; text: string }) {
+  const references = pollenDishTextReferences(text, currentDishSlug);
+  if (references.length === 0) return text;
+
+  const result: ReactNode[] = [];
+  let cursor = 0;
+  references.forEach((reference, index) => {
+    if (reference.start > cursor) result.push(text.slice(cursor, reference.start));
+    result.push(
+      <a
+        className="font-semibold text-moss underline decoration-moss/25 underline-offset-2 transition hover:decoration-moss/70"
+        href={`#dish-${reference.target.slug}`}
+        key={`${reference.target.slug}-${reference.start}-${index}`}
+        title={`Open ${reference.target.title}`}
+      >
+        {text.slice(reference.start, reference.end)}
+      </a>,
+    );
+    cursor = reference.end;
+  });
+  if (cursor < text.length) result.push(text.slice(cursor));
+  return result;
+}
+
 function Chevron({ open, small = false }: { open: boolean; small?: boolean }) {
   return (
     <svg
@@ -78,20 +129,20 @@ function Chevron({ open, small = false }: { open: boolean; small?: boolean }) {
   );
 }
 
-function IngredientList({ ingredients, factor }: { ingredients: string[]; factor: number }) {
+function IngredientList({ currentDishSlug, ingredients, factor }: { currentDishSlug?: string; ingredients: string[]; factor: number }) {
   return (
     <ul className="divide-y divide-ink/[0.07] border-y border-ink/[0.07]">
       {ingredients.map((ingredient, index) => (
         <li className="flex gap-2.5 py-2 text-[0.82rem] leading-5 text-ink/68" key={`${ingredient}-${index}`}>
           <span aria-hidden="true" className="mt-[0.46rem] h-1 w-1 shrink-0 rounded-full bg-moss/55" />
-          <span>{scaleIngredient(ingredient, factor)}</span>
+          <span><LinkedPollenText currentDishSlug={currentDishSlug} text={scaleIngredient(ingredient, factor)} /></span>
         </li>
       ))}
     </ul>
   );
 }
 
-function MethodList({ steps }: { steps: string[] }) {
+function MethodList({ currentDishSlug, steps }: { currentDishSlug?: string; steps: string[] }) {
   return (
     <ol className="grid gap-3">
       {steps.map((step, index) => (
@@ -99,7 +150,7 @@ function MethodList({ steps }: { steps: string[] }) {
           <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-ink/15 text-[0.63rem] font-semibold text-ink/48">
             {index + 1}
           </span>
-          <span>{step}</span>
+          <span><LinkedPollenText currentDishSlug={currentDishSlug} text={step} /></span>
         </li>
       ))}
     </ol>
@@ -284,7 +335,7 @@ function BasicsPanel({ query }: { query: string }) {
   );
 }
 
-function DishComponent({ section, factor }: { section: PollenStreetDishSection; factor: number }) {
+function DishComponent({ currentDishSlug, section, factor }: { currentDishSlug: string; section: PollenStreetDishSection; factor: number }) {
   const [open, setOpen] = useState(true);
 
   return (
@@ -308,12 +359,12 @@ function DishComponent({ section, factor }: { section: PollenStreetDishSection; 
           {section.ingredients.length > 0 && (
             <div>
               <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink/40">Ingredients</p>
-              <IngredientList factor={factor} ingredients={section.ingredients} />
+              <IngredientList currentDishSlug={currentDishSlug} factor={factor} ingredients={section.ingredients} />
             </div>
           )}
           <div className={section.ingredients.length === 0 ? "md:col-span-2" : ""}>
             <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink/40">Method</p>
-            <MethodList steps={section.steps} />
+            <MethodList currentDishSlug={currentDishSlug} steps={section.steps} />
           </div>
         </div>
       )}
@@ -354,6 +405,12 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
   const [factorText, setFactorText] = useState("1");
   const parsed = Number.parseFloat(factorText);
   const factor = Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+  const calledForDishes = [...new Map(
+    dish.sections
+      .flatMap((section) => [...section.ingredients, ...section.steps])
+      .flatMap((text) => pollenDishTextReferences(text, dish.slug))
+      .map((reference) => [reference.target.slug, reference.target]),
+  ).values()];
   return (
     <article className="cookbook-rail-card recipe-card scroll-mt-24 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 p-3 transition" id={`dish-${dish.slug}`}>
       <CookbookRecipeCardSummary description={dish.subtitle} fallbackMark="POLLEN STREET" image={dish.images[0] ?? null} imageAlt={`${dish.title}, plated dish`} index={index} meta={`${dish.sections.length} components`} onToggle={onToggle} open={open} title={dish.title} />
@@ -396,9 +453,26 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
 
           <ScaleControl onChange={setFactorText} value={factorText} />
 
+          {calledForDishes.length > 0 && (
+            <nav aria-label={`Recipes called for by ${dish.title}`} className="rounded-[1.2rem] border border-moss/20 bg-lime/25 p-4 sm:p-5">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-moss">Called-for recipes</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {calledForDishes.map((target) => (
+                  <a
+                    className="rounded-full border border-moss/20 bg-paper/75 px-3 py-1.5 text-[0.72rem] font-semibold text-moss transition hover:border-moss/45"
+                    href={`#dish-${target.slug}`}
+                    key={target.slug}
+                  >
+                    {target.title}
+                  </a>
+                ))}
+              </div>
+            </nav>
+          )}
+
           <div className="grid gap-3">
             {dish.sections.map((section) => (
-              <DishComponent factor={factor} key={section.name} section={section} />
+              <DishComponent currentDishSlug={dish.slug} factor={factor} key={section.name} section={section} />
             ))}
           </div>
 

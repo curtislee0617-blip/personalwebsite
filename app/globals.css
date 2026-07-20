@@ -281,8 +281,7 @@ body {
   .dashboard-mode-launch-icon i:first-child { grid-row: 1 / -1; }
 
   html.dashboard-mode .dashboard-mode-launch,
-  html.dashboard-mode .home-orbit-stage,
-  html.dashboard-mode .home-mobile-header { display: none; }
+  html.dashboard-mode .home-orbit-stage { display: none; }
   html.dashboard-mode .home-orbit { min-height: calc(100svh - 73px); padding: 2rem; place-items: center; }
   html.dashboard-mode .home-photo-grid { opacity: 0.42; }
   html.dashboard-mode .photo-grid-rail { filter: saturate(0.82) contrast(0.92); }
@@ -1147,6 +1146,83 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-cities-copy :is(h1, h2) { margin-top: 0.75rem; font-family: var(--font-ui); font-size: clamp(1.7rem, 3vw, 2.8rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.035em; }
 .contact-cities-copy > div > p:last-child { max-width: 28rem; margin-top: 1rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.82rem; line-height: 1.7; }
 .contact-city-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
+.contact-page {
+  display: grid;
+  min-height: calc(100svh - 73px);
+  padding-top: clamp(1.25rem, 4vw, 3.25rem);
+  padding-bottom: clamp(1.25rem, 4vw, 3.25rem);
+  place-items: center;
+}
+.contact-composition {
+  width: min(100%, 60rem);
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 2.25rem;
+  background: rgb(var(--color-surface) / 0.62);
+  box-shadow: 0 24px 70px rgb(var(--color-ink) / 0.12);
+}
+.contact-art-frame {
+  overflow: hidden;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.1);
+  background: rgb(var(--color-paper));
+}
+.contact-art-frame .contact-cities-art { min-height: 16rem; }
+.contact-link-grid {
+  display: grid;
+  width: min(calc(100% - 2rem), 56rem);
+  margin: 0 auto;
+  padding: 1rem 0 1.2rem;
+  gap: 0.7rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.contact-link-card {
+  display: flex;
+  min-width: 0;
+  min-height: 10.5rem;
+  padding: 1rem;
+  justify-content: flex-start;
+  flex-direction: column;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.35rem;
+  background: rgb(var(--color-paper) / 0.62);
+  box-shadow: 0 10px 28px rgb(var(--color-ink) / 0.04);
+}
+.contact-link-heading { display: flex; min-width: 0; align-items: flex-start; justify-content: space-between; gap: 0.6rem; }
+.contact-link-heading > div { min-width: 0; }
+.contact-link-heading h2 { margin-top: 0.42rem; font-size: 0.92rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; }
+.contact-link-icon { width: 2.7rem !important; height: 2.7rem !important; border-radius: 0.9rem !important; }
+.contact-link-icon svg { width: 1.35rem; height: 1.35rem; }
+.contact-link-detail { margin-top: 0.7rem; color: rgb(var(--color-ink) / 0.52); font-size: 0.59rem; line-height: 1.45; }
+.contact-link-label {
+  margin-top: auto;
+  padding-top: 0.8rem;
+  overflow-wrap: anywhere;
+  color: rgb(var(--color-moss));
+  font-size: 0.61rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+.contact-link-card:hover .contact-link-label { color: rgb(var(--color-ink)); }
+
+@media (max-width: 899px) {
+  .contact-composition { width: min(100%, 42rem); border-radius: 1.8rem; }
+  .contact-link-grid { width: min(calc(100% - 1.4rem), 34rem); padding: 0.75rem 0 0.9rem; gap: 0.6rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contact-link-card { min-height: 8.8rem; }
+}
+
+@media (max-width: 639px) {
+  .contact-page { min-height: 0; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+  .contact-composition { border-radius: 1.35rem; box-shadow: 0 16px 44px rgb(var(--color-ink) / 0.1); }
+  .contact-art-frame .contact-cities-art { min-height: 10rem; }
+  .contact-link-grid { width: calc(100% - 0.9rem); padding: 0.48rem 0 0.58rem; gap: 0.45rem; }
+  .contact-link-card { min-height: 7.25rem; padding: 0.68rem; border-radius: 0.95rem; }
+  .contact-link-heading { gap: 0.4rem; }
+  .contact-link-heading h2 { margin-top: 0.28rem; font-size: 0.75rem; }
+  .contact-link-icon { width: 2.15rem !important; height: 2.15rem !important; border-radius: 0.72rem !important; }
+  .contact-link-icon svg { width: 1.05rem; height: 1.05rem; }
+  .contact-link-detail { display: none; }
+  .contact-link-label { padding-top: 0.55rem; font-size: 0.52rem; }
+}
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
 .contact-city-chips i { display: inline-grid; width: 1.12rem; height: 1rem; flex: none; place-items: center; font-style: normal; }
 .contact-city-chip-icon { display: block; width: 100%; height: 100%; overflow: visible; }
@@ -2612,6 +2688,10 @@ body.has-page-cursor * { cursor: inherit; }
 .instagram-saved-search-results a { padding: 0.62rem 0.72rem; border-radius: 0.75rem; color: rgb(var(--color-ink) / 0.72); font-size: 0.7rem; font-weight: 650; }
 .instagram-saved-search-results a:hover { background: rgb(var(--color-moss) / 0.08); color: rgb(var(--color-moss)); }
 .instagram-saved-search-results p { padding: 0.7rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.7rem; }
+.instagram-saved-page .recipe-shelf-card .recipe-card-summary,
+.instagram-saved-page .recipe-shelf-card .recipe-card-copy,
+.youtube-saved-page .recipe-shelf-card .recipe-card-summary,
+.youtube-saved-page .recipe-shelf-card .recipe-card-copy { height: auto; }
 .instagram-saved-all-posts { margin-top: 2rem; }
 .instagram-saved-category-heading { padding-inline: 0.25rem; }
 .instagram-saved-category-heading h2 { margin-top: 0.3rem; font-size: clamp(1.45rem, 2.2vw, 2rem); font-weight: 650; letter-spacing: -0.035em; }
@@ -2648,6 +2728,24 @@ body.has-page-cursor * { cursor: inherit; }
 .recipe-card-linked-body { display: grid; padding: 0.8rem; gap: 0.8rem; border-top: 1px solid rgb(var(--color-ink) / 0.08); }
 .recipe-card-linked-jump { width: fit-content; color: rgb(var(--color-moss)); font-size: 0.58rem; font-weight: 750; }
 .recipe-card-linked-empty { padding: 0.7rem 0.75rem; border: 1px dashed rgb(var(--color-ink) / 0.12); border-radius: 0.85rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.6rem; line-height: 1.45; }
+.recipe-card-reference-links { display: grid; gap: 0.65rem; }
+.recipe-card-reference-links > div { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.recipe-card-reference-links a {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 0.55rem 0.7rem;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgb(var(--color-moss) / 0.2);
+  border-radius: 9999px;
+  background: rgb(var(--color-lime) / 0.2);
+  color: rgb(var(--color-moss));
+  font-size: 0.6rem;
+  font-weight: 750;
+}
+.recipe-card-reference-links a span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recipe-card-reference-links a i { flex: 0 0 auto; font-style: normal; }
+.recipe-card-reference-links a:hover { border-color: rgb(var(--color-moss) / 0.38); color: rgb(var(--color-ink)); }
 .recipe-shelf-card[open] > .recipe-card-admin-toolbar { padding: 0.65rem 1rem !important; }
 .recipe-shelf-card[open] > .recipe-card-expanded-content { padding: 1rem !important; }
 
@@ -3128,8 +3226,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 }
 
 .home-orbit-nav { position: absolute; inset: 0; }
-.home-mobile-nav,
-.home-mobile-header { display: none; }
+.home-mobile-nav { display: none; }
 
 .orbit-link {
   position: absolute;
@@ -4659,42 +4756,6 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .site-app-shell > div:has(main > .home-orbit) footer :where(.footer-link, button) { font-size: 0.54rem !important; }
   .home-profile,
   .home-orbit-nav { display: none; }
-  .home-mobile-header {
-    position: absolute;
-    left: 0.75rem;
-    right: 0.75rem;
-    top: 0.75rem;
-    z-index: 6;
-    display: flex;
-    min-height: 4.35rem;
-    padding: 0.65rem 0.72rem 0.65rem 1rem;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid rgb(var(--color-ink) / 0.15);
-    border-radius: 1.65rem;
-    background: rgb(var(--color-paper) / 0.82);
-    box-shadow: 0 12px 34px rgb(var(--color-ink) / 0.1);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-  }
-  .home-mobile-name { font-family: var(--font-serif); font-size: 1.22rem; font-weight: 700; line-height: 1; letter-spacing: -0.035em; }
-  .home-mobile-intro { margin-top: 0.3rem; color: rgb(var(--color-ink) / 0.55); font-size: 0.56rem; font-weight: 650; letter-spacing: 0.02em; }
-  .home-mobile-portrait {
-    display: grid;
-    width: 3rem;
-    aspect-ratio: 1;
-    flex: 0 0 auto;
-    overflow: hidden;
-    place-items: center;
-    border: 1px solid rgb(var(--color-ink) / 0.16);
-    border-radius: 9999px;
-    background: rgb(var(--color-mist));
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    box-shadow: 0 7px 18px rgb(var(--color-ink) / 0.12);
-  }
-  .dark .home-mobile-header { border-color: rgb(var(--color-ink) / 0.24); background: rgb(var(--color-paper) / 0.9); box-shadow: 0 12px 34px rgb(0 0 0 / 0.4); }
   .home-mobile-nav {
     position: absolute;
     inset: 0;
@@ -4707,63 +4768,72 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     scroll-snap-type: y mandatory;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 5%, #000 95%, transparent);
   }
   .home-mobile-nav::-webkit-scrollbar { display: none; }
   .home-mobile-nav-list {
     display: grid;
     margin: 0;
     padding: calc(50cqh - 1.75rem) 0;
-    gap: clamp(0.8rem, 2svh, 1.2rem);
+    gap: clamp(0.68rem, 1.75svh, 1rem);
     list-style: none;
   }
-  .home-mobile-nav-list li { display: flex; min-height: 3.9rem; align-items: center; scroll-snap-align: center; scroll-snap-stop: always; }
+  .home-mobile-nav-list li { display: flex; min-height: 4.35rem; align-items: center; scroll-snap-align: center; scroll-snap-stop: always; }
   .home-mobile-link {
     position: relative;
     left: 50%;
     display: grid;
-    width: clamp(10.75rem, 52vw, 12.75rem);
-    min-height: 3.7rem;
-    padding: 0.68rem 0.9rem;
+    width: clamp(13rem, 68vw, 17rem);
+    min-height: 4.15rem;
+    padding: 0.76rem 1.1rem;
     align-items: center;
     border: 1px solid rgb(var(--color-ink) / 0.16);
-    border-radius: 2rem;
-    background: rgb(var(--color-paper) / 0.76);
-    box-shadow: 0 12px 34px rgb(var(--color-ink) / 0.1);
+    border-radius: 9999px;
+    background: rgb(var(--color-paper) / 0.74);
+    box-shadow: 0 14px 38px rgb(var(--color-ink) / 0.12);
     color: rgb(var(--color-ink));
-    grid-template-columns: 2.25rem minmax(0, 1fr);
+    grid-template-columns: 2.6rem minmax(0, 1fr);
     opacity: var(--mobile-bubble-opacity, 0.78);
     transform: translate3d(calc(-50% + var(--mobile-arc-x, -2.4rem)), 0, 0) scale(var(--mobile-bubble-scale, 0.9));
     transform-origin: center;
     filter: blur(var(--mobile-bubble-blur, 0.28px));
     transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     will-change: transform, opacity, filter;
   }
   .home-mobile-link[data-active="true"] {
     border-color: rgb(var(--color-ink) / 0.25);
-    background: rgb(var(--color-paper) / 0.92);
-    box-shadow: 0 18px 42px rgb(var(--color-ink) / 0.18);
+    background: rgb(var(--color-paper) / 0.94);
+    box-shadow: 0 20px 48px rgb(var(--color-ink) / 0.2);
   }
-  .home-mobile-link-icon { width: 1.2rem; height: 1.2rem; justify-self: center; object-fit: contain; }
-  .home-mobile-link-label { font-size: 0.92rem; font-weight: 750; letter-spacing: -0.02em; }
+  .home-mobile-link-icon { width: 1.35rem; height: 1.35rem; justify-self: center; object-fit: contain; }
+  .home-mobile-link-label { font-size: 1rem; font-weight: 750; letter-spacing: -0.025em; }
   .dark .home-mobile-link { border-color: rgb(var(--color-ink) / 0.28); background: rgb(var(--color-paper) / 0.88); box-shadow: 0 12px 34px rgb(0 0 0 / 0.38); }
   .dark .home-mobile-link[data-active="true"] { background: rgb(var(--color-paper) / 0.96); box-shadow: 0 18px 46px rgb(0 0 0 / 0.52); }
   .home-entry-pending .home-mobile-nav { opacity: 0; }
-  .home-entry-mobile-return .home-mobile-header,
   .home-entry-mobile-return .home-mobile-nav-list li { opacity: 0; }
   .home-photo-grid { display: none; }
+  .home-orbit-stage::before {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background:
+      linear-gradient(180deg, rgb(var(--color-paper) / 0.58), transparent 18%, transparent 82%, rgb(var(--color-paper) / 0.62)),
+      radial-gradient(ellipse at center, transparent 24%, rgb(var(--color-paper) / 0.18) 72%, rgb(var(--color-paper) / 0.38));
+    content: "";
+    pointer-events: none;
+  }
   .home-orbit[class*="home-mobile-focus-"]::before {
-    inset: 4.75rem 0 0;
+    inset: 0;
     animation: none;
-    background-position: center top;
-    background-size: 88% auto;
+    background-position: center;
+    background-size: cover;
     background-repeat: no-repeat;
-    filter: blur(4px) saturate(0.78);
-    opacity: 0.68;
-    transform: none;
+    filter: blur(2px) saturate(0.86) contrast(0.96);
+    opacity: 0.8;
+    transform: scale(1.025);
     will-change: auto;
   }
   .home-orbit.home-mobile-focus-about::before {
@@ -4785,8 +4855,8 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/restaurants-light.png");
   }
   .dark .home-orbit[class*="home-mobile-focus-"]::before {
-    filter: blur(4px) saturate(0.72);
-    opacity: 0.68;
+    filter: blur(2px) saturate(0.8) contrast(0.96);
+    opacity: 0.8;
   }
   .dark .home-orbit.home-mobile-focus-about::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/about-dark.png"); }
   .dark .home-orbit.home-mobile-focus-projects::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/projects-dark.png"); }

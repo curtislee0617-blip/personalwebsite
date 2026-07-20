@@ -6,6 +6,12 @@ import { CookbookRecipeCardSummary } from "@/components/cookbook-recipe-card-sum
 import { CookbookRecipeRail } from "@/components/cookbook-recipe-rail";
 import { CookbookSearch } from "@/components/cookbook-search";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
+import {
+  collectCookbookRecipeReferences,
+  createCookbookReferenceIndex,
+  findCookbookTextReferences,
+  type CookbookReferenceIndex,
+} from "@/lib/cookbook-references";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 
 export type ImportedIngredientGroup = {
@@ -107,26 +113,69 @@ function ScaleControl({ onChange, value }: { onChange: (value: string) => void; 
   );
 }
 
+function LinkedCookbookText({
+  currentRecipeId,
+  context,
+  index,
+  onNavigate,
+  text,
+}: {
+  currentRecipeId: string;
+  context: "ingredient" | "method";
+  index: CookbookReferenceIndex;
+  onNavigate: (recipeId: string) => void;
+  text: string;
+}) {
+  const references = findCookbookTextReferences(index, text, currentRecipeId, context);
+  if (references.length === 0) return text;
+
+  const result: React.ReactNode[] = [];
+  let cursor = 0;
+  references.forEach((reference, referenceIndex) => {
+    if (reference.start > cursor) result.push(text.slice(cursor, reference.start));
+    result.push(
+      <a
+        className="font-semibold text-moss underline decoration-moss/25 underline-offset-2 transition hover:decoration-moss/70"
+        href={`#${index.bookId}-${reference.target.id}`}
+        key={`${reference.target.id}-${reference.start}-${referenceIndex}`}
+        onClick={() => onNavigate(reference.target.id)}
+        title={`Open ${reference.target.title}`}
+      >
+        {text.slice(reference.start, reference.end)}
+      </a>,
+    );
+    cursor = reference.end;
+  });
+  if (cursor < text.length) result.push(text.slice(cursor));
+  return result;
+}
+
 function RecipeCard({
+  calledForRecipes,
   cookbook,
   index,
   isAdmin,
   isWishlistPending,
   isWishlisted,
   onToggle,
+  onNavigateReference,
   onToggleWishlist,
   open,
   recipe,
+  referenceIndex,
 }: {
+  calledForRecipes: ReturnType<typeof collectCookbookRecipeReferences>;
   cookbook: ImportedCookbook;
   index: number;
   isAdmin: boolean;
   isWishlistPending: boolean;
   isWishlisted: boolean;
   onToggle: () => void;
+  onNavigateReference: (recipeId: string) => void;
   onToggleWishlist: () => void;
   open: boolean;
   recipe: ImportedCookbookRecipe;
+  referenceIndex: CookbookReferenceIndex;
 }) {
   const [factorText, setFactorText] = useState("1");
   const parsedFactor = Number.parseFloat(factorText);
@@ -229,6 +278,30 @@ function RecipeCard({
 
           <ScaleControl onChange={setFactorText} value={factorText} />
 
+          {calledForRecipes.length > 0 && (
+            <nav
+              aria-label={`Recipes called for by ${recipe.title}`}
+              className="rounded-[1.2rem] border border-moss/20 bg-lime/25 p-4 sm:p-5"
+            >
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-moss">Called-for recipes</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {calledForRecipes.map((target) => (
+                  <a
+                    className="rounded-full border border-moss/20 bg-paper/75 px-3 py-1.5 text-[0.72rem] font-semibold text-moss transition hover:border-moss/45"
+                    href={`#${cookbook.id}-${target.id}`}
+                    key={target.id}
+                    onClick={() => onNavigateReference(target.id)}
+                  >
+                    {target.title}
+                    <span className="ml-1.5 text-[0.58rem] uppercase tracking-[0.08em] text-ink/35">
+                      p. {target.sourcePages.join(", ")}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </nav>
+          )}
+
           <div className="grid gap-4 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
             <section className="rounded-[1.2rem] border border-ink/10 bg-surface/35 p-4 sm:p-5">
               <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-moss">Ingredients</p>
@@ -245,7 +318,13 @@ function RecipeCard({
                         className="border-b border-ink/[0.06] py-1.5 text-[0.76rem] leading-5 text-ink/65"
                         key={`${line}-${lineIndex}`}
                       >
-                        {scaleLine(line, factor)}
+                        <LinkedCookbookText
+                          context="ingredient"
+                          currentRecipeId={recipe.id}
+                          index={referenceIndex}
+                          onNavigate={onNavigateReference}
+                          text={scaleLine(line, factor)}
+                        />
                       </p>
                     ))}
                   </div>
@@ -267,7 +346,15 @@ function RecipeCard({
                       {group.steps.map((step, stepIndex) => (
                         <li className="grid grid-cols-[1.45rem_minmax(0,1fr)] gap-2 text-[0.8rem] leading-6 text-ink/64" key={`${step}-${stepIndex}`}>
                           <span className="font-semibold text-moss/75">{stepIndex + 1}</span>
-                          <span>{step}</span>
+                          <span>
+                            <LinkedCookbookText
+                              context="method"
+                              currentRecipeId={recipe.id}
+                              index={referenceIndex}
+                              onNavigate={onNavigateReference}
+                              text={step}
+                            />
+                          </span>
                         </li>
                       ))}
                     </ol>
@@ -293,6 +380,14 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
   const [isAdmin, setIsAdmin] = useState(false);
   const [wishlistedRecipeIds, setWishlistedRecipeIds] = useState<Set<string>>(new Set());
   const [pendingWishlistIds, setPendingWishlistIds] = useState<Set<string>>(new Set());
+  const referenceIndex = useMemo(() => createCookbookReferenceIndex(cookbook), [cookbook]);
+  const recipeReferences = useMemo(
+    () => new Map(cookbook.recipes.map((recipe) => [
+      recipe.id,
+      collectCookbookRecipeReferences(referenceIndex, recipe),
+    ])),
+    [cookbook.recipes, referenceIndex],
+  );
   const filtered = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase();
     if (!needle) return cookbook.recipes;
@@ -366,18 +461,25 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
 
   const recipeIds = filtered.map((recipe) => recipe.id);
   const allOpen = recipeIds.length > 0 && recipeIds.every((id) => open[id]);
+  const navigateToReference = (recipeId: string) => {
+    setQuery("");
+    setOpen((current) => ({ ...current, [recipeId]: true }));
+  };
   const renderRecipe = (recipe: ImportedCookbookRecipe) => (
     <RecipeCard
+      calledForRecipes={recipeReferences.get(recipe.id) ?? []}
       cookbook={cookbook}
       index={cookbook.recipes.indexOf(recipe)}
       isAdmin={isAdmin}
       isWishlistPending={pendingWishlistIds.has(recipe.id)}
       isWishlisted={wishlistedRecipeIds.has(recipe.id)}
       key={recipe.id}
+      onNavigateReference={navigateToReference}
       onToggle={() => setOpen((current) => ({ ...current, [recipe.id]: !current[recipe.id] }))}
       onToggleWishlist={() => toggleWishlist(recipe.id)}
       open={Boolean(open[recipe.id])}
       recipe={recipe}
+      referenceIndex={referenceIndex}
     />
   );
 

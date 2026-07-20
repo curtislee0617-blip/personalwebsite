@@ -152,7 +152,7 @@ function RecipeCard({ recipe, index, open, onToggle, compact = false }: { recipe
           {basics.length > 0 && (
             <section className="rounded-[1.4rem] border border-moss/20 bg-lime/25 p-4">
               <p className="eyebrow">Called-for Basics</p>
-              <div className="mt-3 grid gap-2">{basics.map((basic) => <details className="rounded-xl border border-ink/10 bg-paper/70 p-3" key={basic.slug}><summary className="cursor-pointer text-sm font-semibold">{basic.name}</summary><div className="mt-3 grid gap-4"><Ingredients factor={factor} items={basic.ingredients} /><Steps items={basic.method} /></div></details>)}</div>
+              <div className="mt-3 grid gap-2">{basics.map((basic) => <details className="rounded-xl border border-ink/10 bg-paper/70 p-3" key={basic.slug}><summary className="cursor-pointer text-sm font-semibold">{basic.name}</summary><div className="mt-3 grid gap-4"><a className="w-fit text-xs font-semibold text-moss underline decoration-moss/25 underline-offset-4" href={`#frantzen-basic-${basic.slug}`}>Open full basic recipe ↗</a><Ingredients factor={factor} items={basic.ingredients} /><Steps items={basic.method} /></div></details>)}</div>
             </section>
           )}
           {recipe.sourceImages && recipe.sourceImages.length > 0 ? <div className="flex flex-wrap gap-x-4 gap-y-2">{recipe.sourceImages.map((source) => <SourceLink href={source.href} key={source.href} label={source.label} />)}</div> : recipe.sourceImage && <SourceLink href={recipe.sourceImage} label={recipe.sourceLabel} />}

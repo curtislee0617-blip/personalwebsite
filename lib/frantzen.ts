@@ -658,7 +658,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "dry-aged-spring-lamb",
     title: "Dry Aged Spring Lamb",
     description: "Blanc de blanc, wasabi raita, legumes & charred cucumber jus",
-    basicReferences: ["rgp-oil", "nori-and-mint-oil"],
+    basicReferences: ["roasted-garlic-puree-and-rgp-oil", "nori-and-mint-oil"],
     components: [
       { name: "Grilled Cucumber and Lamb Jus", ingredients: ["100 Roasted lamb stock", "100 Grilled Cucumber Juice", "100 Roasted chicken stock", "10 Shallots", "2 Garlic", "15 Leek", "Coriander seeds", "Thyme", "15 Light soy", "40 Banyuls vinegar"], steps: ["Roast the mirepoix and coriander seeds until golden. Add the vinegar and reduce by half, then add both stocks, cucumber juice and herbs. Add soy and reduce to the desired flavor. Double-strain and thicken with cornstarch if necessary. Lightly grilled lamb bones or fat may be infused after the sauce is finished to reinforce the lamb flavor."] },
       { name: "Grilled Cucumber Juice", ingredients: ["Cucumbers"], steps: ["Grill the cucumbers on both sides over embers, run through a juicer and filter through cheesecloth."] },
@@ -673,7 +673,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "green-pea-tartlet",
     title: "Green Pea Tartlet",
     description: "Homemade smoked ricotta, black currants & basil blossoms",
-    basicReferences: ["black-currant-oil", "tartlet-formula"],
+    basicReferences: ["currant-oil", "tartlet-formula"],
     components: [
       { name: "Green Peas", ingredients: ["Green peas", "Black Currant Oil", "Lemon", "Fleur de sel"], steps: ["Parboil the peas until al dente and serve marinated in black currant oil, lemon and fleur de sel."] },
       { name: "Homemade Smoked Ricotta", ingredients: ["100 Whole milk (unhomogenized)", "40 Heavy cream (reserve one-third for the final step)", "0.5 Lactic acid", "Water", "Lemon juice", "1.25 Fleur de sel (based on the final weight of cheese)"], steps: ["Slowly bring the milk and two-thirds of the cream to 82°C. Remove from the heat, cover and rest for a minute. Combine the lactic acid, water and lemon juice, stir into the milk and leave covered to curdle for 15–20 minutes. Strain through cheesecloth until the whey drains, then add the remaining cream and salt. Cold-smoke, adjust with lemon if desired and serve lukewarm."] },
@@ -709,7 +709,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "lightly-heated-scallops",
     title: "Lightly Heated Scallops",
     description: "Raw matsutake, galangal root oil, blood lime & pine shoots",
-    basicReferences: ["dried-mushroom-oil", "rgp-oil", "xg-base", "kosho", "nasturtium-oil", "galangal-root-oil", "ginger-dashi"],
+    basicReferences: ["dried-mushroom-oil", "roasted-garlic-puree-and-rgp-oil", "xg-base", "kosho", "nasturtium-oil", "galangal-root-oil", "ginger-dashi"],
     components: [
       { name: "Matsutake Aioli", ingredients: ["100 Matsutake Oil (see basic recipe for Dried Mushroom Oil, p. 305)", "20 RGP Oil (see basic recipe, p. 305)", "White truffle oil", "8 Rice vinegar", "10 XG Base (optional; see basic recipe, p. 308)", "10 Sriracha", "15 Whole egg", "20 Egg yolk", "5 Yuzu Kosho (see basic recipe for Kosho, p. 304)", "10 Yellow miso", "2.5 Salt", "Lemon"], steps: ["Combine all ingredients as for a mayonnaise."] },
       { name: "Serve with", ingredients: ["Lightly heated scallops", "Pine shoots", "Blood lime", "Raw matsutake", "Nasturtium Oil (see basic recipe, p. 304)", "Galangal Root Oil (see basic recipe, p. 304)", "Ginger Dashi (see basic recipe, p. 303)"], steps: [] },
@@ -729,7 +729,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "grilled-amberjack-belly",
     title: "Grilled Amberjack Belly",
     description: "Green peaso, fermented asparagus & lemongrass broth with smoked bone oil",
-    basicReferences: ["fermented-white-asparagus-juice", "rgp-oil", "grilled-bone-oil", "shiro-kombu"],
+    basicReferences: ["fermented-white-asparagus-juice", "roasted-garlic-puree-and-rgp-oil", "grilled-bone-oil", "shiro-kombu"],
     components: [
       { name: "Fermented White Asparagus Stock", ingredients: ["100 Fermented White Asparagus Juice (see basic recipe, p. 303)", "10 White wine", "10 Blond chicken stock", "100 Leek (white part only, sliced)", "30 Shallots (sliced)", "25 Lemongrass bulbs (crushed)", "30 Celery (sliced)", "40 White asparagus peel", "50 Fish bones (rinsed and cleaned)", "10 Garlic (crushed)", "1.5 Star anise", "Lime leaves", "White pepper (whole)"], steps: ["Simmer and skim until flavorful. Strain."] },
       { name: "Clariff", ingredients: ["100 Fermented White Asparagus Stock", "10 Egg white", "10 Ground lean chicken"], steps: ["Blend and pack in large sous-vide bags. Heat at 90°C for 45 minutes, or until fully separated, and strain off the clarified liquid."] },
@@ -767,7 +767,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "grilled-monkfish",
     title: "Grilled Monkfish",
     description: "Fermented mushroom tea, Jerusalem artichokes & yellow miso",
-    basicReferences: ["ponzu", "green-oil", "mushroom-essence"],
+    basicReferences: ["ponzu", "green-oil", "mushroom-essence", "fermented-mushroom-juice"],
     components: [
       { name: "Jerusalem Artichoke Purée", ingredients: ["100 Jerusalem artichokes (peeled)", "20 Butter (reserve half for the purée)", "100 Roasted Jerusalem artichokes", "25 Yellow miso", "50 Heavy cream", "2 Ponzu (see basic recipe, p. 306)", "Salt and lemon, to taste"], steps: ["Cut the artichokes into pieces, add half the butter and roast at 180°C until golden. Lift from the butter and scale. Bring the roasted artichokes, cream, remaining butter, miso and ponzu to a boil. Simmer until flavorful, blend smooth and season with salt and lemon."] },
       { name: "Fermented Mushroom Tea", ingredients: ["100 Mushroom Essence (see basic recipe, p. 304)", "1.5 Dried shiitake", "1.5 Dried matsutake", "Fermented mushroom juice, to taste", "Garlic clove", "Lemon thyme"], steps: ["Bring the liquid to a simmer. Add the dried mushrooms and infuse for 45 minutes. Strain through a fine-meshed cloth. Before serving, add fermented mushroom juice to taste and infuse with garlic and lemon thyme."] },
@@ -779,7 +779,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "bbq-pigeon",
     title: "BBQ Pigeon",
     description: "Medjool dates, cinnamon, hazelnuts, jamón ibérico & caramelized saffron emulsion",
-    basicReferences: [],
+    basicReferences: ["nut-oil"],
     components: [
       { name: "BBQ Pigeon", ingredients: ["100 Cleaned whole pigeons", "10 Shio koji"], steps: ["Brush the birds inside and out and marinate for 24 hours before smoking. Cook slowly over smoke for a soft, tender bird. The thighs are best at 61–63°C and the breast at 56–57°C."] },
       { name: "Caramelized Saffron Emulsion", ingredients: ["Step 1 — 100 Lemon juice", "Step 1 — 65 Sugar", "Step 1 — 1.5 Lemon zest (grated)", "Step 2 — 230 Caramel base", "Step 2 — 40 Egg yolk", "Step 2 — 0.75 Saffron", "Step 2 — Salt", "Step 2 — 100 Canola oil", "Step 2 — 150 Foie gras fat (rendered)", "Step 2 — 50 Hazelnut oil"], steps: ["Step 1: Combine lemon juice, sugar and zest and heat to 118°C.", "Step 2: Mix the caramel base, egg yolk, saffron and salt while lukewarm. Slowly incorporate the oil and fat in a food processor. Store cold."] },
@@ -858,7 +858,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "hiramasa",
     title: "Hiramasa",
     description: "Fresh almonds, coriander blossoms & fermented plum vinaigrette",
-    basicReferences: ["tomato-water", "fermented-plum-juice", "nut-oil"],
+    basicReferences: ["tomato-water", "fermented-plum-juice", "nut-oil", "pickled-myoga", "yuzu-salt"],
     components: [
       { name: "Fermented Plum Vinaigrette", ingredients: ["100 Tomato Water (see basic recipe, p. 308)", "40 Fermented Plum Juice (see basic recipe, p. 302)", "12 Lime juice", "Yuzu zest", "0.3 Guar gum"], steps: ["Mix the ingredients and infuse for at least 1 hour. Strain through a cloth before serving."] },
       { name: "Hiramasa", ingredients: ["Hiramasa", "Horseradish", "Yuzu salt", "Pickled myoga", "Chinese scallion"], steps: ["Cut into slices 4 mm thick. Season the underside with horseradish, yuzu salt, pickled myoga and Chinese scallion."] },
@@ -891,7 +891,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "nordic-kinmedai",
     title: "Nordic Kinmedai",
     description: "Artichoke barigoule nage, mussel emulsion & grilled bone oil",
-    basicReferences: ["barigoule-stock", "kosho", "grilled-bone-oil"],
+    basicReferences: ["barigoule-stock", "kosho", "grilled-bone-oil", "xg-base"],
     components: [
       { name: "Nordic Kinmedai", ingredients: ["Whole kinmedai", "Lightly salted water"], steps: ["Leave the scales on and wash with lightly salted water. Dry inside and out. Age on the bone for about 5 days, drying the cavity daily. Remove scales, portion and grill mostly skin-side down over high heat. Serve with a glassy, rare center at about 48°C."] },
       { name: "Artichoke Barigoule Nage", ingredients: ["100 Artichokes (trimmed and held in water with 1% ascorbic acid)", "20 Carrot (diced)", "20 Shallot (diced)", "10 Garlic (sliced)", "200 Rinsed fish bones", "300 Barigoule Stock (see basic recipe, p. 301)", "10 Aromatics (white pepper, bay leaf and thyme)", "2 Egg whites (percentage of total Barigoule Stock)"], steps: ["Compress everything except the egg white. Poach sous vide at 90°C until the artichokes are just soft. Strain and scale the liquid, blend in the egg white, reseal and cook at 90°C until set. Filter before serving."] },
@@ -904,7 +904,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "vegetables-homage-satio-tempestas",
     title: "Vegetables (Homage Satio Tempestas)",
     description: "Buttermilk, mortar herbs, fish scales & matcha lager",
-    basicReferences: ["rgp-oil", "shichimi-togarashi", "kombu-water", "mushroom-essence", "aigre-doux", "umami-salt", "tomato-water", "green-oil"],
+    basicReferences: ["roasted-garlic-puree-and-rgp-oil", "shichimi-togarashi", "kombu-water", "mushroom-essence", "aigre-doux", "umami-salt", "tomato-water", "green-oil", "nut-oil"],
     components: [
       { name: "Green Pea and Matcha Lager", ingredients: ["Freeze-dried green pea powder", "Matcha", "Skim milk powder", "Albumin", "Beer"], steps: ["Mix and store airtight in a dark container. Use 1 g of mix for 70 g of beer, whisking it into a small amount before topping up with fresh beer."] },
       { name: "Buttermilk Dip", ingredients: ["Coriander seeds (toasted)", "Dill seeds", "Caraway seeds (toasted)", "100 Buttermilk", "100 Crème fraîche", "100 Hung dairy", "6 Lemon juice", "Roasted Garlic Purée (see basic recipe for RGP Oil, p. 305)", "1.25 Salt"], steps: ["Blend the toasted spices and store airtight. Hang the crème fraîche and buttermilk for 24 hours, changing the cloth after 12 hours. Scale, add the remaining ingredients and lightly whip to soft ribbons."] },
@@ -994,7 +994,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "dried-milk-skin",
     title: "Dried Milk Skin",
     description: "Goat quark, grilled pickled roses, macadamias & pink peppercorns",
-    basicReferences: ["rgp-oil", "dried-milk-skin", "grilled-pickled-roses", "yuzu-salt"],
+    basicReferences: ["roasted-garlic-puree-and-rgp-oil", "dried-milk-skin", "grilled-pickled-roses", "yuzu-salt"],
     components: [
       { name: "Goat Quark", ingredients: ["100 Hung goat quark", "0.75 Rose pepper (chopped)", "Scallions (finely cut)", "1.5 Salt", "10 RGP (see basic recipe, p. 305)", "Lemon juice", "Lemon zest (grated)"], steps: ["Blend in a food processor and serve at room temperature."] },
       { name: "Macadamias", ingredients: ["Macadamia nuts", "6% salted water"], steps: ["Soak in 6% salted water for 72 hours and drain. Shave thinly on a mandoline just before serving."] },
@@ -1005,7 +1005,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "langoustines",
     title: "Langoustines",
     description: "Hazelnuts, pressed foie gras, toasted nori & crispy Jerusalem artichokes",
-    basicReferences: ["tartlet-formula"],
+    basicReferences: ["tartlet-formula", "nut-oil"],
     components: [
       { name: "Langoustines", ingredients: ["Raw langoustine tail (diced)", "Hazelnut oil", "Lemon zest", "Lemon juice", "Salt", "Cracked black pepper"], steps: ["Season the tartare lightly with hazelnut oil, lemon zest and juice, salt and cracked black pepper."] },
       { name: "Pressed Foie Gras", ingredients: ["High-quality foie gras", "Salt"], steps: ["Sear slices medium-dark in a hot pan and season lightly. Transfer to a cold tray and refrigerate under a weight for a few hours. Dice to serve."] },
@@ -1054,7 +1054,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "deep-fried-langoustines",
     title: "Deep-Fried Langoustines",
     description: "Clear family-style langoustine head broth, crispy Koshihikari rice, clarified butter & ginger emulsion",
-    basicReferences: ["xg-base", "ginger-butter-oil", "rgp-oil", "chicken-mousseline", "togarashi-hot-sauce", "pasta-dough"],
+    basicReferences: ["xg-base", "ginger-butter-oil", "roasted-garlic-puree-and-rgp-oil", "chicken-mousseline", "shichimi-togarashi-hot-sauce", "pasta-dough"],
     components: [
       { name: "Blanching Water", ingredients: ["100 Water", "2 Salt", "Ättika (or another equally strong white vinegar)"], steps: ["Bring to a boil for blanching the langoustines."] },
       { name: "Deep-Fried Langoustines", ingredients: ["Langoustines", "4% salted water", "Egg-White Cornstarch", "Crispy Koshihikari Rice", "Lemon", "Salt", "Ginger oil"], steps: ["Remove heads and claws and brine the tails for 1 hour. Remove the vein from under the tail, skewer and blanch for 25 seconds. Peel and cool. Brush the underside with Egg-White Cornstarch, coat it with chopped rice and deep-fry at 190°C. Serve mi-cuit at about 37°C in the core."] },
@@ -1083,7 +1083,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "grand-tradition-2008-french-toast",
     title: "Grand Tradition 2008 French Toast",
     description: "Black truffle, Parmigiano-Reggiano emulsion & 150-year-old vinegar",
-    basicReferences: ["rgp-oil"],
+    basicReferences: [],
     components: [
       { name: "Parmigiano-Reggiano Emulsion", ingredients: ["100 Milk", "50 Parmigiano-Reggiano (24 months, grated)", "50 Heavy cream", "50 Egg yolks", "2 Salt", "0.5 Kappa carrageenan"], steps: ["Heat milk, cream, yolk, salt and carrageenan to 83°C. Blend in the Parmesan until shiny and emulsified, then cool over ice."] },
       { name: "French Toast Batter", ingredients: ["100 Heavy cream", "50 Eggs", "15 Balsamic vinegar", "2 Salt", "5 Trisol (optional)"], steps: ["Combine and strain through a fine sieve."] },
@@ -1095,7 +1095,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "juniper-smoked-wild-turbot",
     title: "Juniper-Smoked Wild Turbot",
     description: "Vendace roe, Meyer lemon aspic, purple top turnips & wasabi oil",
-    basicReferences: ["ginger-dashi", "galangal-root-oil", "rgp-oil"],
+    basicReferences: ["ginger-dashi", "galangal-root-oil", "roasted-garlic-puree-and-rgp-oil"],
     components: [
       { name: "Juniper-Smoked Wild Turbot", ingredients: ["Wild turbot", "1% Salt by fillet weight", "Juniper wood", "Juniper beurre blanc"], steps: ["Age on the bone for 4–6 days. Fillet just before serving, skin and scale. Salt at 1%, smoke gently over juniper, then poach in juniper beurre blanc at about 55°C until the fish reaches 45°C. Portion and season."] },
       { name: "Dashi", ingredients: ["100 Ginger Dashi (see basic recipe, p. 303)", "50 Purple top turnips (sliced and dried)"], steps: ["Heat dashi to 85°C and infuse with turnips until flavorful. Season with lemon juice, lime and salt and strain."] },
@@ -1109,7 +1109,7 @@ const frantzenRecipeTranscriptions: FrantzenRecipe[] = [
     slug: "grilled-squid",
     title: "Grilled Squid",
     description: "Sea urchin hot sauce, finger lime, chrysanthemums, pine shoots & ikura",
-    basicReferences: ["sea-buckthorn-oil", "ikura-brine", "galangal-root-oil", "xo-sauce", "rgp-oil"],
+    basicReferences: ["sea-buckthorn-oil", "ikura-brine", "galangal-root-oil", "xo-sauce", "roasted-garlic-puree-and-rgp-oil", "shichimi-togarashi"],
     components: [
       { name: "Pumpkin Purée", ingredients: ["100 Juiced muscat pumpkin", "100 Grated muscat pumpkin"], steps: ["Cook slowly until almost dry and reduced to half the original weight. Blend smooth and pass through a fine mesh sieve."] },
       { name: "Grilled Squid", ingredients: ["Cleaned squid", "Galangal Root Oil", "Salt"], steps: ["Dress with a touch of oil and salt. Grill very quickly over high heat until barely warm; it should remain mi-cuit, tender and sweet. Serve immediately."] },

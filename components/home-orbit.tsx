@@ -337,27 +337,24 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
     firstFrame = window.requestAnimationFrame(() => {
       secondFrame = window.requestAnimationFrame(() => {
-        const header = document.querySelector<HTMLElement>(".home-mobile-header");
         const bubbles = Array.from(document.querySelectorAll<HTMLElement>(".home-mobile-nav-list li"));
-        const elements = [header, ...bubbles].filter((element): element is HTMLElement => Boolean(element));
 
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          elements.forEach((element) => { element.style.opacity = "1"; });
+          bubbles.forEach((element) => { element.style.opacity = "1"; });
           return;
         }
 
         const corner = { x: window.innerWidth - 18, y: 14 };
-        elements.forEach((element, index) => {
+        bubbles.forEach((element, index) => {
           const box = element.getBoundingClientRect();
           const moveX = corner.x - (box.left + box.width / 2);
           const moveY = corner.y - (box.top + box.height / 2);
-          const isHeader = element === header;
 
           animations.push(element.animate(
             [
               {
                 opacity: 0,
-                transform: `translate3d(${moveX}px, ${moveY}px, 0) scale(${isHeader ? 0.12 : 0.18}) rotate(-12deg)`,
+                transform: `translate3d(${moveX}px, ${moveY}px, 0) scale(0.18) rotate(-12deg)`,
               },
               {
                 offset: 0.68,
@@ -367,8 +364,8 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
               { opacity: 1, transform: "translate3d(0, 0, 0) scale(1) rotate(0deg)" },
             ],
             {
-              duration: isHeader ? 720 : 660,
-              delay: isHeader ? 30 : 115 + (index - 1) * 62,
+              duration: 660,
+              delay: 70 + index * 58,
               easing: "cubic-bezier(.16, 1, .3, 1)",
               fill: "both",
             },
@@ -545,18 +542,6 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
       <span className="home-menu-glyph" aria-hidden="true">
         <i /><i /><i />
       </span>
-
-      <header className="home-mobile-header">
-        <div>
-          <p className="home-mobile-name">Curtis Lee</p>
-          <p className="home-mobile-intro">School, work and life</p>
-        </div>
-        <span
-          aria-label="Curtis Lee profile photo"
-          className="home-mobile-portrait has-photo"
-          style={{ backgroundImage: 'url("/profile.webp")' }}
-        />
-      </header>
 
       <div className="home-orbit-stage">
         <div className="home-profile">

@@ -47,7 +47,7 @@ const contactLinks = [
 function ContactIcon({ icon }: { icon: (typeof contactLinks)[number]["icon"] }) {
   if (icon === "caltech") {
     return (
-      <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-full border border-ink/10 bg-white" aria-hidden="true">
+      <span className="contact-link-icon grid size-14 shrink-0 place-items-center overflow-hidden rounded-full border border-ink/10 bg-white" aria-hidden="true">
         <Image alt="" className="h-full w-full scale-[1.04] object-contain object-center p-[0.18rem]" height={56} src="/logos/caltechname.png" width={56} />
       </span>
     );
@@ -55,7 +55,7 @@ function ContactIcon({ icon }: { icon: (typeof contactLinks)[number]["icon"] }) 
 
   if (icon === "instagram") {
     return (
-      <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white" aria-hidden="true">
+      <span className="contact-link-icon grid size-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white" aria-hidden="true">
         <svg className="size-7" fill="none" viewBox="0 0 24 24">
           <rect height="17" rx="5" stroke="currentColor" strokeWidth="1.8" width="17" x="3.5" y="3.5" />
           <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
@@ -67,7 +67,7 @@ function ContactIcon({ icon }: { icon: (typeof contactLinks)[number]["icon"] }) 
 
   if (icon === "linkedin") {
     return (
-      <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-[#0a66c2] text-white" aria-hidden="true">
+      <span className="contact-link-icon grid size-14 shrink-0 place-items-center rounded-2xl bg-[#0a66c2] text-white" aria-hidden="true">
         <svg className="size-7" fill="currentColor" viewBox="0 0 24 24">
           <path d="M6.3 8.1H2.7V21h3.6V8.1ZM4.5 2.7a2.1 2.1 0 1 0 0 4.2 2.1 2.1 0 0 0 0-4.2ZM21.3 13.6c0-3.9-2.1-5.8-4.9-5.8-2.3 0-3.3 1.3-3.9 2.1V8.1H8.9V21h3.6v-6.4c0-1.7.3-3.4 2.5-3.4 2.1 0 2.2 2 2.2 3.5V21h3.6l.5-7.4Z" />
         </svg>
@@ -76,7 +76,7 @@ function ContactIcon({ icon }: { icon: (typeof contactLinks)[number]["icon"] }) 
   }
 
   return (
-    <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-ink text-paper" aria-hidden="true">
+    <span className="contact-link-icon grid size-14 shrink-0 place-items-center rounded-2xl bg-ink text-paper" aria-hidden="true">
       <svg className="size-7" fill="none" viewBox="0 0 24 24">
         <rect height="15" rx="2.5" stroke="currentColor" strokeWidth="1.7" width="19" x="2.5" y="4.5" />
         <path d="m4 7 8 6 8-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
@@ -87,42 +87,37 @@ function ContactIcon({ icon }: { icon: (typeof contactLinks)[number]["icon"] }) 
 
 export default function ContactPage() {
   return (
-    <>
-      <section className="page-shell grid items-center gap-8 pt-12 sm:pt-14 lg:grid-cols-[minmax(16rem,0.7fr)_minmax(0,1.3fr)] lg:gap-12 lg:pt-16">
-        <div>
-          <p className="eyebrow">Contact</p>
-          <h1 className="display-title mt-3">Let&apos;s keep in touch.</h1>
-        </div>
-        <div className="design-panel scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" id="contact-cities">
+    <section className="contact-page page-shell">
+      <h1 className="sr-only">Contact</h1>
+      <div className="contact-composition">
+        <div className="contact-art-frame scroll-mt-24" id="contact-cities">
           <ContactPresenceProvider>
             <ContactCityArtwork editable />
           </ContactPresenceProvider>
         </div>
-      </section>
 
-      <section className="page-section pt-12 sm:pt-16">
-        <div className="grid scroll-mt-24 gap-4 sm:grid-cols-2" id="contact-links">
+        <div className="contact-link-grid scroll-mt-24" id="contact-links">
           {contactLinks.map((contact) => (
             <a
-              className="design-card group flex min-h-56 flex-col justify-between rounded-[1.75rem] border border-ink/10 bg-surface/45 p-6 sm:p-8"
+              className="contact-link-card design-card group"
               href={contact.href}
               key={contact.title}
               rel={contact.external ? "noreferrer" : undefined}
               target={contact.external ? "_blank" : undefined}
             >
-              <div className="flex items-start justify-between gap-5">
+              <div className="contact-link-heading">
                 <div>
                   <p className="eyebrow">{contact.eyebrow}</p>
-                  <h2 className="mt-4 text-2xl font-semibold tracking-tight">{contact.title}</h2>
-                  <p className="mt-3 max-w-sm text-sm leading-6 text-ink/55">{contact.detail}</p>
+                  <h2>{contact.title}</h2>
                 </div>
                 <ContactIcon icon={contact.icon} />
               </div>
-              <p className="mt-8 break-all text-sm font-semibold text-moss group-hover:text-ink sm:text-base">{contact.label} ↗</p>
+              <p className="contact-link-detail">{contact.detail}</p>
+              <p className="contact-link-label">{contact.label} ↗</p>
             </a>
           ))}
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

@@ -90,6 +90,24 @@ function LinkedRecipeSection({ adminEditHref, recipes }: { adminEditHref?: strin
   );
 }
 
+function ReferenceLinks({ links }: { links?: RecipeCardEntry["referenceLinks"] }) {
+  if (!links?.length) return null;
+
+  return (
+    <section className="recipe-card-reference-links">
+      <p className="eyebrow">Written recipes and references</p>
+      <div>
+        {links.map((link) => (
+          <a href={link.url} key={link.url} rel="noreferrer" target="_blank">
+            <span>{link.label}</span>
+            <i aria-hidden="true">↗</i>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function RecipeCard({
   adminEditHref,
   adminMediaWishlist = false,
@@ -112,7 +130,13 @@ export function RecipeCard({
   const shelf = variant === "shelf";
   const hasStructuredContent = Boolean(entry.ingredientGroups?.length || entry.methodGroups?.length);
   const media = entry.media ?? (entry.imageUrls ?? []).map((src) => ({ src, type: "image" as const }));
-  const hasExpandedContent = hasStructuredContent || media.length > 0 || Boolean(entry.instagramPostId) || linkedRecipes.length > 0 || Boolean(adminEditHref) || showBackLink;
+  const hasExpandedContent = hasStructuredContent
+    || media.length > 0
+    || Boolean(entry.instagramPostId)
+    || Boolean(entry.referenceLinks?.length)
+    || linkedRecipes.length > 0
+    || Boolean(adminEditHref)
+    || showBackLink;
   const cardId = `${idPrefix ? `${idPrefix}-` : ""}recipe-${entry.slug}`;
 
   return (
@@ -137,7 +161,7 @@ export function RecipeCard({
               {entry.description}
               {entry.sourceUrl && (
                 <a className="recipe-card-description-source" href={entry.sourceUrl} rel="noreferrer" target="_blank">
-                  Recipe inspiration: {entry.sourceLabel ?? "Source"} ↗
+                  {entry.sourceLinkLabel ?? "Recipe inspiration"}: {entry.sourceLabel ?? "Source"} ↗
                 </a>
               )}
             </p>
@@ -164,6 +188,7 @@ export function RecipeCard({
           <RecipeMediaGallery media={media} title={entry.title} />
           {entry.instagramPostId && <InstagramPostEmbed postId={entry.instagramPostId} title={entry.title} />}
           {hasStructuredContent && <StructuredRecipeContent entry={entry} />}
+          <ReferenceLinks links={entry.referenceLinks} />
           <LinkedRecipeSection adminEditHref={adminEditHref} recipes={linkedRecipes} />
           {showBackLink && <Link className="back-link-bubble" href="/recipes">Back to recipes</Link>}
         </div>

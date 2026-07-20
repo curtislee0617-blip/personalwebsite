@@ -4,21 +4,32 @@ import { useMemo, useState } from "react";
 
 type SearchEntry = { categories?: string[]; slug: string; title: string };
 
-export function InstagramSavedSearch({ entries }: { entries: SearchEntry[] }) {
+export function InstagramSavedSearch({
+  entries,
+  idPrefix = "instagram",
+  label = "Search saved posts",
+  placeholder = "Search dishes, ingredients, or categories",
+}: {
+  entries: SearchEntry[];
+  idPrefix?: string;
+  label?: string;
+  placeholder?: string;
+}) {
   const [query, setQuery] = useState("");
   const results = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     if (!normalized) return [];
     return entries.filter((entry) => `${entry.title} ${(entry.categories ?? []).join(" ")}`.toLowerCase().includes(normalized)).slice(0, 16);
   }, [entries, query]);
+  const inputId = `${idPrefix}-saved-query`;
 
   return (
     <div className="instagram-saved-search">
-      <label htmlFor="instagram-saved-query">Search saved posts</label>
+      <label htmlFor={inputId}>{label}</label>
       <input
-        id="instagram-saved-query"
+        id={inputId}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search dishes, ingredients, or categories"
+        placeholder={placeholder}
         type="search"
         value={query}
       />

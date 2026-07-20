@@ -16,6 +16,7 @@ export type RecipeCardEntry = {
   title: string;
   description: string;
   sourceLabel?: string;
+  sourceLinkLabel?: string;
   sourceUrl?: string;
   instagramPostId?: string;
   status?: "published" | "coming-soon" | string;
@@ -31,5 +32,6 @@ export type RecipeCardEntry = {
   ingredientGroups?: RecipeIngredientGroup[];
   methodGroups?: RecipeMethodGroup[];
   linkedRecipeKeys?: string[];
+  referenceLinks?: Array<{ label: string; url: string }>;
   source: "site" | "uploaded";
 };

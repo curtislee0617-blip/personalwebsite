@@ -65,7 +65,14 @@ export const dashboardSections = [
         label: "Collections",
         items: [
           { href: "/recipes#recipe-collection", label: "Recipes", dynamicChildren: "recipe-categories" },
-          { href: "/recipes#recipe-media-saved", label: "Media saved recipes", items: [{ href: "/recipes/instagram-saved", label: "Instagram" }] },
+          {
+            href: "/recipes#recipe-media-saved",
+            label: "Media saved recipes",
+            items: [
+              { href: "/recipes/instagram-saved", label: "Instagram" },
+              { href: "/recipes/youtube-saved", label: "YouTube" },
+            ],
+          },
           { href: "/recipes#recipe-wishlist", label: "Wishlist" },
           { href: "/recipes#recipe-books", label: "Recipe books" },
         ],

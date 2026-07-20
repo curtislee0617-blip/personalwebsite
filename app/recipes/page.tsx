@@ -8,7 +8,7 @@ import { RecipeShelf } from "@/components/recipe-shelf";
 import { SectionRail } from "@/components/section-rail";
 import { SnapCarousel } from "@/components/snap-carousel";
 import { recipeEntries, recipeSections, wishlistEntries } from "@/lib/recipes";
-import { getInstagramSavedRecipeCards, getPersonalRecipeCards } from "@/lib/personal-recipes";
+import { getInstagramSavedRecipeCards, getPersonalRecipeCards, getYouTubeSavedRecipeCards } from "@/lib/personal-recipes";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
@@ -26,7 +26,11 @@ const recipePageSections = [
   { id: "recipe-books", label: "Books" },
 ] as const;
 
-function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[], instagramRecipes: RecipeCardEntry[]): RecipeSearchItem[] {
+function buildRecipeSearchPreview(
+  personalRecipes: RecipeCardEntry[],
+  instagramRecipes: RecipeCardEntry[],
+  youtubeRecipes: RecipeCardEntry[],
+): RecipeSearchItem[] {
   const siteEntries: RecipeSearchItem[] = recipeEntries
     .filter((entry) => entry.kind === "guide")
     .map((entry) => ({
@@ -53,6 +57,18 @@ function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[], instagramR
     kind: "Media saved",
     href: `/recipes/instagram-saved#recipe-${entry.slug}`,
     searchText: [entry.description, ...(entry.categories ?? []), ...(entry.ingredientGroups?.flatMap((group) => group.items) ?? [])].join(" "),
+  }));
+  const youtubeEntries: RecipeSearchItem[] = youtubeRecipes.map((entry) => ({
+    title: entry.title,
+    context: `Media saved recipes · ${entry.sourceLabel ?? "YouTube"}`,
+    kind: "Media saved",
+    href: `/recipes/youtube-saved#recipe-${entry.slug}`,
+    searchText: [
+      entry.description,
+      ...(entry.categories ?? []),
+      ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),
+      ...(entry.methodGroups?.flatMap((group) => [group.title, ...group.steps]) ?? []),
+    ].join(" "),
   }));
   return [
     {
@@ -130,6 +146,7 @@ function buildRecipeSearchPreview(personalRecipes: RecipeCardEntry[], instagramR
     ...siteEntries,
     ...personalEntries,
     ...instagramEntries,
+    ...youtubeEntries,
   ];
 }
 
@@ -195,9 +212,10 @@ function GuideVisual({ slug }: { slug: string }) {
 
 export default async function RecipesPage() {
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
-  const [recipes, instagramRecipes, savedCookbookRecipes] = await Promise.all([
+  const [recipes, instagramRecipes, youtubeRecipes, savedCookbookRecipes] = await Promise.all([
     getPersonalRecipeCards(),
     getInstagramSavedRecipeCards(),
+    getYouTubeSavedRecipeCards(),
     getRecipeWishlistEntries(),
   ]);
   const recipeByKey = new Map(recipes.map((entry) => [entry.recipeKey, entry]));
@@ -205,7 +223,7 @@ export default async function RecipesPage() {
   const wishlist = [...savedCookbookRecipes, ...wishlistEntries]
     .filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
   const authenticated = await isRecipeAdminAuthenticated();
-  const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes);
+  const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes, youtubeRecipes);
   const chronologicalRecipes = [...recipes].sort((a, b) => {
     if (a.date && b.date) return b.date.localeCompare(a.date) || a.title.localeCompare(b.title);
     if (a.date) return -1;
@@ -340,6 +358,13 @@ export default async function RecipesPage() {
                 <h3 className="mt-4 text-xl font-semibold tracking-tight">Instagram saved recipes</h3>
                 <p className="mt-3 text-sm leading-7 text-ink/65">
                   {instagramRecipes.length} saved posts, with recipe details transcribed from captions, on-screen text, and reels where available.
+                </p>
+              </Link>
+              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href="/recipes/youtube-saved">
+                <p className="eyebrow">YouTube</p>
+                <h3 className="mt-4 text-xl font-semibold tracking-tight">YouTube saved recipes</h3>
+                <p className="mt-3 text-sm leading-7 text-ink/65">
+                  {youtubeRecipes.length} playlist videos, with recipes organized from descriptions, linked sources, transcripts, and on-screen details where available.
                 </p>
               </Link>
             </div>

@@ -5,6 +5,7 @@ import { instagramSavedRecipes } from "@/data/instagram-saved-recipes";
 import { instagramSavedReelAnalysis } from "@/data/instagram-saved-reel-analysis";
 import { instagramHighlightRecipeMetadata } from "@/data/instagram-highlight-recipe-metadata";
 import { personalRecipeCategories } from "@/data/personal-recipe-categories";
+import { youtubeSavedRecipes } from "@/data/youtube-saved-recipes";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
 import type { RecipeCardEntry, RecipeIngredientGroup, RecipeMediaItem, RecipeMethodGroup } from "@/lib/recipe-card-types";
@@ -350,12 +351,26 @@ export async function getInstagramSavedRecipeCards() {
     .map((entry) => applyOverride(entry, overrideByKey.get(entry.recipeKey)));
 }
 
+export async function getYouTubeSavedRecipeCards() {
+  const overrides = await getRecipeOverrides();
+  const overrideByKey = new Map(overrides.map((override) => [override.recipe_key, override]));
+  return youtubeSavedRecipes
+    .filter((entry) => !overrideByKey.get(entry.recipeKey)?.deleted)
+    .map((entry) => applyOverride(entry, overrideByKey.get(entry.recipeKey)))
+    .sort((a, b) => {
+      const aIndex = youtubeSavedRecipes.find((source) => source.recipeKey === a.recipeKey)?.playlistIndex ?? Number.MAX_SAFE_INTEGER;
+      const bIndex = youtubeSavedRecipes.find((source) => source.recipeKey === b.recipeKey)?.playlistIndex ?? Number.MAX_SAFE_INTEGER;
+      return aIndex - bIndex;
+    });
+}
+
 export async function getEditableRecipeCards() {
-  const [personal, instagram] = await Promise.all([
+  const [personal, instagram, youtube] = await Promise.all([
     getPersonalRecipeCards(),
     getInstagramSavedRecipeCards(),
+    getYouTubeSavedRecipeCards(),
   ]);
-  return [...personal, ...instagram];
+  return [...personal, ...instagram, ...youtube];
 }
 
 export function formatIngredientGroups(groups?: RecipeIngredientGroup[]) {
