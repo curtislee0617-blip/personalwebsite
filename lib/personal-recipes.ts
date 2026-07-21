@@ -38,7 +38,7 @@ type RecipeOverrideRow = {
 };
 
 const legacyImportedRecipeTitles: Record<string, readonly string[]> = {
-  "personal-banhmi": ["BanhMi"],
+  "personal-banhmi": ["BanhMi", "Banh Mi", "Bánh mì"],
   "personal-bolalot": ["BoLaLot"],
   "personal-bossam-jjampong": ["Bossam&Jjampong"],
   "personal-bossam-jjampong-copy": ["Bossam&Jjampong (copy)"],
@@ -182,6 +182,58 @@ function siteRecipeCards(): RecipeCardEntry[] {
         .join(" "),
     };
   });
+  const banhMiBreadSource = youtubeSavedRecipes.find((entry) => entry.recipeKey === "youtube-saved-wwbW3zibmMI");
+  const banhMiBreadRecipe: RecipeCardEntry[] = banhMiBreadSource ? [{
+    ...banhMiBreadSource,
+    recipeKey: "personal-banh-mi-baguettes",
+    slug: "personal-banh-mi-baguettes",
+    title: "Bánh Mì Baguettes",
+    description: "Light Vietnamese baguettes with a thin, crisp shell and airy crumb, organized from Huy Nguyen’s method.",
+    date: instagramHighlightRecipeMetadata["personal-banhmi"]?.date,
+    category: undefined,
+    categories: ["bread"],
+  }] : [];
+  const vietnameseButterRecipe: RecipeCardEntry = {
+    recipeKey: "personal-vietnamese-butter",
+    slug: "personal-vietnamese-butter",
+    title: "Bơ (Vietnamese Butter)",
+    description: "A glossy, deeply yellow bánh mì spread emulsified with aromatic clarified butter, neutral oil, and optional rendered poultry or pork fat.",
+    date: instagramHighlightRecipeMetadata["personal-banhmi"]?.date,
+    categories: ["condiments"],
+    ingredientGroups: [
+      {
+        title: "Bơ",
+        items: [
+          "Shallots, thinly sliced, as needed",
+          "Garlic, thinly sliced, as needed",
+          "1–2 egg yolks",
+          "50 ml clarified butter",
+          "50 ml neutral oil",
+          "Rendered pork or chicken fat, optional",
+        ],
+      },
+    ],
+    methodGroups: [
+      {
+        title: "Infuse the fats",
+        steps: [
+          "Combine the clarified butter and neutral oil, adding rendered pork or chicken fat if desired. Heat to 150°C.",
+          "Fry the thinly sliced shallots until lightly golden, approximately 5–10 minutes. Lift them out and reserve for garnishing this or another dish.",
+          "Turn off the heat. Add the thinly sliced garlic to the hot fat and fry until very lightly golden, approximately 5 minutes. Remove and reserve with the shallots.",
+          "Let the aromatic fat cool to below 30°C before emulsifying so it does not cook the yolks.",
+        ],
+      },
+      {
+        title: "Emulsify",
+        steps: [
+          "Whisk the egg yolk while drizzling in the cooled fat very slowly, or combine everything with a hand blender and blend until emulsified.",
+          "Aim for a deep, glossy butter-yellow emulsion rather than a pale mayonnaise. Depending on the yolk size, stop before adding all the fat or add a second yolk to adjust the colour and consistency.",
+          "If clarified butter is unavailable, emulsify the yolk with a smaller amount of neutral oil into a very thick yellow paste, then blend or whisk in very soft butter.",
+        ],
+      },
+    ],
+    source: "site",
+  };
   const bossamAndJjampong = importedWithHighlightMetadata.find((entry) => entry.recipeKey === "personal-bossam-jjampong");
   const bossamAndJjampongCopy: RecipeCardEntry[] = bossamAndJjampong ? [{
     ...bossamAndJjampong,
@@ -273,7 +325,7 @@ function siteRecipeCards(): RecipeCardEntry[] {
     ],
     media: bossamAndJjampong.media?.map((item) => ({ ...item })),
   }] : [];
-  return [...writtenRecipes, ...importedWithHighlightMetadata, ...bossamAndJjampongCopy];
+  return [...writtenRecipes, ...importedWithHighlightMetadata, ...banhMiBreadRecipe, vietnameseButterRecipe, ...bossamAndJjampongCopy];
 }
 
 const getUploadedRecipes = unstable_cache(async (): Promise<RecipeCardEntry[]> => {
@@ -336,6 +388,14 @@ export async function getPersonalRecipeCards() {
   return [...siteRecipeCards(), ...uploaded]
     .filter((entry) => !overrideByKey.get(entry.recipeKey)?.deleted)
     .map((entry) => applyOverride(entry, overrideByKey.get(entry.recipeKey)))
+    .map((entry) => entry.recipeKey === "personal-banhmi" ? {
+      ...entry,
+      linkedRecipeKeys: Array.from(new Set([
+        "personal-banh-mi-baguettes",
+        "personal-vietnamese-butter",
+        ...(entry.linkedRecipeKeys ?? []),
+      ])),
+    } : entry)
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
 }
 

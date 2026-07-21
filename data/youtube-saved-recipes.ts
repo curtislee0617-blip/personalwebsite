@@ -2226,65 +2226,55 @@ export const youtubeSavedRecipes: YouTubeSavedRecipeEntry[] = [
     "recipeKey": "youtube-saved-wwbW3zibmMI",
     "slug": "youtube-saved-how-to-actually-bake-ba-nh-mi-at-home-wwbw3zibmmi",
     "title": "How to Actually Bake Bánh Mì at Home",
-    "description": "Recipe details organized from the video description by Huy Nguyen. Open the original YouTube video for the complete demonstration and creator credit.",
+    "description": "A light Vietnamese baguette with a thin, crisp shell and airy crumb. Recipe details organized from Huy Nguyen’s video description; watch the original demonstration for shaping and oven setup.",
     "sourceLabel": "Huy Nguyen on YouTube",
     "sourceLinkLabel": "Original video",
     "sourceUrl": "https://www.youtube.com/watch?v=wwbW3zibmMI",
-    "category": "inspiration",
+    "category": "bread",
     "categories": [
-      "inspiration"
+      "bread"
     ],
     "ingredientGroups": [
       {
-        "title": "Ingredients",
+        "title": "Bánh mì dough · makes 6",
         "items": [
-          "Makes 6 Bánh Mì (125g unbaked)"
-        ]
-      },
-      {
-        "title": "Ingredients",
-        "items": [
-          "260g Water"
-        ]
-      },
-      {
-        "title": "Ingredients",
-        "items": [
-          "In a stand mixer, mix on low speed for 7 minutes. Then 3 minutes on high speed. Continue mixing until gluten is fully developed. (Total mixing times will vary depending on mixer).",
-          "Lightly oil work surface. Remove dough from bowl. Slap and fold the dough 4-6 times and form a ball. Cover and let rest for 20 minutes."
-        ]
-      },
-      {
-        "title": "Ingredients",
-        "items": [
-          "Open the door to release any leftover steam, and bake 7-8 minutes depending on desired color."
+          "450 g bread flour",
+          "260 g water",
+          "1 whole egg (about 50 g)",
+          "8 g instant yeast",
+          "2 g salt",
+          "2 g sugar",
+          "1 g ascorbic acid",
+          "Vegetable oil, as needed"
         ]
       }
     ],
     "methodGroups": [
       {
-        "title": "Instructions",
+        "title": "Mix and rest",
         "steps": [
-          "In a mixing bowl, add egg, water, yeast, sugar, salt and ascorbic acid. Add in flour and combine."
+          "Add the egg, water, yeast, sugar, salt, and ascorbic acid to a mixing bowl. Add the flour and mix until combined.",
+          "Using a stand mixer, mix on low speed for 7 minutes, then on high speed for 3 minutes. Continue only as needed until the gluten is fully developed; total mixing time varies by mixer.",
+          "Lightly oil the work surface. Turn out the dough, slap and fold it 4–6 times, then form it into a ball. Cover and rest for 20 minutes."
         ]
       },
       {
-        "title": "Method",
+        "title": "Divide, shape, and proof",
         "steps": [
-          "Divide the dough into six 120g portions. Roll into small balls. Cover and let rest for 20 minutes.",
-          "Shape each using the method demonstrated in the video. Place the shaped dough onto a lightly oiled baguette pan.",
-          "Proof in the oven with the light on and a pot of warm water for 60 minutes. Spray with water every 15 minutes.",
-          "Remove from the oven and proof on a countertop for 30 additional minutes. Meanwhile, preheat the oven to Bake 450F (no fan, bottom only if possible) with 2 trays, one with lava rocks.",
-          "Once the dough has grown 2.5 to 3 times in size, and the oven has preheated bowl a pot of water. Score the loaves with a lame or razor. Immediately spray with water after scoring.",
-          "Place the baguette pans with the dough into the oven. Immediately pour boiling water onto lava rocks and secondary tray.",
-          "Bake for 8 minutes without opening the door."
+          "Divide the dough into six 120–125 g portions. Round them into balls, cover, and rest for another 20 minutes.",
+          "Shape each ball into a short baguette using the method demonstrated in the video. Arrange the loaves on a lightly oiled baguette pan.",
+          "Proof for 60 minutes in an unheated oven with the light on and a pot of warm water inside. Spray the dough with water every 15 minutes.",
+          "Move the loaves to the counter and continue proofing for 30 minutes. Meanwhile, preheat the oven to 450°F / 230°C without fan, using bottom heat if available. Place two trays inside, with lava rocks in one tray.",
+          "When the loaves have expanded to roughly 2.5–3 times their original size, bring water to a boil. Score each loaf with a lame or razor and immediately spray it with water."
         ]
       },
       {
-        "title": "Method",
+        "title": "Bake",
         "steps": [
-          "Remove the Bánh Mì from the oven and let cool. Cracks should form after 5-10 minutes.",
-          "FIND ME HERE:"
+          "Load the baguette pan into the oven. Immediately pour boiling water over the lava rocks and into the second hot tray to create steam, then close the door.",
+          "Bake for 8 minutes without opening the oven.",
+          "Open the door briefly to release the remaining steam, then bake for another 7–8 minutes, depending on the colour you want.",
+          "Cool the baguettes on a rack. Fine cracks should begin to form on the crust after 5–10 minutes."
         ]
       }
     ],
