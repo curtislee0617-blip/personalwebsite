@@ -46,6 +46,7 @@ export function FooterAdminLogin() {
       setOpen(false);
       setPassword("");
       setError(false);
+      window.dispatchEvent(new Event("recipe-admin-session-changed"));
       router.refresh();
     } else {
       setError(true);
@@ -56,6 +57,7 @@ export function FooterAdminLogin() {
     await logoutAction();
     setAuthenticated(false);
     setOpen(false);
+    window.dispatchEvent(new Event("recipe-admin-session-changed"));
     router.refresh();
   }
 

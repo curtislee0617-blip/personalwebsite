@@ -1,12 +1,9 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
+import { RECIPE_ADMIN_COOKIE, recipeAdminSessionToken } from "@/lib/recipe-admin-token";
 
-export const RECIPE_ADMIN_COOKIE = "recipe_admin_session";
+export { RECIPE_ADMIN_COOKIE, recipeAdminSessionToken } from "@/lib/recipe-admin-token";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
-
-export function recipeAdminSessionToken(password: string) {
-  return crypto.createHash("sha256").update(`${password}:recipe-admin-session`).digest("hex");
-}
 
 export async function isRecipeAdminAuthenticated() {
   if (process.env.NODE_ENV === "development") return true;

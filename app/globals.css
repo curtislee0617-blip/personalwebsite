@@ -542,18 +542,25 @@ body.has-page-cursor * { cursor: inherit; }
 .viennoiserie-source-note { display: grid; gap: .55rem; max-width: 44rem; margin-top: 1.5rem; padding: 1.15rem 1.3rem; border-left: 3px solid rgb(var(--color-moss) / .6); background: rgb(var(--color-mist) / .34); }
 .viennoiserie-source-note p:last-child { color: rgb(var(--color-ink) / .65); font-size: .9rem; line-height: 1.65; }
 .viennoiserie-source-note strong { color: rgb(var(--color-ink)); }
-.viennoiserie-scaler { display: grid; gap: 1.25rem; margin-top: 1rem; padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid rgb(var(--color-moss) / .28); border-radius: 1.5rem; background: rgb(var(--color-lime) / .28); }
+.viennoiserie-scaler { display: grid; gap: 1.15rem; margin-top: 1rem; padding: clamp(1.15rem, 2.5vw, 1.7rem); border: 1px solid rgb(var(--color-ink) / .11); border-radius: 1.1rem; background: rgb(var(--color-surface) / .62); }
 .viennoiserie-scaler-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
-.viennoiserie-scaler-heading h3 { margin-top: .45rem; font-size: 1.45rem; letter-spacing: -.04em; }
-.viennoiserie-scaler-heading label { display: flex; align-items: center; gap: .55rem; color: rgb(var(--color-ink) / .65); font-size: .8rem; font-weight: 700; }
-.viennoiserie-scaler-heading input { width: 4.5rem; border: 1px solid rgb(var(--color-ink) / .16); border-radius: .65rem; background: rgb(var(--color-surface) / .85); padding: .55rem .6rem; color: rgb(var(--color-ink)); font-weight: 700; text-align: center; }
+.viennoiserie-scaler-heading h3 { margin-top: .35rem; font-size: 1.3rem; letter-spacing: -.04em; }
+.viennoiserie-scale-controls { display: grid; gap: .55rem; justify-items: end; }
+.viennoiserie-scaler-heading label { display: flex; align-items: center; gap: .6rem; color: rgb(var(--color-ink) / .65); font-size: .76rem; font-weight: 700; }
+.viennoiserie-scale-input { display: flex; align-items: center; overflow: hidden; border: 1px solid rgb(var(--color-ink) / .16); border-radius: .65rem; background: rgb(var(--color-surface) / .9); }
+.viennoiserie-scale-input input { width: 4.7rem; border: 0; background: transparent; padding: .5rem .35rem .5rem .6rem; color: rgb(var(--color-ink)); font-weight: 700; text-align: right; outline: 0; }
+.viennoiserie-scale-input > span { padding-right: .6rem; color: rgb(var(--color-ink) / .52); font: 700 .68rem var(--font-code); }
+.viennoiserie-scale-presets { display: flex; gap: .3rem; }
+.viennoiserie-scale-presets button { min-width: 2.5rem; padding: .34rem .52rem; border: 1px solid rgb(var(--color-ink) / .12); border-radius: 999px; color: rgb(var(--color-ink) / .58); font: 700 .66rem var(--font-code); transition: border-color .2s ease, background .2s ease, color .2s ease; }
+.viennoiserie-scale-presets button:hover,
+.viennoiserie-scale-presets button.is-active { border-color: rgb(var(--color-moss) / .38); background: rgb(var(--color-lime) / .42); color: rgb(var(--color-moss)); }
 .viennoiserie-scaler-note { max-width: 58rem; color: rgb(var(--color-ink) / .68); font-size: .85rem; line-height: 1.65; }
 .viennoiserie-scaler-note strong { color: rgb(var(--color-ink)); }
 .viennoiserie-scaled-groups { display: grid; gap: 1rem; grid-template-columns: repeat(3, 1fr); }
 .viennoiserie-scaled-groups > div { padding-top: .9rem; border-top: 1px solid rgb(var(--color-moss) / .25); }
 .viennoiserie-scaled-groups h4 { color: rgb(var(--color-ink) / .55); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
 .viennoiserie-scaled-groups ul { display: grid; gap: .4rem; margin-top: .65rem; list-style: none; color: rgb(var(--color-ink) / .68); font-size: .82rem; }
-.viennoiserie-scaled-groups li { display: grid; gap: .55rem; grid-template-columns: 3.8rem 1fr; }
+.viennoiserie-scaled-groups li { display: grid; gap: .65rem; grid-template-columns: minmax(4.5rem, max-content) 1fr; }
 .viennoiserie-scaled-groups li span { color: rgb(var(--color-moss)); font-family: var(--font-code); font-size: .72rem; font-weight: 700; }
 .viennoiserie-recipe-layout { display: grid; gap: 1.25rem; margin-top: 2rem; grid-template-columns: minmax(0, 1.25fr) minmax(17rem, .75fr); align-items: start; }
 .viennoiserie-recipe-main { display: grid; gap: 1rem; }
@@ -569,12 +576,14 @@ body.has-page-cursor * { cursor: inherit; }
 .viennoiserie-step-rail figcaption { padding: .7rem .85rem .85rem; color: rgb(var(--color-ink) / .6); font-size: .72rem; }
 .viennoiserie-variation-recipe { margin-top: 1rem; border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.5rem; background: rgb(var(--color-surface) / .42); }
 .viennoiserie-variation-recipe summary { cursor: pointer; padding: 1.25rem 1.5rem; font-weight: 700; }
-.viennoiserie-variation-recipe .viennoiserie-recipe-card { border: 0; border-top: 1px solid var(--line-subtle); border-radius: 0 0 1.5rem 1.5rem; }
+.viennoiserie-variation-recipe-body { display: grid; gap: 1rem; padding: 0 1rem 1rem; border-top: 1px solid var(--line-subtle); }
+.viennoiserie-variation-recipe-body .viennoiserie-scaler { margin-top: 1rem; }
 .recipe-subhead { margin-top: 1.7rem !important; }
 .old-man-teh-workflow { display: grid; gap: 1.25rem; }
 .old-man-teh-workflow .viennoiserie-photo-heading,
 .old-man-teh-workflow .viennoiserie-source-note { margin-top: 0; }
 .old-man-teh-overview { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1.15fr) minmax(17rem, .85fr); align-items: stretch; }
+.old-man-teh-overview .viennoiserie-scaler { margin-top: 0; }
 .old-man-teh-parameters { display: grid; overflow: hidden; border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.5rem; background: rgb(var(--color-mist) / .25); grid-template-columns: repeat(2, 1fr); }
 .old-man-teh-parameters div { display: grid; gap: .35rem; align-content: center; min-height: 6.5rem; padding: 1rem 1.15rem; border-right: 1px solid var(--line-subtle); border-bottom: 1px solid var(--line-subtle); }
 .old-man-teh-parameters div:nth-child(2n) { border-right: 0; }
@@ -583,7 +592,8 @@ body.has-page-cursor * { cursor: inherit; }
 .old-man-teh-parameters strong { font-size: .92rem; }
 .old-man-teh-source-caveat { padding: .85rem 1rem; border-radius: 1rem; background: rgb(var(--color-lime) / .22); color: rgb(var(--color-ink) / .65); font-size: .82rem; line-height: 1.6; }
 .old-man-teh-source-caveat strong { color: rgb(var(--color-ink)); }
-.old-man-teh-phase-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.old-man-teh-phase-grid { columns: 2 24rem; column-gap: 1rem; }
+.old-man-teh-phase-grid > .viennoiserie-recipe-card { break-inside: avoid; margin: 0 0 1rem; }
 .old-man-teh-steps { display: grid; gap: .9rem; margin: 1.1rem 0 0; padding-left: 1.35rem; color: rgb(var(--color-ink) / .68); font-size: .88rem; line-height: 1.7; }
 .old-man-teh-steps li::marker { color: rgb(var(--color-moss)); font-family: var(--font-code); font-size: .75rem; font-weight: 700; }
 .old-man-teh-inline-diagram { overflow: hidden; margin-top: 1.25rem; border: 1px solid rgb(var(--color-ink) / .09); border-radius: 1.1rem; background: #fff; }
@@ -599,22 +609,8 @@ body.has-page-cursor * { cursor: inherit; }
 .artisan-crust-recipe .viennoiserie-photo-heading,
 .artisan-crust-recipe .viennoiserie-source-note { margin-top: 0; }
 .artisan-crust-recipe .viennoiserie-source-note a { color: rgb(var(--color-moss)); font-weight: 700; }
-.artisan-crust-overview { display: grid; gap: 1rem; align-items: stretch; grid-template-columns: minmax(0, 1.15fr) minmax(16rem, .85fr); }
-.artisan-crust-table-wrap { overflow-x: auto; margin-top: 1rem; }
-.artisan-crust-formula-table { width: 100%; border-collapse: collapse; font-size: .84rem; }
-.artisan-crust-formula-table th,
-.artisan-crust-formula-table td { padding: .7rem .55rem; border-bottom: 1px solid rgb(var(--color-ink) / .09); text-align: left; }
-.artisan-crust-formula-table th { color: rgb(var(--color-ink) / .48); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; }
-.artisan-crust-formula-table th:nth-child(n + 2),
-.artisan-crust-formula-table td:nth-child(n + 2) { white-space: nowrap; font-family: var(--font-code); font-size: .74rem; }
-.artisan-crust-formula-table tbody tr:last-child td { border-bottom: 0; }
-.artisan-crust-batch { display: grid; overflow: hidden; border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.5rem; background: rgb(var(--color-mist) / .25); grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.artisan-crust-batch div { display: grid; gap: .35rem; align-content: center; min-height: 7rem; padding: 1rem 1.15rem; border-right: 1px solid var(--line-subtle); border-bottom: 1px solid var(--line-subtle); }
-.artisan-crust-batch div:nth-child(2n) { border-right: 0; }
-.artisan-crust-batch div:nth-last-child(-n + 2) { border-bottom: 0; }
-.artisan-crust-batch span { color: rgb(var(--color-ink) / .5); font-size: .67rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.artisan-crust-batch strong { font-size: .95rem; }
-.artisan-crust-method-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.artisan-crust-recipe > .viennoiserie-scaler { margin-top: 0; }
+.artisan-crust-method { max-width: 60rem; }
 
 @media (max-width: 800px) {
   .viennoiserie-scaler-heading { align-items: start; flex-direction: column; }
@@ -622,21 +618,17 @@ body.has-page-cursor * { cursor: inherit; }
   .viennoiserie-recipe-layout { grid-template-columns: 1fr; }
   .viennoiserie-step-rail { position: static; grid-template-columns: repeat(3, 1fr); }
   .viennoiserie-step-rail img { height: auto; }
-  .old-man-teh-overview,
-  .old-man-teh-phase-grid,
-  .artisan-crust-overview { grid-template-columns: 1fr; }
-  .artisan-crust-method-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .old-man-teh-overview { grid-template-columns: 1fr; }
+  .old-man-teh-phase-grid { columns: 1; }
   .old-man-teh-source-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 480px) {
+  .viennoiserie-scale-controls { justify-items: start; width: 100%; }
+  .viennoiserie-scaler-heading label { justify-content: space-between; width: 100%; }
   .viennoiserie-step-rail { grid-template-columns: 1fr; }
   .viennoiserie-step-rail img { height: auto; }
   .old-man-teh-source-grid { grid-template-columns: 1fr; }
-  .artisan-crust-batch,
-  .artisan-crust-method-grid { grid-template-columns: 1fr; }
-  .artisan-crust-batch div { border-right: 0; }
-  .artisan-crust-batch div:nth-last-child(2) { border-bottom: 1px solid var(--line-subtle); }
 }
 
 .viennoiserie-photo-section { margin-top: clamp(3.5rem, 8vw, 7rem); scroll-margin-top: 7rem; }

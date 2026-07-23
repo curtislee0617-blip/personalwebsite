@@ -16,6 +16,7 @@ import { importedCookbooks } from "@/lib/imported-cookbooks";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
 import { cocktailBooks } from "@/lib/cocktail-books";
+import { isPrivateCookbookHref } from "@/lib/cookbook-access";
 
 export const metadata: Metadata = { title: "Recipes" };
 
@@ -224,7 +225,11 @@ export default async function RecipesPage() {
   const wishlist = [...savedCookbookRecipes, ...wishlistEntries]
     .filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
   const authenticated = await isRecipeAdminAuthenticated();
-  const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes, youtubeRecipes);
+  const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes, youtubeRecipes)
+    .filter((item) => authenticated || !isPrivateCookbookHref(item.href));
+  const visibleRecipePageSections = authenticated
+    ? recipePageSections
+    : recipePageSections.filter((section) => section.id !== "recipe-books");
   const chronologicalRecipes = [...recipes].sort((a, b) => {
     if (a.date && b.date) return b.date.localeCompare(a.date) || a.title.localeCompare(b.title);
     if (a.date) return -1;
@@ -244,7 +249,7 @@ export default async function RecipesPage() {
           <RecipeLibrarySearch initialItems={searchPreview} />
         </div>
       </div>
-      <SectionRail ariaLabel="Recipe page sections" sections={recipePageSections} />
+      <SectionRail ariaLabel="Recipe page sections" sections={visibleRecipePageSections} />
 
       <section className="recipe-content-section page-section">
         <div className="space-y-12">
@@ -313,7 +318,7 @@ export default async function RecipesPage() {
             <div className="recipe-category-list mt-4 space-y-8">
               {recipeSections.map((section) => {
                 const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
-                const showsPrivateCocktailLibrary = section.id === "drinks";
+                const showsPrivateCocktailLibrary = authenticated && section.id === "drinks";
 
                 return (
                   <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
@@ -437,7 +442,7 @@ export default async function RecipesPage() {
             </div>
           </section>
 
-          <section id="recipe-books">
+          {authenticated && <section id="recipe-books">
             <div>
               <p className="eyebrow">Books</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipe books</h2>
@@ -649,7 +654,7 @@ export default async function RecipesPage() {
                 </Link>
               ))}
             </div>
-          </section>
+          </section>}
 
         </div>
       </section>

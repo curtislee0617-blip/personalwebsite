@@ -140,6 +140,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
   const [dashboardRecipes, setDashboardRecipes] = useState<DashboardRecipeItem[]>([]);
+  const [isRecipeAdmin, setIsRecipeAdmin] = useState(false);
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
   const sidebarResizerRef = useRef<HTMLDivElement>(null);
   const resizingPointerRef = useRef<number | null>(null);
@@ -189,6 +190,23 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
     return () => controller.abort();
   }, [isDashboard]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const syncRecipeAdminSession = () => {
+      void fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+        .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
+        .then((result) => setIsRecipeAdmin(result.authenticated === true))
+        .catch(() => undefined);
+    };
+
+    syncRecipeAdminSession();
+    window.addEventListener("recipe-admin-session-changed", syncRecipeAdminSession);
+    return () => {
+      controller.abort();
+      window.removeEventListener("recipe-admin-session-changed", syncRecipeAdminSession);
+    };
+  }, []);
 
   const recipeCategoryNodes = useMemo<DashboardTreeNode[]>(() => recipeCategories.flatMap((category) => {
     const dishes = dashboardRecipes
@@ -348,6 +366,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             const isActive = activeHref === section.href;
             const isExpanded = expanded[section.href] ?? isActive;
             const canExpand = section.href !== "/contact";
+            const visibleGroups = section.groups.filter((group) => isRecipeAdmin || group.label !== "Cookbooks");
 
             return (
               <div className={`dashboard-sidebar-item ${isActive ? "is-active" : ""}`} data-dashboard-href={section.href} key={section.href}>
@@ -371,9 +390,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                   <div className="dashboard-sidebar-subtitle-inner">
                     <p>{section.subtitle}</p>
                     <div className="dashboard-sidebar-groups">
-                      {section.groups.map((group) => {
+                      {visibleGroups.map((group) => {
                         const groupKey = `${section.href}:${group.label}`;
-                        const groupIsActive = group.items.some((item) => {
+                        const visibleItems = group.items.filter((item) => isRecipeAdmin || item.label !== "Recipe books");
+                        const groupIsActive = visibleItems.some((item) => {
                           const itemPath = hrefPath(item.href);
                           return pathname === itemPath || (itemPath !== section.href && pathname.startsWith(`${itemPath}/`));
                         });
@@ -394,7 +414,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                             </div>
                             <div aria-hidden={!groupIsExpanded} className="dashboard-sidebar-leaves" data-expanded={groupIsExpanded ? "true" : "false"}>
                               <div>
-                                {group.items.map((item) => {
+                                {visibleItems.map((item) => {
                                   const dynamicChildren = "dynamicChildren" in item && item.dynamicChildren === "recipe-categories"
                                     ? recipeCategoryNodes
                                     : undefined;

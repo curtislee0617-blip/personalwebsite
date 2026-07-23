@@ -2,45 +2,117 @@
 
 import { useMemo, useState } from "react";
 
-const baseYield = 15;
+export type ViennoiserieScaleItem = {
+  amount?: number;
+  unit?: string;
+  ingredient: string;
+  fixedAmount?: string;
+};
 
-const groups = [
-  {
-    title: "Croissant dough",
-    items: [
-      [375, "bread flour T65"],
-      [375, "all-purpose flour T55"],
-      [112, "granulated sugar"],
-      [12, "salt"],
-      [375, "whole milk"],
-      [50, "unsalted butter, chilled"],
-      [35, "fresh yeast"],
-    ],
-  },
-  { title: "Butter block", items: [[500, "unsalted butter, chilled"]] },
-  {
-    title: "Egg wash",
-    items: [[100, "whole eggs"], [100, "egg yolks"], [100, "milk"]],
-  },
-] as const;
+export type ViennoiserieScaleGroup = {
+  title: string;
+  items: readonly ViennoiserieScaleItem[];
+};
+
+type ViennoiserieScalerProps = {
+  id: string;
+  baseValue: number;
+  inputLabel: string;
+  inputUnit: string;
+  groups: readonly ViennoiserieScaleGroup[];
+  note?: string;
+  step?: number;
+  max?: number;
+};
 
 function formatAmount(amount: number) {
-  return Number.isInteger(amount) ? String(amount) : amount.toFixed(1).replace(/\.0$/, "");
+  const absoluteAmount = Math.abs(amount);
+  const maximumFractionDigits = absoluteAmount < 1 ? 2 : absoluteAmount < 10 ? 1 : 0;
+
+  return new Intl.NumberFormat("en-GB", {
+    maximumFractionDigits,
+    minimumFractionDigits: 0,
+  }).format(amount);
 }
 
-export function ViennoiserieScaler() {
-  const [yieldAmount, setYieldAmount] = useState(baseYield);
-  const multiplier = useMemo(() => yieldAmount / baseYield, [yieldAmount]);
+export function ViennoiserieScaler({
+  id,
+  baseValue,
+  inputLabel,
+  inputUnit,
+  groups,
+  note,
+  step = 1,
+  max = 10000,
+}: ViennoiserieScalerProps) {
+  const [targetValue, setTargetValue] = useState(baseValue);
+  const multiplier = useMemo(() => targetValue / baseValue, [baseValue, targetValue]);
+  const titleId = `${id}-scaler-title`;
 
   return (
-    <section className="viennoiserie-scaler" aria-labelledby="viennoiserie-scaler-title">
+    <section className="viennoiserie-scaler" aria-labelledby={titleId}>
       <div className="viennoiserie-scaler-heading">
-        <div><p className="eyebrow">Kitchen tool</p><h3 id="viennoiserie-scaler-title">Scale the batch</h3></div>
-        <label>Target yield <input aria-label="Target croissant yield" inputMode="numeric" min="1" max="200" step="1" type="number" value={yieldAmount} onChange={(event) => setYieldAmount(Math.max(1, Math.min(200, Number(event.target.value) || 1)))} /> croissants</label>
+        <div>
+          <p className="eyebrow">Recipe scaler</p>
+          <h3 id={titleId}>Scale this formula</h3>
+        </div>
+        <div className="viennoiserie-scale-controls">
+          <label>
+            {inputLabel}
+            <span className="viennoiserie-scale-input">
+              <input
+                aria-label={`${inputLabel} in ${inputUnit}`}
+                inputMode="decimal"
+                min={step}
+                max={max}
+                step={step}
+                type="number"
+                value={targetValue}
+                onChange={(event) => {
+                  const nextValue = Number(event.target.value);
+                  setTargetValue(Math.max(step, Math.min(max, Number.isFinite(nextValue) ? nextValue : baseValue)));
+                }}
+              />
+              <span>{inputUnit}</span>
+            </span>
+          </label>
+          <div className="viennoiserie-scale-presets" aria-label="Batch scale presets">
+            {[0.5, 1, 1.5, 2].map((preset) => (
+              <button
+                className={Math.abs(multiplier - preset) < 0.001 ? "is-active" : ""}
+                key={preset}
+                type="button"
+                onClick={() => setTargetValue(Number((baseValue * preset).toFixed(2)))}
+              >
+                {preset}×
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-      <p className="viennoiserie-scaler-note"><strong>Important:</strong> this adjusts ingredient quantities, including the butter block and egg wash. The size measurements in the method will be different for another batch size — do not follow the photographed sizing measurements after scaling.</p>
+
+      {note ? <p className="viennoiserie-scaler-note">{note}</p> : null}
+
       <div className="viennoiserie-scaled-groups">
-        {groups.map((group) => <div key={group.title}><h4>{group.title}</h4><ul>{group.items.map(([amount, ingredient]) => <li key={ingredient}><span>{formatAmount(amount * multiplier)} g</span>{ingredient}</li>)}</ul></div>)}
+        {groups.map((group) => (
+          <div key={group.title}>
+            <h4>{group.title}</h4>
+            <ul>
+              {group.items.map((item) => {
+                const quantity = item.amount === undefined
+                  ? item.fixedAmount ?? "as needed"
+                  : `${formatAmount(item.amount * multiplier)}${item.unit ? ` ${item.unit}` : ""}`;
+
+                return (
+                  <li key={`${group.title}-${item.ingredient}`}>
+                    <span>{quantity}</span>
+                    {item.ingredient}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </div>
     </section>
   );

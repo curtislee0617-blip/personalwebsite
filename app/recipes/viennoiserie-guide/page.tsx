@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
 import { SectionRail } from "@/components/section-rail";
-import { ViennoiserieScaler } from "@/components/viennoiserie-scaler";
+import { ViennoiserieScaler, type ViennoiserieScaleGroup } from "@/components/viennoiserie-scaler";
 
 export const metadata: Metadata = {
   title: "Viennoiserie guide",
@@ -38,6 +38,107 @@ const variations = [
   },
 ] as const;
 
+const bachourCroissantFormula = [
+  {
+    title: "Croissant dough",
+    items: [
+      { amount: 375, unit: "g", ingredient: "bread flour T65" },
+      { amount: 375, unit: "g", ingredient: "all-purpose flour T55" },
+      { amount: 112, unit: "g", ingredient: "granulated sugar" },
+      { amount: 12, unit: "g", ingredient: "salt" },
+      { amount: 375, unit: "g", ingredient: "whole milk" },
+      { amount: 50, unit: "g", ingredient: "unsalted butter, chilled" },
+      { amount: 35, unit: "g", ingredient: "fresh yeast" },
+      { fixedAmount: "as needed", ingredient: "non-stick spray" },
+    ],
+  },
+  {
+    title: "Butter block",
+    items: [{ amount: 500, unit: "g", ingredient: "unsalted butter, chilled" }],
+  },
+  {
+    title: "Egg wash",
+    items: [
+      { amount: 100, unit: "g", ingredient: "whole eggs" },
+      { amount: 100, unit: "g", ingredient: "egg yolks" },
+      { amount: 100, unit: "g", ingredient: "milk" },
+    ],
+  },
+] satisfies readonly ViennoiserieScaleGroup[];
+
+const bachourCocoaFormula = [
+  {
+    title: "Cocoa détrempe",
+    items: [
+      { amount: 75, unit: "g", ingredient: "bread flour" },
+      { amount: 75, unit: "g", ingredient: "all-purpose flour" },
+      { amount: 22, unit: "g", ingredient: "sugar" },
+      { amount: 2.2, unit: "g", ingredient: "salt" },
+      { amount: 75, unit: "g", ingredient: "whole milk" },
+      { amount: 50, unit: "g", ingredient: "water" },
+      { amount: 10, unit: "g", ingredient: "unsalted butter, chilled" },
+      { amount: 7, unit: "g", ingredient: "fresh yeast" },
+      { amount: 20, unit: "g", ingredient: "cocoa powder" },
+    ],
+  },
+  {
+    title: "Glaze",
+    items: [
+      { amount: 500, unit: "g", ingredient: "sugar" },
+      { amount: 200, unit: "g", ingredient: "water" },
+      { amount: 150, unit: "g", ingredient: "glucose" },
+    ],
+  },
+  {
+    title: "To finish",
+    items: [{ fixedAmount: "as needed", ingredient: "chocolate batons" }],
+  },
+] satisfies readonly ViennoiserieScaleGroup[];
+
+const oldManTehFormula = [
+  {
+    title: "Dough",
+    items: [
+      { amount: 362, unit: "g", ingredient: "bread flour" },
+      { amount: 14, unit: "g", ingredient: "fresh yeast" },
+      { amount: 36, unit: "g", ingredient: "sugar" },
+      { amount: 7, unit: "g", ingredient: "salt" },
+      { amount: 14, unit: "g", ingredient: "milk powder" },
+      { amount: 152, unit: "g", ingredient: "crushed ice" },
+      { amount: 54, unit: "g", ingredient: "unsalted butter" },
+    ],
+  },
+  {
+    title: "Lamination",
+    items: [{ amount: 180, unit: "g", ingredient: "lamination butter, approximately" }],
+  },
+] satisfies readonly ViennoiserieScaleGroup[];
+
+const artisanCrustFormula = [
+  {
+    title: "Dough",
+    items: [
+      { amount: 542, unit: "g", ingredient: "baker’s flour · 100%" },
+      { amount: 54, unit: "g", ingredient: "sugar · 10%" },
+      { amount: 11, unit: "g", ingredient: "salt · 2%" },
+      { amount: 6, unit: "g", ingredient: "dried yeast · 1.2%" },
+      { amount: 0.43, unit: "g", ingredient: "deactivated yeast · 0.08% (a very small pinch at 1×)" },
+      { amount: 22, unit: "g", ingredient: "butter · 4%" },
+      { amount: 168, unit: "g", ingredient: "water · 31%" },
+      { amount: 125, unit: "g", ingredient: "milk · 23%" },
+      { amount: 106, unit: "g", ingredient: "scrap croissant or Danish dough · 10% of total dough" },
+    ],
+  },
+  {
+    title: "Lamination",
+    items: [{ amount: 264, unit: "g", ingredient: "roll-in butter · 25% of total dough" }],
+  },
+  {
+    title: "To finish",
+    items: [{ fixedAmount: "as needed", ingredient: "egg, milk and salt glaze" }],
+  },
+] satisfies readonly ViennoiserieScaleGroup[];
+
 function Photo({ file, alt }: { file: string; alt: string }) {
   const parts = file.split("/");
   const encodedFile = parts.map((part) => encodeURIComponent(part)).join("/");
@@ -46,7 +147,7 @@ function Photo({ file, alt }: { file: string; alt: string }) {
     ? `/recipes/viennoiserie/recipe-steps/thumbs-v2-${encodeURIComponent(parts[1])}`
     : `/recipes/viennoiserie/thumbs/${encodeURIComponent(parts[0])}`;
   const viewerHref = `/recipes/viennoiserie-guide/image?src=${encodeURIComponent(fullSrc)}&alt=${encodeURIComponent(alt)}`;
-  return <Link className="viennoiserie-photo-link" href={viewerHref} aria-label={`Open full-size image: ${alt}`}><Image src={thumbSrc} alt={alt} width={900} height={1200} quality={78} sizes="(max-width: 640px) 92vw, (max-width: 1000px) 45vw, 30vw" /></Link>;
+  return <Link className="viennoiserie-photo-link" href={viewerHref} aria-label={`Open full-size image: ${alt}`}><Image src={thumbSrc} alt={alt} width={900} height={1200} quality={75} sizes="(max-width: 640px) 92vw, (max-width: 1000px) 45vw, 30vw" /></Link>;
 }
 
 function OldManTehSourcePage({ page, alt }: { page: number; alt: string }) {
@@ -106,28 +207,31 @@ export default function ViennoiserieGuidePage() {
             <p className="eyebrow">Recipe source</p>
             <p>This croissant recipe is by <strong>Antonio Bachour</strong>. The photographed pages include the plain croissant method and the cocoa détrempe variation for pain au chocolat.</p>
           </aside>
-          <ViennoiserieScaler />
+          <ViennoiserieScaler
+            id="bachour-plain-croissant"
+            baseValue={15}
+            inputLabel="Target yield"
+            inputUnit="croissants"
+            groups={bachourCroissantFormula}
+            note="This scales the dough, butter block and egg wash together. Sheet dimensions and individual pastry size must be adjusted when the batch changes."
+            max={200}
+          />
 
           <div className="viennoiserie-recipe-layout">
             <div className="viennoiserie-recipe-main">
               <div className="viennoiserie-recipe-card">
                 <p className="eyebrow">Croissant dough</p>
-                <ul className="viennoiserie-ingredient-list">
-                  <li><span>375 g</span> bread flour T65</li><li><span>375 g</span> all-purpose flour T55</li><li><span>112 g</span> granulated sugar</li><li><span>12 g</span> salt</li><li><span>375 g</span> whole milk</li><li><span>50 g</span> unsalted butter, chilled</li><li><span>35 g</span> fresh yeast</li><li><span>—</span> non-stick spray, as needed</li>
-                </ul>
                 <p>In a mixer fitted with the hook attachment, combine the flours, sugar, salt, milk and butter and mix on low speed. After 1 minute, add the yeast and continue to mix on low speed for an additional 7 minutes. Scrape down the sides of the bowl and mix for 8 more minutes on second speed. Pick the dough (a handful) between the hands and stretch. If it does not break and creates a thin elastic dough, it is perfect.</p>
                 <p>Prepare a large bowl with non-stick spray. Knead the dough, place it in the bowl, cover with plastic wrap and leave it to rest for 30 minutes at room temperature. Stretch the dough to 50x35 cm and reserve in the freezer overnight.</p>
               </div>
 
               <div className="viennoiserie-recipe-card">
                 <p className="eyebrow">Butter block</p>
-                <ul className="viennoiserie-ingredient-list"><li><span>500 g</span> unsalted butter, chilled</li></ul>
                 <p>Place a piece of parchment paper on the work surface. Center the butter on the paper. Top with another sheet of parchment paper and pound the top of the butter from the left to right with the help of a rolling pin to begin to flatten it. Continue to flatten the butter until you a rectangular shape of 30x35cm is obtained. Wrap and refrigerate.</p>
               </div>
 
               <div className="viennoiserie-recipe-card">
                 <p className="eyebrow">Egg wash</p>
-                <ul className="viennoiserie-ingredient-list"><li><span>100 g</span> whole eggs</li><li><span>100 g</span> egg yolks</li><li><span>100 g</span> milk</li></ul>
                 <p>Put all the ingredients in a bowl and mix with a hand whisk. Reserve in the refrigerator until ready to use.</p>
               </div>
 
@@ -152,7 +256,29 @@ export default function ViennoiserieGuidePage() {
             </div>
           </div>
 
-          <details className="viennoiserie-variation-recipe"><summary>Cocoa détrempe &amp; pain au chocolat</summary><div className="viennoiserie-recipe-card"><p className="eyebrow">Cocoa détrempe</p><ul className="viennoiserie-ingredient-list"><li><span>75 g</span> bread flour</li><li><span>75 g</span> all-purpose flour</li><li><span>22 g</span> sugar</li><li><span>2.2 g</span> salt</li><li><span>75 g</span> whole milk</li><li><span>50 g</span> water</li><li><span>10 g</span> unsalted butter, chilled</li><li><span>7 g</span> fresh yeast</li><li><span>20 g</span> cocoa powder</li></ul><p>In a mixer fitted with the hook attachment, combine the flours, sugar, salt, milk, water, cocoa powder and butter and mix on low speed. After 1 minute, add the yeast and continue to mix on low speed for an additional 7 minutes. Scrape down the sides of the bowl and mix for 7 more minutes on second speed. Pick the dough (a handful) between the hands and stretch. If it does not break and creates a thin elastic dough, it is perfect. Roll the dough in a square shape, wrap in plastic and reserve in the refrigerator overnight. Roll it to the same size as the croissant dough sheet after performing all the turns.</p><p className="eyebrow recipe-subhead">Glaze</p><ul className="viennoiserie-ingredient-list"><li><span>500 g</span> sugar</li><li><span>200 g</span> water</li><li><span>150 g</span> glucose</li></ul><p>Place everything in a pot and bring to a boil.</p><p className="eyebrow recipe-subhead">Lamination</p><p>Laminate the croissant dough as for the Plain croissant and proceed as for the rest of the bicolor viennoiserie. To do this, place the cocoa dough on top of the croissant dough. Laminate to a thickness of 3 mm leaving the cocoa part underneath. Cut strips of bicolor dough of 8x16 cm. Make a few shallow diagonal cuts on the bottom of the strip, turn the cocoa side. Turn the strip so that the cocoa side is facing down, place a chocolate baton at one end and start rolling up. Place a second baton and finish rolling up the strip to form the pain au chocolat (see step-by-step photographs). Spray a sheet pan with non-stick spray, line with parchment paper. Place the pieces on the sheet pan and leave to proof at 28°C for 2 hours.</p></div></details>
+          <details className="viennoiserie-variation-recipe">
+            <summary>Cocoa détrempe &amp; pain au chocolat</summary>
+            <div className="viennoiserie-variation-recipe-body">
+              <ViennoiserieScaler
+                id="bachour-cocoa-detrempe"
+                baseValue={1}
+                inputLabel="Batch multiplier"
+                inputUnit="batch"
+                groups={bachourCocoaFormula}
+                note="The cocoa sheet is paired with the plain croissant dough after its turns. Scale both formulas by the same multiplier."
+                step={0.25}
+                max={10}
+              />
+              <div className="viennoiserie-recipe-card">
+                <p className="eyebrow">Cocoa détrempe</p>
+                <p>In a mixer fitted with the hook attachment, combine the flours, sugar, salt, milk, water, cocoa powder and butter and mix on low speed. After 1 minute, add the yeast and continue to mix on low speed for an additional 7 minutes. Scrape down the sides of the bowl and mix for 7 more minutes on second speed. Pick the dough (a handful) between the hands and stretch. If it does not break and creates a thin elastic dough, it is perfect. Roll the dough in a square shape, wrap in plastic and reserve in the refrigerator overnight. Roll it to the same size as the croissant dough sheet after performing all the turns.</p>
+                <p className="eyebrow recipe-subhead">Glaze</p>
+                <p>Place the sugar, water and glucose in a pot and bring to a boil.</p>
+                <p className="eyebrow recipe-subhead">Lamination</p>
+                <p>Laminate the croissant dough as for the plain croissant and proceed as for the rest of the bicolour viennoiserie. Place the cocoa dough on top of the croissant dough and laminate to 3 mm thick, leaving the cocoa side underneath. Cut 8 × 16 cm strips. Make a few shallow diagonal cuts on the underside of each strip, then turn the cocoa side down. Place a chocolate baton at one end and start rolling. Add a second baton and finish rolling to form the pain au chocolat. Place the pieces on a parchment-lined, lightly sprayed sheet pan and proof at 28°C for 2 hours.</p>
+              </div>
+            </div>
+          </details>
         </section>
 
         <section id="variations" className="viennoiserie-photo-section">
@@ -179,20 +305,15 @@ export default function ViennoiserieGuidePage() {
           </aside>
 
           <div className="old-man-teh-overview">
-            <div className="viennoiserie-recipe-card">
-              <p className="eyebrow">Dough · 650 g approximately</p>
-              <ul className="viennoiserie-ingredient-list">
-                <li><span>362 g</span> bread flour</li>
-                <li><span>14 g</span> fresh yeast</li>
-                <li><span>36 g</span> sugar</li>
-                <li><span>7 g</span> salt</li>
-                <li><span>14 g</span> milk powder</li>
-                <li><span>152 g</span> crushed ice</li>
-                <li><span>54 g</span> unsalted butter</li>
-                <li><span>180 g ±</span> lamination butter</li>
-              </ul>
-              <p>The lamination butter is 27–30% of the dough weight. The source calculates every dough ingredient as a proportion of the 362 g bread flour.</p>
-            </div>
+            <ViennoiserieScaler
+              id="old-man-teh-croissant"
+              baseValue={650}
+              inputLabel="Target dough"
+              inputUnit="g"
+              groups={oldManTehFormula}
+              note="The source describes an approximately 650 g dough. Lamination butter is 27–30% of dough weight; the listed 180 g is the source’s working amount."
+              max={10000}
+            />
 
             <div className="old-man-teh-parameters">
               <div><span>Mixing speed</span><strong>Slow → medium</strong></div>
@@ -276,70 +397,31 @@ export default function ViennoiserieGuidePage() {
             </p>
           </aside>
 
-          <div className="artisan-crust-overview">
-            <article className="viennoiserie-recipe-card">
-              <p className="eyebrow">Dough formula</p>
-              <div className="artisan-crust-table-wrap">
-                <table className="artisan-crust-formula-table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Ingredient</th>
-                      <th scope="col">Baker’s %</th>
-                      <th scope="col">Quantity</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>Baker’s flour</td><td>100%</td><td>542 g</td></tr>
-                    <tr><td>Sugar</td><td>10%</td><td>54 g</td></tr>
-                    <tr><td>Salt</td><td>2%</td><td>11 g</td></tr>
-                    <tr><td>Dried yeast</td><td>1.2%</td><td>6 g</td></tr>
-                    <tr><td>Deactivated yeast</td><td>0.08%</td><td>Very small pinch</td></tr>
-                    <tr><td>Butter</td><td>4%</td><td>22 g</td></tr>
-                    <tr><td>Water</td><td>31%</td><td>168 g</td></tr>
-                    <tr><td>Milk</td><td>23%</td><td>125 g</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </article>
-
-            <div className="artisan-crust-batch">
-              <div><span>Total dough</span><strong>1.056 kg</strong></div>
-              <div><span>Roll-in butter</span><strong>264 g · 25%</strong></div>
-              <div><span>Scrap dough</span><strong>106 g · 10%</strong></div>
-              <div><span>Sheet total</span><strong>1.32 kg</strong></div>
-            </div>
-          </div>
+          <ViennoiserieScaler
+            id="artisan-crust-croissant"
+            baseValue={1056}
+            inputLabel="Target dough"
+            inputUnit="g"
+            groups={artisanCrustFormula}
+            note="The printed base formula makes 1.056 kg dough, with 264 g roll-in butter for a 1.32 kg laminated batch. The source rounds its ingredient lines, so their displayed sum does not exactly equal the printed total."
+            max={10000}
+          />
 
           <p className="old-man-teh-source-caveat">
-            <strong>Quantity note:</strong> the supplied sheet records its quantities in kilograms and rounds each line. The totals above are therefore retained exactly as printed instead of being recalculated from the rounded ingredient rows.
+            <strong>What is scrap dough?</strong> It is unbaked croissant or Danish dough left from trimming and shaping an earlier batch. The offcuts are saved and mixed into the next dough, reducing waste while bringing some already-developed gluten and flavour. Because laminated offcuts can also contain butter, this is not simply extra flour-and-water dough. Scott’s sheet calls for 106 g, or 10% of the printed total dough, but does not specify its age or give a substitute for a first batch.
           </p>
 
-          <div className="artisan-crust-method-grid">
-            <article className="viennoiserie-recipe-card">
-              <p className="eyebrow">01 · Mix</p>
-              <p>Mix for 5 minutes on first speed, followed by 3 minutes on second speed.</p>
-            </article>
-            <article className="viennoiserie-recipe-card">
-              <p className="eyebrow">02 · Bulk proof</p>
-              <p>Roll the dough to 12 mm thick, then refrigerate for 16–24 hours.</p>
-            </article>
-            <article className="viennoiserie-recipe-card">
-              <p className="eyebrow">03 · Laminate</p>
-              <p>Lock in the 264 g butter block. Perform one book fold followed by two single folds, resting the dough for at least 15 minutes between every fold.</p>
-            </article>
-            <article className="viennoiserie-recipe-card">
-              <p className="eyebrow">04 · Shape</p>
-              <p>Roll to 4 mm thick. Rest on the bench for 10 minutes so the sheet can relax, then cut it into the desired shapes.</p>
-            </article>
-            <article className="viennoiserie-recipe-card">
-              <p className="eyebrow">05 · Final proof</p>
-              <p>Proof for 2–3 hours at 26°C and 70% relative humidity. Glaze with a mixture of egg, milk and salt.</p>
-            </article>
-            <article className="viennoiserie-recipe-card">
-              <p className="eyebrow">06 · Bake</p>
-              <p>Bake in a fan-forced oven at 180°C with 2 seconds of steam for 16 minutes.</p>
-            </article>
-          </div>
+          <article className="viennoiserie-recipe-card artisan-crust-method">
+            <p className="eyebrow">Method</p>
+            <ol className="old-man-teh-steps">
+              <li>Mix for 5 minutes on first speed, followed by 3 minutes on second speed.</li>
+              <li>Roll the dough to 12 mm thick, then refrigerate for 16–24 hours.</li>
+              <li>Lock in the scaled roll-in butter. Perform one book fold followed by two single folds, resting the dough for at least 15 minutes between every fold.</li>
+              <li>Roll to 4 mm thick. Rest on the bench for 10 minutes so the sheet can relax, then cut it into the desired shapes.</li>
+              <li>Proof for 2–3 hours at 26°C and 70% relative humidity. Glaze with a mixture of egg, milk and salt.</li>
+              <li>Bake in a fan-forced oven at 180°C with 2 seconds of steam for 16 minutes.</li>
+            </ol>
+          </article>
         </section>
       </section>
     </div>
