@@ -256,7 +256,7 @@ function CocktailRecipeCard({
       <summary>
         {recipe.image && (
           <div className="cocktail-library-recipe-thumb">
-            <Image alt={`${recipe.title} from ${book.title}`} className="object-cover" fill sizes="(max-width: 640px) 44vw, 15rem" src={recipe.image} />
+            <Image alt={`${recipe.title} from ${book.title}`} className="object-cover" fill sizes="(max-width: 640px) 44vw, 15rem" src={recipe.image} unoptimized />
           </div>
         )}
         <span className="cocktail-library-recipe-copy">
@@ -272,7 +272,7 @@ function CocktailRecipeCard({
           <div className="cocktail-library-media">
             {recipe.images.map((src, imageIndex) => (
               <RecipeImageViewer alt={`${recipe.title}, image ${imageIndex + 1}`} className="cocktail-library-media-item" key={src} src={src}>
-                <Image alt={`${recipe.title}, image ${imageIndex + 1}`} className="object-contain" fill loading="eager" sizes="(max-width: 640px) 82vw, 30rem" src={src} />
+                <Image alt={`${recipe.title}, image ${imageIndex + 1}`} className="object-contain" fill loading="eager" sizes="(max-width: 640px) 82vw, 30rem" src={src} unoptimized />
               </RecipeImageViewer>
             ))}
           </div>
@@ -507,7 +507,7 @@ export function CocktailBookBrowser({ book, initiallyPublished }: { book: Cockta
           <div>
             {book.images.map((image) => (
               <RecipeImageViewer alt={`${book.title}, PDF page ${image.sourcePages.join(", ")}`} className="cocktail-library-archive-image" key={image.src} src={image.src}>
-                <Image alt={`${book.title}, PDF page ${image.sourcePages.join(", ")}`} className="object-contain" fill sizes="(max-width: 640px) 45vw, 18rem" src={image.src} />
+                <Image alt={`${book.title}, PDF page ${image.sourcePages.join(", ")}`} className="object-contain" fill sizes="(max-width: 640px) 45vw, 18rem" src={image.src} unoptimized />
                 <span>PDF p. {image.sourcePages.join(", ")}</span>
               </RecipeImageViewer>
             ))}

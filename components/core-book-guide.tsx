@@ -124,7 +124,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: CoreDish; index: numb
             <div className={`mx-auto grid w-full max-w-md gap-2 overflow-hidden rounded-[1rem] ${dish.images.length > 1 ? "grid-cols-2" : ""}`}>
               {dish.images.map((source, imageIndex) => {
                 const alt = `${dish.title}, plated dish${dish.images.length > 1 ? `, view ${imageIndex + 1}` : ""}`;
-                return <RecipeImageViewer alt={alt} className="relative aspect-[4/3] w-full overflow-hidden bg-mist/25" key={source} src={source}><Image alt={alt} className="object-cover" fill sizes="(max-width: 640px) 88vw, 28rem" src={source} /></RecipeImageViewer>;
+                return <RecipeImageViewer alt={alt} className="relative aspect-[4/3] w-full overflow-hidden bg-mist/25" key={source} src={source}><Image alt={alt} className="object-cover" fill sizes="(max-width: 640px) 88vw, 28rem" src={source} unoptimized /></RecipeImageViewer>;
               })}
             </div>
           ) : (
@@ -139,7 +139,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: CoreDish; index: numb
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:hidden"><span className="text-xs font-semibold uppercase tracking-[0.1em] text-ink/48">Exact source pages</span><span className="text-xs text-ink/35 transition group-open:rotate-45">+</span></summary>
             <div className="grid gap-3 border-t border-ink/[0.07] p-3">{dish.sourceScans.map((source, sourceIndex) => {
               const alt = `${dish.title} source recipe page ${sourceIndex + 1}`;
-              return <RecipeImageViewer alt={alt} className="w-full" key={source} src={source}><Image alt={alt} className="h-auto w-full rounded-lg" height={1942} sizes="(max-width: 900px) 94vw, 60rem" src={source} width={1500} /></RecipeImageViewer>;
+              return <RecipeImageViewer alt={alt} className="w-full" key={source} src={source}><Image alt={alt} className="h-auto w-full rounded-lg" height={1942} sizes="(max-width: 900px) 94vw, 60rem" src={source} unoptimized width={1500} /></RecipeImageViewer>;
             })}</div>
           </details>
         </div>

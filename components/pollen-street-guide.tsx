@@ -432,6 +432,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
                     fill
                     sizes={dish.images.length > 1 ? "(max-width: 640px) 88vw, 16rem" : "(max-width: 640px) 88vw, 32rem"}
                     src={source}
+                    unoptimized
                   />
                 </RecipeImageViewer>
               ))}

@@ -147,7 +147,7 @@ function RecipeCard({ recipe, index, open, onToggle, collection = "original" }: 
         <div className="mt-3 grid gap-5 border-t border-ink/[0.07] p-4 sm:p-5">
           {recipe.image && (
             <RecipeImageViewer alt={`${recipe.title}, finished pastry`} className="relative mx-auto aspect-[4/3] w-full max-w-lg overflow-hidden rounded-[1.15rem] bg-paper" src={recipe.image}>
-              <Image alt={`${recipe.title}, finished pastry`} className="object-cover" fill sizes="(max-width: 640px) 88vw, 32rem" src={recipe.image} style={{ objectPosition: recipe.imagePosition ?? "50% 50%" }} />
+              <Image alt={`${recipe.title}, finished pastry`} className="object-cover" fill sizes="(max-width: 640px) 88vw, 32rem" src={recipe.image} style={{ objectPosition: recipe.imagePosition ?? "50% 50%" }} unoptimized />
             </RecipeImageViewer>
           )}
           <header>

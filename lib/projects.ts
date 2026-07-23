@@ -56,7 +56,7 @@ export const projects: ProjectEntry[] = [
         viewer: "external",
       },
       {
-        href: "/Curtis’s Ch9 final project.pdf",
+        href: "/curtis-ch9-final-project.pdf",
         label: "Synthesis presentation",
         description: "Presentation on biodiesel synthesis from used cooking oil and ethanol.",
         viewer: "external",

@@ -51,6 +51,7 @@ export function CookbookRecipeCardSummary({
               objectPosition: imagePosition ?? "50% 50%",
               transform: imageRotation ? `rotate(${imageRotation}deg) scale(1.35)` : undefined,
             }}
+            unoptimized
           />
         ) : (
           <div className="grid h-full place-items-center bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.95),rgba(219,210,191,0.42))] text-sm font-semibold uppercase tracking-[0.14em] text-ink/30">

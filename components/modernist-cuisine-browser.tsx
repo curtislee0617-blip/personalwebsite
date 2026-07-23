@@ -178,6 +178,7 @@ function SourceFigure({ entry, compact = false }: { entry: ContentsEntry; compac
           height={entry.sourceImageHeight || 900}
           sizes="(max-width: 768px) 90vw, 760px"
           src={entry.sourceImage}
+          unoptimized
           width={entry.sourceImageWidth || 1200}
         />
       </RecipeImageViewer>

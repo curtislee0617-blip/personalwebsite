@@ -1,6 +1,11 @@
 import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { isPrivateCookbookPathname } from "@/lib/cookbook-access";
+import {
+  cookbookMediaObjectPath,
+  isPrivateCookbookMediaPathname,
+  isPrivateCookbookPathname,
+  isPublicCookbookMediaPathname,
+} from "@/lib/cookbook-access";
 import { RECIPE_ADMIN_COOKIE, recipeAdminSessionToken } from "@/lib/recipe-admin-token";
 
 function hasValidRecipeAdminSession(request: NextRequest) {
@@ -16,7 +21,22 @@ function hasValidRecipeAdminSession(request: NextRequest) {
 }
 
 export function proxy(request: NextRequest) {
-  if (!isPrivateCookbookPathname(request.nextUrl.pathname) || hasValidRecipeAdminSession(request)) {
+  const pathname = request.nextUrl.pathname;
+
+  if (isPrivateCookbookMediaPathname(pathname)) {
+    // Keep the checked-out copies available for offline localhost work. The
+    // production deployment serves the private Supabase objects instead.
+    if (process.env.NODE_ENV === "development") return NextResponse.next();
+    if (!isPublicCookbookMediaPathname(pathname) && !hasValidRecipeAdminSession(request)) {
+      return new NextResponse(null, { status: 404 });
+    }
+
+    const mediaUrl = request.nextUrl.clone();
+    mediaUrl.pathname = `/api/cookbook-media/${cookbookMediaObjectPath(pathname)}`;
+    return NextResponse.rewrite(mediaUrl);
+  }
+
+  if (!isPrivateCookbookPathname(pathname) || hasValidRecipeAdminSession(request)) {
     return NextResponse.next();
   }
 
@@ -26,5 +46,16 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/recipes/:path*"],
+  matcher: [
+    "/recipes/:path*",
+    "/bachour/:path*",
+    "/benu/:path*",
+    "/core-book/:path*",
+    "/frantzen/:path*",
+    "/imported-cookbooks/:path*",
+    "/modernist-cuisine/:path*",
+    "/modernist-pizza/:path*",
+    "/opera/:path*",
+    "/pollen-street/:path*",
+  ],
 };

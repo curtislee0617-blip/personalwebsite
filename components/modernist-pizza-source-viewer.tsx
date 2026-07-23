@@ -67,6 +67,7 @@ export function ModernistPizzaSourceViewer({ backHref, pages, title }: Modernist
                   sizes={zoom === "fit" ? "(max-width: 1120px) 96vw, 1085px" : `${width}px`}
                   src={source}
                   style={{ maxWidth: zoom === "fit" ? "100%" : "none", width }}
+                  unoptimized
                   width={PAGE_WIDTH}
                 />
               </div>

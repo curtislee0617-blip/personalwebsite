@@ -261,6 +261,7 @@ function RecipeCard({
                 fill
                 sizes="(max-width: 640px) 88vw, 28rem"
                 src={recipe.image}
+                unoptimized
               />
             </RecipeImageViewer>
           )}

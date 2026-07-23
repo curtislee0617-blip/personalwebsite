@@ -111,6 +111,7 @@ export default async function CocktailCodexStylePage({ params }: { params: Style
                           fill
                           sizes="(max-width: 760px) 88vw, 46rem"
                           src={src}
+                          unoptimized
                         />
                       </RecipeImageViewer>
                     ))}

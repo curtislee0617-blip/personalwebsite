@@ -4,7 +4,7 @@ import crypto from "node:crypto";
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { uploadToR2 } from "@/lib/r2";
+import { uploadRecipeMedia } from "@/lib/media-storage";
 import { clearRecipeAdminCookie, isRecipeAdminAuthenticated, setRecipeAdminCookie } from "@/lib/recipe-admin-auth";
 import { isRecipeCategoryId } from "@/data/recipe-categories";
 import { getEditableRecipeCards, parseIngredientGroupsEditor, parseMethodGroupsEditor } from "@/lib/personal-recipes";
@@ -48,7 +48,7 @@ export async function submitRecipe(formData: FormData) {
     const buffer = Buffer.from(await photo.arrayBuffer());
     const safeName = photo.name.replace(/[^a-zA-Z0-9.-]+/g, "-").toLowerCase() || "photo.jpg";
     const key = `recipes/${draftId}/${String(index).padStart(2, "0")}-${safeName}`;
-    const url = await uploadToR2(key, buffer, photo.type || "application/octet-stream");
+    const url = await uploadRecipeMedia(key, buffer, photo.type || "application/octet-stream");
     imageUrls.push(url);
   }
 
@@ -184,7 +184,7 @@ export async function saveRecipeCard(formData: FormData) {
     const safeName = photo.name.replace(/[^a-zA-Z0-9.-]+/g, "-").toLowerCase() || "photo.jpg";
     const safeRecipeKey = recipeKey.replace(/[^a-zA-Z0-9-]+/g, "-").toLowerCase();
     const key = `recipes/overrides/${safeRecipeKey}/${crypto.randomUUID()}-${safeName}`;
-    const src = await uploadToR2(key, buffer, photo.type);
+    const src = await uploadRecipeMedia(key, buffer, photo.type);
     newMedia.push({ src, type: "image" });
   }
   mediaItems = [...mediaItems, ...newMedia];

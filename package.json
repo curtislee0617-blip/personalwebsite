@@ -19,7 +19,6 @@
     "maps:review": "node scripts/export-restaurant-review.mjs"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1079.0",
     "@fontsource/roboto": "^5.2.10",
     "@googlemaps/js-api-loader": "^2.1.1",
     "@supabase/ssr": "^0.12.0",

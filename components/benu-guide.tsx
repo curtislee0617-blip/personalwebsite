@@ -206,6 +206,7 @@ function RecipeCard({ recipe, index, open, onToggle }: { recipe: BenuRecipe; ind
                 sizes="(max-width: 640px) 88vw, 32rem"
                 src={recipe.image}
                 style={{ objectPosition: recipe.imagePosition ?? "50% 50%" }}
+                unoptimized
               />
             </RecipeImageViewer>
           ) : (

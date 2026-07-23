@@ -155,9 +155,9 @@ function buildRecipeSearchPreview(
 const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string; mark: string; tone: string }> = {
   "sourdough-guide": {
     srcs: [
-      "/Screenshot 2026-07-01 at 1.38.07 AM.png",
-      "/Screenshot 2026-07-01 at 1.39.02 AM.png",
-      "/Screenshot 2026-07-01 at 1.39.43 AM.png",
+      "/sourdough-step-1.png",
+      "/sourdough-step-2.png",
+      "/sourdough-step-3.png",
     ],
     alt: "Three sourdough loaves and crumb views",
     mark: "SD",
@@ -343,6 +343,7 @@ export default async function RecipesPage() {
                                   fill
                                   sizes="(max-width: 640px) 45vw, 12rem"
                                   src="/recipes/cocktail-books/cocktail-codex/page-0001-1.webp"
+                                  unoptimized
                                 />
                               </div>
                             </div>
@@ -461,6 +462,7 @@ export default async function RecipesPage() {
                       fill
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/core-book/dishes/core-teser-1-v2.jpg"
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -484,6 +486,7 @@ export default async function RecipesPage() {
                       fill
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/pollen-street/cumbrian-suckling-pig.jpg"
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -508,6 +511,7 @@ export default async function RecipesPage() {
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/benu/thousand-year-old-quail-egg.jpeg"
                       style={{ objectPosition: "50% 47%" }}
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -532,6 +536,7 @@ export default async function RecipesPage() {
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/bachour/coffee-caramel-gianduja.jpeg"
                       style={{ objectPosition: "50% 50%" }}
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -556,6 +561,7 @@ export default async function RecipesPage() {
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/modernist-cuisine/title-page.jpg"
                       style={{ objectPosition: "50% 39%" }}
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -580,6 +586,7 @@ export default async function RecipesPage() {
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/modernist-pizza/cover.webp"
                       style={{ objectPosition: "50% 24%" }}
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -604,6 +611,7 @@ export default async function RecipesPage() {
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/frantzen/dishes/roasted-scallops.jpg"
                       style={{ objectPosition: "50% 52%" }}
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -628,6 +636,7 @@ export default async function RecipesPage() {
                       sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
                       src="/opera/photos/pain-au-chocolat.webp"
                       style={{ objectPosition: "50% 50%" }}
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -643,7 +652,7 @@ export default async function RecipesPage() {
                 <Link className="design-card order-9 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3" href={`/recipes/${book.id}`} key={book.id}>
                   <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
                     <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                      <Image alt={`${book.title} cover`} className="object-cover" fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem" src={`/imported-cookbooks/${book.id}.jpg`} />
+                      <Image alt={`${book.title} cover`} className="object-cover" fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem" src={`/imported-cookbooks/${book.id}.jpg`} unoptimized />
                     </div>
                   </div>
                   <div className="p-3 pb-4 pt-4">

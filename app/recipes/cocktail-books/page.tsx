@@ -47,7 +47,7 @@ export default async function CocktailBooksPage() {
             <Link className="cocktail-library-book-card" href={`/recipes/cocktail-books/${book.id}`} key={book.id}>
               {book.thumbnail ? (
                 <div className="cocktail-library-book-cover">
-                  <Image alt={`${book.title} source cover`} className="object-cover" fill priority sizes="(max-width: 760px) 92vw, 28rem" src={book.thumbnail} />
+                  <Image alt={`${book.title} source cover`} className="object-cover" fill priority sizes="(max-width: 760px) 92vw, 28rem" src={book.thumbnail} unoptimized />
                 </div>
               ) : (
                 <div className="cocktail-library-book-cover is-text-only" aria-hidden="true">

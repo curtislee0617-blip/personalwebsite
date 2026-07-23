@@ -468,24 +468,24 @@ export function SourdoughGuide({ openCrumbCookbook }: { openCrumbCookbook: Impor
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              src: "/Screenshot 2026-07-01 at 1.38.07 AM.png",
+              src: "/sourdough-step-1.png",
               alt: "Sourdough loaf with an open ear",
               caption: "Pronounced ear and strong oven spring.",
             },
             {
-              src: "/Screenshot 2026-07-01 at 1.39.02 AM.png",
+              src: "/sourdough-step-2.png",
               alt: "Sourdough crumb cross section",
               caption: "Open crumb and interior structure.",
             },
             {
-              src: "/Screenshot 2026-07-01 at 1.39.43 AM.png",
+              src: "/sourdough-step-3.png",
               alt: "Finished round sourdough boule",
               caption: "Round boule shape and darker crust finish.",
             },
           ].map((image) => (
             <figure className="overflow-hidden rounded-[1.35rem] border border-ink/10 bg-paper/70" key={image.src}>
               <RecipeImageViewer alt={image.alt} className="relative aspect-[4/5] w-full" src={image.src}>
-                <Image alt={image.alt} className="object-cover" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={image.src} />
+                <Image alt={image.alt} className="object-cover" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={image.src} unoptimized />
               </RecipeImageViewer>
               <figcaption className="px-4 py-3 text-sm leading-6 text-ink/60">{image.caption}</figcaption>
             </figure>

@@ -134,6 +134,7 @@ function RecipeCard({ recipe, index, open, onToggle, compact = false }: { recipe
                   objectPosition: recipe.imagePosition ?? "50% 50%",
                   transform: recipe.imageRotation ? `rotate(${recipe.imageRotation}deg) scale(1.35)` : undefined,
                 }}
+                unoptimized
               />
             </RecipeImageViewer>
           )}
