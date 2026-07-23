@@ -14,6 +14,17 @@ export const privateCookbookSlugs = [
   "science-of-spice",
   "secrets-of-open-crumb",
   "thailand-the-cookbook",
+  "breakfast-the-cookbook",
+  "tu-casa-mi-casa",
+  "the-silver-spoon",
+  "the-essential-new-york-times-cookbook",
+  "larousse-patisserie-and-baking",
+  "crumb-richard-bertinet",
+  "advanced-professional-pastry-chef",
+  "complete-book-of-pasta-sauces",
+  "the-french-laundry-cookbook",
+  "spain-the-cookbook",
+  "sauces-reconsidered",
 ] as const;
 
 export const privateCookbookMediaPrefixes = [

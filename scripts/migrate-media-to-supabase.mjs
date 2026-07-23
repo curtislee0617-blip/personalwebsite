@@ -7,9 +7,12 @@ import path from "node:path";
 const root = process.cwd();
 const supabaseCli = path.join(root, "node_modules/.bin/supabase");
 const repair = process.argv.includes("--repair");
+const onlyPrefix = process.argv
+  .find((argument) => argument.startsWith("--only="))
+  ?.slice("--only=".length);
 const cacheControl = "31536000, immutable";
 
-const directoryMappings = [
+const allDirectoryMappings = [
   ["public/bachour", "cookbook-media", "bachour"],
   ["public/benu", "cookbook-media", "benu"],
   ["public/core-book", "cookbook-media", "core-book"],
@@ -34,6 +37,9 @@ const directoryMappings = [
   ["public/project-pages", "site-media", "project-pages"],
   ["public/project-previews", "site-media", "project-previews"],
 ];
+const directoryMappings = onlyPrefix
+  ? allDirectoryMappings.filter(([, , destinationPrefix]) => destinationPrefix === onlyPrefix)
+  : allDirectoryMappings;
 
 const rootMediaExtensions = new Set([
   ".avif",
@@ -56,7 +62,10 @@ function listFiles(directory) {
     for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
       const fullPath = path.join(current, entry.name);
       if (entry.isDirectory()) stack.push(fullPath);
-      else if (entry.isFile() && entry.name !== ".gitkeep") files.push(fullPath);
+      else if (
+        (entry.isFile() || (entry.isSymbolicLink() && fs.statSync(fullPath).isFile()))
+        && entry.name !== ".gitkeep"
+      ) files.push(fullPath);
     }
   }
   return files;
@@ -92,7 +101,7 @@ for (const [sourceDirectory, bucket, destinationPrefix] of directoryMappings) {
   }
 }
 
-for (const entry of fs.readdirSync(path.join(root, "public"), { withFileTypes: true })) {
+for (const entry of onlyPrefix ? [] : fs.readdirSync(path.join(root, "public"), { withFileTypes: true })) {
   if (
     !entry.isFile()
     || !/^[\x20-\x7e]+$/.test(entry.name)
@@ -120,7 +129,11 @@ if (repair) {
       const relativeStoragePath = entry.storagePath.slice(entry.bucket.length + 1);
       const stagedPath = path.join(stagingRoot, entry.bucket, relativeStoragePath);
       fs.mkdirSync(path.dirname(stagedPath), { recursive: true });
-      fs.linkSync(entry.localPath, stagedPath);
+      if (fs.lstatSync(entry.localPath).isSymbolicLink()) {
+        fs.copyFileSync(entry.localPath, stagedPath);
+      } else {
+        fs.linkSync(entry.localPath, stagedPath);
+      }
     }
 
     const uploadGroups = new Map();

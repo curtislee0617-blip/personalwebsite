@@ -11,13 +11,13 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ cookbook: string }> }): Promise<Metadata> {
   const { cookbook: id } = await params;
-  const book = getImportedCookbook(id);
+  const book = await getImportedCookbook(id);
   return { title: book ? `${book.title} by ${book.author}` : "Recipe book" };
 }
 
 export default async function ImportedCookbookPage({ params }: { params: Promise<{ cookbook: string }> }) {
   const { cookbook: id } = await params;
-  const book = getImportedCookbook(id);
+  const book = await getImportedCookbook(id);
   if (!book) notFound();
 
   return (

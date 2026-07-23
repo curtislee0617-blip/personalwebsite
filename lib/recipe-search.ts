@@ -4,7 +4,7 @@ import { benuRecipes } from "@/lib/benu";
 import { coreCategories, coreRecipes } from "@/lib/core-basics";
 import { coreDishes } from "@/lib/core-dishes";
 import { frantzenBasics, frantzenPetitFours, frantzenRecipes } from "@/lib/frantzen";
-import { importedCookbooks } from "@/lib/imported-cookbooks";
+import { importedCookbooks, importedCookbookSearchEntries } from "@/lib/imported-cookbooks";
 import { modernistEntryHref } from "@/lib/modernist-navigation";
 import { modernistPizzaEntries, modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { operaBasics, operaRecipes } from "@/lib/opera";
@@ -91,22 +91,22 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     href: "/recipes/opera",
     searchText: "opera patisserie cedric grolet pastry breakfast french desserts frozen fruit cookbook",
   },
-  ...importedCookbooks.flatMap((book): RecipeSearchItem[] => [
+  ...importedCookbooks.map((book): RecipeSearchItem => (
     {
       title: `${book.title} by ${book.author}`,
       context: `Recipe book · ${book.recipeCountLabel}`,
       kind: "Book",
       href: `/recipes/${book.id}`,
       searchText: `${book.title} ${book.author} cookbook ${book.categories.join(" ")}`,
-    },
-    ...book.recipes.map((recipe) => ({
-      title: recipe.title,
-      context: `${book.title} · ${recipe.category} · PDF page ${recipe.sourcePages.join(", ")}`,
-      kind: "Cookbook recipe",
-      href: `/recipes/${book.id}#${book.id}-${recipe.id}`,
-      searchText: recipe.searchText,
-    })),
-  ]),
+    }
+  )),
+  ...importedCookbookSearchEntries.map((recipe): RecipeSearchItem => ({
+    title: recipe.title,
+    context: `${recipe.bookTitle} · ${recipe.category} · PDF page ${recipe.sourcePages.join(", ")}`,
+    kind: "Cookbook recipe",
+    href: `/recipes/${recipe.bookId}#${recipe.bookId}-${recipe.id}`,
+    searchText: `${recipe.title} ${recipe.category} ${recipe.bookTitle}`,
+  })),
   ...recipeEntries
     .filter((entry) => entry.kind === "guide")
     .map((entry): RecipeSearchItem => ({

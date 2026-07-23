@@ -42,10 +42,17 @@ export type ImportedCookbookRecipe = {
 export type ImportedCookbook = {
   author: string;
   categories: string[];
+  coverImage?: string;
   description: string;
   id: string;
   recipeCountLabel: string;
   recipes: ImportedCookbookRecipe[];
+  sourceDocument?: string;
+  sourceDocuments?: {
+    endPage: number;
+    path: string;
+    startPage: number;
+  }[];
   title: string;
 };
 
@@ -79,6 +86,18 @@ function scaleLine(text: string, factor: number) {
   const match = text.match(QUANTITY);
   if (!match) return text;
   return `${match[1] ?? ""}${displayQuantity(quantityValue(match[2]) * factor)}${text.slice(match[0].length)}`;
+}
+
+function sourceHrefForPage(cookbook: ImportedCookbook, page: number) {
+  const sourcePart = cookbook.sourceDocuments?.find(
+    (document) => document.startPage <= page && page <= document.endPage,
+  );
+  if (sourcePart) {
+    return `${sourcePart.path}#page=${page - sourcePart.startPage + 1}`;
+  }
+  return cookbook.sourceDocument
+    ? `${cookbook.sourceDocument}#page=${page}`
+    : null;
 }
 
 function ScaleControl({ onChange, value }: { onChange: (value: string) => void; value: string }) {
@@ -365,9 +384,29 @@ function RecipeCard({
             </section>
           </div>
 
-          <p className="border-t border-ink/[0.07] pt-3 text-[0.66rem] font-semibold uppercase tracking-[0.1em] text-ink/35">
-            Source · {sourceLabel}
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink/[0.07] pt-3">
+            <p className="text-[0.66rem] font-semibold uppercase tracking-[0.1em] text-ink/35">
+              Source · {sourceLabel}
+            </p>
+            {(cookbook.sourceDocument || cookbook.sourceDocuments?.length) && (
+              <div className="flex flex-wrap gap-1.5">
+                {recipe.sourcePages.map((page) => {
+                  const href = sourceHrefForPage(cookbook, page);
+                  return href ? (
+                    <a
+                      className="rounded-full border border-ink/10 px-2.5 py-1 text-[0.64rem] font-semibold text-ink/45 transition hover:border-moss/30 hover:text-moss"
+                      href={href}
+                      key={page}
+                      rel="noreferrer"
+                      target="_blank"
+                    >
+                      Open page {page}
+                    </a>
+                  ) : null;
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </article>

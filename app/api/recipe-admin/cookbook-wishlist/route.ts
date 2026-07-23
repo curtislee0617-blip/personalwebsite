@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { getImportedCookbook } from "@/lib/imported-cookbooks";
+import { getImportedCookbook, hasImportedCookbook } from "@/lib/imported-cookbooks";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   }
 
   const cookbookId = new URL(request.url).searchParams.get("cookbookId")?.trim() ?? "";
-  if (!getImportedCookbook(cookbookId)) {
+  if (!hasImportedCookbook(cookbookId)) {
     return NextResponse.json({ error: "Cookbook not found." }, { status: 404 });
   }
 
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   const action = body?.action;
   const cookbookId = typeof body?.cookbookId === "string" ? body.cookbookId.trim() : "";
   const recipeId = typeof body?.recipeId === "string" ? body.recipeId.trim() : "";
-  const cookbook = getImportedCookbook(cookbookId);
+  const cookbook = await getImportedCookbook(cookbookId);
   const recipe = cookbook?.recipes.find((entry) => entry.id === recipeId);
 
   if (!cookbook || !recipe || (action !== "add" && action !== "remove")) {

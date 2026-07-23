@@ -16,8 +16,8 @@ const sourdoughSections = [
   { id: "sourdough-open-crumb-recipes", label: "Bread Stalker recipes" },
 ] as const;
 
-export default function SourdoughGuidePage() {
-  const openCrumbCookbook = getImportedCookbook("secrets-of-open-crumb");
+export default async function SourdoughGuidePage() {
+  const openCrumbCookbook = await getImportedCookbook("secrets-of-open-crumb");
 
   if (!openCrumbCookbook) return null;
 

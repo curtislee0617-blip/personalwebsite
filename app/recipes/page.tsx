@@ -12,7 +12,7 @@ import { getInstagramSavedRecipeCards, getPersonalRecipeCards, getYouTubeSavedRe
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
-import { importedCookbooks } from "@/lib/imported-cookbooks";
+import { importedCookbooks, importedCookbookSearchEntries } from "@/lib/imported-cookbooks";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
 import { cocktailBooks } from "@/lib/cocktail-books";
@@ -129,22 +129,22 @@ function buildRecipeSearchPreview(
       href: "/recipes/bachour",
       searchText: "bachour antonio baker pastry entremet tart choux chocolate croissant brioche cookbook",
     },
-    ...importedCookbooks.flatMap((book): RecipeSearchItem[] => [
+    ...importedCookbooks.map((book): RecipeSearchItem => (
       {
         title: `${book.title} by ${book.author}`,
         context: `Recipe book · ${book.recipeCountLabel}`,
         kind: "Book",
         href: `/recipes/${book.id}`,
         searchText: `${book.title} ${book.author} cookbook ${book.categories.join(" ")}`,
-      },
-      ...book.recipes.map((recipe) => ({
-        title: recipe.title,
-        context: `${book.title} · ${recipe.category} · PDF page ${recipe.sourcePages.join(", ")}`,
-        kind: "Cookbook recipe",
-        href: `/recipes/${book.id}#${book.id}-${recipe.id}`,
-        searchText: recipe.searchText,
-      })),
-    ]),
+      }
+    )),
+    ...importedCookbookSearchEntries.map((recipe): RecipeSearchItem => ({
+      title: recipe.title,
+      context: `${recipe.bookTitle} · ${recipe.category} · PDF page ${recipe.sourcePages.join(", ")}`,
+      kind: "Cookbook recipe",
+      href: `/recipes/${recipe.bookId}#${recipe.bookId}-${recipe.id}`,
+      searchText: `${recipe.title} ${recipe.category} ${recipe.bookTitle}`,
+    })),
     ...siteEntries,
     ...personalEntries,
     ...instagramEntries,
@@ -652,7 +652,7 @@ export default async function RecipesPage() {
                 <Link className="design-card order-9 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3" href={`/recipes/${book.id}`} key={book.id}>
                   <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
                     <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                      <Image alt={`${book.title} cover`} className="object-cover" fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem" src={`/imported-cookbooks/${book.id}.jpg`} unoptimized />
+                      <Image alt={`${book.title} cover`} className="object-cover" fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem" src={book.coverImage ?? `/imported-cookbooks/${book.id}.jpg`} unoptimized />
                     </div>
                   </div>
                   <div className="p-3 pb-4 pt-4">
