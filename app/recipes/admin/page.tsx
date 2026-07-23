@@ -51,7 +51,10 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
     <div className="page-shell py-16 sm:py-20">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="section-title">{wishlistEntry ? "Upload made wishlist dish" : "Add a recipe"}</h1>
-        <Link className="back-link-bubble" href="/recipes">← Back to recipes</Link>
+        <div className="flex flex-wrap gap-3">
+          <Link className="back-link-bubble" href="/recipes/cocktail-books">Cocktail library</Link>
+          <Link className="back-link-bubble" href="/recipes">← Back to recipes</Link>
+        </div>
       </div>
 
       {params.error === "missing" && <p className="mt-4 rounded-2xl border border-clay/30 bg-clay/10 px-4 py-3 text-sm text-clay">Add a title, at least one ingredient, and at least one method step.</p>}

@@ -15,6 +15,7 @@ import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { importedCookbooks } from "@/lib/imported-cookbooks";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
+import { cocktailBooks } from "@/lib/cocktail-books";
 
 export const metadata: Metadata = { title: "Recipes" };
 
@@ -312,6 +313,7 @@ export default async function RecipesPage() {
             <div className="recipe-category-list mt-4 space-y-8">
               {recipeSections.map((section) => {
                 const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
+                const showsPrivateCocktailLibrary = section.id === "drinks";
 
                 return (
                   <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
@@ -321,8 +323,31 @@ export default async function RecipesPage() {
                         +
                       </span>
                     </summary>
-                    {sectionRecipes.length > 0 ? (
+                    {sectionRecipes.length > 0 || showsPrivateCocktailLibrary ? (
                       <RecipeShelf label={section.title} layout="grid">
+                        {showsPrivateCocktailLibrary && (
+                          <Link
+                            className="recipe-card recipe-shelf-card block overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20"
+                            href="/recipes/cocktail-books"
+                          >
+                            <div className="recipe-card-thumbnail relative overflow-hidden bg-black">
+                              <div className="relative h-full">
+                                <Image
+                                  alt="Cocktail Codex source cover"
+                                  className="object-cover"
+                                  fill
+                                  sizes="(max-width: 640px) 45vw, 12rem"
+                                  src="/recipes/cocktail-books/cocktail-codex/page-0001-1.webp"
+                                />
+                              </div>
+                            </div>
+                            <div className="recipe-card-copy">
+                              <p className="eyebrow">Admin-only · {cocktailBooks.length} books</p>
+                              <h3>Private cocktail library</h3>
+                              <p className="recipe-card-description">590 recipes and the saved bar-and-pantry matcher.</p>
+                            </div>
+                          </Link>
+                        )}
                         {sectionRecipes.map((entry) => (
                           <RecipeCard
                             adminEditHref={authenticated ? `/recipes/admin/edit/${encodeURIComponent(entry.recipeKey)}` : undefined}

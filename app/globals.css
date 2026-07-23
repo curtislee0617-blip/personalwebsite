@@ -6476,3 +6476,686 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   .modernist-scale-actions { width: 100%; justify-content: space-between; }
   .modernist-entry-kind { display: none; }
 }
+
+/* Private cocktail source library */
+.cocktail-library-index,
+.cocktail-library-book-page {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.cocktail-library-book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1rem;
+  margin-top: 0.35rem;
+}
+
+.cocktail-library-book-card {
+  display: grid;
+  grid-template-columns: minmax(8rem, 40%) minmax(0, 1fr);
+  gap: 1rem;
+  min-height: 12rem;
+  padding: 0.65rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.45rem;
+  background: rgb(var(--color-surface) / 0.58);
+  transition: transform 240ms var(--ease-standard), border-color 240ms var(--ease-standard);
+}
+
+.cocktail-library-book-card:hover {
+  transform: translateY(-2px);
+  border-color: rgb(var(--color-ink) / 0.24);
+}
+
+.cocktail-library-book-cover {
+  position: relative;
+  min-height: 10.5rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: rgb(var(--color-ink) / 0.06);
+}
+
+.cocktail-library-book-cover.is-text-only {
+  display: grid;
+  place-content: center;
+  align-items: center;
+  background: #151413;
+  color: #f1e9d9;
+  font-family: var(--font-display), serif;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.cocktail-library-book-cover.is-text-only span { font-size: 2.1rem; line-height: 0.9; }
+.cocktail-library-book-cover.is-text-only small { margin-top: 0.45rem; font-size: 0.58rem; letter-spacing: 0.28em; }
+.cocktail-library-book-card > div:last-child { align-self: center; min-width: 0; padding: 0.35rem 0.35rem 0.35rem 0; }
+.cocktail-library-book-card h2 { margin-top: 0.55rem; font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 650; line-height: 1.05; letter-spacing: -0.025em; }
+.cocktail-library-book-card h2 + p { margin-top: 0.5rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.72rem; line-height: 1.45; }
+.cocktail-library-book-card div > small { display: block; margin-top: 0.75rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.62rem; line-height: 1.5; }
+
+.cocktail-library-book-description {
+  max-width: 60rem;
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+.cocktail-codex-style-links {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid rgb(var(--color-moss) / 0.18);
+  border-radius: 1.25rem;
+  background: rgb(var(--color-moss) / 0.045);
+  padding: clamp(0.85rem, 2vw, 1.15rem);
+}
+.cocktail-codex-style-links-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+.cocktail-codex-style-links-heading h2 { margin-top: 0.25rem; font-size: clamp(1.15rem, 2vw, 1.55rem); font-weight: 650; letter-spacing: -0.03em; }
+.cocktail-codex-style-links-heading > p { max-width: 34rem; color: rgb(var(--color-ink) / 0.5); font-size: 0.67rem; line-height: 1.55; }
+.cocktail-codex-style-link-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
+.cocktail-codex-style-link {
+  display: grid;
+  min-width: 0;
+  min-height: 7.2rem;
+  align-content: start;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 0.9rem;
+  background: rgb(var(--color-paper) / 0.5);
+  padding: 0.8rem;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+.cocktail-codex-style-link:hover { transform: translateY(-1px); border-color: rgb(var(--color-moss) / 0.42); background: rgb(var(--color-surface) / 0.72); }
+.cocktail-codex-style-link small { color: rgb(var(--color-moss)); font-size: 0.5rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; }
+.cocktail-codex-style-link strong { margin-top: 0.4rem; overflow-wrap: anywhere; font-size: 0.86rem; font-weight: 700; }
+.cocktail-codex-style-link span { margin-top: 0.24rem; color: rgb(var(--color-ink) / 0.4); font-size: 0.53rem; line-height: 1.4; }
+.cocktail-codex-style-link i { margin-top: auto; padding-top: 0.65rem; color: rgb(var(--color-ink) / 0.52); font-size: 0.56rem; font-style: normal; font-weight: 700; }
+
+.cocktail-codex-article { display: grid; gap: 1rem; }
+.cocktail-codex-article-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+.cocktail-codex-article-style-nav {
+  display: flex;
+  max-width: 100%;
+  gap: 0.35rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+  scrollbar-width: thin;
+}
+.cocktail-codex-article-style-nav a {
+  flex: 0 0 auto;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 999px;
+  background: rgb(var(--color-surface) / 0.48);
+  padding: 0.48rem 0.72rem;
+  color: rgb(var(--color-ink) / 0.55);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+.cocktail-codex-article-style-nav a[aria-current="page"] { border-color: rgb(var(--color-moss) / 0.36); background: rgb(var(--color-moss) / 0.11); color: rgb(var(--color-moss)); }
+.cocktail-codex-article-layout {
+  display: grid;
+  grid-template-columns: minmax(10.5rem, 0.25fr) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.8rem);
+  align-items: start;
+  border-top: 1px solid rgb(var(--color-ink) / 0.09);
+  padding-top: clamp(1.15rem, 2vw, 1.75rem);
+}
+.cocktail-codex-article-contents {
+  position: sticky;
+  top: 5.25rem;
+  max-height: calc(100vh - 7rem);
+  overflow-y: auto;
+  padding: 0.2rem 0.3rem 0.3rem 0;
+  scrollbar-width: thin;
+}
+.cocktail-codex-article-contents ol { display: grid; gap: 0.18rem; margin-top: 0.65rem; }
+.cocktail-codex-article-contents a {
+  display: grid;
+  grid-template-columns: 1.65rem minmax(0, 1fr);
+  gap: 0.38rem;
+  border-radius: 0.5rem;
+  padding: 0.38rem 0.42rem;
+  color: rgb(var(--color-ink) / 0.53);
+  font-size: 0.58rem;
+  line-height: 1.35;
+  transition: background 160ms ease, color 160ms ease;
+}
+.cocktail-codex-article-contents a:hover { background: rgb(var(--color-moss) / 0.08); color: rgb(var(--color-ink)); }
+.cocktail-codex-article-contents a span { color: rgb(var(--color-moss) / 0.6); font-size: 0.5rem; font-weight: 750; }
+.cocktail-codex-article-body { display: grid; min-width: 0; max-width: 58rem; }
+.cocktail-codex-article-body > section { min-width: 0; scroll-margin-top: 5.5rem; }
+.cocktail-codex-article-body > section > header h2 {
+  max-width: 24ch;
+  margin-top: 0.32rem;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.65rem, 4vw, 2.8rem);
+  font-weight: 520;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+}
+.cocktail-codex-article-media {
+  display: flex;
+  max-width: 100%;
+  gap: 0.65rem;
+  overflow-x: auto;
+  margin-top: 1.15rem;
+  padding-bottom: 0.25rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+.cocktail-codex-article-image {
+  position: relative;
+  width: min(46rem, 88vw);
+  aspect-ratio: 16 / 10;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: rgb(var(--color-ink) / 0.045);
+  scroll-snap-align: start;
+}
+.cocktail-codex-article-copy { display: grid; gap: 0.85rem; margin-top: 1.15rem; }
+.cocktail-codex-article-copy h3 {
+  margin-top: 0.65rem;
+  color: rgb(var(--color-moss));
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.cocktail-codex-article-copy p {
+  max-width: 76ch;
+  color: rgb(var(--color-ink) / 0.73);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.78rem, 1.1vw, 0.9rem);
+  line-height: 1.84;
+}
+.cocktail-codex-article-body hr { width: 100%; height: 1px; margin: clamp(2.4rem, 5vw, 4.4rem) 0; border: 0; background: rgb(var(--color-ink) / 0.11); }
+
+.cocktail-library-browser { min-width: 0; }
+.cocktail-library-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; }
+.cocktail-library-controls label { flex: 1 1 18rem; }
+.cocktail-library-controls input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgb(var(--color-ink) / 0.13);
+  border-radius: 999px;
+  background: rgb(var(--color-surface) / 0.68);
+  color: rgb(var(--color-ink));
+  font-size: 0.75rem;
+  outline: none;
+}
+.cocktail-library-controls input:focus { border-color: rgb(var(--color-moss) / 0.62); box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.1); }
+.cocktail-library-controls button,
+.cocktail-library-admin-action button,
+.cocktail-cabinet-form button,
+.cocktail-pantry-manager button,
+.cocktail-cabinet-result-card > button {
+  min-height: 2.5rem;
+  padding: 0.62rem 1rem;
+  border-radius: 999px;
+  background: rgb(var(--color-ink));
+  color: rgb(var(--color-paper));
+  font-size: 0.68rem;
+  font-weight: 700;
+  transition: opacity 180ms ease, background 180ms ease;
+}
+.cocktail-library-controls button:hover,
+.cocktail-library-admin-action button:hover,
+.cocktail-cabinet-form button:hover,
+.cocktail-pantry-manager button:hover,
+.cocktail-cabinet-result-card > button:hover { background: rgb(var(--color-moss)); }
+.cocktail-library-admin-action button:disabled,
+.cocktail-cabinet-form button:disabled,
+.cocktail-pantry-manager button:disabled { cursor: not-allowed; opacity: 0.35; }
+.cocktail-library-result-count { margin: 0.65rem 0 1rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.62rem; }
+.cocktail-library-error { margin: 0.8rem 0; border-radius: 0.8rem; background: rgb(var(--color-clay) / 0.12); padding: 0.7rem 0.9rem; color: rgb(var(--color-clay)); font-size: 0.72rem; }
+.cocktail-reading-guide {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgb(var(--color-moss) / 0.18);
+  border-radius: 1.25rem;
+  background: rgb(var(--color-moss) / 0.045);
+  padding: 1rem;
+}
+.cocktail-reading-guide-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.cocktail-reading-guide-heading h2 { margin-top: 0.35rem; font-size: clamp(1.15rem, 2vw, 1.6rem); font-weight: 650; letter-spacing: -0.03em; }
+.cocktail-reading-guide-heading > p { color: rgb(var(--color-ink) / 0.42); font-size: 0.6rem; }
+.cocktail-reading-chapters { display: grid; gap: 0.45rem; }
+.cocktail-reading-chapter {
+  overflow: clip;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 0.9rem;
+  background: rgb(var(--color-paper) / 0.46);
+}
+.cocktail-reading-chapter > summary,
+.cocktail-reading-topic > summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.cocktail-reading-chapter > summary { min-height: 3.35rem; padding: 0.7rem 0.85rem; }
+.cocktail-reading-chapter > summary::-webkit-details-marker,
+.cocktail-reading-topic > summary::-webkit-details-marker { display: none; }
+.cocktail-reading-chapter > summary span,
+.cocktail-reading-topic > summary span { display: grid; min-width: 0; gap: 0.16rem; }
+.cocktail-reading-chapter > summary strong { font-size: 0.8rem; font-weight: 700; }
+.cocktail-reading-chapter > summary small,
+.cocktail-reading-topic > summary small { color: rgb(var(--color-ink) / 0.42); font-size: 0.54rem; }
+.cocktail-reading-chapter > summary i,
+.cocktail-reading-topic > summary i { color: rgb(var(--color-ink) / 0.4); font-size: 0.95rem; font-style: normal; transition: transform 180ms ease; }
+.cocktail-reading-chapter[open] > summary i,
+.cocktail-reading-topic[open] > summary i { transform: rotate(45deg); }
+.cocktail-reading-topic-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.45rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.07);
+  padding: 0.55rem;
+}
+.cocktail-reading-topic {
+  min-width: 0;
+  overflow: clip;
+  border: 1px solid rgb(var(--color-ink) / 0.08);
+  border-radius: 0.75rem;
+  background: rgb(var(--color-surface) / 0.48);
+}
+.cocktail-reading-topic[open] { grid-column: 1 / -1; }
+.cocktail-reading-topic > summary { min-height: 3rem; padding: 0.6rem 0.7rem; }
+.cocktail-reading-topic > summary strong { overflow-wrap: anywhere; font-size: 0.67rem; font-weight: 680; line-height: 1.3; }
+.cocktail-reading-topic-body {
+  display: grid;
+  gap: 0.72rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.07);
+  padding: clamp(0.85rem, 2vw, 1.25rem);
+}
+.cocktail-reading-topic-media {
+  display: flex;
+  max-width: 100%;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+.cocktail-reading-topic-image {
+  position: relative;
+  width: min(21rem, 78vw);
+  aspect-ratio: 4 / 3;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: rgb(var(--color-ink) / 0.045);
+  scroll-snap-align: start;
+}
+.cocktail-reading-topic-body h4 {
+  margin-top: 0.35rem;
+  color: rgb(var(--color-moss));
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cocktail-reading-topic-body p {
+  max-width: 78ch;
+  color: rgb(var(--color-ink) / 0.7);
+  font-size: 0.72rem;
+  line-height: 1.72;
+}
+.cocktail-library-sections { display: grid; gap: 0.55rem; }
+
+.cocktail-library-section {
+  overflow: clip;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.15rem;
+  background: rgb(var(--color-surface) / 0.44);
+}
+.cocktail-library-section > summary,
+.cocktail-library-image-archive > summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.75rem;
+  padding: 0.85rem 1rem;
+}
+.cocktail-library-section > summary::-webkit-details-marker,
+.cocktail-library-image-archive > summary::-webkit-details-marker,
+.cocktail-library-recipe > summary::-webkit-details-marker { display: none; }
+.cocktail-library-section > summary span,
+.cocktail-library-image-archive > summary span { display: grid; gap: 0.18rem; }
+.cocktail-library-section > summary strong,
+.cocktail-library-image-archive > summary strong { font-size: 0.88rem; font-weight: 650; }
+.cocktail-library-section > summary small,
+.cocktail-library-image-archive > summary small { color: rgb(var(--color-ink) / 0.42); font-size: 0.59rem; }
+.cocktail-library-section > summary i,
+.cocktail-library-image-archive > summary i,
+.cocktail-library-recipe > summary > i { color: rgb(var(--color-ink) / 0.4); font-size: 1rem; font-style: normal; transition: transform 220ms ease; }
+.cocktail-library-section[open] > summary i,
+.cocktail-library-image-archive[open] > summary i,
+.cocktail-library-recipe[open] > summary > i { transform: rotate(45deg); }
+
+.cocktail-library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+  gap: 0.55rem;
+  padding: 0 0.7rem 0.7rem;
+}
+.cocktail-library-recipe {
+  min-width: 0;
+  overflow: clip;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 0.85rem;
+  background: rgb(var(--color-paper) / 0.5);
+}
+.cocktail-library-recipe[open] { grid-column: 1 / -1; }
+.cocktail-library-recipe > summary {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 4.4rem;
+  padding: 0.4rem 0.65rem 0.4rem 0.4rem;
+  cursor: pointer;
+  list-style: none;
+}
+.cocktail-library-recipe.text-only > summary { grid-template-columns: minmax(0, 1fr) auto; padding-left: 0.8rem; }
+.cocktail-library-recipe-thumb { position: relative; align-self: stretch; min-height: 3.6rem; overflow: hidden; border-radius: 0.6rem; background: rgb(var(--color-ink) / 0.05); }
+.cocktail-library-recipe-copy { display: grid; min-width: 0; gap: 0.14rem; }
+.cocktail-library-recipe-copy small { overflow: hidden; color: rgb(var(--color-moss) / 0.75); font-size: 0.48rem; letter-spacing: 0.08em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.cocktail-library-recipe-copy strong { overflow-wrap: anywhere; font-size: 0.77rem; font-weight: 650; line-height: 1.22; }
+.cocktail-library-recipe-copy span { color: rgb(var(--color-ink) / 0.4); font-size: 0.52rem; line-height: 1.3; }
+.cocktail-library-recipe-body { display: grid; gap: 1rem; border-top: 1px solid rgb(var(--color-ink) / 0.08); padding: 1rem; }
+.cocktail-library-recipe-body > header { max-width: 58rem; }
+.cocktail-library-recipe-body > header h3 { margin-top: 0.35rem; font-size: clamp(1.25rem, 2.2vw, 1.85rem); font-weight: 650; letter-spacing: -0.03em; }
+.cocktail-library-recipe-body > header h3 + p { margin-top: 0.55rem; color: rgb(var(--color-ink) / 0.6); font-size: 0.74rem; line-height: 1.65; }
+.cocktail-library-recipe-body > header small { display: block; margin-top: 0.55rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.62rem; }
+
+.cocktail-library-media {
+  display: flex;
+  gap: 0.65rem;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.3rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+.cocktail-library-media-item { position: relative; width: min(23rem, 80vw); aspect-ratio: 4 / 3; flex: 0 0 auto; overflow: hidden; border-radius: 0.85rem; background: rgb(var(--color-ink) / 0.045); scroll-snap-align: start; }
+.cocktail-library-formula { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 1.25rem; }
+.cocktail-library-formula > section { min-width: 0; border-radius: 0.9rem; background: rgb(var(--color-surface) / 0.58); padding: 0.9rem; }
+.cocktail-library-formula h4 { margin-top: 0.65rem; font-size: 0.7rem; font-weight: 700; }
+.cocktail-library-formula ul,
+.cocktail-library-formula ol { display: grid; gap: 0.3rem; margin-top: 0.55rem; color: rgb(var(--color-ink) / 0.72); font-size: 0.68rem; line-height: 1.5; }
+.cocktail-library-formula ul { list-style: none; }
+.cocktail-library-formula ol { padding-left: 1.15rem; }
+.cocktail-library-formula li { overflow-wrap: anywhere; }
+.cocktail-library-original-copy {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+  border-left: 2px solid rgb(var(--color-moss) / 0.45);
+  padding-left: 0.8rem;
+  color: rgb(var(--color-ink) / 0.68);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.72rem;
+  font-style: italic;
+  line-height: 1.65;
+}
+.cocktail-library-lost-formula > section:last-child { background: rgb(var(--color-moss) / 0.065); }
+.cocktail-recipe-book-notes {
+  overflow: clip;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 0.85rem;
+  background: rgb(var(--color-surface) / 0.48);
+}
+.cocktail-recipe-book-notes > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.72rem 0.85rem;
+  cursor: pointer;
+  list-style: none;
+}
+.cocktail-recipe-book-notes > summary::-webkit-details-marker { display: none; }
+.cocktail-recipe-book-notes > summary > span { display: grid; min-width: 0; gap: 0.12rem; }
+.cocktail-recipe-book-notes > summary strong { font-size: 0.7rem; font-weight: 700; }
+.cocktail-recipe-book-notes > summary small { color: rgb(var(--color-ink) / 0.42); font-size: 0.54rem; }
+.cocktail-recipe-book-notes > summary i { color: rgb(var(--color-moss)); font-size: 0.9rem; font-style: normal; transition: transform 180ms ease; }
+.cocktail-recipe-book-notes[open] > summary i { transform: rotate(45deg); }
+.cocktail-recipe-book-notes > div { display: grid; gap: 0.55rem; border-top: 1px solid rgb(var(--color-ink) / 0.08); padding: 0.8rem 0.85rem; }
+.cocktail-recipe-book-notes > div p { max-width: 78ch; color: rgb(var(--color-ink) / 0.68); font-size: 0.7rem; line-height: 1.68; }
+.cocktail-recipe-book-notes > div small { color: rgb(var(--color-ink) / 0.43); font-size: 0.58rem; line-height: 1.55; }
+.cocktail-referenced-preparations {
+  overflow: clip;
+  border: 1px solid rgb(var(--color-moss) / 0.17);
+  border-radius: 0.9rem;
+  background: rgb(var(--color-moss) / 0.045);
+}
+.cocktail-referenced-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0.9rem 0.65rem;
+}
+.cocktail-referenced-heading h4 { margin-top: 0.22rem; font-size: 0.78rem; font-weight: 650; }
+.cocktail-referenced-heading > small { color: rgb(var(--color-ink) / 0.42); font-size: 0.56rem; white-space: nowrap; }
+.cocktail-referenced-list { display: grid; border-top: 1px solid rgb(var(--color-moss) / 0.12); }
+.cocktail-referenced-item + .cocktail-referenced-item { border-top: 1px solid rgb(var(--color-moss) / 0.12); }
+.cocktail-referenced-item > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.68rem 0.9rem;
+  cursor: pointer;
+  list-style: none;
+}
+.cocktail-referenced-item > summary::-webkit-details-marker { display: none; }
+.cocktail-referenced-item > summary > span { display: grid; gap: 0.12rem; min-width: 0; }
+.cocktail-referenced-item > summary strong { overflow-wrap: anywhere; font-size: 0.7rem; font-weight: 700; }
+.cocktail-referenced-item > summary small { color: rgb(var(--color-ink) / 0.4); font-size: 0.52rem; }
+.cocktail-referenced-item > summary i {
+  color: rgb(var(--color-moss));
+  font-size: 0.9rem;
+  font-style: normal;
+  transition: transform 180ms ease;
+}
+.cocktail-referenced-item[open] > summary i { transform: rotate(45deg); }
+.cocktail-referenced-body {
+  display: grid;
+  gap: 0.7rem;
+  border-top: 1px solid rgb(var(--color-moss) / 0.1);
+  padding: 0.8rem 0.9rem 0.9rem;
+}
+.cocktail-referenced-body > header { display: grid; gap: 0.35rem; max-width: 52rem; }
+.cocktail-referenced-body > header p { color: rgb(var(--color-ink) / 0.62); font-size: 0.66rem; line-height: 1.55; }
+.cocktail-referenced-body > header small { color: rgb(var(--color-ink) / 0.42); font-size: 0.56rem; }
+.cocktail-referenced-formula { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 0.65rem; }
+.cocktail-referenced-formula > section { min-width: 0; border-radius: 0.7rem; background: rgb(var(--color-surface) / 0.62); padding: 0.7rem; }
+.cocktail-referenced-formula h5 { margin-top: 0.55rem; font-size: 0.64rem; font-weight: 700; }
+.cocktail-referenced-formula ul,
+.cocktail-referenced-formula ol { display: grid; gap: 0.25rem; margin-top: 0.42rem; color: rgb(var(--color-ink) / 0.7); font-size: 0.63rem; line-height: 1.48; }
+.cocktail-referenced-formula ul { list-style: none; }
+.cocktail-referenced-formula ol { padding-left: 1.05rem; }
+.cocktail-referenced-formula li { overflow-wrap: anywhere; }
+.cocktail-library-empty { margin-top: 0.55rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.67rem; line-height: 1.55; }
+.cocktail-library-admin-action { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding-top: 0.15rem; }
+.cocktail-library-admin-action a { color: rgb(var(--color-moss)); font-size: 0.66rem; font-weight: 700; }
+
+.cocktail-library-image-archive { overflow: clip; margin-top: 0.75rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1.15rem; background: rgb(var(--color-surface) / 0.44); }
+.cocktail-library-image-archive > div { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 0.55rem; padding: 0 0.7rem 0.7rem; }
+.cocktail-library-archive-image { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 0.75rem; background: rgb(var(--color-ink) / 0.04); }
+.cocktail-library-archive-image > span { position: absolute; right: 0.4rem; bottom: 0.4rem; z-index: 1; border-radius: 999px; background: rgb(0 0 0 / 0.7); padding: 0.22rem 0.45rem; color: white; font-size: 0.48rem; }
+
+.cocktail-cabinet-tool { display: grid; grid-template-columns: minmax(13rem, 0.55fr) minmax(18rem, 1fr); gap: 1.25rem; margin-top: 1rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1.45rem; background: rgb(var(--color-surface) / 0.5); padding: clamp(1rem, 2.5vw, 1.6rem); }
+.cocktail-cabinet-intro { grid-column: 1; grid-row: 1 / span 2; }
+.cocktail-cabinet-intro h2 { margin-top: 0.45rem; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 650; letter-spacing: -0.03em; }
+.cocktail-cabinet-intro h2 + p { margin-top: 0.65rem; max-width: 29rem; color: rgb(var(--color-ink) / 0.56); font-size: 0.72rem; line-height: 1.7; }
+.cocktail-pantry-manager {
+  display: grid;
+  grid-column: 2;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.45rem;
+  align-items: center;
+}
+.cocktail-pantry-manager > label {
+  grid-column: 1 / -1;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cocktail-pantry-manager select,
+.cocktail-pantry-manager input {
+  min-width: 0;
+  min-height: 2.5rem;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 0.75rem;
+  background: rgb(var(--color-paper) / 0.55);
+  padding: 0.55rem 0.75rem;
+  color: rgb(var(--color-ink));
+  font-size: 0.7rem;
+  outline: none;
+}
+.cocktail-pantry-manager select:focus,
+.cocktail-pantry-manager input:focus { border-color: rgb(var(--color-moss) / 0.62); box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.1); }
+.cocktail-pantry-manager .cocktail-pantry-name-label { margin-top: 0.35rem; }
+.cocktail-pantry-manager input { grid-column: 1 / -1; }
+.cocktail-pantry-manager button { min-height: 2.5rem; padding-inline: 0.8rem; }
+.cocktail-pantry-manager button:last-of-type { border: 1px solid rgb(var(--color-ink) / 0.13); background: transparent; color: rgb(var(--color-ink)); }
+.cocktail-cabinet-form { display: grid; grid-column: 2; gap: 0.55rem; }
+.cocktail-cabinet-form > label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.cocktail-cabinet-form textarea { width: 100%; resize: vertical; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 0.9rem; background: rgb(var(--color-paper) / 0.55); padding: 0.8rem; color: rgb(var(--color-ink)); font-size: 0.7rem; line-height: 1.55; outline: none; }
+.cocktail-cabinet-form textarea:focus { border-color: rgb(var(--color-moss) / 0.62); box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.1); }
+.cocktail-cabinet-form > div { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; }
+.cocktail-cabinet-form > div button:nth-child(2) { border: 1px solid rgb(var(--color-ink) / 0.13); background: transparent; color: rgb(var(--color-ink)); }
+.cocktail-cabinet-form > div small { margin-left: auto; color: rgb(var(--color-ink) / 0.4); font-size: 0.57rem; }
+.cocktail-cabinet-results { display: grid; grid-column: 1 / -1; gap: 1.25rem; margin-top: 0.5rem; }
+.cocktail-cabinet-results h3 { display: flex; align-items: center; gap: 0.55rem; font-size: 0.9rem; font-weight: 700; }
+.cocktail-cabinet-results h3 span { border-radius: 999px; background: rgb(var(--color-moss) / 0.12); padding: 0.2rem 0.45rem; color: rgb(var(--color-moss)); font-size: 0.55rem; }
+.cocktail-cabinet-result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); gap: 0.5rem; margin-top: 0.65rem; }
+.cocktail-cabinet-result-card { display: grid; min-width: 0; overflow: hidden; border: 1px solid rgb(var(--color-ink) / 0.08); border-radius: 0.75rem; background: rgb(var(--color-paper) / 0.5); }
+.cocktail-cabinet-result-card:hover { border-color: rgb(var(--color-moss) / 0.45); }
+.cocktail-cabinet-result-card > a { display: grid; gap: 0.25rem; min-width: 0; padding: 0.7rem 0.7rem 0.5rem; }
+.cocktail-cabinet-result-card > button {
+  justify-self: start;
+  min-height: 1.75rem;
+  margin: 0 0.7rem 0.65rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.55rem;
+}
+.cocktail-cabinet-result-grid strong { overflow-wrap: anywhere; font-size: 0.72rem; }
+.cocktail-cabinet-result-grid span { color: rgb(var(--color-ink) / 0.47); font-size: 0.54rem; }
+.cocktail-cabinet-result-grid small { color: rgb(var(--color-moss)); font-size: 0.57rem; line-height: 1.45; }
+.cocktail-cabinet-result-grid > p { color: rgb(var(--color-ink) / 0.46); font-size: 0.68rem; }
+
+.cocktail-pantry-usage {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1rem;
+  background: rgb(var(--color-paper) / 0.35);
+}
+.cocktail-pantry-usage > summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.9rem;
+}
+.cocktail-pantry-usage > summary::-webkit-details-marker { display: none; }
+.cocktail-pantry-usage > summary span { display: grid; gap: 0.15rem; }
+.cocktail-pantry-usage > summary strong { font-size: 0.75rem; }
+.cocktail-pantry-usage > summary small { color: rgb(var(--color-ink) / 0.42); font-size: 0.55rem; }
+.cocktail-pantry-usage > summary i { color: rgb(var(--color-ink) / 0.4); font-size: 0.85rem; font-style: normal; transition: transform 180ms ease; }
+.cocktail-pantry-usage[open] > summary i { transform: rotate(45deg); }
+.cocktail-pantry-usage-body { display: grid; grid-template-columns: minmax(12rem, 0.7fr) minmax(16rem, 1.3fr); gap: 0.8rem; border-top: 1px solid rgb(var(--color-ink) / 0.08); padding: 0.8rem; }
+.cocktail-pantry-used-ingredients > div { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.55rem; }
+.cocktail-pantry-used-ingredients span { border: 1px solid rgb(var(--color-ink) / 0.09); border-radius: 999px; background: rgb(var(--color-surface) / 0.52); padding: 0.3rem 0.5rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.55rem; }
+.cocktail-pantry-used-ingredients b { margin-left: 0.18rem; color: rgb(var(--color-moss)); font-size: 0.5rem; }
+.cocktail-pantry-history { display: grid; gap: 0.4rem; max-height: 19rem; overflow-y: auto; }
+.cocktail-pantry-history article { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.65rem; border-radius: 0.7rem; background: rgb(var(--color-surface) / 0.5); padding: 0.6rem; }
+.cocktail-pantry-history article > div { display: grid; min-width: 0; gap: 0.16rem; }
+.cocktail-pantry-history strong { font-size: 0.66rem; }
+.cocktail-pantry-history span { color: rgb(var(--color-ink) / 0.42); font-size: 0.5rem; }
+.cocktail-pantry-history small { overflow-wrap: anywhere; color: rgb(var(--color-ink) / 0.52); font-size: 0.52rem; line-height: 1.45; }
+.cocktail-pantry-history button { flex: none; color: rgb(var(--color-clay)); font-size: 0.52rem; font-weight: 700; }
+
+@media (max-width: 700px) {
+  .cocktail-codex-style-links-heading { display: grid; gap: 0.4rem; }
+  .cocktail-codex-style-link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cocktail-codex-style-link { min-height: 6.7rem; }
+  .cocktail-codex-article-layout { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  .cocktail-codex-article-contents {
+    position: static;
+    max-height: none;
+    overflow: hidden;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+    padding-bottom: 0.85rem;
+  }
+  .cocktail-codex-article-contents ol {
+    display: flex;
+    max-width: 100%;
+    gap: 0.35rem;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+  .cocktail-codex-article-contents li { flex: 0 0 auto; width: min(12rem, 72vw); scroll-snap-align: start; }
+  .cocktail-codex-article-contents a { height: 100%; border: 1px solid rgb(var(--color-ink) / 0.08); background: rgb(var(--color-surface) / 0.45); padding: 0.55rem; }
+  .cocktail-codex-article-copy p { font-size: 0.78rem; line-height: 1.78; }
+  .cocktail-reading-guide { padding: 0.7rem; }
+  .cocktail-reading-guide-heading { display: grid; gap: 0.45rem; }
+  .cocktail-reading-guide-heading > p { display: none; }
+  .cocktail-reading-topic-list { grid-template-columns: minmax(0, 1fr); }
+  .cocktail-reading-topic-body p { font-size: 0.68rem; }
+  .cocktail-library-book-card { grid-template-columns: 7rem minmax(0, 1fr); min-height: 10.5rem; }
+  .cocktail-library-book-cover { min-height: 9rem; }
+  .cocktail-library-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem; padding-inline: 0.45rem; }
+  .cocktail-library-recipe > summary { grid-template-columns: 2.7rem minmax(0, 1fr) auto; min-height: 3.8rem; gap: 0.45rem; padding: 0.35rem 0.45rem 0.35rem 0.35rem; }
+  .cocktail-library-recipe-thumb { min-height: 3.05rem; }
+  .cocktail-library-recipe-copy small { display: none; }
+  .cocktail-library-recipe-copy strong { font-size: 0.68rem; }
+  .cocktail-library-recipe-copy span { font-size: 0.47rem; }
+  .cocktail-library-formula { grid-template-columns: minmax(0, 1fr); gap: 0.65rem; }
+  .cocktail-referenced-heading { align-items: start; }
+  .cocktail-referenced-heading > small { display: none; }
+  .cocktail-referenced-formula { grid-template-columns: minmax(0, 1fr); }
+  .cocktail-library-recipe-body { padding: 0.75rem; }
+  .cocktail-library-media-item { width: min(18rem, 80vw); }
+  .cocktail-cabinet-tool { grid-template-columns: minmax(0, 1fr); }
+  .cocktail-cabinet-intro,
+  .cocktail-pantry-manager,
+  .cocktail-cabinet-form { grid-column: 1; grid-row: auto; }
+  .cocktail-pantry-usage-body { grid-template-columns: minmax(0, 1fr); }
+  .cocktail-cabinet-form > div small { width: 100%; margin-left: 0; }
+}
+
+@media (max-width: 420px) {
+  .cocktail-library-book-card { grid-template-columns: 5.8rem minmax(0, 1fr); }
+  .cocktail-library-book-cover { min-height: 8.5rem; }
+  .cocktail-library-book-cover.is-text-only span { font-size: 1.4rem; }
+  .cocktail-library-book-card h2 { font-size: 1rem; }
+}

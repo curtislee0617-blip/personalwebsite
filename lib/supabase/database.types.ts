@@ -245,6 +245,22 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["recipe_wishlist_entries"]["Insert"]>;
         Relationships: [];
       };
+      cocktail_recipe_publications: {
+        Row: {
+          source_key: string;
+          book_id: string;
+          recipe_id: string;
+          published_at: string;
+        };
+        Insert: {
+          source_key: string;
+          book_id: string;
+          recipe_id: string;
+          published_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["cocktail_recipe_publications"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

@@ -7,6 +7,7 @@ import { instagramHighlightRecipeMetadata } from "@/data/instagram-highlight-rec
 import { personalRecipeCategories } from "@/data/personal-recipe-categories";
 import { youtubeSavedRecipes } from "@/data/youtube-saved-recipes";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getPublishedCocktailRecipeCards } from "@/lib/cocktail-books";
 import type { Json } from "@/lib/supabase/database.types";
 import type { RecipeCardEntry, RecipeIngredientGroup, RecipeMediaItem, RecipeMethodGroup } from "@/lib/recipe-card-types";
 
@@ -383,9 +384,13 @@ function applyOverride(entry: RecipeCardEntry, override?: RecipeOverrideRow): Re
 }
 
 export async function getPersonalRecipeCards() {
-  const [uploaded, overrides] = await Promise.all([getUploadedRecipes(), getRecipeOverrides()]);
+  const [uploaded, overrides, publishedCocktails] = await Promise.all([
+    getUploadedRecipes(),
+    getRecipeOverrides(),
+    getPublishedCocktailRecipeCards(),
+  ]);
   const overrideByKey = new Map(overrides.map((override) => [override.recipe_key, override]));
-  return [...siteRecipeCards(), ...uploaded]
+  return [...siteRecipeCards(), ...uploaded, ...publishedCocktails]
     .filter((entry) => !overrideByKey.get(entry.recipeKey)?.deleted)
     .map((entry) => applyOverride(entry, overrideByKey.get(entry.recipeKey)))
     .map((entry) => entry.recipeKey === "personal-banhmi" ? {
