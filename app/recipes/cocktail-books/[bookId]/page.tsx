@@ -39,7 +39,7 @@ export default async function CocktailBookPage({ params }: { params: Promise<{ b
     .filter((publication) => publication.bookId === book.id)
     .map((publication) => publication.recipeId);
   const structureLabel = book.id === "lost-cocktails"
-    ? "50 drinks in the book’s original numbered order"
+    ? "50 drinks across 6 cocktail styles"
     : book.id === "cocktail-codex"
       ? "6 cocktail styles + 1 appendix"
       : `${book.sections.length} original sections`;

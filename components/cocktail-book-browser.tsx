@@ -11,6 +11,101 @@ function pageLabel(pages: number[]) {
   return pages.length === 1 ? `PDF page ${pages[0]}` : `PDF pages ${pages.join(", ")}`;
 }
 
+const cocktailCodexAppendixSections = [
+  { label: "Cocktails", sourceSection: "Appendix · Cocktails" },
+  { label: "Syrups and cordials", sourceSection: "Appendix · Syrups and cordials" },
+  { label: "Infusions", sourceSection: "Appendix · Infusions" },
+  { label: "House mixes and sodas", sourceSection: "Appendix · House mixes and sodas" },
+  { label: "Salts and rims", sourceSection: "Appendix · Salts and rims" },
+  { label: "Solutions, tinctures and concentrates", sourceSection: "Appendix · Solutions, tinctures, and concentrates" },
+] as const;
+
+const lostCocktailStyleSections = [
+  {
+    name: "Spirit-forward and aromatic",
+    slug: "spirit-forward",
+    recipeIds: [
+      "old-fashioned-whiskey-cocktail",
+      "sazerac",
+      "stinger",
+      "japanese-cocktail",
+      "improved-whiskey-cocktail",
+      "widow-s-kiss",
+    ],
+  },
+  {
+    name: "Martinis and vermouth cocktails",
+    slug: "martinis-vermouth",
+    recipeIds: [
+      "manhattan",
+      "martinez",
+      "marguerite-proto-martini",
+      "hanky-panky",
+      "brooklyn",
+      "vieux-carre",
+      "rob-roy",
+      "bobby-burns",
+      "boulevardier",
+      "negroni",
+      "el-presidente",
+      "saratoga",
+    ],
+  },
+  {
+    name: "Sours and daisies",
+    slug: "sours-daisies",
+    recipeIds: [
+      "aviation",
+      "last-word",
+      "corpse-reviver-no-2",
+      "bronx",
+      "daiquiri-no-1",
+      "hemingway-daiquiri",
+      "mary-pickford",
+      "jack-rose",
+      "whiskey-sour",
+      "clover-club",
+      "pink-lady",
+      "bee-s-knees",
+      "sidecar",
+      "between-the-sheets",
+      "blood-and-sand",
+      "hotel-nacional-special",
+      "brandy-crusta",
+      "twentieth-century",
+    ],
+  },
+  {
+    name: "Collins, fizzes and sparkling",
+    slug: "collins-fizzes-sparkling",
+    recipeIds: [
+      "tom-collins",
+      "john-collins",
+      "gin-fizz",
+      "ramos-gin-fizz",
+      "americano",
+      "airmail",
+      "french-75",
+      "champagne-cocktail",
+    ],
+  },
+  {
+    name: "Juleps and smashes",
+    slug: "juleps-smashes",
+    recipeIds: ["mint-julep-cognac", "smash"],
+  },
+  {
+    name: "Creamy and hot drinks",
+    slug: "creamy-hot",
+    recipeIds: ["alexander-gin", "grasshopper", "apple-toddy", "tom-jerry-eggnog"],
+  },
+] as const;
+
+function isCocktailCodexSyrup(recipe: CocktailBookRecipe) {
+  return /\b(syrup|cordial|grenadine|orgeat|oleo[- ]saccharum)\b/i.test(recipe.title)
+    || /\bsyrups?\b/i.test(recipe.subsection);
+}
+
 function findReferencedRecipes(recipe: CocktailBookRecipe, index: CocktailBookRecipe[]) {
   const referenced = new Map<string, CocktailBookRecipe>();
 
@@ -133,7 +228,6 @@ function LostCocktailFormula({ recipe }: { recipe: CocktailBookRecipe }) {
 
 function CocktailRecipeCard({
   book,
-  bookOrder,
   pending,
   published,
   recipe,
@@ -141,7 +235,6 @@ function CocktailRecipeCard({
   onPublish,
 }: {
   book: CocktailBook;
-  bookOrder?: number;
   pending: boolean;
   published: boolean;
   recipe: CocktailBookRecipe;
@@ -150,6 +243,9 @@ function CocktailRecipeCard({
 }) {
   const [open, setOpen] = useState(false);
   const metadata = [recipe.yield, recipe.glassware, recipe.equipment].filter(Boolean).join(" · ");
+  const cardLabel = book.id === "lost-cocktails"
+    ? recipe.tags.slice(0, 2).join(" · ")
+    : recipe.subsection || recipe.section;
 
   return (
     <details
@@ -164,7 +260,7 @@ function CocktailRecipeCard({
           </div>
         )}
         <span className="cocktail-library-recipe-copy">
-          <small>{bookOrder ? `No. ${String(bookOrder).padStart(2, "0")} · ${recipe.subsection || recipe.section}` : recipe.subsection || recipe.section}</small>
+          <small>{cardLabel}</small>
           <strong>{recipe.title}</strong>
           <span>{metadata || pageLabel(recipe.sourcePages)}</span>
         </span>
@@ -265,19 +361,34 @@ export function CocktailBookBrowser({ book, initiallyPublished }: { book: Cockta
     () => new Map(book.recipes.map((recipe) => [recipe.id, findReferencedRecipes(recipe, book.recipes)])),
     [book.recipes],
   );
-  const recipeGroups = book.id === "lost-cocktails"
-    ? [{ name: "Fifty drinks in book order", recipes, slug: "book-order" }]
+  type RecipeGroup = {
+    name: string;
+    recipes: CocktailBookRecipe[];
+    slug?: string;
+    subgroups?: Array<{ name: string; recipes: CocktailBookRecipe[] }>;
+  };
+  const recipeGroups: RecipeGroup[] = book.id === "lost-cocktails"
+    ? lostCocktailStyleSections.map((style) => ({
+        name: style.name,
+        recipes: recipes.filter((recipe) => (style.recipeIds as readonly string[]).includes(recipe.id)),
+        slug: style.slug,
+      }))
     : book.id === "cocktail-codex"
       ? [
           ...cocktailCodexStyles.map((style) => ({
             name: style.chapter,
-            recipes: recipes.filter((recipe) => recipe.section === style.chapter),
+            recipes: recipes.filter((recipe) => recipe.section === style.chapter && !isCocktailCodexSyrup(recipe)),
             slug: style.slug,
           })),
           {
             name: "Appendix",
-            recipes: recipes.filter((recipe) => recipe.section.startsWith("Appendix")),
+            recipes: recipes.filter((recipe) => recipe.section.startsWith("Appendix") || isCocktailCodexSyrup(recipe)),
             slug: "appendix",
+            subgroups: cocktailCodexAppendixSections.map((appendixSection) => ({
+              name: appendixSection.label,
+              recipes: recipes.filter((recipe) => recipe.section === appendixSection.sourceSection
+                || (appendixSection.label === "Syrups and cordials" && isCocktailCodexSyrup(recipe))),
+            })),
           },
         ]
       : book.sections.map((section) => ({
@@ -343,20 +454,48 @@ export function CocktailBookBrowser({ book, initiallyPublished }: { book: Cockta
                 <span><strong>{group.name}</strong><small>{sectionRecipes.length} recipes</small></span>
                 <i aria-hidden="true">+</i>
               </summary>
-              <div className="cocktail-library-grid">
-                {sectionRecipes.map((recipe) => (
-                  <CocktailRecipeCard
-                    book={book}
-                    bookOrder={book.id === "lost-cocktails" ? book.recipes.findIndex((entry) => entry.id === recipe.id) + 1 : undefined}
-                    key={recipe.id}
-                    onPublish={togglePublication}
-                    pending={pending.has(recipe.id)}
-                    published={published.has(recipe.id)}
-                    recipe={recipe}
-                    referencedRecipes={referencesByRecipe.get(recipe.id) ?? []}
-                  />
-                ))}
-              </div>
+              {group.subgroups ? (
+                <div className="cocktail-library-subsections">
+                  {group.subgroups.map((subgroup) => {
+                    if (subgroup.recipes.length === 0) return null;
+                    return (
+                      <details className="cocktail-library-subsection" key={subgroup.name} open={expandAll || Boolean(deferredQuery)}>
+                        <summary>
+                          <span><strong>{subgroup.name}</strong><small>{subgroup.recipes.length} recipes</small></span>
+                          <i aria-hidden="true">+</i>
+                        </summary>
+                        <div className="cocktail-library-grid">
+                          {subgroup.recipes.map((recipe) => (
+                            <CocktailRecipeCard
+                              book={book}
+                              key={recipe.id}
+                              onPublish={togglePublication}
+                              pending={pending.has(recipe.id)}
+                              published={published.has(recipe.id)}
+                              recipe={recipe}
+                              referencedRecipes={referencesByRecipe.get(recipe.id) ?? []}
+                            />
+                          ))}
+                        </div>
+                      </details>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="cocktail-library-grid">
+                  {sectionRecipes.map((recipe) => (
+                    <CocktailRecipeCard
+                      book={book}
+                      key={recipe.id}
+                      onPublish={togglePublication}
+                      pending={pending.has(recipe.id)}
+                      published={published.has(recipe.id)}
+                      recipe={recipe}
+                      referencedRecipes={referencesByRecipe.get(recipe.id) ?? []}
+                    />
+                  ))}
+                </div>
+              )}
             </details>
           );
         })}
