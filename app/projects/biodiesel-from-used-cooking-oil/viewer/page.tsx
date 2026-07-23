@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import projectPages from "@/data/project-pages.json";
 
 export const metadata: Metadata = {
@@ -46,9 +46,9 @@ export default function BiodieselProjectViewerPage() {
               A scrollable in-site reader for both parts of the biodiesel project.
             </p>
           </div>
-          <Link className="back-link-bubble self-start" href="/projects#biodiesel-from-used-cooking-oil">
+          <HistoryBackButton className="self-start" fallbackHref="/projects#biodiesel-from-used-cooking-oil">
             Back to projects
-          </Link>
+          </HistoryBackButton>
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">

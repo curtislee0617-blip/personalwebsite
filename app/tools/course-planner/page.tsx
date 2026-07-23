@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { CaltechCoursePlanner } from "@/components/caltech-course-planner";
 
@@ -16,7 +16,7 @@ export default function CoursePlannerPage() {
         title="Course planner"
         description="Requirements are grouped into compact department dropdowns. Drag a requirement onto a term to turn it into a class, then tag on anything else that same class also satisfies — a lot of Caltech courses double-count. Click a course name or its unit badge to edit it. Ticks mark classes already taken, and they stay saved if you change majors/minors or the requirement sets are updated. Sign in to save your plan to the cloud and pick it up on another device."
       />
-      <div className="page-shell pb-4 pt-5 sm:pt-6"><Link className="back-link-bubble" href="/tools">← Back to tools</Link></div>
+      <div className="page-shell pb-4 pt-5 sm:pt-6"><HistoryBackButton fallbackHref="/tools">← Back to tools</HistoryBackButton></div>
       <div className="page-shell pb-16 sm:pb-20">
         <CaltechCoursePlanner />
         <p className="mt-10 text-xs leading-5 text-ink/40">

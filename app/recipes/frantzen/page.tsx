@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { FrantzenGuide } from "@/components/frantzen-guide";
 import { PageIntro } from "@/components/page-intro";
 
@@ -14,7 +14,7 @@ export default function FrantzenPage() {
         description="The supplied cookbook pages rebuilt as 64 foundation recipes from Basics pages 301–308, centered dish recipes and a separate Petit Fours collection. Every published card preserves component boundaries, scaling and an exact source-page link."
       />
       <section className="page-section pt-10 sm:pt-14">
-        <Link className="back-link-bubble mb-6" href="/recipes#recipe-books">← Back to recipe books</Link>
+        <HistoryBackButton className="mb-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
         <FrantzenGuide />
       </section>
     </>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { ProjectViewer } from "@/components/project-viewer";
 import { getProjectBySlug, projects } from "@/lib/projects";
 import projectPages from "@/data/project-pages.json";
@@ -54,9 +54,7 @@ export default async function ProjectViewerPage({ params, searchParams }: Projec
   return (
     <>
       <div className={`fixed left-3 top-4 z-50 sm:left-4 sm:top-4 ${mode === "poster" ? "text-white" : "text-ink"}`}>
-        <Link className="back-link-bubble" href={backHref}>
-          ← Back
-        </Link>
+        <HistoryBackButton fallbackHref={backHref} />
       </div>
       <div className="pt-12 sm:pt-0">
         <ProjectViewer mode={mode} pages={pages} pdfHref={primaryDocument.href} title={project.title} />

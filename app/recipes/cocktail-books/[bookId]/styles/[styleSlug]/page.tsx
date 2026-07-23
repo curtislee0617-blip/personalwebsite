@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { cocktailCodexStyleHref, cocktailCodexStyles, getCocktailCodexStyle } from "@/lib/cocktail-codex";
@@ -38,7 +39,7 @@ export default async function CocktailCodexStylePage({ params }: { params: Style
       <div className="page-shell py-16 sm:py-20">
         <h1 className="section-title">Admin login required</h1>
         <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">The full source-book reading guides are kept private.</p>
-        <Link className="back-link-bubble mt-6" href="/recipes#recipe-books">← Back to recipe books</Link>
+        <HistoryBackButton className="mt-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
       </div>
     );
   }
@@ -57,7 +58,7 @@ export default async function CocktailCodexStylePage({ params }: { params: Style
       />
       <section className="cocktail-codex-article page-section pt-8 sm:pt-10">
         <div className="cocktail-codex-article-actions">
-          <Link className="back-link-bubble" href="/recipes/cocktail-books/cocktail-codex">← Cocktail Codex</Link>
+          <HistoryBackButton fallbackHref="/recipes/cocktail-books/cocktail-codex">← Cocktail Codex</HistoryBackButton>
           <Link className="back-link-bubble" href={`/recipes/cocktail-books/cocktail-codex#cocktail-section-${style.slug}`}>View {style.label} recipes</Link>
         </div>
 

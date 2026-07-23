@@ -189,6 +189,167 @@ const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string;
   "cookbook-guide": { src: "/project-documents/cook-enterprise/book2.jpeg", alt: "Cookbook spread preview", mark: "BOOK", tone: "book" },
 };
 
+type RecipeBookGroupId = "fine-dining" | "cuisines" | "baking";
+
+type RecipeBookCardData = {
+  id: string;
+  group: RecipeBookGroupId;
+  href: string;
+  title: string;
+  count: string;
+  description: string;
+  image: string;
+  imageAlt: string;
+  imageBackground?: string;
+  imagePosition?: string;
+};
+
+const recipeBookGroups = [
+  { id: "fine-dining", label: "Fine dining" },
+  { id: "cuisines", label: "Cuisines" },
+  { id: "baking", label: "Baking" },
+] as const;
+
+const featuredRecipeBooks: RecipeBookCardData[] = [
+  {
+    id: "core",
+    group: "fine-dining",
+    href: "/recipes/core-basics",
+    title: "Core by Clare Smyth",
+    count: "Basics + 51 dish groups",
+    description: "Core Basics and the complete supplied dishes, rebuilt as searchable, scalable cards while retaining the book's page flow.",
+    image: "/core-book/dishes/core-teser-1-v2.jpg",
+    imageAlt: "Core-teser by Clare Smyth",
+  },
+  {
+    id: "frantzen",
+    group: "fine-dining",
+    href: "/recipes/frantzen",
+    title: "Frantzén by Björn Frantzén",
+    count: "64 Basics + 53 dishes + 5 Petit Fours",
+    description: "The supplied Basics, plated dishes and Petit Fours rebuilt as scalable component cards with exact source-page references.",
+    image: "/frantzen/dishes/roasted-scallops.jpg",
+    imageAlt: "Roasted scallops from Frantzén by Björn Frantzén",
+    imagePosition: "50% 52%",
+  },
+  {
+    id: "modernist-cuisine",
+    group: "fine-dining",
+    href: "/recipes/modernist-cuisine",
+    title: "Modernist Cuisine recipes",
+    count: "749 entries",
+    description: "Volume 6, rebuilt from every indexed page with scalable recipe grids and exact source layouts for charts and complex techniques.",
+    image: "/modernist-cuisine/title-page.jpg",
+    imageAlt: "Modernist Cuisine title and authors page",
+    imageBackground: "bg-white",
+    imagePosition: "50% 39%",
+  },
+  {
+    id: "pollen-street",
+    group: "fine-dining",
+    href: "/recipes/pollen-street",
+    title: "Pollen Street by Jason Atherton",
+    count: "83 recipes",
+    description: "54 foundation recipes and 29 complete dishes, with scaling and called-for Basics built into every card.",
+    image: "/pollen-street/cumbrian-suckling-pig.jpg",
+    imageAlt: "Cumbrian suckling pig from Pollen Street",
+  },
+  {
+    id: "benu",
+    group: "fine-dining",
+    href: "/recipes/benu",
+    title: "Benu by Corey Lee",
+    count: "8 dishes",
+    description: "The supplied dishes rebuilt as searchable, scalable cards, with every ingredient kept beside its corresponding method.",
+    image: "/benu/thousand-year-old-quail-egg.jpeg",
+    imageAlt: "Thousand-Year-Old Quail Egg from Benu",
+    imagePosition: "50% 47%",
+  },
+  {
+    id: "modernist-pizza",
+    group: "baking",
+    href: "/recipes/modernist-pizza",
+    title: "Modernist Pizza",
+    count: `${modernistPizzaRecipes.length} recipes + ${modernistPizzaKnowledge.length} references`,
+    description: "Volume 4 separated into searchable recipe spreads and a remade practical guide to dough, ovens, baking, service, and troubleshooting.",
+    image: "/modernist-pizza/cover.webp",
+    imageAlt: "Modernist Pizza title and authors page",
+    imageBackground: "bg-white",
+    imagePosition: "50% 24%",
+  },
+  {
+    id: "opera",
+    group: "baking",
+    href: "/recipes/opera",
+    title: "Opéra Pâtisserie by Cédric Grolet",
+    count: "22 Basics + 96 recipes",
+    description: "Breakfast pastries, French classics, plated desserts, frozen fruit and annex basics rebuilt with scaling and exact source pages.",
+    image: "/opera/photos/pain-au-chocolat.webp",
+    imageAlt: "Pain au chocolat from Opéra Pâtisserie by Cédric Grolet",
+    imageBackground: "bg-black",
+    imagePosition: "50% 50%",
+  },
+  {
+    id: "bachour",
+    group: "baking",
+    href: "/recipes/bachour",
+    title: "Bachour by Antonio Bachour",
+    count: "78 pastries & foundations",
+    description: "Two collections: the supplied entremets and all 67 recipes from Bachour the Baker, rebuilt as searchable, scalable component-by-component cards.",
+    image: "/bachour/coffee-caramel-gianduja.jpeg",
+    imageAlt: "Coffee Caramel and Gianduja pastry by Antonio Bachour",
+    imagePosition: "50% 50%",
+  },
+];
+
+const importedRecipeBookGroups: Record<string, RecipeBookGroupId> = {
+  "everyday-lebanese": "cuisines",
+  "japan-the-cookbook": "cuisines",
+  anatolia: "cuisines",
+  "science-of-spice": "cuisines",
+  "secrets-of-open-crumb": "baking",
+  "thailand-the-cookbook": "cuisines",
+  "breakfast-the-cookbook": "cuisines",
+  "tu-casa-mi-casa": "cuisines",
+  "the-silver-spoon": "cuisines",
+  "the-essential-new-york-times-cookbook": "cuisines",
+  "larousse-patisserie-and-baking": "baking",
+  "crumb-richard-bertinet": "baking",
+  "advanced-professional-pastry-chef": "baking",
+  "complete-book-of-pasta-sauces": "cuisines",
+  "the-french-laundry-cookbook": "fine-dining",
+  "spain-the-cookbook": "cuisines",
+  "sauces-reconsidered": "cuisines",
+};
+
+function RecipeBookCard({ book }: { book: RecipeBookCardData }) {
+  return (
+    <Link
+      className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+      href={book.href}
+    >
+      <div className={`relative aspect-[16/9] overflow-hidden rounded-[1.45rem] ${book.imageBackground ?? "bg-mist/30"}`}>
+        <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
+          <Image
+            alt={book.imageAlt}
+            className="object-cover"
+            fill
+            sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
+            src={book.image}
+            style={book.imagePosition ? { objectPosition: book.imagePosition } : undefined}
+            unoptimized
+          />
+        </div>
+      </div>
+      <div className="p-3 pb-4 pt-4">
+        <p className="eyebrow">Book · {book.count}</p>
+        <h3 className="mt-2 text-xl font-semibold tracking-tight">{book.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-ink/52">{book.description}</p>
+      </div>
+    </Link>
+  );
+}
+
 function GuideVisual({ slug }: { slug: string }) {
   const visual = guideVisuals[slug] ?? { alt: "Recipe guide graphic", mark: "GUIDE", tone: "default" };
   return (
@@ -236,6 +397,19 @@ export default async function RecipesPage() {
     if (b.date) return 1;
     return a.title.localeCompare(b.title);
   });
+  const recipeBookCards: RecipeBookCardData[] = [
+    ...featuredRecipeBooks,
+    ...importedCookbooks.map((book) => ({
+      id: book.id,
+      group: importedRecipeBookGroups[book.id] ?? "cuisines",
+      href: `/recipes/${book.id}`,
+      title: book.title,
+      count: book.recipeCountLabel,
+      description: `${book.author} · source-linked recipes organized by the book's original sections.`,
+      image: book.coverImage ?? `/imported-cookbooks/${book.id}.jpg`,
+      imageAlt: `${book.title} cover`,
+    })),
+  ];
 
   return (
     <div className="recipe-library-page">
@@ -449,219 +623,24 @@ export default async function RecipesPage() {
               <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipe books</h2>
               <p className="section-description mt-2 text-sm text-ink/50">Reference books and their recipe contents.</p>
             </div>
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              <Link
-                className="design-card order-1 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
-                href="/recipes/core-basics"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
-                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                    <Image
-                      alt="Core-teser by Clare Smyth"
-                      className="object-cover"
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/core-book/dishes/core-teser-1-v2.jpg"
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · Basics + 51 dish groups</p>
-                  <div className="mt-2 flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold tracking-tight">Core by Clare Smyth</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">Core Basics and the complete supplied dishes, rebuilt as searchable, scalable cards while retaining the book&apos;s page flow.</p>
-                </div>
-              </Link>
-              <Link
-                className="design-card order-5 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
-                href="/recipes/pollen-street"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
-                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                    <Image
-                      alt="Cumbrian suckling pig from Pollen Street"
-                      className="object-cover"
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/pollen-street/cumbrian-suckling-pig.jpg"
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · 83 recipes</p>
-                  <div className="mt-2 flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold tracking-tight">Pollen Street by Jason Atherton</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">54 foundation recipes and 29 complete dishes, with scaling and called-for Basics built into every card.</p>
-                </div>
-              </Link>
-              <Link
-                className="design-card order-8 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
-                href="/recipes/benu"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
-                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                    <Image
-                      alt="Thousand-Year-Old Quail Egg from Benu"
-                      className="object-cover"
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/benu/thousand-year-old-quail-egg.jpeg"
-                      style={{ objectPosition: "50% 47%" }}
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · 8 dishes</p>
-                  <div className="mt-2 flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold tracking-tight">Benu by Corey Lee</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">The supplied dishes rebuilt as searchable, scalable cards, with every ingredient kept beside its corresponding method.</p>
-                </div>
-              </Link>
-              <Link
-                className="design-card order-7 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
-                href="/recipes/bachour"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
-                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                    <Image
-                      alt="Coffee Caramel and Gianduja pastry by Antonio Bachour"
-                      className="object-cover"
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/bachour/coffee-caramel-gianduja.jpeg"
-                      style={{ objectPosition: "50% 50%" }}
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · 78 pastries & foundations</p>
-                  <div className="mt-2 flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold tracking-tight">Bachour by Antonio Bachour</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">Two collections: the supplied entremets and all 67 recipes from Bachour the Baker, rebuilt as searchable, scalable component-by-component cards.</p>
-                </div>
-              </Link>
-              <Link
-                className="design-card order-3 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
-                href="/recipes/modernist-cuisine"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-white">
-                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                    <Image
-                      alt="Modernist Cuisine title and authors page"
-                      className="object-cover"
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/modernist-cuisine/title-page.jpg"
-                      style={{ objectPosition: "50% 39%" }}
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · 749 entries</p>
-                  <div className="mt-2 flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold tracking-tight">Modernist Cuisine recipes</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">Volume 6, rebuilt from every indexed page with scalable recipe grids and exact source layouts for charts and complex techniques.</p>
-                </div>
-              </Link>
-              <Link
-                className="design-card order-4 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
-                href="/recipes/modernist-pizza"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-white">
-                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                    <Image
-                      alt="Modernist Pizza title and authors page"
-                      className="object-cover"
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/modernist-pizza/cover.webp"
-                      style={{ objectPosition: "50% 24%" }}
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · {modernistPizzaRecipes.length} recipes + {modernistPizzaKnowledge.length} references</p>
-                  <div className="mt-2 flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold tracking-tight">Modernist Pizza</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">Volume 4 separated into searchable recipe spreads and a remade practical guide to dough, ovens, baking, service, and troubleshooting.</p>
-                </div>
-              </Link>
-              <Link
-                className="design-card order-2 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
-                href="/recipes/frantzen"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
-                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                    <Image
-                      alt="Roasted scallops from Frantzén by Björn Frantzén"
-                      className="object-cover"
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/frantzen/dishes/roasted-scallops.jpg"
-                      style={{ objectPosition: "50% 52%" }}
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · 64 Basics + 53 dishes + 5 Petit Fours</p>
-                  <div className="mt-2 flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold tracking-tight">Frantzén by Björn Frantzén</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">The supplied Basics, plated dishes and Petit Fours rebuilt as scalable component cards with exact source-page references.</p>
-                </div>
-              </Link>
-              <Link
-                className="design-card order-6 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
-                href="/recipes/opera"
-              >
-                <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-black">
-                  <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                    <Image
-                      alt="Pain au chocolat from Opéra Pâtisserie by Cédric Grolet"
-                      className="object-cover"
-                      fill
-                      sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem"
-                      src="/opera/photos/pain-au-chocolat.webp"
-                      style={{ objectPosition: "50% 50%" }}
-                      unoptimized
-                    />
-                  </div>
-                </div>
-                <div className="p-3 pb-4 pt-4">
-                  <p className="eyebrow">Book · 22 Basics + 96 recipes</p>
-                  <div className="mt-2 flex items-start justify-between gap-4">
-                    <h3 className="text-xl font-semibold tracking-tight">Opéra Pâtisserie by Cédric Grolet</h3>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-ink/52">Breakfast pastries, French classics, plated desserts, frozen fruit and annex basics rebuilt with scaling and exact source pages.</p>
-                </div>
-              </Link>
-              {importedCookbooks.map((book) => (
-                <Link className="design-card order-9 group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3" href={`/recipes/${book.id}`} key={book.id}>
-                  <div className="relative aspect-[16/9] overflow-hidden rounded-[1.45rem] bg-mist/30">
-                    <div className="absolute inset-0 transition duration-500 group-hover:scale-[1.025]">
-                      <Image alt={`${book.title} cover`} className="object-cover" fill sizes="(max-width: 768px) 92vw, (max-width: 1280px) 45vw, 28rem" src={book.coverImage ?? `/imported-cookbooks/${book.id}.jpg`} unoptimized />
+            <div className="mt-7 space-y-10">
+              {recipeBookGroups.map((group) => {
+                const books = recipeBookCards.filter((book) => book.group === group.id);
+
+                return (
+                  <section aria-labelledby={`recipe-book-group-${group.id}`} key={group.id}>
+                    <div className="flex items-baseline justify-between gap-4 border-b border-ink/10 pb-3">
+                      <h3 className="text-xl font-semibold tracking-tight sm:text-2xl" id={`recipe-book-group-${group.id}`}>
+                        {group.label}
+                      </h3>
+                      <span className="text-xs font-medium text-ink/38">{books.length} books</span>
                     </div>
-                  </div>
-                  <div className="p-3 pb-4 pt-4">
-                    <p className="eyebrow">Book · {book.recipeCountLabel}</p>
-                    <h3 className="mt-2 text-xl font-semibold tracking-tight">{book.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-ink/52">{book.author} · source-linked recipes organized by the book&apos;s original sections.</p>
-                  </div>
-                </Link>
-              ))}
+                    <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                      {books.map((book) => <RecipeBookCard book={book} key={book.id} />)}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           </section>}
 

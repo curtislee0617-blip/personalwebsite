@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { ModernistCuisineBrowser } from "@/components/modernist-cuisine-browser";
 import { PageIntro } from "@/components/page-intro";
 
@@ -15,7 +15,7 @@ export default function ModernistCuisinePage() {
       />
 
       <section className="page-section pt-10 sm:pt-14">
-        <Link className="back-link-bubble mb-6" href="/recipes#recipe-books">← Back to recipe books</Link>
+        <HistoryBackButton className="mb-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
         <ModernistCuisineBrowser />
       </section>
     </>

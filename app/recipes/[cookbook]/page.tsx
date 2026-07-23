@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { ImportedCookbookGuide } from "@/components/imported-cookbook-guide";
 import { getImportedCookbook, importedCookbooks } from "@/lib/imported-cookbooks";
 import { PageIntro } from "@/components/page-intro";
@@ -24,7 +24,7 @@ export default async function ImportedCookbookPage({ params }: { params: Promise
     <>
       <PageIntro eyebrow="Recipe book" title={book.title} description={`${book.author} · ${book.recipeCountLabel}`} />
       <section className="page-section pt-8 sm:pt-10">
-        <Link className="back-link-bubble mb-6" href="/recipes#recipe-books">← Back to recipe books</Link>
+        <HistoryBackButton className="mb-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
         <ImportedCookbookGuide cookbook={book} />
       </section>
     </>

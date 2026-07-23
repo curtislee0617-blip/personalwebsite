@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { InstagramSavedSearch } from "@/components/instagram-saved-search";
 import { MediaSavedWishlistProvider } from "@/components/media-saved-wishlist";
 import { RecipeCard } from "@/components/recipe-card";
@@ -46,7 +46,7 @@ export default async function InstagramSavedRecipesPage() {
     <>
       <MediaSavedWishlistProvider initialRecipeKeys={wishlistedRecipeKeys}>
         <main className="page-shell page-section instagram-saved-page">
-          <Link className="back-link-bubble mb-6" href="/recipes#recipe-media-saved">← Back to media saved recipes</Link>
+          <HistoryBackButton className="mb-6" fallbackHref="/recipes#recipe-media-saved">← Back to media saved recipes</HistoryBackButton>
           <p className="eyebrow">Media saved recipes · Instagram</p>
           <h1 className="section-title mt-3">Instagram saved recipes</h1>
           <p className="section-description mt-3 max-w-3xl">

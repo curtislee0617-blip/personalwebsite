@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CocktailBookBrowser } from "@/components/cocktail-book-browser";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { cocktailCodexStyleHref, cocktailCodexStyles } from "@/lib/cocktail-codex";
 import { getCocktailBook, getCocktailPublications } from "@/lib/cocktail-books";
@@ -29,7 +30,7 @@ export default async function CocktailBookPage({ params }: { params: Promise<{ b
       <div className="page-shell py-16 sm:py-20">
         <h1 className="section-title">Admin login required</h1>
         <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">The full source-book recipes are kept private.</p>
-        <Link className="back-link-bubble mt-6" href="/recipes#recipe-books">← Back to recipe books</Link>
+        <HistoryBackButton className="mt-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
       </div>
     );
   }
@@ -53,7 +54,7 @@ export default async function CocktailBookPage({ params }: { params: Promise<{ b
       />
       <section className="cocktail-library-book-page page-section pt-8 sm:pt-10">
         <div className="flex flex-wrap gap-3">
-          <Link className="back-link-bubble" href="/recipes/cocktail-books">← Cocktail library</Link>
+          <HistoryBackButton fallbackHref="/recipes/cocktail-books">← Cocktail library</HistoryBackButton>
           <Link className="back-link-bubble" href="/recipes#recipe-category-drinks">Cocktails &amp; Drinks</Link>
         </div>
         <p className="cocktail-library-book-description">{book.description}</p>

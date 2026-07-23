@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { SteamTableCalculator } from "@/components/steam-table-calculator";
 import { PageIntro } from "@/components/page-intro";
 
@@ -17,7 +17,7 @@ export default function WaterPropertiesPage() {
         description="Calculate specific volume, internal energy, enthalpy, and entropy from any two independent properties within the Koretsky steam-table ranges."
       />
       <div className="page-shell pb-4 pt-5 sm:pt-6">
-        <Link className="back-link-bubble" href="/tools">← Back to tools</Link>
+        <HistoryBackButton fallbackHref="/tools">← Back to tools</HistoryBackButton>
       </div>
       <div className="page-shell pb-16 sm:pb-20">
         <SteamTableCalculator />

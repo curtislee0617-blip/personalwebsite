@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
+import { HistoryBackButton } from "@/components/history-back-button";
 
 type Zoom = "fit" | 1.25 | 1.5;
 
@@ -23,9 +23,9 @@ export function ModernistPizzaSourceViewer({ backHref, pages, title }: Modernist
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[rgb(16_18_20/0.92)] py-3 pl-3 pr-16 backdrop-blur-xl sm:pl-5 sm:pr-20">
         <div className="mx-auto flex max-w-[110rem] flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <Link className="inline-flex shrink-0 items-center rounded-full border border-white/15 bg-white/[0.06] px-3 py-2 text-xs font-semibold transition hover:bg-white/[0.12]" href={backHref}>
+            <HistoryBackButton className="inline-flex shrink-0 items-center rounded-full border border-white/15 bg-white/[0.06] px-3 py-2 text-xs font-semibold transition hover:bg-white/[0.12]" fallbackHref={backHref}>
               ← Back to recipe
-            </Link>
+            </HistoryBackButton>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold sm:text-base">{title}</p>
               <p className="mt-0.5 text-[0.65rem] uppercase tracking-[0.12em] text-white/45">Modernist Pizza · {pages.length} source {pages.length === 1 ? "page" : "pages"}</p>

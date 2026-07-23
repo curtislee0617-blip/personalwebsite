@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { SectionRail } from "@/components/section-rail";
 import { ViennoiserieScaler, type ViennoiserieScaleGroup } from "@/components/viennoiserie-scaler";
@@ -189,7 +190,7 @@ export default function ViennoiserieGuidePage() {
       <SectionRail ariaLabel="Viennoiserie guide sections" sections={sections} />
 
       <section className="page-section pt-12 sm:pt-16">
-        <Link className="back-link-bubble mb-4" href="/recipes">← Back to recipes</Link>
+        <HistoryBackButton className="mb-4" fallbackHref="/recipes">← Back to recipes</HistoryBackButton>
 
         <section id="croissants" className="viennoiserie-croissants-section viennoiserie-photo-section">
           <div className="viennoiserie-photo-heading">

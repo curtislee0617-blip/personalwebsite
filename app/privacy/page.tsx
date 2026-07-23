@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 
 export const metadata: Metadata = {
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
       />
 
       <div className="page-shell pb-4 pt-5 sm:pt-6">
-        <Link className="back-link-bubble" href="/tools/course-planner">← Back to course planner</Link>
+        <HistoryBackButton fallbackHref="/tools/course-planner">← Back to course planner</HistoryBackButton>
       </div>
 
       <section className="page-shell pb-16 sm:pb-20">

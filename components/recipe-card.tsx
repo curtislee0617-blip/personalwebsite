@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { InstagramPostEmbed } from "@/components/instagram-post-embed";
 import { MediaSavedWishlistButton } from "@/components/media-saved-wishlist";
 import { RecipeDeleteButton } from "@/components/recipe-delete-button";
@@ -190,7 +191,7 @@ export function RecipeCard({
           {hasStructuredContent && <StructuredRecipeContent entry={entry} />}
           <ReferenceLinks links={entry.referenceLinks} />
           <LinkedRecipeSection adminEditHref={adminEditHref} recipes={linkedRecipes} />
-          {showBackLink && <Link className="back-link-bubble" href="/recipes">Back to recipes</Link>}
+          {showBackLink && <HistoryBackButton fallbackHref="/recipes">Back to recipes</HistoryBackButton>}
         </div>
       )}
     </details>

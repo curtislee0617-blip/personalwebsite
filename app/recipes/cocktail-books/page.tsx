@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CocktailCabinetMatcher } from "@/components/cocktail-cabinet-matcher";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { cocktailBooks, getCocktailMatcherRecipes } from "@/lib/cocktail-books";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
@@ -22,7 +23,7 @@ export default async function CocktailBooksPage() {
         <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">
           This source library is visible only after admin login. Log in from the footer, then return here.
         </p>
-        <Link className="back-link-bubble mt-6" href="/recipes#recipe-category-drinks">← Back to Cocktails &amp; Drinks</Link>
+        <HistoryBackButton className="mt-6" fallbackHref="/recipes#recipe-category-drinks">← Back to Cocktails &amp; Drinks</HistoryBackButton>
       </div>
     );
   }
@@ -38,7 +39,7 @@ export default async function CocktailBooksPage() {
       />
       <section className="cocktail-library-index page-section pt-8 sm:pt-10">
         <div className="flex flex-wrap gap-3">
-          <Link className="back-link-bubble" href="/recipes#recipe-category-drinks">← Back to Cocktails &amp; Drinks</Link>
+          <HistoryBackButton fallbackHref="/recipes#recipe-category-drinks">← Back to Cocktails &amp; Drinks</HistoryBackButton>
           <Link className="back-link-bubble" href="/recipes/admin">Recipe admin</Link>
         </div>
 

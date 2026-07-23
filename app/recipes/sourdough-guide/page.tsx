@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { SectionRail } from "@/components/section-rail";
 import { SourdoughGuide } from "@/components/sourdough-guide";
@@ -31,7 +31,7 @@ export default async function SourdoughGuidePage() {
       <SectionRail ariaLabel="Sourdough guide sections" sections={sourdoughSections} />
 
       <section className="page-section pt-12 sm:pt-16">
-        <Link className="back-link-bubble mb-6" href="/recipes">← Back to recipes</Link>
+        <HistoryBackButton className="mb-6" fallbackHref="/recipes">← Back to recipes</HistoryBackButton>
         <SourdoughGuide openCrumbCookbook={openCrumbCookbook} />
       </section>
     </div>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Metadata } from "next";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { wishlistEntries } from "@/lib/recipes";
@@ -32,7 +33,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
         <p className="mt-3 max-w-md text-sm text-ink/60">
           Log in from the footer — click “Curtis Lee” at the bottom of any page — then come back here.
         </p>
-        <Link className="back-link-bubble mt-6" href="/recipes">← Back to recipes</Link>
+        <HistoryBackButton className="mt-6" fallbackHref="/recipes">← Back to recipes</HistoryBackButton>
       </div>
     );
   }
@@ -53,7 +54,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
         <h1 className="section-title">{wishlistEntry ? "Upload made wishlist dish" : "Add a recipe"}</h1>
         <div className="flex flex-wrap gap-3">
           <Link className="back-link-bubble" href="/recipes/cocktail-books">Cocktail library</Link>
-          <Link className="back-link-bubble" href="/recipes">← Back to recipes</Link>
+          <HistoryBackButton fallbackHref="/recipes">← Back to recipes</HistoryBackButton>
         </div>
       </div>
 

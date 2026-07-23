@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { PollenStreetGuide } from "@/components/pollen-street-guide";
 
@@ -15,7 +15,7 @@ export default function PollenStreetPage() {
       />
 
       <section className="page-section pt-10 sm:pt-14">
-        <Link className="back-link-bubble mb-6" href="/recipes#recipe-books">← Back to recipe books</Link>
+        <HistoryBackButton className="mb-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
         <PollenStreetGuide />
       </section>
     </>

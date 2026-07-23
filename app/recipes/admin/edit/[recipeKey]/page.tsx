@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { RecipeLinkPicker } from "@/components/recipe-link-picker";
 import { RecipeThumbnailPositionEditor } from "@/components/recipe-thumbnail-position-editor";
 import { RecipeMediaOrganizer } from "@/components/recipe-media-organizer";
@@ -32,7 +33,7 @@ export default async function EditRecipeCardPage({
       <div className="page-shell py-16 sm:py-20">
         <h1 className="section-title">Recipe editor</h1>
         <p className="mt-3 max-w-md text-sm text-ink/60">Log in through the footer before editing recipe cards.</p>
-        <Link className="back-link-bubble mt-6" href="/recipes">← Back to recipes</Link>
+        <HistoryBackButton className="mt-6" fallbackHref="/recipes">← Back to recipes</HistoryBackButton>
       </div>
     );
   }

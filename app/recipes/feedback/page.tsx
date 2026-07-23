@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { WebsiteErrorFeedback } from "@/components/website-error-feedback";
 import { WebsiteErrorFeedbackAdminList } from "@/components/website-error-feedback-admin-list";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
@@ -36,7 +36,7 @@ export default async function WebsiteErrorFeedbackPage({ searchParams }: { searc
           <h1 className="section-title mt-3">Website error feedback</h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-ink/60">Use this page to report transcription mistakes, broken links, missing images, or anything else that needs checking.</p>
         </div>
-        <Link className="back-link-bubble" href={returnTo}>← Back</Link>
+        <HistoryBackButton fallbackHref={returnTo} />
       </div>
       <div className="mt-8">
         <WebsiteErrorFeedback />

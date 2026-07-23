@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { OperaGuide } from "@/components/opera-guide";
 import { PageIntro } from "@/components/page-intro";
 
@@ -14,7 +14,7 @@ export default function OperaPage() {
         description="The complete supplied book rebuilt as 96 searchable, scalable pastry cards and 22 reusable basic recipes. Finished-pastry photographs, component boundaries and exact printed source pages stay attached to every transcription."
       />
       <section className="page-section pt-10 sm:pt-14">
-        <Link className="back-link-bubble mb-6" href="/recipes#recipe-books">← Back to recipe books</Link>
+        <HistoryBackButton className="mb-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
         <OperaGuide />
       </section>
     </>

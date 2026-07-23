@@ -135,14 +135,16 @@ function ScaleControl({ onChange, value }: { onChange: (value: string) => void; 
 function LinkedCookbookText({
   currentRecipeId,
   context,
+  expandedRecipeIds,
   index,
-  onNavigate,
+  onExpand,
   text,
 }: {
   currentRecipeId: string;
   context: "ingredient" | "method";
+  expandedRecipeIds: Record<string, boolean>;
   index: CookbookReferenceIndex;
-  onNavigate: (recipeId: string) => void;
+  onExpand: (recipeId: string) => void;
   text: string;
 }) {
   const references = findCookbookTextReferences(index, text, currentRecipeId, context);
@@ -153,20 +155,129 @@ function LinkedCookbookText({
   references.forEach((reference, referenceIndex) => {
     if (reference.start > cursor) result.push(text.slice(cursor, reference.start));
     result.push(
-      <a
+      <button
+        aria-controls={`${index.bookId}-${currentRecipeId}-linked-${reference.target.id}`}
+        aria-expanded={Boolean(expandedRecipeIds[reference.target.id])}
         className="font-semibold text-moss underline decoration-moss/25 underline-offset-2 transition hover:decoration-moss/70"
-        href={`#${index.bookId}-${reference.target.id}`}
         key={`${reference.target.id}-${reference.start}-${referenceIndex}`}
-        onClick={() => onNavigate(reference.target.id)}
-        title={`Open ${reference.target.title}`}
+        onClick={() => onExpand(reference.target.id)}
+        title={`Expand ${reference.target.title} below this recipe`}
+        type="button"
       >
         {text.slice(reference.start, reference.end)}
-      </a>,
+      </button>,
     );
     cursor = reference.end;
   });
   if (cursor < text.length) result.push(text.slice(cursor));
   return result;
+}
+
+function CalledForRecipe({
+  cookbook,
+  onToggle,
+  open,
+  parentRecipeId,
+  recipe,
+}: {
+  cookbook: ImportedCookbook;
+  onToggle: (open: boolean) => void;
+  open: boolean;
+  parentRecipeId: string;
+  recipe: ImportedCookbookRecipe;
+}) {
+  const [factorText, setFactorText] = useState("1");
+  const parsedFactor = Number.parseFloat(factorText);
+  const factor = Number.isFinite(parsedFactor) && parsedFactor > 0 ? parsedFactor : 1;
+  const sourceLabel = recipe.sourcePages.length === 1
+    ? `PDF page ${recipe.sourcePages[0]}`
+    : `PDF pages ${recipe.sourcePages.join(", ")}`;
+
+  return (
+    <details
+      className="group overflow-hidden rounded-[1rem] border border-moss/20 bg-paper/70"
+      id={`${cookbook.id}-${parentRecipeId}-linked-${recipe.id}`}
+      onToggle={(event) => {
+        if (event.currentTarget.open !== open) onToggle(event.currentTarget.open);
+      }}
+      open={open}
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 marker:hidden">
+        <span className="min-w-0">
+          <strong className="block text-sm leading-snug text-ink/78">{recipe.title}</strong>
+          <small className="mt-1 block text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-ink/38">
+            {recipe.yield ? `${recipe.yield} · ` : ""}{sourceLabel}
+          </small>
+        </span>
+        <span aria-hidden="true" className="shrink-0 text-base text-moss transition group-open:rotate-45">+</span>
+      </summary>
+
+      <div className="grid gap-4 border-t border-moss/15 p-4">
+        {recipe.subtitle && <p className="text-xs leading-5 text-ink/55">{recipe.subtitle}</p>}
+        <ScaleControl onChange={setFactorText} value={factorText} />
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <section className="rounded-[0.9rem] border border-ink/[0.08] bg-surface/35 p-3.5">
+            <p className="mb-3 text-[0.62rem] font-semibold uppercase tracking-[0.13em] text-moss">Ingredients</p>
+            <div className="grid gap-4">
+              {recipe.ingredientGroups.map((group, groupIndex) => (
+                <div key={`${group.heading}-${groupIndex}`}>
+                  {recipe.ingredientGroups.length > 1 && (
+                    <h5 className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-ink/45">{group.heading}</h5>
+                  )}
+                  {group.lines.map((line, lineIndex) => (
+                    <p className="border-b border-ink/[0.05] py-1 text-[0.72rem] leading-5 text-ink/62" key={`${line}-${lineIndex}`}>
+                      {scaleLine(line, factor)}
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-[0.9rem] border border-ink/[0.08] bg-surface/35 p-3.5">
+            <p className="mb-3 text-[0.62rem] font-semibold uppercase tracking-[0.13em] text-moss">Method</p>
+            <div className="grid gap-4">
+              {recipe.methodGroups.map((group, groupIndex) => (
+                <div key={`${group.heading}-${groupIndex}`}>
+                  {recipe.methodGroups.length > 1 && (
+                    <h5 className="mb-2 text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-ink/45">{group.heading}</h5>
+                  )}
+                  <ol className="grid gap-2.5">
+                    {group.steps.map((step, stepIndex) => (
+                      <li className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-2 text-[0.74rem] leading-5 text-ink/62" key={`${step}-${stepIndex}`}>
+                        <span className="font-semibold text-moss/75">{stepIndex + 1}</span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        {(cookbook.sourceDocument || cookbook.sourceDocuments?.length) && (
+          <div className="flex flex-wrap justify-end gap-1.5 border-t border-ink/[0.06] pt-3">
+            {recipe.sourcePages.map((page) => {
+              const href = sourceHrefForPage(cookbook, page);
+              return href ? (
+                <a
+                  className="rounded-full border border-ink/10 px-2.5 py-1 text-[0.62rem] font-semibold text-ink/45 transition hover:border-moss/30 hover:text-moss"
+                  href={href}
+                  key={page}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Open page {page}
+                </a>
+              ) : null;
+            })}
+          </div>
+        )}
+      </div>
+    </details>
+  );
 }
 
 function RecipeCard({
@@ -177,26 +288,25 @@ function RecipeCard({
   isWishlistPending,
   isWishlisted,
   onToggle,
-  onNavigateReference,
   onToggleWishlist,
   open,
   recipe,
   referenceIndex,
 }: {
-  calledForRecipes: ReturnType<typeof collectCookbookRecipeReferences>;
+  calledForRecipes: ImportedCookbookRecipe[];
   cookbook: ImportedCookbook;
   index: number;
   isAdmin: boolean;
   isWishlistPending: boolean;
   isWishlisted: boolean;
   onToggle: () => void;
-  onNavigateReference: (recipeId: string) => void;
   onToggleWishlist: () => void;
   open: boolean;
   recipe: ImportedCookbookRecipe;
   referenceIndex: CookbookReferenceIndex;
 }) {
   const [factorText, setFactorText] = useState("1");
+  const [openCalledForRecipeIds, setOpenCalledForRecipeIds] = useState<Record<string, boolean>>({});
   const parsedFactor = Number.parseFloat(factorText);
   const factor = Number.isFinite(parsedFactor) && parsedFactor > 0 ? parsedFactor : 1;
   const sourceLabel = recipe.sourcePages.length === 1
@@ -208,6 +318,9 @@ function RecipeCard({
   ].filter(Boolean).join(" · ");
   const ingredientCount = recipe.ingredientGroups.reduce((count, group) => count + group.lines.length, 0);
   const hasImage = Boolean(recipe.image);
+  const expandCalledForRecipe = (recipeId: string) => {
+    setOpenCalledForRecipeIds((current) => ({ ...current, [recipeId]: true }));
+  };
 
   return (
     <article
@@ -298,30 +411,6 @@ function RecipeCard({
 
           <ScaleControl onChange={setFactorText} value={factorText} />
 
-          {calledForRecipes.length > 0 && (
-            <nav
-              aria-label={`Recipes called for by ${recipe.title}`}
-              className="rounded-[1.2rem] border border-moss/20 bg-lime/25 p-4 sm:p-5"
-            >
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-moss">Called-for recipes</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {calledForRecipes.map((target) => (
-                  <a
-                    className="rounded-full border border-moss/20 bg-paper/75 px-3 py-1.5 text-[0.72rem] font-semibold text-moss transition hover:border-moss/45"
-                    href={`#${cookbook.id}-${target.id}`}
-                    key={target.id}
-                    onClick={() => onNavigateReference(target.id)}
-                  >
-                    {target.title}
-                    <span className="ml-1.5 text-[0.58rem] uppercase tracking-[0.08em] text-ink/35">
-                      p. {target.sourcePages.join(", ")}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </nav>
-          )}
-
           <div className="grid gap-4 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
             <section className="rounded-[1.2rem] border border-ink/10 bg-surface/35 p-4 sm:p-5">
               <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-moss">Ingredients</p>
@@ -341,8 +430,9 @@ function RecipeCard({
                         <LinkedCookbookText
                           context="ingredient"
                           currentRecipeId={recipe.id}
+                          expandedRecipeIds={openCalledForRecipeIds}
                           index={referenceIndex}
-                          onNavigate={onNavigateReference}
+                          onExpand={expandCalledForRecipe}
                           text={scaleLine(line, factor)}
                         />
                       </p>
@@ -370,8 +460,9 @@ function RecipeCard({
                             <LinkedCookbookText
                               context="method"
                               currentRecipeId={recipe.id}
+                              expandedRecipeIds={openCalledForRecipeIds}
                               index={referenceIndex}
-                              onNavigate={onNavigateReference}
+                              onExpand={expandCalledForRecipe}
                               text={step}
                             />
                           </span>
@@ -383,6 +474,33 @@ function RecipeCard({
               </div>
             </section>
           </div>
+
+          {calledForRecipes.length > 0 && (
+            <section
+              aria-label={`Recipes called for by ${recipe.title}`}
+              className="grid gap-3 rounded-[1.2rem] border border-moss/20 bg-lime/25 p-4 sm:p-5"
+            >
+              <div>
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-moss">Called-for recipes</p>
+                <p className="mt-1 text-xs leading-5 text-ink/48">Open any linked component without leaving this recipe.</p>
+              </div>
+              <div className="grid gap-2">
+                {calledForRecipes.map((target) => (
+                  <CalledForRecipe
+                    cookbook={cookbook}
+                    key={target.id}
+                    onToggle={(nextOpen) => setOpenCalledForRecipeIds((current) => ({
+                      ...current,
+                      [target.id]: nextOpen,
+                    }))}
+                    open={Boolean(openCalledForRecipeIds[target.id])}
+                    parentRecipeId={recipe.id}
+                    recipe={target}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink/[0.07] pt-3">
             <p className="text-[0.66rem] font-semibold uppercase tracking-[0.1em] text-ink/35">
@@ -420,13 +538,22 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
   const [isAdmin, setIsAdmin] = useState(false);
   const [wishlistedRecipeIds, setWishlistedRecipeIds] = useState<Set<string>>(new Set());
   const [pendingWishlistIds, setPendingWishlistIds] = useState<Set<string>>(new Set());
+  const usesCompactTextIndex = cookbook.id === "the-essential-new-york-times-cookbook"
+    || cookbook.id === "sauces-reconsidered";
   const referenceIndex = useMemo(() => createCookbookReferenceIndex(cookbook), [cookbook]);
+  const recipesById = useMemo(
+    () => new Map(cookbook.recipes.map((recipe) => [recipe.id, recipe])),
+    [cookbook.recipes],
+  );
   const recipeReferences = useMemo(
     () => new Map(cookbook.recipes.map((recipe) => [
       recipe.id,
-      collectCookbookRecipeReferences(referenceIndex, recipe),
+      collectCookbookRecipeReferences(referenceIndex, recipe).flatMap((target) => {
+        const linkedRecipe = recipesById.get(target.id);
+        return linkedRecipe ? [linkedRecipe] : [];
+      }),
     ])),
-    [cookbook.recipes, referenceIndex],
+    [cookbook.recipes, recipesById, referenceIndex],
   );
   const filtered = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase();
@@ -501,10 +628,6 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
 
   const recipeIds = filtered.map((recipe) => recipe.id);
   const allOpen = recipeIds.length > 0 && recipeIds.every((id) => open[id]);
-  const navigateToReference = (recipeId: string) => {
-    setQuery("");
-    setOpen((current) => ({ ...current, [recipeId]: true }));
-  };
   const renderRecipe = (recipe: ImportedCookbookRecipe) => (
     <RecipeCard
       calledForRecipes={recipeReferences.get(recipe.id) ?? []}
@@ -514,7 +637,6 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
       isWishlistPending={pendingWishlistIds.has(recipe.id)}
       isWishlisted={wishlistedRecipeIds.has(recipe.id)}
       key={recipe.id}
-      onNavigateReference={navigateToReference}
       onToggle={() => setOpen((current) => ({ ...current, [recipe.id]: !current[recipe.id] }))}
       onToggleWishlist={() => toggleWishlist(recipe.id)}
       open={Boolean(open[recipe.id])}
@@ -555,6 +677,27 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
           {cookbook.categories.map((category) => {
             const recipes = filtered.filter((recipe) => recipe.category === category);
             if (recipes.length === 0) return null;
+            if (usesCompactTextIndex) {
+              const categoryHeadingId = `${cookbook.id}-${category.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-heading`;
+              return (
+                <section aria-labelledby={categoryHeadingId} className="grid gap-3" key={category}>
+                  <div className="flex items-end justify-between gap-4 border-b border-ink/10 pb-2">
+                    <h2
+                      className="text-base font-semibold tracking-tight sm:text-lg"
+                      id={categoryHeadingId}
+                    >
+                      {category}
+                    </h2>
+                    <span className="text-[0.62rem] font-semibold uppercase tracking-[0.11em] text-ink/35">
+                      {recipes.length} {recipes.length === 1 ? "recipe" : "recipes"}
+                    </span>
+                  </div>
+                  <div className="grid items-start gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                    {recipes.map(renderRecipe)}
+                  </div>
+                </section>
+              );
+            }
             return (
               <CookbookRecipeRail key={category} title={category}>
                 {recipes.map(renderRecipe)}

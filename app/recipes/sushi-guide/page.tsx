@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { SectionRail } from "@/components/section-rail";
@@ -20,7 +20,7 @@ export default function SushiGuidePage() {
       <SectionRail ariaLabel="Sushi guide sections" sections={sections} />
 
       <section className="page-section">
-        <Link className="back-link-bubble mb-6" href="/recipes">← Back to recipes</Link>
+        <HistoryBackButton className="mb-6" fallbackHref="/recipes">← Back to recipes</HistoryBackButton>
 
         <section id="sushi" className="sushi-showcase" aria-label="Sushi guide photographs">
           <figure>

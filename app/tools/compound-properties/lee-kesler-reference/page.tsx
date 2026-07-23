@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 
 export const metadata: Metadata = { title: "Lee–Kesler reference" };
@@ -9,7 +9,7 @@ export default function LeeKeslerReferencePage() {
     <>
       <PageIntro eyebrow="Formatted reference" title="Lee–Kesler correlation" description="A readable guide to the generalized tables in Koretsky Appendix C." />
       <div className="page-shell pb-16 pt-5 sm:pb-20 sm:pt-6">
-        <div className="lk-reference-actions"><Link className="back-link-bubble" href="/tools/compound-properties">← Back to calculator</Link><a download href="/documents/koretsky-lee-kesler.pdf">Download source PDF</a></div>
+        <div className="lk-reference-actions"><HistoryBackButton fallbackHref="/tools/compound-properties">← Back to calculator</HistoryBackButton><a download href="/documents/koretsky-lee-kesler.pdf">Download source PDF</a></div>
         <article className="lk-reference">
           <section><p>01 · Reduce the state</p><h2>Critical-property scaling</h2><div className="lk-equations"><strong>Tᵣ = T / Tᶜ</strong><strong>Pᵣ = P / Pᶜ</strong></div><span>Use absolute temperature and consistent pressure units. Critical constants and the acentric factor ω are selected automatically from Appendix A.</span></section>
           <section><p>02 · Evaluate two fluids</p><h2>Simple and reference correlations</h2><div className="lk-equations"><strong>Z⁽⁰⁾ = PᵣVᵣ⁽⁰⁾ / Tᵣ</strong><strong>Z⁽ʳ⁾ = PᵣVᵣ⁽ʳ⁾ / Tᵣ</strong></div><span>The calculator solves the Lee–Kesler equation of state for both the simple fluid (ω = 0) and reference fluid (ωʳ = 0.3978), choosing the largest real volume root.</span></section>
