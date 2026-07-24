@@ -7686,74 +7686,76 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
    unhover snaps cleanly back to the idle state, and each hover restarts
    the sequence from the beginning. Chart paths carry pathLength={1}. */
 
-/* Odometer readouts: a one-line window over a vertical track of values.
-   The first value repeats at the end so the loop wraps seamlessly. */
-.tool-cycle { display: inline-flex; overflow: hidden; height: 1.3em; }
+/* Flip-clock readouts: a one-row window over a vertical track of values that
+   snaps up to the next value in turn (the first value repeats at the end so
+   the loop wraps seamlessly). The cycle owns its clipping so the ellipsis
+   overflow on the surrounding <strong>/<small> can't crop the moving rows. */
+.tool-property-grid strong:has(.tool-cycle),
+.tool-compound-search strong:has(.tool-cycle),
+.tool-compound-search small:has(.tool-cycle),
+.tool-state-inputs strong:has(.tool-cycle) { overflow: visible; }
+
+.tool-cycle { display: block; overflow: hidden; height: 1.25em; line-height: 1.25em; }
 .tool-cycle-track { display: block; white-space: nowrap; }
-.tool-cycle-track > span { display: block; height: 1.3em; line-height: 1.3em; }
+.tool-cycle-track > span { display: block; height: 1.25em; line-height: 1.25em; }
 
 @keyframes tool-cycle-scroll {
-  0%, 22% { transform: translateY(0); }
-  25%, 47% { transform: translateY(-1.3em); }
-  50%, 72% { transform: translateY(-2.6em); }
-  75%, 95% { transform: translateY(-3.9em); }
-  100% { transform: translateY(-5.2em); }
+  0%, 19% { transform: translateY(0); }
+  25%, 44% { transform: translateY(-1.25em); }
+  50%, 69% { transform: translateY(-2.5em); }
+  75%, 94% { transform: translateY(-3.75em); }
+  100% { transform: translateY(-5em); }
 }
 
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-cycle-track {
-  animation: tool-cycle-scroll 8s var(--ease-standard) infinite;
+  animation: tool-cycle-scroll 8s cubic-bezier(0.7, 0, 0.2, 1) infinite;
 }
 
-/* NMR: idle shows the phased spectrum; on hover the zero-order phase flicks
-   through an oscillating hunt (0.48s per guess) before the corrected
-   spectrum lands and holds. */
-.tool-phase-step { opacity: 0; }
-.tool-phase-final { opacity: 1; }
-
-@keyframes tool-phase-flick {
-  0%, 5.9% { opacity: 1; }
-  6%, 100% { opacity: 0; }
+/* NMR: idle shows the corrected spectrum; on hover the trace morphs fluidly
+   through a phase sweep (CSS `d` interpolation over the injected keyframes,
+   see nmrMorphKeyframes) and settles back on the phased spectrum. Where `d`
+   animation is unsupported the path holds its final shape. */
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-nmr-morph {
+  animation: tool-nmr-phase-morph 8s cubic-bezier(0.5, 0, 0.3, 1) infinite;
 }
 
-@keyframes tool-phase-land {
-  0%, 29% { opacity: 0; }
-  30%, 100% { opacity: 1; }
+/* Draw-on reveals use stroke-dashoffset (dasharray fixed at the full path
+   length) so the trace grows strictly from the start with no stray dash dot.
+   pathLength=1 makes 1 unit equal the whole path. */
+.tool-chart-line-ir-load,
+.tool-vle-curve-1,
+.tool-vle-curve-2,
+.tool-vle-tie { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
+
+@keyframes tool-draw-on {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
 }
 
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-phase-step {
-  animation: tool-phase-flick 8s linear infinite;
-  animation-delay: calc(var(--cycle-index, 0) * 0.48s - 8s);
-}
-
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-phase-final {
-  animation: tool-phase-land 8s linear infinite;
-}
-
-/* IR: the trace acquires from the high-wavenumber end. */
+/* IR: the trace acquires from the high-wavenumber (left) end. */
 @keyframes tool-ir-load {
-  0% { stroke-dasharray: 0 1; }
-  42%, 100% { stroke-dasharray: 1 0; }
+  0% { stroke-dashoffset: 1; }
+  42%, 100% { stroke-dashoffset: 0; }
 }
 
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-chart-line-ir-load {
   animation: tool-ir-load 8s var(--ease-standard) infinite;
 }
 
-/* VLE: bubble curve, then dew curve, then one smooth tie line sweeping in
-   from the left. */
+/* VLE: bubble curve, then dew curve, then one smooth tie line from the left. */
 @keyframes tool-vle-draw-1 {
-  0% { stroke-dasharray: 0 1; }
-  25%, 100% { stroke-dasharray: 1 0; }
+  0% { stroke-dashoffset: 1; }
+  25%, 100% { stroke-dashoffset: 0; }
 }
 
 @keyframes tool-vle-draw-2 {
-  0%, 25% { stroke-dasharray: 0 1; }
-  50%, 100% { stroke-dasharray: 1 0; }
+  0%, 25% { stroke-dashoffset: 1; }
+  50%, 100% { stroke-dashoffset: 0; }
 }
 
 @keyframes tool-vle-draw-tie {
-  0%, 52% { stroke-dasharray: 0 1; }
-  70%, 100% { stroke-dasharray: 1 0; }
+  0%, 52% { stroke-dashoffset: 1; }
+  70%, 100% { stroke-dashoffset: 0; }
 }
 
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-1 { animation: tool-vle-draw-1 8s var(--ease-standard) infinite; }
@@ -7773,16 +7775,17 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 .tool-planner-row > span:has(.tool-planner-demo-chip) { overflow: visible; }
 
 @keyframes tool-planner-drag {
-  0% { opacity: 0; transform: translate(-2.4rem, -2rem) rotate(-4deg) scale(1.1); filter: drop-shadow(0 5px 7px rgb(32 35 31 / 0.3)); }
-  5% { opacity: 1; }
-  17% { transform: translate(0.12rem, 0.08rem) rotate(1.5deg) scale(1.05); filter: drop-shadow(0 2px 3px rgb(32 35 31 / 0.22)); }
-  23%, 88% { opacity: 1; transform: none; filter: none; }
-  96%, 100% { opacity: 0; transform: none; filter: none; }
+  0% { opacity: 0; transform: translate(-2.2rem, -1.8rem) rotate(-4deg) scale(1.12); filter: drop-shadow(0 5px 7px rgb(32 35 31 / 0.3)); }
+  6% { opacity: 1; }
+  22% { transform: translate(0.12rem, 0.08rem) rotate(1.5deg) scale(1.05); filter: drop-shadow(0 2px 3px rgb(32 35 31 / 0.22)); }
+  30%, 90% { opacity: 1; transform: none; filter: none; }
+  97%, 100% { opacity: 0; transform: none; filter: none; }
 }
 
+/* Three waves of drops land ~0.9s apart, so the plan fills in about 3s. */
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-planner-demo-chip {
-  animation: tool-planner-drag 9.6s var(--ease-standard) infinite both;
-  animation-delay: calc(var(--demo-index, 0) * 3.2s);
+  animation: tool-planner-drag 4.5s var(--ease-standard) infinite both;
+  animation-delay: calc(var(--demo-index, 0) * 0.9s);
 }
 
 /* The projects focus panel is keyed on the active card, so each carousel
@@ -7817,8 +7820,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .page-intro-actions,
   .project-focus-panel,
   .tool-cycle-track,
-  .tool-phase-step,
-  .tool-phase-final,
+  .tool-nmr-morph,
   .tool-chart-line-ir-load,
   .tool-vle-curve-1,
   .tool-vle-curve-2,

@@ -5,11 +5,15 @@ import { COURSE_PLAN_STORAGE_KEY, fetchCoursePlan, loadStoredIdentity } from "@/
 
 // Sample classes that loop a drag-and-drop demo into empty cells, styled as
 // the planner page's colored requirement bubbles; cells already holding real
-// plan entries are left alone.
-const demoDrops: Record<string, { label: string; index: number; color: string }> = {
-  "1-Winter": { label: "ChE 63a", index: 0, color: "rgb(var(--color-moss) / 0.38)" },
-  "2-Spring": { label: "ACM 95a", index: 1, color: "rgb(var(--color-clay) / 0.42)" },
-  "4-Fall": { label: "ChE 126", index: 2, color: "rgb(122 148 198 / 0.42)" },
+// plan entries are left alone. `wave` groups classes that drop together, so
+// several land at once and the whole plan fills quickly.
+const demoDrops: Record<string, { label: string; wave: number; color: string }> = {
+  "1-Fall": { label: "Ma 1a", wave: 0, color: "rgb(122 148 198 / 0.42)" },
+  "1-Winter": { label: "ChE 63a", wave: 0, color: "rgb(var(--color-moss) / 0.38)" },
+  "2-Spring": { label: "ACM 95a", wave: 1, color: "rgb(var(--color-clay) / 0.42)" },
+  "3-Fall": { label: "ChE 103a", wave: 1, color: "rgb(var(--color-moss) / 0.38)" },
+  "4-Fall": { label: "ChE 126", wave: 2, color: "rgb(122 148 198 / 0.42)" },
+  "4-Winter": { label: "BEM 103", wave: 2, color: "rgb(var(--color-clay) / 0.42)" },
 };
 
 type ThumbnailClass = {
@@ -104,7 +108,7 @@ export function CoursePlannerThumbnail() {
                   {shownClasses.map((entry) => <i key={entry.id}>{entry.label}</i>)}
                   {termClasses.length > shownClasses.length && <i>+{termClasses.length - shownClasses.length}</i>}
                   {demo && (
-                    <i className="tool-planner-demo-chip" style={{ "--demo-chip-bg": demo.color, "--demo-index": demo.index } as CSSProperties}>
+                    <i className="tool-planner-demo-chip" style={{ "--demo-chip-bg": demo.color, "--demo-index": demo.wave } as CSSProperties}>
                       {demo.label}
                     </i>
                   )}
