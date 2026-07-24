@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { compounds } from "@/lib/compound-properties";
 import { generateVleDiagram, type DiagramType, type VleModel, type VleParameters } from "@/lib/vle";
+import { computeVlePhaseSplit } from "@/lib/vle-split";
 import { VleChart } from "@/components/vle-chart";
+import { VlePhaseSplitPanel } from "@/components/vle-phase-split";
 
 const modelLabels: Record<VleModel, string> = {
   ideal: "Ideal Raoult",
@@ -51,6 +53,31 @@ export function VleSimulator() {
   const first = compoundByName(submitted.firstName);
   const second = compoundByName(submitted.secondName);
   const result = useMemo(() => generateVleDiagram(first, second, submitted.type, submitted.fixedValue, submitted.model, submitted.parameters), [first, second, submitted]);
+
+  // The flash state (overall composition + system level) is keyed to the
+  // current diagram: when a new diagram is generated the key changes and the
+  // state falls back to a re-centred default (z = 0.5, level halfway between
+  // that composition's bubble and dew points, so it opens two-phase). Deriving
+  // the default during render — rather than resetting via an effect — keeps the
+  // reset synchronous and avoids a stale first paint.
+  const diagramKey = `${submitted.firstName}|${submitted.secondName}|${submitted.type}|${submitted.model}|${submitted.fixedValue}|${JSON.stringify(submitted.parameters)}`;
+  const levelRange = useMemo(() => {
+    if (result.points.length < 2) return { min: 0, max: 1 };
+    const values = result.points.map((point) => point.value);
+    return { min: Math.min(...values), max: Math.max(...values) };
+  }, [result]);
+  const defaultLevel = useMemo(() => {
+    if (result.points.length < 2) return (levelRange.min + levelRange.max) / 2;
+    const probe = computeVlePhaseSplit(result.points, submitted.type, 0.5, (levelRange.min + levelRange.max) / 2);
+    return probe?.bubbleLevel != null && probe?.dewLevel != null ? (probe.bubbleLevel + probe.dewLevel) / 2 : (levelRange.min + levelRange.max) / 2;
+  }, [result, submitted.type, levelRange.min, levelRange.max]);
+  const [analysis, setAnalysis] = useState<{ key: string; z: number; level: number } | null>(null);
+  const activeAnalysis = analysis?.key === diagramKey ? analysis : { key: diagramKey, z: 0.5, level: defaultLevel };
+  const analysisZ = activeAnalysis.z;
+  const analysisLevelValue = activeAnalysis.level;
+  const setAnalysisZ = (value: number) => setAnalysis({ key: diagramKey, z: value, level: analysisLevelValue });
+  const setAnalysisLevel = (value: number) => setAnalysis({ key: diagramKey, z: analysisZ, level: value });
+  const phaseSplit = useMemo(() => computeVlePhaseSplit(result.points, submitted.type, analysisZ, analysisLevelValue), [result, submitted.type, analysisZ, analysisLevelValue]);
   const isActivityModel = model === "nrtl" || model === "wilson";
   const isCubicEos = model === "van-der-waals" || model === "peng-robinson";
   const validFirst = compounds.some((compound) => compound.name === firstName);
@@ -127,12 +154,25 @@ export function VleSimulator() {
 
         <div className="vle-output">
           <header><div><p>{modelLabels[submitted.model]}</p><h2>{first.name} + {second.name}</h2></div><span>{submitted.type === "txy" ? `${submitted.fixedValue} bar` : `${(submitted.fixedValue - 273.15).toFixed(2)} °C`}</span></header>
-          <VleChart firstLabel={first.formula} points={result.points} type={submitted.type} />
+          <VleChart analysis={result.points.length >= 2 ? { z: analysisZ, level: analysisLevelValue, split: phaseSplit } : null} firstLabel={first.formula} points={result.points} type={submitted.type} />
           <div className="vle-status">
             <span>{result.points.length} equilibrium points</span>
             {result.extrapolated && <strong>Antoine extrapolation used</strong>}
             {result.failed > 0 && <strong>{result.failed} compositions did not converge</strong>}
           </div>
+          {result.points.length >= 2 && (
+            <VlePhaseSplitPanel
+              firstLabel={first.formula}
+              secondLabel={second.formula}
+              level={analysisLevelValue}
+              levelRange={levelRange}
+              onChangeLevel={setAnalysisLevel}
+              onChangeZ={setAnalysisZ}
+              split={phaseSplit}
+              type={submitted.type}
+              z={analysisZ}
+            />
+          )}
         </div>
       </div>
 

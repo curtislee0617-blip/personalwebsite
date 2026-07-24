@@ -2,11 +2,13 @@
 
 import { useState, type PointerEvent } from "react";
 import type { DiagramType, VlePoint } from "@/lib/vle";
+import type { VlePhaseSplit } from "@/lib/vle-split";
 
 type VleChartProps = {
   points: VlePoint[];
   type: DiagramType;
   firstLabel: string;
+  analysis?: { z: number; level: number; split: VlePhaseSplit | null } | null;
 };
 
 function pathFor(points: VlePoint[], xKey: "x" | "y", xScale: (value: number) => number, yScale: (value: number) => number) {
@@ -28,7 +30,7 @@ type HoverState = {
   nearestCurve: "bubble" | "dew";
 };
 
-export function VleChart({ points, type, firstLabel }: VleChartProps) {
+export function VleChart({ points, type, firstLabel, analysis }: VleChartProps) {
   const [hover, setHover] = useState<HoverState | null>(null);
   if (points.length < 2) return <div className="vle-chart-empty">No continuous two-phase curve was found for this state and model.</div>;
   const values = points.map((point) => point.value);
@@ -105,6 +107,19 @@ export function VleChart({ points, type, firstLabel }: VleChartProps) {
         <path className="vle-vapour-curve" d={pathFor(points, "y", xScale, yScale)} />
         {points.filter((_, index) => index % 4 === 0).map((point) => <circle className="vle-liquid-point" cx={xScale(point.x)} cy={yScale(point.value)} key={`x-${point.x}`} r="2.3" />)}
         {points.filter((_, index) => index % 4 === 0).map((point) => <circle className="vle-vapour-point" cx={xScale(point.y)} cy={yScale(point.value)} key={`y-${point.x}`} r="2.3" />)}
+        {analysis && analysis.split && (() => {
+          const { z, level, split } = analysis;
+          const levelY = yScale(level);
+          return <g className="vle-analysis">
+            {split.phase === "two-phase" && split.xStar !== null && split.yStar !== null && <>
+              <line className="vle-analysis-tie" x1={xScale(Math.min(split.xStar, split.yStar))} x2={xScale(Math.max(split.xStar, split.yStar))} y1={levelY} y2={levelY} />
+              <circle className="vle-analysis-endpoint is-liquid" cx={xScale(split.xStar)} cy={levelY} r="4" />
+              <circle className="vle-analysis-endpoint is-vapour" cx={xScale(split.yStar)} cy={levelY} r="4" />
+            </>}
+            <line className="vle-analysis-z" x1={xScale(z)} x2={xScale(z)} y1={top} y2={height - bottom} />
+            <circle className="vle-analysis-overall" cx={xScale(z)} cy={levelY} r="4.5" />
+          </g>;
+        })()}
         {hover && (
           <g className="vle-hover">
             <line x1={hover.svgX} x2={hover.svgX} y1={top} y2={height - bottom} />
