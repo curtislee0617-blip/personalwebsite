@@ -84,6 +84,16 @@ export function VleSimulator() {
   const validFirst = compounds.some((compound) => compound.name === firstName);
   const validSecond = compounds.some((compound) => compound.name === secondName);
   const validPair = validFirst && validSecond && firstName !== secondName;
+  const parsedFixedValue = Number(fixedInput);
+  const validFixedValue = Number.isFinite(parsedFixedValue)
+    && (type === "txy" ? parsedFixedValue > 0 : parsedFixedValue > -273.15);
+  const validModelParameters = model === "nrtl"
+    ? Number.isFinite(parameters.a12) && Number.isFinite(parameters.a21) && parameters.alpha >= 0 && parameters.alpha <= 1
+    : model === "wilson"
+      ? parameters.lambda12 > 0 && parameters.lambda21 > 0
+      : isCubicEos
+        ? Number.isFinite(parameters.kij)
+        : true;
 
   function switchDiagram(nextType: DiagramType) {
     setType(nextType);
@@ -95,14 +105,13 @@ export function VleSimulator() {
   }
 
   function calculate() {
-    if (!validPair) return;
-    const value = Number(fixedInput);
+    if (!validPair || !validFixedValue || !validModelParameters) return;
     setSubmitted({
       firstName,
       secondName,
       type,
       model,
-      fixedValue: type === "pxy" ? value + 273.15 : value,
+      fixedValue: type === "pxy" ? parsedFixedValue + 273.15 : parsedFixedValue,
       parameters: { ...parameters },
     });
   }
@@ -139,6 +148,7 @@ export function VleSimulator() {
           </div>
 
           <label className="vle-fixed-input"><span>{type === "txy" ? "System pressure" : "System temperature"}</span><div><input inputMode="decimal" onChange={(event) => setFixedInput(stripLeadingZeros(event.target.value))} type="number" value={fixedInput} /><b>{type === "txy" ? "bar" : "°C"}</b></div></label>
+          {!validFixedValue && <p className="vle-selection-error">{type === "txy" ? "Pressure must be greater than 0 bar." : "Temperature must be above absolute zero (−273.15 °C)."}</p>}
 
           <label className="vle-model-select"><span>Thermodynamic model</span><select onChange={(event) => setModel(event.target.value as VleModel)} value={model}>{Object.entries(modelLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
 
@@ -148,8 +158,9 @@ export function VleSimulator() {
             {model === "wilson" && <><label>Λ₁₂<input inputMode="decimal" onChange={(event) => setParameter("lambda12", event.target.value)} type="number" value={parameters.lambda12} /></label><label>Λ₂₁<input inputMode="decimal" onChange={(event) => setParameter("lambda21", event.target.value)} type="number" value={parameters.lambda21} /></label></>}
           </div>}
           {isCubicEos && <div className="vle-parameters"><p>Binary interaction</p><label>kᵢⱼ<input inputMode="decimal" onChange={(event) => setParameter("kij", event.target.value)} step="0.01" type="number" value={parameters.kij} /></label></div>}
+          {!validModelParameters && <p className="vle-selection-error">{model === "nrtl" ? "Enter finite NRTL τ values and an α between 0 and 1." : model === "wilson" ? "Wilson Λ parameters must be greater than 0." : "Enter a finite binary-interaction parameter."}</p>}
 
-          <button className="vle-calculate" disabled={!validPair || !Number.isFinite(Number(fixedInput))} onClick={calculate} type="button">Generate diagram</button>
+          <button className="vle-calculate" disabled={!validPair || !validFixedValue || !validModelParameters} onClick={calculate} type="button">Generate diagram</button>
           <p className="vle-model-note">{model === "peng-robinson" ? "Cubic EOS calculation using critical properties and acentric factors. Suitable for light gases and non-polar mixtures; fit kᵢⱼ when data are available." : model === "van-der-waals" ? "Classical two-parameter cubic EOS with one-fluid mixing rules. Useful for teaching and qualitative comparison; it is less accurate than modern cubic equations." : model === "ideal" ? "Ideal modified Raoult law with γ₁ = γ₂ = 1. Best for chemically similar liquids at low pressure." : "Activity-coefficient model with constant illustrative parameters. Enter fitted binary parameters for quantitative design work."}</p>
         </aside>
 

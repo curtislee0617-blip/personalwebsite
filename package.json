@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test:tools": "node --experimental-strip-types --test tests/tool-math.test.mjs",
     "photos:optimize": "node scripts/optimize-photos.mjs",
     "photos:mobile-collage": "node scripts/build-mobile-collage.mjs",
     "maps:import": "node scripts/import-google-maps.mjs",

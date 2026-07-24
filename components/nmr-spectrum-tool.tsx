@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { NmrSpectrumChart, type NmrInteractionMode, type NmrRegion } from "@/components/nmr-spectrum-chart";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { NmrSpectrumChart, type NmrCouplingMarker, type NmrInteractionMode, type NmrRegion } from "@/components/nmr-spectrum-chart";
 import { Nmr2dChart } from "@/components/nmr-2d-chart";
 import { stripLeadingZeros } from "@/lib/number-input";
-import { estimatePhaseCorrection, parseProcessingScript, parseSpinsolve1d, parseSpinsolve2d, parseSpinsolveParameters, pickNmr2dPeaks, pickNmrPeaks, processSpinsolve2d, processSpinsolveFid, type ComplexFid, type ComplexFid2d, type NmrPeak2d, type SpinsolveParameters } from "@/lib/nmr-spectrum";
+import { couplingConstantHz, estimatePhaseCorrection, integrateNmrRegion, parseProcessingScript, parseSpinsolve1d, parseSpinsolve2d, parseSpinsolveParameters, pickNmr2dPeaks, pickNmrPeaks, processSpinsolve2d, processSpinsolveFid, solventReferenceOffset, spinsolvePhaseCorrection, type ComplexFid, type ComplexFid2d, type NmrPeak2d, type SpinsolveParameters } from "@/lib/nmr-spectrum";
 
 type NmrNucleus = "1H" | "13C";
+type CouplingMeasurement = { id: string; points: [number, number] };
+
+const analysisStoragePrefix = "nmr-spectrum-analysis-v1:";
 
 const solvents = [
   { id: "cdcl3", label: "Chloroform-d (CDCl₃)", proton: 7.26, carbon: 77.16 },
@@ -20,13 +23,51 @@ const solvents = [
   { id: "toluene", label: "Toluene-d₈", proton: 2.09, carbon: 20.43 },
 ] as const;
 
-function integrateRegion(points: { shift: number; intensity: number }[], region: NmrRegion) {
-  const selected = points.filter((point) => point.shift >= region.low && point.shift <= region.high);
-  let area = 0;
-  for (let index = 1; index < selected.length; index += 1) {
-    area += Math.abs(selected[index].shift - selected[index - 1].shift) * (selected[index].intensity + selected[index - 1].intensity) / 2;
+type StoredNmrAnalysis = {
+  version: 1;
+  solventId: (typeof solvents)[number]["id"];
+  calibrationOffset: number;
+  solventPeak?: number;
+  regions: NmrRegion[];
+  referenceRegionId: string;
+  referenceValue: number;
+  couplingMeasurements: CouplingMeasurement[];
+  splittingLabels: Record<string, string>;
+};
+
+async function spectrumStorageKey(buffer: ArrayBuffer) {
+  const digest = await crypto.subtle.digest("SHA-256", buffer);
+  const hexadecimal = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `${analysisStoragePrefix}${hexadecimal}`;
+}
+
+function readStoredAnalysis(storageKey: string): StoredNmrAnalysis | null {
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<StoredNmrAnalysis>;
+    if (parsed.version !== 1 || !Array.isArray(parsed.regions) || !Array.isArray(parsed.couplingMeasurements)) return null;
+    const solvent = solvents.find((item) => item.id === parsed.solventId)?.id ?? "dmso";
+    const regions = parsed.regions.filter((region): region is NmrRegion => typeof region?.id === "string" && Number.isFinite(region.low) && Number.isFinite(region.high));
+    const couplingMeasurements = parsed.couplingMeasurements.filter((measurement): measurement is CouplingMeasurement =>
+      typeof measurement?.id === "string"
+      && Array.isArray(measurement.points)
+      && measurement.points.length === 2
+      && measurement.points.every(Number.isFinite));
+    return {
+      version: 1,
+      solventId: solvent,
+      calibrationOffset: Number.isFinite(parsed.calibrationOffset) ? parsed.calibrationOffset! : 0,
+      solventPeak: Number.isFinite(parsed.solventPeak) ? parsed.solventPeak : undefined,
+      regions,
+      referenceRegionId: typeof parsed.referenceRegionId === "string" ? parsed.referenceRegionId : "",
+      referenceValue: Number.isFinite(parsed.referenceValue) && parsed.referenceValue! > 0 ? parsed.referenceValue! : 1,
+      couplingMeasurements,
+      splittingLabels: parsed.splittingLabels && typeof parsed.splittingLabels === "object" ? parsed.splittingLabels : {},
+    };
+  } catch {
+    return null;
   }
-  return area;
 }
 
 export function NmrSpectrumTool() {
@@ -42,6 +83,7 @@ export function NmrSpectrumTool() {
   const [phase1Degrees, setPhase1Degrees] = useState(0);
   const [lineBroadeningHz, setLineBroadeningHz] = useState(0.2);
   const [zeroFill, setZeroFill] = useState<1 | 2 | 4>(2);
+  const [processingDefaults, setProcessingDefaults] = useState({ phase0Degrees: 0, phase1Degrees: 0, lineBroadeningHz: 0.2 });
   const [nucleus, setNucleus] = useState<NmrNucleus>("1H");
   const [xMinimum, setXMinimum] = useState(-10);
   const [xMaximum, setXMaximum] = useState(20);
@@ -53,7 +95,9 @@ export function NmrSpectrumTool() {
   const [regions, setRegions] = useState<NmrRegion[]>([]);
   const [referenceRegionId, setReferenceRegionId] = useState("");
   const [referenceValue, setReferenceValue] = useState(1);
-  const [couplingPoints, setCouplingPoints] = useState<number[]>([]);
+  const [couplingDraft, setCouplingDraft] = useState<number[]>([]);
+  const [couplingMeasurements, setCouplingMeasurements] = useState<CouplingMeasurement[]>([]);
+  const [analysisStorageKey, setAnalysisStorageKey] = useState("");
   const [showPeakLabels, setShowPeakLabels] = useState(true);
   const [peakCount, setPeakCount] = useState(12);
   const [peakProminence, setPeakProminence] = useState(0.025);
@@ -81,11 +125,47 @@ export function NmrSpectrumTool() {
   const availableSolvents = solvents.filter((solvent) => nucleus === "1H" ? solvent.proton !== undefined : "carbon" in solvent && solvent.carbon !== undefined);
   const selectedSolvent = availableSolvents.find((solvent) => solvent.id === solventId) ?? availableSolvents[0];
   const selectedSolventShift = nucleus === "1H" ? selectedSolvent.proton : ("carbon" in selectedSolvent ? selectedSolvent.carbon : undefined);
-  const regionAreas = useMemo(() => regions.map((region) => ({ ...region, area: integrateRegion(points, region) })), [points, regions]);
+  const regionAreas = useMemo(() => regions.map((region) => ({ ...region, area: integrateNmrRegion(points, region.low, region.high) })), [points, regions]);
   const referenceArea = regionAreas.find((region) => region.id === referenceRegionId)?.area ?? regionAreas[0]?.area ?? 0;
-  const couplingHz = couplingPoints.length === 2 ? Math.abs(couplingPoints[0] - couplingPoints[1]) * (axis === "ppm" ? observation : 1) : null;
+  const couplingValues = useMemo(() => couplingMeasurements.map((measurement) => ({
+    ...measurement,
+    hertz: couplingConstantHz(measurement.points[0], measurement.points[1], axis, observation),
+  })), [axis, couplingMeasurements, observation]);
+  const couplingMarkers = useMemo<NmrCouplingMarker[]>(() => [
+    ...couplingMeasurements.flatMap((measurement, measurementIndex) => measurement.points.map((shift, pointIndex) => ({
+      id: `${measurement.id}-${pointIndex}`,
+      shift,
+      label: `J${measurementIndex + 1}${pointIndex === 0 ? "a" : "b"}`,
+    }))),
+    ...couplingDraft.map((shift, pointIndex) => ({
+      id: `draft-${pointIndex}`,
+      shift,
+      label: `J${couplingMeasurements.length + 1}a`,
+    })),
+  ], [couplingDraft, couplingMeasurements]);
   const spectrum2d = useMemo(() => fid2d ? processSpinsolve2d(fid2d, parameters) : null, [fid2d, parameters]);
   const peaks2d = useMemo(() => spectrum2d ? pickNmr2dPeaks(spectrum2d, contourThreshold, peak2dCount) : [], [contourThreshold, peak2dCount, spectrum2d]);
+
+  useEffect(() => {
+    if (!analysisStorageKey || !fid) return;
+    const analysis: StoredNmrAnalysis = {
+      version: 1,
+      solventId,
+      calibrationOffset,
+      solventPeak,
+      regions,
+      referenceRegionId,
+      referenceValue,
+      couplingMeasurements,
+      splittingLabels,
+    };
+    try {
+      localStorage.setItem(analysisStorageKey, JSON.stringify(analysis));
+    } catch {
+      // Storage can be unavailable in privacy-restricted browser contexts.
+      // Analysis remains usable for the current session in React state.
+    }
+  }, [analysisStorageKey, calibrationOffset, couplingMeasurements, fid, referenceRegionId, referenceValue, regions, solventId, solventPeak, splittingLabels]);
 
   async function loadFiles(files: FileList | null) {
     if (!files?.length) return;
@@ -93,16 +173,23 @@ export function NmrSpectrumTool() {
     const dataFile = selected.find((file) => file.name.toLowerCase().endsWith(".1d"));
     const data2dFile = selected.find((file) => file.name.toLowerCase().endsWith(".2d"));
     if (!dataFile && !data2dFile) return setMessage("No .1d or .2d Spinsolve file was selected.");
+    // Stop writes to the previously loaded acquisition while this asynchronous
+    // file read is in progress.
+    setAnalysisStorageKey("");
     try {
-      const nextFid = dataFile ? parseSpinsolve1d(await dataFile.arrayBuffer()) : null;
+      const dataBuffer = dataFile ? await dataFile.arrayBuffer() : null;
+      const nextFid = dataBuffer ? parseSpinsolve1d(dataBuffer) : null;
       const nextFid2d = data2dFile ? parseSpinsolve2d(await data2dFile.arrayBuffer()) : null;
       const acquFile = selected.find((file) => file.name.toLowerCase() === "acqu.par");
       const scriptFile = selected.find((file) => file.name.toLowerCase().endsWith("processing.script"));
       const nextParameters = acquFile ? parseSpinsolveParameters(await acquFile.text()) : {};
-      const processing = scriptFile ? parseProcessingScript(await scriptFile.text()) : { phaseDegrees: undefined, lineBroadeningHz: undefined };
+      const processing = scriptFile ? parseProcessingScript(await scriptFile.text()) : {};
       const nextLineBroadening = processing.lineBroadeningHz ?? 0.2;
-      const automaticCorrection = nextFid ? estimatePhaseCorrection(nextFid, nextLineBroadening) : { phase0Degrees: 0, phase1Degrees: 0 };
-      const automaticPhase = automaticCorrection.phase0Degrees;
+      const instrumentCorrection = spinsolvePhaseCorrection(processing);
+      const automaticCorrection = nextFid && !instrumentCorrection ? estimatePhaseCorrection(nextFid, nextLineBroadening) : null;
+      const phaseCorrection = instrumentCorrection ?? automaticCorrection ?? { phase0Degrees: 0, phase1Degrees: 0 };
+      const nextStorageKey = dataBuffer ? await spectrumStorageKey(dataBuffer) : "";
+      const stored = nextStorageKey ? readStoredAnalysis(nextStorageKey) : null;
       const detectedNucleus: NmrNucleus = nextParameters.nucleus?.toUpperCase().includes("13C") ? "13C" : "1H";
       setFid(nextFid);
       setFid2d(nextFid2d);
@@ -115,17 +202,24 @@ export function NmrSpectrumTool() {
         || (solvent.id === "cdcl3" && reportedSolvent.includes("chloroform"))
         || (solvent.id === "methanol" && reportedSolvent.includes("meoh"))
         || (solvent.id === "water" && reportedSolvent.includes("d2o")));
-      if (matchedSolvent) setSolventId(matchedSolvent.id);
-      setCalibrationOffset(0);
-      setSolventPeak(undefined);
-      setRegions([]);
-      setReferenceRegionId("");
-      setCouplingPoints([]);
+      const restoredSolvent = stored ? solvents.find((solvent) =>
+        solvent.id === stored.solventId
+        && (detectedNucleus === "1H" || ("carbon" in solvent && solvent.carbon !== undefined))) : undefined;
+      setSolventId(restoredSolvent?.id ?? matchedSolvent?.id ?? "dmso");
+      const restoredOffset = stored?.calibrationOffset ?? 0;
+      setCalibrationOffset(restoredOffset);
+      setSolventPeak(stored?.solventPeak);
+      setRegions(stored?.regions ?? []);
+      setReferenceRegionId(stored?.referenceRegionId ?? "");
+      setReferenceValue(stored?.referenceValue ?? 1);
+      setCouplingDraft([]);
+      setCouplingMeasurements(stored?.couplingMeasurements ?? []);
       setSelected2dPeak(null);
-      setSplittingLabels({});
-      setPhaseDegrees(automaticPhase);
-      setPhase1Degrees(automaticCorrection.phase1Degrees);
+      setSplittingLabels(stored?.splittingLabels ?? {});
+      setPhaseDegrees(phaseCorrection.phase0Degrees);
+      setPhase1Degrees(phaseCorrection.phase1Degrees);
       setLineBroadeningHz(nextLineBroadening);
+      setProcessingDefaults({ ...phaseCorrection, lineBroadeningHz: nextLineBroadening });
       setZeroFill(2);
       if (nextParameters.observationMHz) setObservationMHz(String(nextParameters.observationMHz));
       else setObservationMHz("");
@@ -134,9 +228,9 @@ export function NmrSpectrumTool() {
         setCarrierHz(String(nextCarrier));
         if (nextParameters.observationMHz) {
           const defaultRange = detectedNucleus === "13C" ? { low: 0, high: 220 } : { low: -10, high: 20 };
-          setXMinimum(defaultRange.low);
-          setXMaximum(defaultRange.high);
-          setFullRange(defaultRange);
+          setXMinimum(defaultRange.low + restoredOffset);
+          setXMaximum(defaultRange.high + restoredOffset);
+          setFullRange({ low: defaultRange.low + restoredOffset, high: defaultRange.high + restoredOffset });
         } else {
           const centre = nextCarrier;
           const width = nextParameters.bandwidthHz;
@@ -157,7 +251,12 @@ export function NmrSpectrumTool() {
         setY2dRange(experiment2d === "hsqc" ? { low: 0, high: 220 } : { low: -10, high: 20 });
       }
       const descriptions = [nextFid ? `${nextFid.pointCount.toLocaleString()} 1D points` : "", nextFid2d ? `${nextFid2d.width} × ${nextFid2d.height} 2D matrix` : ""].filter(Boolean).join(" and ");
-      setMessage(`Read ${descriptions}${acquFile ? " with acquisition metadata" : ""}${nextFid ? `. Automatic phase: ${automaticPhase.toFixed(1)}° (ϕ₀), ${automaticCorrection.phase1Degrees.toFixed(0)}° (ϕ₁).` : "."}`);
+      const phaseSource = instrumentCorrection ? "Instrument phase" : "Automatic phase";
+      const restoredSummary = stored
+        ? ` Restored ${stored.regions.length} integration region${stored.regions.length === 1 ? "" : "s"} and ${stored.couplingMeasurements.length} saved J measurement${stored.couplingMeasurements.length === 1 ? "" : "s"}.`
+        : "";
+      setMessage(`Read ${descriptions}${acquFile ? " with acquisition metadata" : ""}${nextFid ? `. ${phaseSource}: ${phaseCorrection.phase0Degrees.toFixed(1)}° (ϕ₀), ${phaseCorrection.phase1Degrees.toFixed(0)}° (ϕ₁).` : "."}${restoredSummary}`);
+      setAnalysisStorageKey(nextStorageKey);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "The NMR file could not be read.");
     }
@@ -176,7 +275,8 @@ export function NmrSpectrumTool() {
       setMode("inspect");
       setRegions([]);
       setReferenceRegionId("");
-      setCouplingPoints([]);
+      setCouplingDraft([]);
+      setCouplingMeasurements([]);
       if (solventId === "water") setSolventId("dmso");
     }
   }
@@ -205,17 +305,26 @@ export function NmrSpectrumTool() {
 
   function handlePeakSelect(shift: number) {
     if (mode === "solvent" && axis === "ppm" && selectedSolventShift !== undefined) {
-      const adjustment = selectedSolventShift - shift;
+      const adjustment = solventReferenceOffset(shift, selectedSolventShift);
       setCalibrationOffset((current) => current + adjustment);
       setSolventPeak(selectedSolventShift);
       setXMinimum((current) => current + adjustment);
       setXMaximum((current) => current + adjustment);
       setFullRange((current) => ({ low: current.low + adjustment, high: current.high + adjustment }));
       setRegions((current) => current.map((region) => ({ ...region, low: region.low + adjustment, high: region.high + adjustment })));
-      setCouplingPoints((current) => current.map((point) => point + adjustment));
+      setCouplingDraft((current) => current.map((point) => point + adjustment));
+      setCouplingMeasurements((current) => current.map((measurement): CouplingMeasurement => ({
+        ...measurement,
+        points: [measurement.points[0] + adjustment, measurement.points[1] + adjustment],
+      })));
       setMessage(`Calibrated ${shift.toFixed(4)} ppm to ${selectedSolvent.label} at ${selectedSolventShift.toFixed(2)} ppm.`);
     } else if (mode === "coupling") {
-      setCouplingPoints((current) => current.length >= 2 ? [shift] : [...current, shift]);
+      if (couplingDraft.length === 1) {
+        setCouplingMeasurements((current) => [...current, { id: crypto.randomUUID(), points: [couplingDraft[0], shift] }]);
+        setCouplingDraft([]);
+      } else {
+        setCouplingDraft([shift]);
+      }
     }
   }
 
@@ -240,7 +349,7 @@ export function NmrSpectrumTool() {
         <fieldset><legend>Zero filling</legend><div className="nmr-segmented">{([1, 2, 4] as const).map((value) => <button className={zeroFill === value ? "is-active" : ""} key={value} onClick={() => setZeroFill(value)} type="button">{value}×</button>)}</div></fieldset>
         <fieldset className="nmr-peak-settings"><legend>Peak labels <label><input checked={showPeakLabels} onChange={(event) => setShowPeakLabels(event.target.checked)} type="checkbox" /> Show</label></legend><label><span>Maximum labels <output>{peakCount}</output></span><input max="30" min="1" onChange={(event) => setPeakCount(Number(event.target.value))} type="range" value={peakCount} /></label><label><span>Minimum prominence</span><input min="0.001" onChange={(event) => setPeakProminence(Number(event.target.value))} step="0.005" type="number" value={peakProminence} /></label></fieldset>
         <fieldset><legend>Displayed {axis === "ppm" ? "chemical shift" : "frequency"}</legend><div className="nmr-range"><label><span>High</span><input onChange={(event) => setXMaximum(Number(event.target.value))} step="any" type="number" value={Number(xMaximum.toFixed(4))} /></label><label><span>Low</span><input onChange={(event) => setXMinimum(Number(event.target.value))} step="any" type="number" value={Number(xMinimum.toFixed(4))} /></label></div></fieldset>
-        <button className="nmr-reset" onClick={() => { setLineBroadeningHz(0.2); setZeroFill(2); const correction = fid ? estimatePhaseCorrection(fid, 0.2) : { phase0Degrees: 0, phase1Degrees: 0 }; setPhaseDegrees(correction.phase0Degrees); setPhase1Degrees(correction.phase1Degrees); }} type="button">Reset processing</button>
+        <button className="nmr-reset" onClick={() => { setLineBroadeningHz(processingDefaults.lineBroadeningHz); setZeroFill(2); setPhaseDegrees(processingDefaults.phase0Degrees); setPhase1Degrees(processingDefaults.phase1Degrees); }} type="button">Reset processing</button>
         </> : <>
           <div className="nmr-2d-kind"><span>{spectrum2d?.experiment === "hsqc" ? "g-HSQC · ¹H / ¹³C" : "COSY · ¹H / ¹H"}</span><strong>{fid2d?.width} × {fid2d?.height}</strong></div>
           <label><span>Contour threshold <output>{Math.round(contourThreshold * 100)}%</output></span><input max="0.8" min="0.01" onChange={(event) => setContourThreshold(Number(event.target.value))} step="0.01" type="range" value={contourThreshold} /></label>
@@ -258,8 +367,8 @@ export function NmrSpectrumTool() {
           {(["inspect", "zoom", ...(nucleus === "1H" ? ["integrate"] as const : []), "solvent", ...(nucleus === "1H" ? ["coupling"] as const : [])] as NmrInteractionMode[]).map((value) => <button className={mode === value ? "is-active" : ""} disabled={value === "solvent" && axis !== "ppm"} key={value} onClick={() => setMode(value)} type="button">{value === "inspect" ? "Inspect" : value === "zoom" ? "Zoom box" : value === "integrate" ? "Integrate" : value === "solvent" ? "Set solvent" : "Measure J"}</button>)}
           <button onClick={() => { setXMinimum(fullRange.low); setXMaximum(fullRange.high); }} type="button">Reset zoom</button>
         </div>
-        <p className="nmr-mode-help">{mode === "zoom" ? "Drag across the spectrum to zoom into an exact range." : mode === "integrate" ? "Drag a box around a signal to add an integration region." : mode === "solvent" ? `Click the ${selectedSolvent.label} residual peak to set it to ${selectedSolventShift?.toFixed(2)} ppm.` : mode === "coupling" ? "Click two peak maxima; the frequency separation will be reported as J." : "Hover over the spectrum to inspect precise shift and intensity values."}</p>
-        <NmrSpectrumChart axis={axis} couplingPoints={couplingPoints} mode={mode} onPeakSelect={handlePeakSelect} onRangeSelect={handleRangeSelect} peaks={peaks} points={points} regions={regions} solventPeak={solventPeak} xMaximum={xMaximum} xMinimum={xMinimum} />
+        <p className="nmr-mode-help">{mode === "zoom" ? "Drag across the spectrum to zoom into an exact range." : mode === "integrate" ? "Drag a box around a signal to add an integration region." : mode === "solvent" ? `Click the ${selectedSolvent.label} residual peak to set it to ${selectedSolventShift?.toFixed(2)} ppm.` : mode === "coupling" ? "Click two peak maxima to save a J measurement, then continue with another pair." : "Hover over the spectrum to inspect precise shift and intensity values."}</p>
+        <NmrSpectrumChart axis={axis} couplingMarkers={couplingMarkers} mode={mode} onPeakSelect={handlePeakSelect} onRangeSelect={handleRangeSelect} peaks={peaks} points={points} regions={regions} solventPeak={solventPeak} xMaximum={xMaximum} xMinimum={xMinimum} />
         </> : spectrum2d ? <><p className="nmr-mode-help">Hover to inspect a correlation and click a cross-peak to pin it in the signal table.</p><Nmr2dChart contourThreshold={contourThreshold} onSelectPeak={setSelected2dPeak} peaks={peaks2d} spectrum={spectrum2d} xRange={x2dRange} yRange={y2dRange} /></> : <div className="nmr-chart-empty">Select a Spinsolve data.2d file.</div>}
       </div>
     </div>
@@ -280,15 +389,16 @@ export function NmrSpectrumTool() {
 
       {nucleus === "1H" && <section className="nmr-analysis-card">
         <header><p>Coupling</p><h2>Measure J</h2></header>
-        <p>Select <strong>Measure J</strong> and click two peak maxima. A third click starts a new measurement.</p>
-        <div className="nmr-j-result"><span>{couplingPoints.length ? couplingPoints.map((point) => point.toFixed(axis === "ppm" ? 4 : 1)).join(" ↔ ") : "Choose two peaks"}</span><strong>{couplingHz === null ? "—" : `${couplingHz.toFixed(2)} Hz`}</strong></div>
-        <button onClick={() => setCouplingPoints([])} type="button">Clear measurement</button>
+        <p>Select <strong>Measure J</strong> and click two peak maxima. Every completed pair is retained and restored locally when you reopen this acquisition.</p>
+        {couplingDraft.length === 1 && <div className="nmr-j-draft"><span>J{couplingMeasurements.length + 1} first peak</span><strong>{couplingDraft[0].toFixed(axis === "ppm" ? 4 : 1)} {axis}</strong></div>}
+        {!couplingValues.length ? <div className="nmr-j-result"><span>{couplingDraft.length ? "Choose the second peak" : "Choose two peaks"}</span><strong>—</strong></div> : <div className="nmr-j-list">{couplingValues.map((measurement, index) => <article key={measurement.id}><span>J{index + 1}<small>{measurement.points.map((point) => point.toFixed(axis === "ppm" ? 4 : 1)).join(" ↔ ")} {axis}</small></span><strong>{measurement.hertz === null ? "—" : `${measurement.hertz.toFixed(2)} Hz`}</strong><button aria-label={`Remove J measurement ${index + 1}`} onClick={() => setCouplingMeasurements((current) => current.filter((item) => item.id !== measurement.id))} type="button">×</button></article>)}</div>}
+        <button disabled={!couplingDraft.length && !couplingMeasurements.length} onClick={() => { setCouplingDraft([]); setCouplingMeasurements([]); }} type="button">Clear all J measurements</button>
       </section>}
     </div>}
 
     <section className="nmr-signal-table">
       <header><div><p>Assignments</p><h2>Identified signals</h2></div><span>{viewMode === "2d" ? `${peaks2d.length} cross-peaks` : `${peaks.length} labelled peaks`}</span></header>
-      <div>{viewMode === "2d" ? <table><thead><tr><th>Signal</th><th>F2 ¹H shift</th><th>F1 {spectrum2d?.experiment === "hsqc" ? "¹³C" : "¹H"} shift</th><th>Type</th><th>Intensity</th></tr></thead><tbody>{peaks2d.map((peak, index) => <tr className={selected2dPeak?.xIndex === peak.xIndex && selected2dPeak?.yIndex === peak.yIndex ? "is-selected" : ""} key={`${peak.xIndex}-${peak.yIndex}`}><td>P{index + 1}</td><td>{peak.x.toFixed(3)} ppm</td><td>{peak.y.toFixed(3)} ppm</td><td>{spectrum2d?.experiment === "hsqc" ? "¹H–¹³C correlation" : "¹H–¹H correlation"}</td><td>{peak.intensity.toFixed(3)}</td></tr>)}</tbody></table> : <table><thead><tr><th>Signal</th><th>Chemical shift</th><th>Splitting</th><th>Integration</th><th>Coupling</th></tr></thead><tbody>{peaks.map((peak, index) => { const key = peak.shift.toFixed(3); const region = regionAreas.find((item) => peak.shift >= item.low && peak.shift <= item.high); const integral = region && referenceArea > 0 ? region.area / referenceArea * referenceValue : null; const carriesJ = couplingHz !== null && couplingPoints.some((point) => Math.abs(point - peak.shift) < 0.01); return <tr key={key}><td>S{index + 1}</td><td>{peak.shift.toFixed(3)} ppm</td><td><select onChange={(event) => setSplittingLabels((current) => ({ ...current, [key]: event.target.value }))} value={splittingLabels[key] ?? "—"}>{["—", "s", "d", "t", "q", "m", "dd", "br"].map((label) => <option key={label}>{label}</option>)}</select></td><td>{nucleus === "1H" && integral !== null ? integral.toFixed(2) : "—"}</td><td>{nucleus === "1H" && carriesJ ? `${couplingHz?.toFixed(2)} Hz` : "—"}</td></tr>; })}</tbody></table>}</div>
+      <div>{viewMode === "2d" ? <table><thead><tr><th>Signal</th><th>F2 ¹H shift</th><th>F1 {spectrum2d?.experiment === "hsqc" ? "¹³C" : "¹H"} shift</th><th>Type</th><th>Intensity</th></tr></thead><tbody>{peaks2d.map((peak, index) => <tr className={selected2dPeak?.xIndex === peak.xIndex && selected2dPeak?.yIndex === peak.yIndex ? "is-selected" : ""} key={`${peak.xIndex}-${peak.yIndex}`}><td>P{index + 1}</td><td>{peak.x.toFixed(3)} ppm</td><td>{peak.y.toFixed(3)} ppm</td><td>{spectrum2d?.experiment === "hsqc" ? "¹H–¹³C correlation" : "¹H–¹H correlation"}</td><td>{peak.intensity.toFixed(3)}</td></tr>)}</tbody></table> : <table><thead><tr><th>Signal</th><th>Chemical shift</th><th>Splitting</th><th>Integration</th><th>Coupling</th></tr></thead><tbody>{peaks.map((peak, index) => { const key = peak.shift.toFixed(3); const region = regionAreas.find((item) => peak.shift >= item.low && peak.shift <= item.high); const integral = region && referenceArea > 0 ? region.area / referenceArea * referenceValue : null; const signalCouplings = couplingValues.filter((measurement) => measurement.hertz !== null && measurement.points.some((point) => Math.abs(point - peak.shift) < 0.01)); return <tr key={key}><td>S{index + 1}</td><td>{peak.shift.toFixed(3)} ppm</td><td><select onChange={(event) => setSplittingLabels((current) => ({ ...current, [key]: event.target.value }))} value={splittingLabels[key] ?? "—"}>{["—", "s", "d", "t", "q", "m", "dd", "br"].map((label) => <option key={label}>{label}</option>)}</select></td><td>{nucleus === "1H" && integral !== null ? integral.toFixed(2) : "—"}</td><td>{nucleus === "1H" && signalCouplings.length ? signalCouplings.map((measurement) => measurement.hertz!.toFixed(2)).join(", ") + " Hz" : "—"}</td></tr>; })}</tbody></table>}</div>
       <p>{viewMode === "2d" ? "Cross-peaks are automatically selected by relative contour intensity. Integration and multiplicity belong to the corresponding 1D spectrum, so they are not inferred from COSY or HSQC contours." : "Splitting labels are editable. Integrals and J values appear when the corresponding 1D analysis regions or peak pair have been selected."}</p>
     </section>
 

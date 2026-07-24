@@ -25,7 +25,11 @@ export function guessSpectrumMode(points: SpectrumPoint[]): SpectrumMode {
 
 export function normaliseSpectrumRows(rows: unknown[][]): SpectrumPoint[] {
   const points = rows.flatMap((row) => {
-    const values = row.map((cell) => typeof cell === "number" ? cell : Number(String(cell).trim())).filter(Number.isFinite);
+    const values = row.map((cell) => {
+      if (typeof cell === "number") return cell;
+      const text = String(cell ?? "").trim();
+      return text === "" ? Number.NaN : Number(text);
+    }).filter(Number.isFinite);
     return values.length >= 2 ? [{ wavenumber: values[0], value: values[1] }] : [];
   });
 

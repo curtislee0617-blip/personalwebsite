@@ -25,6 +25,11 @@ export type NmrPeak = NmrPoint & { index: number; prominence: number };
 export type ComplexFid2d = { width: number; height: number; real: Float64Array; imaginary: Float64Array };
 export type NmrSpectrum2d = { width: number; height: number; intensity: Float32Array; xLow: number; xHigh: number; yLow: number; yHigh: number; experiment: "cosy" | "hsqc" };
 export type NmrPeak2d = { x: number; y: number; intensity: number; xIndex: number; yIndex: number };
+export type NmrProcessingScript = {
+  phase0Degrees?: number;
+  phase1Degrees?: number;
+  lineBroadeningHz?: number;
+};
 
 const SPINSOLVE_MAGIC = "SORPATAD1.1V";
 
@@ -96,13 +101,69 @@ export function parseSpinsolveParameters(text: string): SpinsolveParameters {
   };
 }
 
-export function parseProcessingScript(text: string) {
-  const phase = /Phase\(\s*([-+\d.]+)/i.exec(text);
-  const broadening = /LineBroaden\(\s*([-+\d.]+)/i.exec(text);
+export function parseProcessingScript(text: string): NmrProcessingScript {
+  const number = String.raw`[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?`;
+  const phase = new RegExp(String.raw`Phase\(\s*(${number})(?:\s*,\s*(${number}))?`, "i").exec(text);
+  const broadening = new RegExp(String.raw`LineBroaden\(\s*(${number})`, "i").exec(text);
   return {
-    phaseDegrees: phase ? Number(phase[1]) : undefined,
+    phase0Degrees: phase ? Number(phase[1]) : undefined,
+    phase1Degrees: phase?.[2] === undefined ? undefined : Number(phase[2]),
     lineBroadeningHz: broadening ? Number(broadening[1]) : undefined,
   };
+}
+
+export function normalizePhaseDegrees(value: number) {
+  if (!Number.isFinite(value)) return 0;
+  return ((value + 180) % 360 + 360) % 360 - 180;
+}
+
+// Spinsolve's processing script rotates the instrument spectrum using the
+// opposite complex-sign convention from processSpinsolveFid's FFT. Negating
+// the stored phase reproduces the vendor-processed spectrum; normalising ϕ₀
+// keeps the equivalent angle inside the UI slider's range.
+export function spinsolvePhaseCorrection(processing: NmrProcessingScript) {
+  if (processing.phase0Degrees === undefined || !Number.isFinite(processing.phase0Degrees)) return null;
+  return {
+    phase0Degrees: normalizePhaseDegrees(-processing.phase0Degrees),
+    phase1Degrees: Number.isFinite(processing.phase1Degrees) ? -(processing.phase1Degrees ?? 0) : 0,
+  };
+}
+
+export function integrateNmrRegion(points: NmrPoint[], low: number, high: number) {
+  if (points.length < 2 || !Number.isFinite(low) || !Number.isFinite(high)) return 0;
+  const lower = Math.min(low, high);
+  const upper = Math.max(low, high);
+  const ordered = [...points].sort((first, second) => first.shift - second.shift);
+  let area = 0;
+
+  // Clip every line segment to the requested limits and linearly interpolate
+  // its two boundary intensities. This integrates exactly to the user's drag
+  // limits even when an edge falls between acquired points.
+  for (let index = 1; index < ordered.length; index += 1) {
+    const first = ordered[index - 1];
+    const second = ordered[index];
+    if (second.shift <= lower || first.shift >= upper || second.shift === first.shift) continue;
+    const segmentLow = Math.max(lower, first.shift);
+    const segmentHigh = Math.min(upper, second.shift);
+    if (segmentHigh <= segmentLow) continue;
+    const fractionLow = (segmentLow - first.shift) / (second.shift - first.shift);
+    const fractionHigh = (segmentHigh - first.shift) / (second.shift - first.shift);
+    const intensityLow = first.intensity + (second.intensity - first.intensity) * fractionLow;
+    const intensityHigh = first.intensity + (second.intensity - first.intensity) * fractionHigh;
+    area += (segmentHigh - segmentLow) * (intensityLow + intensityHigh) / 2;
+  }
+  return area;
+}
+
+export function couplingConstantHz(first: number, second: number, axis: "ppm" | "hz", observationMHz: number) {
+  if (!Number.isFinite(first) || !Number.isFinite(second)) return null;
+  if (axis === "ppm" && !(observationMHz > 0)) return null;
+  return Math.abs(first - second) * (axis === "ppm" ? observationMHz : 1);
+}
+
+export function solventReferenceOffset(measuredShift: number, knownShift: number) {
+  if (!Number.isFinite(measuredShift) || !Number.isFinite(knownShift)) return 0;
+  return knownShift - measuredShift;
 }
 
 function fft(real: Float64Array, imaginary: Float64Array) {
@@ -199,7 +260,8 @@ function refineZeroOrder(
     const candidate = phaseScore(real, imaginary, size, threshold, phase, phase1Deg);
     if (candidate > bestScore) { bestPhase = phase; bestScore = candidate; }
   }
-  for (let phase = bestPhase - 1; phase <= bestPhase + 1; phase += 0.1) {
+  const refinementCentre = bestPhase;
+  for (let phase = refinementCentre - 1; phase <= refinementCentre + 1; phase += 0.1) {
     const candidate = phaseScore(real, imaginary, size, threshold, phase, phase1Deg);
     if (candidate > bestScore) { bestPhase = phase; bestScore = candidate; }
   }
@@ -229,7 +291,8 @@ export function estimatePhaseCorrection(fid: ComplexFid, lineBroadeningHz = 0.2)
     const zeroOrder = refineZeroOrder(real, imaginary, size, threshold, phase1);
     if (zeroOrder.score > bestScore) { bestScore = zeroOrder.score; bestPhase1 = phase1; phase0 = zeroOrder.phase; }
   }
-  for (let phase1 = bestPhase1 - 10; phase1 <= bestPhase1 + 10; phase1 += 2) {
+  const phase1RefinementCentre = bestPhase1;
+  for (let phase1 = phase1RefinementCentre - 10; phase1 <= phase1RefinementCentre + 10; phase1 += 2) {
     const zeroOrder = refineZeroOrder(real, imaginary, size, threshold, phase1);
     if (zeroOrder.score > bestScore) { bestScore = zeroOrder.score; bestPhase1 = phase1; phase0 = zeroOrder.phase; }
   }
@@ -247,7 +310,7 @@ export function estimatePhaseCorrection(fid: ComplexFid, lineBroadeningHz = 0.2)
   const tallestValue = real[tallestSource] * Math.cos(tallestAngle) - imaginary[tallestSource] * Math.sin(tallestAngle);
   if (tallestValue < 0) phase0 += phase0 > 0 ? -180 : 180;
 
-  return { phase0Degrees: Math.round(phase0 * 10) / 10, phase1Degrees: Math.round(bestPhase1) };
+  return { phase0Degrees: Math.round(normalizePhaseDegrees(phase0) * 10) / 10, phase1Degrees: Math.round(bestPhase1) };
 }
 
 export function processSpinsolveFid(

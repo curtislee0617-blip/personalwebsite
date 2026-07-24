@@ -72,13 +72,21 @@ function reducedPressure(tr: number, vr: number, c: FluidConstants) {
 }
 
 function solveReducedVolume(tr: number, pr: number, constants: FluidConstants) {
+  if (!(tr > 0) || !(pr > 0) || !Number.isFinite(tr) || !Number.isFinite(pr)) return null;
+  // At extremely low pressure the EOS is indistinguishable from its ideal-gas
+  // limit. Returning Vr = Tr/Pr also avoids overflowing the logarithmic scan.
+  if (pr < 1e-12) return tr / pr;
+
   // Scan logarithmically and retain the largest root: the vapour root used by
   // the Lee–Kesler tables and the most stable choice above the critical point.
   const roots: number[] = [];
+  // The vapour root approaches Vr = Tr/Pr as pressure tends to zero. A fixed
+  // upper bound previously made otherwise valid low-pressure states disappear.
+  const maximumVolume = Math.max(25000, tr / pr * 8);
   let previousV = 0.015;
   let previousF = reducedPressure(tr, previousV, constants) - pr;
   for (let index = 1; index <= 400; index += 1) {
-    const volume = 0.015 * (25000 / 0.015) ** (index / 400);
+    const volume = 0.015 * (maximumVolume / 0.015) ** (index / 400);
     const value = reducedPressure(tr, volume, constants) - pr;
     if (Number.isFinite(value) && previousF * value <= 0) {
       let low = previousV;

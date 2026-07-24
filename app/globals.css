@@ -4833,7 +4833,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .nmr-analysis-card > label { display: grid; gap: 0.22rem; }
 .nmr-analysis-card > label > span { color: rgb(var(--color-ink) / 0.48); font-size: 0.51rem; font-weight: 700; }
 .nmr-analysis-card select, .nmr-analysis-card input[type="number"] { width: 100%; min-width: 0; height: 2.1rem; padding: 0 0.55rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 0.58rem; background: rgb(var(--color-surface) / 0.72); font-size: 0.58rem; }
-.nmr-analysis-card > div:not(.nmr-integral-list):not(.nmr-j-result) { display: flex; padding: 0.5rem 0.6rem; align-items: center; justify-content: space-between; border-radius: 0.65rem; background: rgb(var(--color-ink) / 0.04); color: rgb(var(--color-ink) / 0.48); font-size: 0.53rem; }
+.nmr-analysis-card > div:not(.nmr-integral-list):not(.nmr-j-result):not(.nmr-j-list):not(.nmr-j-draft) { display: flex; padding: 0.5rem 0.6rem; align-items: center; justify-content: space-between; border-radius: 0.65rem; background: rgb(var(--color-ink) / 0.04); color: rgb(var(--color-ink) / 0.48); font-size: 0.53rem; }
 .nmr-analysis-card > div strong { color: rgb(var(--color-moss)); font-size: 0.6rem; }
 .nmr-integral-list { display: grid; max-height: 9.5rem; overflow: auto; gap: 0.25rem; }
 .nmr-integral-list article { display: grid; padding: 0.42rem 0.48rem; align-items: center; gap: 0.4rem; border-radius: 0.58rem; background: rgb(var(--color-ink) / 0.04); grid-template-columns: auto minmax(0, 1fr) auto auto; }
@@ -4844,7 +4844,16 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .nmr-j-result { display: grid; padding: 0.7rem; gap: 0.12rem; border-radius: 0.7rem; background: rgb(110 92 146 / 0.08); }
 .nmr-j-result span { color: rgb(var(--color-ink) / 0.48); font-family: var(--font-code); font-size: 0.52rem; }
 .nmr-j-result strong { color: #6e5c92 !important; font-size: 1rem !important; }
+.nmr-j-draft { display: flex; padding: 0.48rem 0.58rem; align-items: center; justify-content: space-between; gap: 0.5rem; border: 1px dashed rgb(110 92 146 / 0.3); border-radius: 0.65rem; color: rgb(var(--color-ink) / 0.48); font-size: 0.52rem; }
+.nmr-j-draft strong { color: #6e5c92 !important; font-family: var(--font-code); font-size: 0.52rem !important; }
+.nmr-j-list { display: grid; max-height: 9.5rem; overflow: auto; gap: 0.25rem; }
+.nmr-j-list article { display: grid; padding: 0.45rem 0.5rem; align-items: center; gap: 0.4rem; border-radius: 0.58rem; background: rgb(110 92 146 / 0.08); grid-template-columns: minmax(0, 1fr) auto auto; }
+.nmr-j-list article > span { display: grid; color: #6e5c92; font-size: 0.55rem; font-weight: 700; }
+.nmr-j-list small { color: rgb(var(--color-ink) / 0.44); font-family: var(--font-code); font-size: 0.45rem; font-weight: 500; }
+.nmr-j-list article > strong { color: #6e5c92; font-size: 0.62rem; }
+.nmr-j-list button { width: 1.3rem; height: 1.3rem; border-radius: 99px; background: rgb(var(--color-ink) / 0.06); color: rgb(var(--color-ink) / 0.45); }
 .nmr-analysis-card > button { min-height: 1.9rem; border-radius: 0.58rem; background: rgb(var(--color-ink) / 0.055); color: rgb(var(--color-ink) / 0.52); font-size: 0.52rem; font-weight: 700; }
+.nmr-analysis-card > button:disabled { cursor: not-allowed; opacity: 0.38; }
 .nmr-signal-table { overflow: hidden; }
 .nmr-signal-table > header { display: flex; padding: 0.8rem 0.9rem; align-items: start; justify-content: space-between; gap: 1rem; }
 .nmr-signal-table > header p { color: rgb(var(--color-ink) / 0.46); font-size: 0.52rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
