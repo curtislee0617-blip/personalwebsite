@@ -28,6 +28,28 @@ type DashboardTreeNode = {
   children?: DashboardTreeNode[];
 };
 
+type DashboardGroupItem = {
+  href: string;
+  label: string;
+  items?: readonly DashboardGroupItem[];
+  dynamicChildren?: "recipe-categories";
+};
+
+type DashboardGroup = {
+  href: string;
+  label: string;
+  items: readonly DashboardGroupItem[];
+  adminOnly?: boolean;
+  dynamicItems?: "recipe-categories";
+};
+
+type DashboardSection = {
+  href: string;
+  label: string;
+  subtitle: string;
+  groups: readonly DashboardGroup[];
+};
+
 type DashboardRecipeItem = {
   title: string;
   href: string;
@@ -40,7 +62,7 @@ type DashboardRouteLoading = {
   variant: SectionLoadingVariant;
 };
 
-export const dashboardSections = [
+export const dashboardSections: readonly DashboardSection[] = [
   {
     href: "/about", label: "CV", subtitle: "Education, experience, interests, and life beyond the lab.",
     groups: [
@@ -67,62 +89,84 @@ export const dashboardSections = [
   {
     href: "/recipes", label: "Recipes", subtitle: "Personal recipes, detailed guides, and transcribed cookbooks.",
     groups: [
-      { href: "/recipes#recipe-guides", label: "Guides", items: [{ href: "/recipes/pasta-guide", label: "Pasta" }, { href: "/recipes/sushi-guide", label: "Sushi" }, { href: "/recipes/viennoiserie-guide", label: "Viennoiserie" }, { href: "/recipes/sourdough-guide", label: "Sourdough" }, { href: "/projects/cook-enterprise?from=recipes", label: "Cookbook" }] },
       {
         href: "/recipes#recipe-collection",
-        label: "Collections",
+        label: "Recipes",
+        dynamicItems: "recipe-categories",
         items: [
-          { href: "/recipes#recipe-collection", label: "Recipes", dynamicChildren: "recipe-categories" },
+          { href: "/recipes/pasta-guide", label: "Pasta guide" },
+          { href: "/recipes/sushi-guide", label: "Sushi guide" },
+          { href: "/recipes/viennoiserie-guide", label: "Viennoiserie guide" },
+          { href: "/recipes/sourdough-guide", label: "Sourdough guide" },
+          { href: "/projects/cook-enterprise?from=recipes", label: "cook.enterprise cookbook" },
+        ],
+      },
+      {
+        href: "/recipes#recipe-media-saved",
+        label: "Media saved",
+        items: [
+          { href: "/recipes/instagram-saved", label: "Instagram" },
+          { href: "/recipes/youtube-saved", label: "YouTube" },
+        ],
+      },
+      { href: "/recipes#recipe-wishlist", label: "Wishlist", items: [] },
+      {
+        href: "/recipes#recipe-books",
+        label: "Recipe books",
+        adminOnly: true,
+        items: [
           {
-            href: "/recipes#recipe-media-saved",
-            label: "Media saved recipes",
+            href: "/recipes#recipe-books",
+            label: "Fine dining",
             items: [
-              { href: "/recipes/instagram-saved", label: "Instagram" },
-              { href: "/recipes/youtube-saved", label: "YouTube" },
+              { href: "/recipes/core-basics", label: "Core" },
+              { href: "/recipes/frantzen", label: "Frantzén" },
+              { href: "/recipes/modernist-cuisine", label: "Modernist Cuisine" },
+              { href: "/recipes/pollen-street", label: "Pollen Street" },
+              { href: "/recipes/benu", label: "Benu" },
+              { href: "/recipes/the-french-laundry-cookbook", label: "The French Laundry Cookbook" },
             ],
           },
-          { href: "/recipes#recipe-wishlist", label: "Wishlist" },
-          { href: "/recipes#recipe-books", label: "Recipe books" },
+          {
+            href: "/recipes#recipe-books",
+            label: "Cuisines",
+            items: [
+              { href: "/recipes/everyday-lebanese", label: "Everyday Lebanese" },
+              { href: "/recipes/japan-the-cookbook", label: "Japan: The Cookbook" },
+              { href: "/recipes/anatolia", label: "Anatolia" },
+              { href: "/recipes/thailand-the-cookbook", label: "Thailand: The Cookbook" },
+              { href: "/recipes/breakfast-the-cookbook", label: "Breakfast: The Cookbook" },
+              { href: "/recipes/tu-casa-mi-casa", label: "Tu Casa Mi Casa" },
+              { href: "/recipes/the-silver-spoon", label: "The Silver Spoon" },
+              { href: "/recipes/the-essential-new-york-times-cookbook", label: "The Essential New York Times Cookbook" },
+              { href: "/recipes/complete-book-of-pasta-sauces", label: "The Complete Book of Pasta Sauces" },
+              { href: "/recipes/spain-the-cookbook", label: "Spain: The Cookbook" },
+              { href: "/recipes/science-of-spice", label: "The Science of Spice" },
+              { href: "/recipes/sauces-reconsidered", label: "Sauces Reconsidered" },
+            ],
+          },
+          {
+            href: "/recipes#recipe-books",
+            label: "Baking",
+            items: [
+              { href: "/recipes/modernist-pizza", label: "Modernist Pizza" },
+              { href: "/recipes/opera", label: "Opéra Pâtisserie" },
+              { href: "/recipes/bachour", label: "Bachour" },
+              { href: "/recipes/secrets-of-open-crumb", label: "Secrets of Open Crumb" },
+              { href: "/recipes/larousse-patisserie-and-baking", label: "Larousse Patisserie and Baking" },
+              { href: "/recipes/crumb-richard-bertinet", label: "Crumb" },
+              { href: "/recipes/advanced-professional-pastry-chef", label: "The Advanced Professional Pastry Chef" },
+            ],
+          },
+          {
+            href: "/recipes/cocktail-books",
+            label: "Cocktails",
+            items: [
+              { href: "/recipes/cocktail-books", label: "Cocktail books" },
+            ],
+          },
         ],
       },
-      {
-        href: "/recipes#recipe-books", label: "Cookbooks · Fine dining", items: [
-          { href: "/recipes/core-basics", label: "Core" },
-          { href: "/recipes/frantzen", label: "Frantzén" },
-          { href: "/recipes/modernist-cuisine", label: "Modernist Cuisine" },
-          { href: "/recipes/pollen-street", label: "Pollen Street" },
-          { href: "/recipes/benu", label: "Benu" },
-          { href: "/recipes/the-french-laundry-cookbook", label: "The French Laundry Cookbook" },
-        ],
-      },
-      {
-        href: "/recipes#recipe-books", label: "Cookbooks · Cuisines", items: [
-          { href: "/recipes/everyday-lebanese", label: "Everyday Lebanese" },
-          { href: "/recipes/japan-the-cookbook", label: "Japan: The Cookbook" },
-          { href: "/recipes/anatolia", label: "Anatolia" },
-          { href: "/recipes/thailand-the-cookbook", label: "Thailand: The Cookbook" },
-          { href: "/recipes/breakfast-the-cookbook", label: "Breakfast: The Cookbook" },
-          { href: "/recipes/tu-casa-mi-casa", label: "Tu Casa Mi Casa" },
-          { href: "/recipes/the-silver-spoon", label: "The Silver Spoon" },
-          { href: "/recipes/the-essential-new-york-times-cookbook", label: "The Essential New York Times Cookbook" },
-          { href: "/recipes/complete-book-of-pasta-sauces", label: "The Complete Book of Pasta Sauces" },
-          { href: "/recipes/spain-the-cookbook", label: "Spain: The Cookbook" },
-          { href: "/recipes/science-of-spice", label: "The Science of Spice" },
-          { href: "/recipes/sauces-reconsidered", label: "Sauces Reconsidered" },
-        ],
-      },
-      {
-        href: "/recipes#recipe-books", label: "Cookbooks · Baking", items: [
-          { href: "/recipes/modernist-pizza", label: "Modernist Pizza" },
-          { href: "/recipes/opera", label: "Opéra Pâtisserie" },
-          { href: "/recipes/bachour", label: "Bachour" },
-          { href: "/recipes/secrets-of-open-crumb", label: "Secrets of Open Crumb" },
-          { href: "/recipes/larousse-patisserie-and-baking", label: "Larousse Patisserie and Baking" },
-          { href: "/recipes/crumb-richard-bertinet", label: "Crumb" },
-          { href: "/recipes/advanced-professional-pastry-chef", label: "The Advanced Professional Pastry Chef" },
-        ],
-      },
-      { href: "/recipes/cocktail-books", label: "Cookbooks · Cocktails", items: [{ href: "/recipes/cocktail-books", label: "Cocktail books" }] },
     ],
   },
   {
@@ -138,7 +182,7 @@ export const dashboardSections = [
       { href: "/contact#contact-links", label: "Reach me", items: [{ href: "/contact#contact-links", label: "Email & social links" }, { href: "/recipes/feedback", label: "Website feedback" }] },
     ],
   },
-] as const;
+];
 
 type DashboardModeContextValue = {
   isDashboard: boolean;
@@ -174,6 +218,25 @@ function applyDashboardMode(enabled: boolean) {
 
 function hrefPath(href: string) {
   return href.split(/[?#]/)[0] || "/";
+}
+
+function dashboardTreeNodeForItem(
+  item: DashboardGroupItem,
+  recipeCategoryNodes: DashboardTreeNode[],
+): DashboardTreeNode {
+  const children = item.dynamicChildren === "recipe-categories"
+    ? recipeCategoryNodes
+    : item.items?.map((child) => dashboardTreeNodeForItem(child, recipeCategoryNodes));
+
+  return { href: item.href, label: item.label, children };
+}
+
+function dashboardTreeNodeMatchesPath(node: DashboardTreeNode, pathname: string, sectionHref: string): boolean {
+  const nodePath = hrefPath(node.href);
+  const nodeMatches = (pathname === nodePath && !node.href.includes("#"))
+    || (nodePath !== sectionHref && pathname.startsWith(`${nodePath}/`));
+
+  return nodeMatches || (node.children?.some((child) => dashboardTreeNodeMatchesPath(child, pathname, sectionHref)) ?? false);
 }
 
 function loadingDetailsForPath(path: string): Pick<DashboardRouteLoading, "title" | "variant"> {
@@ -489,7 +552,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             const isActive = activeHref === section.href;
             const isExpanded = expanded[section.href] ?? isActive;
             const canExpand = !["/about", "/restaurants", "/contact"].includes(section.href);
-            const visibleGroups = section.groups.filter((group) => isRecipeAdmin || !group.label.startsWith("Cookbooks"));
+            const visibleGroups = section.groups.filter((group) => isRecipeAdmin || !group.adminOnly);
 
             return (
               <div className={`dashboard-sidebar-item ${isActive ? "is-active" : ""}`} data-dashboard-href={section.href} key={section.href}>
@@ -515,42 +578,39 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                     <div className="dashboard-sidebar-groups">
                       {visibleGroups.map((group) => {
                         const groupKey = `${section.href}:${group.label}`;
-                        const visibleItems = group.items.filter((item) => isRecipeAdmin || item.label !== "Recipe books");
-                        const groupIsActive = visibleItems.some((item) => {
-                          const itemPath = hrefPath(item.href);
-                          return pathname === itemPath || (itemPath !== section.href && pathname.startsWith(`${itemPath}/`));
-                        });
+                        const groupNodes = [
+                          ...group.items.map((item) => dashboardTreeNodeForItem(item, recipeCategoryNodes)),
+                          ...(group.dynamicItems === "recipe-categories" ? recipeCategoryNodes : []),
+                        ];
+                        const groupHasItems = groupNodes.length > 0;
+                        const groupIsActive = groupNodes.some((node) => dashboardTreeNodeMatchesPath(node, pathname, section.href));
                         const groupIsExpanded = expandedGroups[groupKey] ?? groupIsActive;
 
                         return (
                           <div className="dashboard-sidebar-group" key={groupKey}>
-                            <div className="dashboard-sidebar-group-row">
+                            <div className={`dashboard-sidebar-group-row ${groupHasItems ? "" : "is-link-only"}`}>
                               <Link href={group.href} onClick={(event) => followDashboardLink(event, group.href)}>{group.label}</Link>
-                              <button
-                                aria-expanded={groupIsExpanded}
-                                aria-label={`${groupIsExpanded ? "Hide" : "Show"} ${group.label} links`}
-                                onClick={() => setExpandedGroups((current) => ({ ...current, [groupKey]: !groupIsExpanded }))}
-                                type="button"
-                              >
-                                <i aria-hidden="true">⌄</i>
-                              </button>
+                              {groupHasItems && (
+                                <button
+                                  aria-expanded={groupIsExpanded}
+                                  aria-label={`${groupIsExpanded ? "Hide" : "Show"} ${group.label} links`}
+                                  onClick={() => setExpandedGroups((current) => ({ ...current, [groupKey]: !groupIsExpanded }))}
+                                  type="button"
+                                >
+                                  <i aria-hidden="true">⌄</i>
+                                </button>
+                              )}
                             </div>
-                            <div aria-hidden={!groupIsExpanded} className="dashboard-sidebar-leaves" data-expanded={groupIsExpanded ? "true" : "false"}>
-                              <div>
-                                {visibleItems.map((item) => {
-                                  const dynamicChildren = "dynamicChildren" in item && item.dynamicChildren === "recipe-categories"
-                                    ? recipeCategoryNodes
-                                    : undefined;
-                                  const staticChildren = "items" in item
-                                    ? item.items.map((child) => ({ href: child.href, label: child.label }))
-                                    : undefined;
-                                  return renderDashboardNode(
-                                    { href: item.href, label: item.label, children: dynamicChildren ?? staticChildren },
-                                    `${groupKey}:${item.label}`,
-                                  );
-                                })}
+                            {groupHasItems && (
+                              <div aria-hidden={!groupIsExpanded} className="dashboard-sidebar-leaves" data-expanded={groupIsExpanded ? "true" : "false"}>
+                                <div>
+                                  {groupNodes.map((node) => renderDashboardNode(
+                                    node,
+                                    `${groupKey}:${node.label}`,
+                                  ))}
+                                </div>
                               </div>
-                            </div>
+                            )}
                           </div>
                         );
                       })}
