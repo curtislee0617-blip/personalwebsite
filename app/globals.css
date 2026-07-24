@@ -3064,7 +3064,7 @@ html.dashboard-mode .section-rail {
 .tool-state-inputs small { color: rgb(var(--color-ink) / 0.38); font-size: 0.37rem; }
 .tool-state-inputs strong { color: rgb(var(--color-ink) / 0.72); font-family: var(--font-code); font-size: 0.52rem; }
 .tool-compound-search { display: flex; padding: 0.32rem 0.45rem; align-items: center; justify-content: space-between; }
-.tool-compound-search span { display: flex; align-items: baseline; gap: 0.35rem; }
+.tool-compound-search > span { display: flex; align-items: baseline; gap: 0.35rem; }
 .tool-compound-search strong { color: rgb(var(--color-ink) / 0.72); font-size: 0.52rem; }
 .tool-compound-search small, .tool-compound-search b { color: rgb(var(--color-ink) / 0.38); font-family: var(--font-code); font-size: 0.43rem; }
 .tool-property-grid { display: grid; gap: 0.3rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -7763,47 +7763,50 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   animation: tool-nmr-phase-morph 8s cubic-bezier(0.5, 0, 0.3, 1) infinite;
 }
 
-/* VLE curves draw with stroke-dashoffset (dasharray fixed at the full path
-   length) so the trace grows strictly from the start with no stray dash dot.
-   pathLength=1 makes 1 unit equal the whole path. */
+/* Chart draw-ons use a left→right clip wipe rather than stroke-dashoffset: a
+   length-based dash draw rushed the flat tails and left stray line-cap dots on
+   these Bézier traces. A clip wipe reveals evenly by x-position and never
+   leaves a partial-dash artefact. */
+.tool-chart-line-ir-load,
 .tool-vle-curve-1,
 .tool-vle-curve-2,
-.tool-vle-tie { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
+.tool-vle-tie { clip-path: inset(-2% 0 -2% 0); stroke-linecap: butt; }
 
-/* IR draws with a left→right clip wipe rather than stroke-dashoffset: the tall
-   fingerprint peaks dominate the arc length, so a length-based draw would rush
-   the flat tail below ~900 cm⁻¹ through in an instant. A clip wipe reveals
-   evenly by x-position, so the whole spectrum acquires at a steady rate. */
-.tool-chart-line-ir-load { clip-path: inset(0 0 0 0); }
+@keyframes tool-wipe-in {
+  from { clip-path: inset(-2% 100% -2% 0); }
+  to { clip-path: inset(-2% 0 -2% 0); }
+}
 
+/* IR: the spectrum acquires from the high-wavenumber (left) end. */
 @keyframes tool-ir-wipe {
-  0% { clip-path: inset(0 100% 0 0); }
-  46%, 100% { clip-path: inset(0 0 0 0); }
+  0% { clip-path: inset(-2% 100% -2% 0); }
+  46%, 100% { clip-path: inset(-2% 0 -2% 0); }
 }
 
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-chart-line-ir-load {
   animation: tool-ir-wipe 8s var(--ease-standard) infinite;
 }
 
-/* VLE: bubble curve, then dew curve, then one smooth tie line from the left. */
-@keyframes tool-vle-draw-1 {
-  0% { stroke-dashoffset: 1; }
-  25%, 100% { stroke-dashoffset: 0; }
+/* VLE: bubble curve wipes in, then the dew curve, then the horizontal tie line
+   sweeps across between them. */
+@keyframes tool-vle-wipe-1 {
+  0% { clip-path: inset(-2% 100% -2% 0); }
+  28%, 100% { clip-path: inset(-2% 0 -2% 0); }
 }
 
-@keyframes tool-vle-draw-2 {
-  0%, 25% { stroke-dashoffset: 1; }
-  50%, 100% { stroke-dashoffset: 0; }
+@keyframes tool-vle-wipe-2 {
+  0%, 28% { clip-path: inset(-2% 100% -2% 0); }
+  56%, 100% { clip-path: inset(-2% 0 -2% 0); }
 }
 
-@keyframes tool-vle-draw-tie {
-  0%, 52% { stroke-dashoffset: 1; }
-  70%, 100% { stroke-dashoffset: 0; }
+@keyframes tool-vle-wipe-tie {
+  0%, 60% { clip-path: inset(-2% 100% -2% 0); }
+  78%, 100% { clip-path: inset(-2% 0 -2% 0); }
 }
 
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-1 { animation: tool-vle-draw-1 8s var(--ease-standard) infinite; }
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-2 { animation: tool-vle-draw-2 8s var(--ease-standard) infinite; }
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-tie { animation: tool-vle-draw-tie 8s linear infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-1 { animation: tool-vle-wipe-1 8s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-2 { animation: tool-vle-wipe-2 8s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-tie { animation: tool-vle-wipe-tie 8s linear infinite; }
 
 /* Course planner: sample classes get dragged onto the plan in turn, styled
    like the planner page's colored requirement bubbles. */
