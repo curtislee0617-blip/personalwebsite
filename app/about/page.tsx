@@ -87,35 +87,35 @@ const experience: TimelineItem[] = [
     role: "Cultivated Meat Research Intern",
     organisation: "UC Davis Robert Mondavi Institute, iCAMP (Alternative Meat & Protein)",
     detail: "Working in the Integrative Center for Alternative Meat and Protein - iCAMP at UC Davis to research methods of producing sustainable and healthy meat via cell culturing. Over a five-week period, I primarily worked under Nick Johnson. I built and tested 32 scaffold combinations, using Texture Profile Analysis to judge how closely each reproduced real meat texture.",
-    logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-[center_58%]", frameClassName: "bg-white/90" },
+    logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-[center_58%]", frameClassName: "bg-white" },
   },
   {
     dates: "March 2024 - April 2024",
     role: "Intern",
     organisation: "NUS Institute for Functional Intelligent Materials (I-FIM)",
     detail: "Invited by Professor Konstantin Novoselov (2010 Nobel Prize in Physics) to intern under Dr Maxim Rybin to learn current methods of synthesizing graphene, specifically using CVD chemical vapour deposition onto copper foil. I learned the theory and process of using nitric acid etching and electrochemical polishing to smooth copper, as well as annealing to form larger monocrystals for better-quality graphene formation on the copper substrate. I then studied the heating and pressure conditions required for ideal deposition using methane as the precursor, and learned the transfer process of graphene onto a PMMA coat and then onto a silicon dioxide chip for analysis using optical microscopes and Raman spectroscopy.",
-    logo: { src: "/logos/nus.png", alt: "National University of Singapore logo", fallback: "NUS", fitClassName: "h-10 w-12", alignClassName: "object-center" },
+    logo: { src: "/logos/nus.png", alt: "National University of Singapore logo", fallback: "NUS", fitClassName: "h-10 w-12", alignClassName: "object-center", frameClassName: "bg-white" },
   },
   {
     dates: "September 2023 - March 2024",
     role: "Student Tutor",
     organisation: "The King's School, Canterbury",
     detail: "Helping younger students in school with iGCSE sciences and maths.",
-    logo: { src: "/logos/kings-school.png", alt: "The King's School Canterbury logo", fallback: "KSC", fitClassName: "h-9 w-11" },
+    logo: { src: "/logos/kings-school.png", alt: "The King's School Canterbury logo", fallback: "KSC", fitClassName: "h-9 w-11", frameClassName: "bg-white" },
   },
   {
     dates: "November 2022 - April 2023",
     role: "General Manager",
     organisation: "cook.enterprise",
     detail: "Managed and led a team of 17 students competing in the Young Enterprise UK competition, winning the Kent Finals Best Company award. We created a student-centric cookbook inspired by works such as Modernist Cuisine, researching novel ways to prepare food quickly and microwave-cooking techniques suited to a busy student, earning £5,850 in revenue.",
-    logo: { src: "/logos/cook.png", alt: "cook.enterprise logo", fallback: "COOK", fitClassName: "h-10 w-10" },
+    logo: { src: "/logos/cook.png", alt: "cook.enterprise logo", fallback: "COOK", fitClassName: "h-10 w-10", frameClassName: "bg-white" },
   },
   {
     dates: "July 2021 - Present",
     role: "Stage and Cook",
     organisation: "Michelin-starred restaurants",
     detail: "Ran full service in high-pressure, zero-error kitchens across over a dozen Michelin-starred restaurants and chefs holding over 42 Michelin stars combined, including The Fat Duck, Ecriture, The Clove Club, Core by Clare Smyth, Sushiyoshi, Muse by Tom Aikens, and Frog by Adam Handling.",
-    logo: { src: "/logos/michelin.png", alt: "Michelin logo", fallback: "42★", fitClassName: "h-9 w-9" },
+    logo: { src: "/logos/michelin.png", alt: "Michelin logo", fallback: "42★", fitClassName: "h-9 w-9", frameClassName: "bg-white" },
   },
 ];
 
@@ -130,7 +130,7 @@ const education: EducationItem[] = [
     dates: "2019 - 2024",
     school: "The King's School, Canterbury",
     detail: "A-Levels in Mathematics, Further Mathematics, Physics and Chemistry.",
-    logo: { src: "/logos/kings-school.png", alt: "The King's School Canterbury logo", fallback: "KSC", fitClassName: "h-9 w-11" },
+    logo: { src: "/logos/kings-school.png", alt: "The King's School Canterbury logo", fallback: "KSC", fitClassName: "h-9 w-11", frameClassName: "bg-white" },
   },
 ];
 
