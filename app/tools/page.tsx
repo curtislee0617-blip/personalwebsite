@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { CoursePlannerThumbnail } from "@/components/course-planner-thumbnail";
 import { PageIntro } from "@/components/page-intro";
@@ -147,7 +148,7 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
       <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary T–x–y"}</span><i>{kind === "vle" ? "Bubble / dew" : kind === "ir" ? "Ethanol · liquid film" : "Ethanol · 89.56 MHz"}</i></div>
       <svg viewBox="0 0 160 90" preserveAspectRatio="none">
         <path className="tool-chart-grid" d="M8 18H152M8 45H152M8 72H152M32 10V80M72 10V80M112 10V80" />
-        <path className="tool-chart-line" d={paths[kind]} />
+        <path className="tool-chart-line" d={paths[kind]} pathLength={1} />
         {kind === "vle" && <><circle className="tool-chart-point" cx="62" cy="33" r="2" /><circle className="tool-chart-point" cx="78" cy="48" r="2" /></>}
       </svg>
       <div className="tool-chart-axis">{axis.map((label) => <span key={label}>{label}</span>)}</div>
@@ -155,9 +156,9 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
   );
 }
 
-function ToolCard({ tool }: { tool: Tool }) {
+function ToolCard({ index, tool }: { index: number; tool: Tool }) {
   return (
-    <Link className="tool-card swipe-bubble-card group block w-[19rem] shrink-0 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem] sm:p-6" data-reveal data-spotlight href={tool.href}>
+    <Link className="tool-card swipe-bubble-card group block w-[19rem] shrink-0 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem] sm:p-6" data-reveal data-spotlight href={tool.href} style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}>
       <ToolThumbnail kind={tool.kind} />
       <div className="tool-card-copy swipe-bubble-copy flex items-end justify-between gap-5">
         <div>
@@ -179,8 +180,8 @@ export default function ToolsPage() {
           <section key={section.title}>
             <h2 className="section-title">{section.title}</h2>
             <SnapCarousel className="mobile-snap-carousel -mx-5 -mt-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 pt-6 sm:mx-0 sm:px-0" repeatEdges={false}>
-              {section.tools.map((tool) => (
-                <ToolCard key={tool.href} tool={tool} />
+              {section.tools.map((tool, index) => (
+                <ToolCard index={index} key={tool.href} tool={tool} />
               ))}
             </SnapCarousel>
           </section>

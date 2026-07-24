@@ -623,7 +623,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
                 {group.sections.map((section) => {
                   const icon = navIconForPath(section.href);
                   return (
-                    <Link href={section.href} key={section.href}>
+                    <Link data-spotlight href={section.href} key={section.href}>
                       <span className="home-dashboard-icon">{icon && <img alt="" aria-hidden="true" src={icon} />}</span>
                       <span><strong>{section.label}</strong><small>{section.subtitle}</small></span>
                     </Link>

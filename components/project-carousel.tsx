@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { SnapCarousel } from "@/components/snap-carousel";
 import type { ProjectEntry } from "@/lib/projects";
 
@@ -31,9 +31,12 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
           return (
             <Link
               className="project-card swipe-bubble-card group overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto"
+              data-reveal
+              data-spotlight
               href={`/projects/${project.slug}`}
               id={project.slug}
               key={project.slug}
+              style={{ "--reveal-delay": `${Math.min(index, 5) * 70}ms` } as CSSProperties}
             >
               <div className="project-card-media swipe-bubble-media relative aspect-[16/10] overflow-hidden bg-mist">
                 {preview ? (

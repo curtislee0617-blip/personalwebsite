@@ -7683,3 +7683,80 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
     display: none;
   }
 }
+
+/* ==========================================================================
+   Creative layer — page entrances and tactile micro-interactions
+   ========================================================================== */
+
+/* Every interior page opens with a quiet three-beat rise: title, then
+   description, then actions. Pure CSS so it replays on client-side
+   navigations and degrades to plain visible content everywhere else. */
+@keyframes page-intro-rise {
+  from { opacity: 0; transform: translateY(0.85rem); }
+  to { opacity: 1; transform: none; }
+}
+
+.page-intro-title { animation: page-intro-rise 640ms var(--ease-standard) backwards; }
+.page-intro-description { animation: page-intro-rise 640ms var(--ease-standard) 110ms backwards; }
+.page-intro-actions { animation: page-intro-rise 640ms var(--ease-standard) 210ms backwards; }
+
+/* Tool-card spectra redraw themselves on hover — the trace sweeps in from
+   the left like a fresh acquisition, and marked points pop in at the end.
+   The SVG paths carry pathLength={1} so one rule fits every spectrum. */
+@keyframes tool-chart-draw {
+  from { stroke-dasharray: 0 1; }
+  to { stroke-dasharray: 1 0; }
+}
+
+@keyframes tool-point-pop {
+  0%, 62% { opacity: 0; transform: scale(0.4); transform-origin: center; transform-box: fill-box; }
+  82% { opacity: 1; transform: scale(1.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@media (hover: hover) {
+  .tool-card:hover .tool-chart-line { animation: tool-chart-draw 1050ms var(--ease-standard); }
+  .tool-card:hover .tool-chart-point { animation: tool-point-pop 1250ms var(--ease-standard); }
+}
+
+/* The projects focus panel is keyed on the active card, so each carousel
+   swap remounts it — this animation turns that swap into a soft rise. */
+@keyframes focus-panel-swap {
+  from { opacity: 0; transform: translateY(0.4rem); }
+  to { opacity: 1; transform: none; }
+}
+
+.project-focus-panel { animation: focus-panel-swap 420ms var(--ease-standard) backwards; }
+
+/* Contact cards tilt their icon toward the visitor on hover. */
+.contact-link-icon { transition: transform var(--motion-standard) var(--ease-standard); }
+
+@media (hover: hover) {
+  .contact-link-card:hover .contact-link-icon { transform: translateY(-3px) rotate(-4deg) scale(1.04); }
+}
+
+/* CV timeline logos give a small acknowledging lift when their entry is read. */
+.about-logo-badge { transition: transform var(--motion-standard) var(--ease-standard), box-shadow var(--motion-standard) var(--ease-standard); }
+
+@media (hover: hover) {
+  .about-entry:hover .about-logo-badge {
+    transform: translateY(-3px) rotate(-3deg);
+    box-shadow: 0 16px 30px rgb(var(--color-ink) / 0.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-intro-title,
+  .page-intro-description,
+  .page-intro-actions,
+  .project-focus-panel,
+  .tool-card:hover .tool-chart-line,
+  .tool-card:hover .tool-chart-point {
+    animation: none;
+  }
+
+  .contact-link-card:hover .contact-link-icon,
+  .about-entry:hover .about-logo-badge {
+    transform: none;
+  }
+}

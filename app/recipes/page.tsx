@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/page-intro";
@@ -326,6 +327,7 @@ function RecipeBookCard({ book }: { book: RecipeBookCardData }) {
   return (
     <Link
       className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+      data-reveal
       data-spotlight
       href={book.href}
     >
@@ -559,14 +561,14 @@ export default async function RecipesPage() {
             </div>
 
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href="/recipes/instagram-saved">
+              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" data-reveal data-spotlight href="/recipes/instagram-saved">
                 <p className="eyebrow">Instagram</p>
                 <h3 className="mt-4 text-xl font-semibold tracking-tight">Instagram saved recipes</h3>
                 <p className="mt-3 text-sm leading-7 text-ink/65">
                   {instagramRecipes.length} saved posts, with recipe details transcribed from captions, on-screen text, and reels where available.
                 </p>
               </Link>
-              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" href="/recipes/youtube-saved">
+              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" data-reveal data-spotlight href="/recipes/youtube-saved" style={{ "--reveal-delay": "90ms" } as CSSProperties}>
                 <p className="eyebrow">YouTube</p>
                 <h3 className="mt-4 text-xl font-semibold tracking-tight">YouTube saved recipes</h3>
                 <p className="mt-3 text-sm leading-7 text-ink/65">
@@ -584,8 +586,8 @@ export default async function RecipesPage() {
             </div>
 
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {wishlist.map((entry) => (
-                  <article className="design-panel rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:p-8" key={entry.slug}>
+              {wishlist.map((entry, index) => (
+                  <article className="design-panel rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:p-8" data-reveal key={entry.slug} style={{ "--reveal-delay": `${Math.min(index % 3, 2) * 80}ms` } as CSSProperties}>
                     {entry.image && (
                       <div className="relative mb-5 aspect-[16/9] overflow-hidden rounded-[1.25rem] bg-mist/30">
                         <Image alt={entry.title} className="object-cover" fill sizes="(max-width: 768px) 90vw, 24rem" src={entry.image} />

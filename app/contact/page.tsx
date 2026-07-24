@@ -91,7 +91,7 @@ export default function ContactPage() {
     <section className="contact-page page-shell">
       <h1 className="sr-only">Contact</h1>
       <div className="contact-composition">
-        <div className="contact-art-frame scroll-mt-24" id="contact-cities">
+        <div className="contact-art-frame scroll-mt-24" data-reveal id="contact-cities">
           <ContactPresenceProvider>
             <ContactCityArtwork editable />
           </ContactPresenceProvider>

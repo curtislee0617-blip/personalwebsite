@@ -236,7 +236,7 @@ export default function AboutPage() {
           </div>
 
           <aside className="about-aside space-y-12">
-            <section className="about-section about-section--awards scroll-mt-24" id="about-awards">
+            <section className="about-section about-section--awards scroll-mt-24" data-reveal id="about-awards">
               <h2 className="about-section-heading eyebrow">Awards</h2>
               <ul className="about-aside-list mt-5 space-y-3 text-sm leading-6 text-ink/60">
                 <li>RSC UK Chemistry Olympiad - Gold Award, 2024</li>
@@ -246,17 +246,17 @@ export default function AboutPage() {
               </ul>
             </section>
 
-            <section className="about-section about-section--beyond scroll-mt-24" id="about-beyond">
+            <section className="about-section about-section--beyond scroll-mt-24" data-reveal id="about-beyond" style={{ "--reveal-delay": "80ms" } as CSSProperties}>
               <h2 className="about-section-heading eyebrow">Beyond the lab</h2>
               <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">ChemE Car, chamber singing, a cappella, glee club, violin and cooking. Grade 8 in singing and violin, and a PADI Advanced Open Water Diver.</p>
             </section>
 
-            <section className="about-section about-section--languages scroll-mt-24" id="about-languages">
+            <section className="about-section about-section--languages scroll-mt-24" data-reveal id="about-languages" style={{ "--reveal-delay": "160ms" } as CSSProperties}>
               <h2 className="about-section-heading eyebrow">Languages</h2>
               <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">English, Cantonese and Mandarin (native); French (elementary).</p>
             </section>
 
-            <section className="about-section about-section--skills scroll-mt-24" id="about-skills">
+            <section className="about-section about-section--skills scroll-mt-24" data-reveal id="about-skills" style={{ "--reveal-delay": "240ms" } as CSSProperties}>
               <h2 className="about-section-heading eyebrow">Technical skills</h2>
               <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">Python, process modelling, NMR, IR, mass spectrometry; basic DWSIM.</p>
             </section>
