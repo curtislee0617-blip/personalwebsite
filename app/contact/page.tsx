@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { ContactCityArtwork } from "@/components/contact-city-artwork";
 import { ContactPresenceProvider } from "@/components/contact-presence";
@@ -97,12 +98,15 @@ export default function ContactPage() {
         </div>
 
         <div className="contact-link-grid scroll-mt-24" id="contact-links">
-          {contactLinks.map((contact) => (
+          {contactLinks.map((contact, index) => (
             <a
               className="contact-link-card design-card group"
+              data-reveal
+              data-spotlight
               href={contact.href}
               key={contact.title}
               rel={contact.external ? "noreferrer" : undefined}
+              style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}
               target={contact.external ? "_blank" : undefined}
             >
               <div className="contact-link-heading">

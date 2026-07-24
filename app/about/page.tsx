@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AboutSectionRail } from "@/components/about-section-rail";
@@ -193,8 +194,8 @@ export default function AboutPage() {
             <section className="about-section about-section--education scroll-mt-24" id="about-education">
             <h2 className="about-section-heading section-title">Education</h2>
             <div className="about-list mt-7 divide-y divide-ink/10 border-y border-ink/10">
-              {education.map((item) => (
-                <article className="about-entry grid gap-4 py-7 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8" key={item.school}>
+              {education.map((item, index) => (
+                <article className="about-entry grid gap-4 py-7 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8" data-reveal key={item.school} style={{ "--reveal-delay": `${index * 70}ms` } as CSSProperties}>
                   <p className="about-entry-dates text-sm leading-6 text-ink/45">{item.dates}</p>
                   <div className="about-entry-main grid gap-4 sm:grid-cols-[4.25rem_minmax(0,1fr)] sm:items-start">
                     <LogoBadge logo={item.logo} />
@@ -211,8 +212,8 @@ export default function AboutPage() {
             <section className="about-section about-section--experience mt-14 scroll-mt-24" id="about-experience">
             <h2 className="about-section-heading section-title">Experience</h2>
             <div className="about-list mt-7 divide-y divide-ink/10 border-y border-ink/10">
-              {experience.map((item) => (
-                <article className="about-entry grid gap-4 py-7 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8" key={`${item.role}-${item.organisation}`}>
+              {experience.map((item, index) => (
+                <article className="about-entry grid gap-4 py-7 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-8" data-reveal key={`${item.role}-${item.organisation}`} style={{ "--reveal-delay": `${Math.min(index, 4) * 60}ms` } as CSSProperties}>
                   <p className="about-entry-dates text-sm leading-6 text-ink/45">{item.dates}</p>
                   <div className="about-entry-main grid gap-4 sm:grid-cols-[4.25rem_minmax(0,1fr)] sm:items-start">
                     <LogoBadge logo={item.logo} />
@@ -271,8 +272,8 @@ export default function AboutPage() {
             <Link className="text-sm font-semibold text-moss hover:text-ink" href="/projects">View all projects →</Link>
           </div>
           <div className="about-featured-grid mt-7 grid gap-3 sm:grid-cols-2">
-            {featuredWork.map((item) => (
-              <Link className="about-featured-card design-card group rounded-3xl border border-ink/10 bg-surface/45 p-6" href={`${item.href}?from=about`} key={item.href}>
+            {featuredWork.map((item, index) => (
+              <Link className="about-featured-card design-card group rounded-3xl border border-ink/10 bg-surface/45 p-6" data-reveal data-spotlight href={`${item.href}?from=about`} key={item.href} style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-moss">{item.type}</p>
                 <h3 className="mt-3 text-lg font-semibold group-hover:text-moss">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-ink/60">{item.summary}</p>
@@ -282,7 +283,7 @@ export default function AboutPage() {
         </section>
 
         <section className="about-contact-cta mt-20 border-t border-ink/10 pt-12" aria-labelledby="cv-contact-title">
-          <div className="design-panel flex flex-col gap-6 rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div className="design-panel flex flex-col gap-6 rounded-[2rem] border border-ink/10 bg-surface/45 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8" data-reveal data-spotlight>
             <div>
               <p className="eyebrow">Contact</p>
               <h2 className="section-title mt-3" id="cv-contact-title">Want to get in touch?</h2>

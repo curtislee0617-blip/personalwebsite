@@ -25,7 +25,7 @@ export default function ProjectsPage() {
             <h2 className="section-title" id="creative-projects-title">Creative projects</h2>
           </div>
           <div className="creative-projects-list">
-            <article className="website-project-card creative-project-card project-card design-panel overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55">
+            <article className="website-project-card creative-project-card project-card design-panel overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" data-reveal data-spotlight>
               <div className="website-project-media">
                 <Image
                   alt="The Curtis Lee website homepage"

@@ -157,7 +157,7 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
 
 function ToolCard({ tool }: { tool: Tool }) {
   return (
-    <Link className="tool-card swipe-bubble-card group block w-[19rem] shrink-0 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem] sm:p-6" href={tool.href}>
+    <Link className="tool-card swipe-bubble-card group block w-[19rem] shrink-0 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem] sm:p-6" data-reveal data-spotlight href={tool.href}>
       <ToolThumbnail kind={tool.kind} />
       <div className="tool-card-copy swipe-bubble-copy flex items-end justify-between gap-5">
         <div>
