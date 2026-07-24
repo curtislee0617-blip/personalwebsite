@@ -283,7 +283,6 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
               >
                 <span aria-hidden="true" className="section-rail__label">{section.label}</span>
                 <span aria-hidden="true" className="section-rail__bar" />
-                <span aria-hidden="true" className="section-rail__dot" />
                 <span className="sr-only">{section.label}</span>
               </a>
             </li>

@@ -2292,8 +2292,8 @@ body.has-page-cursor * { cursor: inherit; }
   font-size: 0.82rem;
   line-height: 1.7;
 }
-.website-project-card { display: grid; align-items: stretch; grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.92fr); }
-.website-project-media { position: relative; min-height: 34rem; overflow: hidden; border-right: 1px solid rgb(var(--color-ink) / 0.08); background: rgb(var(--color-mist)); }
+.website-project-card { display: grid; align-items: stretch; grid-template-columns: minmax(0, 0.82fr) minmax(22rem, 1.18fr); }
+.website-project-media { position: relative; min-height: 24rem; overflow: hidden; border-right: 1px solid rgb(var(--color-ink) / 0.08); background: rgb(var(--color-mist)); }
 .website-project-copy { padding: clamp(1.5rem, 3vw, 3rem); }
 .website-project-copy h3 { margin-top: 0.6rem; font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 600; line-height: 1; letter-spacing: -0.055em; }
 .website-project-copy .creative-project-description { margin-top: 1.15rem; }
@@ -2461,24 +2461,8 @@ html.dashboard-mode .section-rail {
   pointer-events: auto;
 }
 .section-rail__item:focus-visible { outline: none; }
+.section-rail__item:focus-visible .section-rail__label { opacity: 0.9; transform: translate(0, -50%) scaleX(1); }
 .section-rail__bar { display: none; }
-.section-rail__dot {
-  position: absolute;
-  left: 0.08rem;
-  top: 50%;
-  display: block;
-  width: 0.18rem;
-  height: 0.18rem;
-  border: 1px solid rgb(var(--color-paper) / 0.9);
-  border-radius: 9999px;
-  background: rgb(var(--color-moss) / 0.58);
-  box-shadow: 0 0 0.22rem rgb(var(--color-paper) / 0.92);
-  transform: translate(0, -50%);
-  transition: width 220ms ease, height 220ms ease, background-color 220ms ease, opacity 220ms ease;
-}
-.section-rail__item.is-active .section-rail__dot { width: 0.28rem; height: 0.28rem; background: rgb(var(--color-moss)); }
-.section-rail__item:focus-visible .section-rail__dot { box-shadow: 0 0 0 0.18rem rgb(var(--color-moss) / 0.2), 0 0 0.22rem rgb(var(--color-paper) / 0.92); }
-.section-rail.is-scrolling .section-rail__item.is-active .section-rail__dot { width: 0.34rem; height: 0.34rem; }
 
 @media (min-width: 640px) {
   .section-rail__label { left: 2.3rem; }
@@ -2501,13 +2485,6 @@ html.dashboard-mode .section-rail {
   .section-rail__wave-line { stroke-width: 1.2; opacity: 0.9; }
   .section-rail.is-scrolling .section-rail__wave-line { stroke-width: 1.55; }
   .section-rail__item { min-height: 1.8rem; }
-  .section-rail__dot {
-    left: 0.06rem;
-    width: 0.14rem;
-    height: 0.14rem;
-  }
-  .section-rail__item.is-active .section-rail__dot { width: 0.23rem; height: 0.23rem; }
-  .section-rail.is-scrolling .section-rail__item.is-active .section-rail__dot { width: 0.28rem; height: 0.28rem; }
 }
 
 @media (max-width: 639px) {
