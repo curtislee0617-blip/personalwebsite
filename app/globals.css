@@ -7806,7 +7806,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
    see nmrMorphKeyframes) and settles back on the phased spectrum. Where `d`
    animation is unsupported the path holds its final shape. */
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-nmr-morph {
-  animation: tool-nmr-phase-morph 5.1s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+  animation: tool-nmr-phase-morph 4.1s cubic-bezier(0.5, 0, 0.3, 1) infinite;
 }
 
 /* Chart draw-ons use a left→right clip wipe rather than stroke-dashoffset: a
