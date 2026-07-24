@@ -7,10 +7,23 @@ import { COURSE_PLAN_STORAGE_KEY, fetchCoursePlan, loadStoredIdentity } from "@/
 // per term (the first in each populated cell) drops into place as a colored
 // requirement bubble, staggered in waves so several land together. Terms with
 // no class are skipped entirely.
-const dropColors = [
-  "rgb(var(--color-moss) / 0.38)",
-  "rgb(var(--color-clay) / 0.42)",
-  "rgb(122 148 198 / 0.42)",
+// Requirement colours from the real planner (data/caltech-requirements), used
+// the same way the planner styles a chip: a low-opacity tint of the colour
+// behind text in the full colour.
+const dropColors = ["#42a727", "#0c9b70", "#2a78d6", "#eb6834", "#7a4fc8", "#b96b00"];
+
+// When no saved plan has loaded (fresh browser / signed out), the animation
+// falls back to a representative Caltech ChemE + BEM schedule so the drag-in
+// demo never disappears. One class per listed term.
+const fallbackClasses: ThumbnailClass[] = [
+  { id: "f1", label: "Ch 1a", units: 9, done: true, cell: "1-Fall" },
+  { id: "f2", label: "Ph 1a", units: 9, done: true, cell: "1-Spring" },
+  { id: "f3", label: "ChE 63a", units: 9, done: true, cell: "2-Fall" },
+  { id: "f4", label: "ChE 63b", units: 9, done: false, cell: "2-Winter" },
+  { id: "f5", label: "ChE 103a", units: 9, done: false, cell: "3-Fall" },
+  { id: "f6", label: "ChE 130", units: 9, done: false, cell: "3-Spring" },
+  { id: "f7", label: "ChE 126", units: 9, done: false, cell: "4-Fall" },
+  { id: "f8", label: "BEM 103", units: 9, done: false, cell: "4-Winter" },
 ];
 
 type ThumbnailClass = {
@@ -78,11 +91,14 @@ export function CoursePlannerThumbnail() {
     };
   }, []);
 
+  // Use the viewer's saved schedule when present; otherwise the fallback demo
+  // so the drag-in animation is always visible.
+  const displayClasses = classes.length > 0 ? classes : fallbackClasses;
   const classesByCell = useMemo(() => {
     const grouped = new Map<string, ThumbnailClass[]>();
-    for (const entry of classes) grouped.set(entry.cell, [...(grouped.get(entry.cell) ?? []), entry]);
+    for (const entry of displayClasses) grouped.set(entry.cell, [...(grouped.get(entry.cell) ?? []), entry]);
     return grouped;
-  }, [classes]);
+  }, [displayClasses]);
   const totalUnits = classes.reduce((sum, entry) => sum + entry.units, 0);
 
   // Assign each populated term a drop order (two per wave) and a bubble colour,
@@ -120,7 +136,7 @@ export function CoursePlannerThumbnail() {
               return (
                 <span className={termClasses.length > 0 ? termClasses.every((entry) => entry.done) ? "is-accent" : "is-filled" : ""} key={term}>
                   {shownClasses.map((entry, index) => index === 0 && drop ? (
-                    <i className="tool-planner-demo-chip" key={entry.id} style={{ "--demo-chip-bg": drop.color, "--demo-index": drop.wave } as CSSProperties}>{entry.label}</i>
+                    <i className="tool-planner-demo-chip" key={entry.id} style={{ "--demo-chip-bg": `${drop.color}2b`, "--demo-chip-fg": drop.color, "--demo-index": drop.wave } as CSSProperties}>{entry.label}</i>
                   ) : (
                     <i key={entry.id}>{entry.label}</i>
                   ))}

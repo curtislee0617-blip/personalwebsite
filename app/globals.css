@@ -7779,11 +7779,26 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   100% { transform: translateY(-10em); }
 }
 
+/* Fast rhythm for six water states — riffle through five, then land on the
+   sixth (480 K / 1 MPa) and hold before wrapping (7 rows). */
+@keyframes tool-cycle-fast6 {
+  0%, 4% { transform: translateY(0); }
+  8%, 11% { transform: translateY(-1.25em); }
+  15%, 18% { transform: translateY(-2.5em); }
+  22%, 25% { transform: translateY(-3.75em); }
+  29%, 32% { transform: translateY(-5em); }
+  37%, 93% { transform: translateY(-6.25em); }
+  100% { transform: translateY(-7.5em); }
+}
+
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .is-cycle-steady .tool-cycle-track {
   animation: tool-cycle-steady 5.5s cubic-bezier(0.7, 0, 0.2, 1) infinite;
 }
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .is-cycle-fast .tool-cycle-track {
   animation: tool-cycle-fast 5.5s cubic-bezier(0.6, 0, 0.15, 1) infinite;
+}
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .is-cycle-fast6 .tool-cycle-track {
+  animation: tool-cycle-fast6 5.5s cubic-bezier(0.6, 0, 0.15, 1) infinite;
 }
 
 /* NMR: idle shows the corrected spectrum; on hover the trace morphs fluidly
@@ -7791,7 +7806,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
    see nmrMorphKeyframes) and settles back on the phased spectrum. Where `d`
    animation is unsupported the path holds its final shape. */
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-nmr-morph {
-  animation: tool-nmr-phase-morph 6.4s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+  animation: tool-nmr-phase-morph 5.1s cubic-bezier(0.5, 0, 0.3, 1) infinite;
 }
 
 /* Chart draw-ons use a left→right clip wipe rather than stroke-dashoffset: a
@@ -7848,10 +7863,11 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 .tool-planner-demo-chip {
   position: relative;
   z-index: 3;
-  padding: 0.05rem 0.2rem;
+  padding: 0.05rem 0.24rem;
   border-radius: 9999px;
-  background: var(--demo-chip-bg, rgb(var(--color-moss) / 0.38));
-  color: rgb(var(--color-ink) / 0.72);
+  background: var(--demo-chip-bg, rgb(var(--color-moss) / 0.24));
+  color: var(--demo-chip-fg, rgb(var(--color-moss)));
+  font-weight: 700;
 }
 .tool-planner-row > span:has(.tool-planner-demo-chip) { overflow: visible; }
 
