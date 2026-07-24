@@ -1309,15 +1309,21 @@ body.has-page-cursor * { cursor: inherit; }
   position: relative; isolation: isolate; display: grid; width: 100%; min-height: 13rem; height: 100%; place-items: center; overflow: hidden; background: var(--contact-art-edge);
   transition: --hk-blue-hour 1s linear, --hk-dawn 1s linear, --hk-daylight 1s linear, --hk-golden 1s linear, --hk-night 1s linear, --hk-stars 1s linear, --hk-sunset 1s linear, --london-blue-hour 1s linear, --london-dawn 1s linear, --london-daylight 1s linear, --london-golden 1s linear, --london-night 1s linear, --london-stars 1s linear, --london-sunset 1s linear, --la-blue-hour 1s linear, --la-dawn 1s linear, --la-daylight 1s linear, --la-golden 1s linear, --la-night 1s linear, --la-stars 1s linear, --la-sunset 1s linear;
 }
-/* While the sun is on the LA side (before the ~8:15am HKT curve flip) the
-   LA↔London border sits 10 points closer to LA and the London↔HK border 7
-   points closer to London; the right-light values below the flip are as-is. */
+/* Left-light mode (sun on the LA side, before the ~8:15am HKT flip).
+   The scene is drawn as two panels that meet on a hidden seam at 60cqw,
+   inside London's constant zone: the LA–London border rides the near curve,
+   and the London–HK border rides --contact-far-curve — the same ellipse
+   translated right so its arc is an exact copy of the near border's
+   curvature. Both borders therefore share the ring stops 47.5%/53.5%
+   (near: tuned 8 points toward LA; far: equivalent to 91.3%/97.3% on the
+   near curve, tuned 5.5 points toward London). */
 .contact-cities-picture[data-light-direction="left"] {
   --contact-transition-curve: ellipse 69.35194cqw 180cqw at 0cqw calc(50% - 12.8549061cqw);
-  --contact-near-end: 45.5%;
-  --contact-middle-start: 51.5%;
-  --contact-middle-end: 89.8%;
-  --contact-far-start: 95.8%;
+  --contact-far-curve: ellipse 69.35194cqw 180cqw at 30.376cqw calc(50% - 12.8549061cqw);
+  --contact-near-end: 47.5%;
+  --contact-middle-start: 53.5%;
+  --contact-middle-end: 47.5%;
+  --contact-far-start: 53.5%;
 }
 .contact-cities-picture[data-time-source="preview"] { transition-duration: 140ms; }
 .contact-cities-picture[data-time-source="preview"] .contact-city-celestial,
@@ -1350,24 +1356,26 @@ body.has-page-cursor * { cursor: inherit; }
   );
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask {
-  -webkit-mask-image: radial-gradient(
-    var(--contact-transition-curve),
-    rgb(0 0 0 / var(--la-night)) 0%,
-    rgb(0 0 0 / var(--la-night)) var(--contact-near-end),
-    rgb(0 0 0 / var(--london-night)) var(--contact-middle-start),
-    rgb(0 0 0 / var(--london-night)) var(--contact-middle-end),
-    rgb(0 0 0 / var(--hk-night)) var(--contact-far-start),
-    rgb(0 0 0 / var(--hk-night)) 148%
-  );
-  mask-image: radial-gradient(
-    var(--contact-transition-curve),
-    rgb(0 0 0 / var(--la-night)) 0%,
-    rgb(0 0 0 / var(--la-night)) var(--contact-near-end),
-    rgb(0 0 0 / var(--london-night)) var(--contact-middle-start),
-    rgb(0 0 0 / var(--london-night)) var(--contact-middle-end),
-    rgb(0 0 0 / var(--hk-night)) var(--contact-far-start),
-    rgb(0 0 0 / var(--hk-night)) 148%
-  );
+  background: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::before,
+.contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(2 22 55) 0%, rgb(3 24 58) 46%, rgb(4 22 50) 100%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::before {
+  clip-path: inset(0 40cqw 0 0);
+  -webkit-mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
+  mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::after {
+  clip-path: inset(0 0 0 60cqw);
+  -webkit-mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
+  mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
 }
 .contact-cities-backdrop-frame { position: absolute; inset: 0; z-index: 0; display: block; overflow: hidden; background: var(--contact-art-edge); pointer-events: none; }
 .contact-cities-night-backdrop { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
@@ -1460,17 +1468,47 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-atmosphere-sunset {
   background: radial-gradient(var(--contact-transition-curve), rgb(255 122 86 / calc(0.24 * var(--hk-sunset))) 0% var(--contact-near-end), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 104 69 / calc(0.26 * var(--la-sunset))) var(--contact-far-start) 148%);
 }
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue {
-  background: radial-gradient(var(--contact-transition-curve), rgb(45 54 93 / calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night))) 0% var(--contact-near-end), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) var(--contact-middle-start) var(--contact-middle-end), rgb(36 58 98 / calc(0.18 * var(--hk-blue-hour) + 0.04 * var(--hk-night))) var(--contact-far-start) 148%);
+/* Left-light atmosphere tints use the same two-panel split as the night mask
+   so their borders share one curvature. Panels meet on the hidden 60cqw seam
+   inside London's constant zone; pseudo-elements carry the two gradients. */
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span {
+  background: none;
 }
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-dawn {
-  background: radial-gradient(var(--contact-transition-curve), rgb(255 151 82 / calc(0.31 * var(--la-dawn))) 0% var(--contact-near-end), rgb(255 163 101 / calc(0.27 * var(--london-dawn))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 144 78 / calc(0.3 * var(--hk-dawn))) var(--contact-far-start) 148%);
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::before,
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
 }
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-golden {
-  background: radial-gradient(var(--contact-transition-curve), rgb(255 181 84 / calc(0.11 * var(--la-golden))) 0% var(--contact-near-end), rgb(242 198 139 / calc(0.08 * var(--london-golden))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 194 112 / calc(0.1 * var(--hk-golden))) var(--contact-far-start) 148%);
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::before {
+  clip-path: inset(0 40cqw 0 0);
 }
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-sunset {
-  background: radial-gradient(var(--contact-transition-curve), rgb(255 104 69 / calc(0.26 * var(--la-sunset))) 0% var(--contact-near-end), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 122 86 / calc(0.24 * var(--hk-sunset))) var(--contact-far-start) 148%);
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::after {
+  clip-path: inset(0 0 0 60cqw);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue::before {
+  background: radial-gradient(var(--contact-transition-curve), rgb(45 54 93 / calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night))) 0% var(--contact-near-end), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) var(--contact-middle-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue::after {
+  background: radial-gradient(var(--contact-far-curve), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) 0% var(--contact-near-end), rgb(36 58 98 / calc(0.18 * var(--hk-blue-hour) + 0.04 * var(--hk-night))) var(--contact-middle-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-dawn::before {
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 151 82 / calc(0.31 * var(--la-dawn))) 0% var(--contact-near-end), rgb(255 163 101 / calc(0.27 * var(--london-dawn))) var(--contact-middle-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-dawn::after {
+  background: radial-gradient(var(--contact-far-curve), rgb(255 163 101 / calc(0.27 * var(--london-dawn))) 0% var(--contact-near-end), rgb(255 144 78 / calc(0.3 * var(--hk-dawn))) var(--contact-middle-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-golden::before {
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 181 84 / calc(0.11 * var(--la-golden))) 0% var(--contact-near-end), rgb(242 198 139 / calc(0.08 * var(--london-golden))) var(--contact-middle-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-golden::after {
+  background: radial-gradient(var(--contact-far-curve), rgb(242 198 139 / calc(0.08 * var(--london-golden))) 0% var(--contact-near-end), rgb(255 194 112 / calc(0.1 * var(--hk-golden))) var(--contact-middle-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-sunset::before {
+  background: radial-gradient(var(--contact-transition-curve), rgb(255 104 69 / calc(0.26 * var(--la-sunset))) 0% var(--contact-near-end), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) var(--contact-middle-start) 148%);
+}
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-sunset::after {
+  background: radial-gradient(var(--contact-far-curve), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) 0% var(--contact-near-end), rgb(255 122 86 / calc(0.24 * var(--hk-sunset))) var(--contact-middle-start) 148%);
 }
 .contact-harbour-group { position: absolute; inset: 0; display: block; transform: translateX(67.2%); pointer-events: none; }
 .contact-harbour-boat-group { z-index: 3; }
