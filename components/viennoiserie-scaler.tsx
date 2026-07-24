@@ -98,26 +98,33 @@ export function ViennoiserieScaler({
             <h4>{group.title}</h4>
             <ul>
               {group.items.map((item) => {
-                const quantity = item.amount === undefined ? null : item.amount * multiplier;
+                const baseAmount = item.amount;
+
+                if (baseAmount === undefined) {
+                  return (
+                    <li key={`${group.title}-${item.ingredient}`}>
+                      <span>{item.fixedAmount ?? "as needed"}</span>
+                      {item.ingredient}
+                    </li>
+                  );
+                }
+
+                const quantity = baseAmount * multiplier;
 
                 return (
                   <li key={`${group.title}-${item.ingredient}`}>
-                    {quantity === null ? (
-                      <span>{item.fixedAmount ?? "as needed"}</span>
-                    ) : (
-                      <label className="viennoiserie-scaled-amount">
-                        <input
-                          aria-label={`${item.ingredient} amount`}
-                          inputMode="decimal"
-                          min={0}
-                          step={inputStep(item.amount)}
-                          type="number"
-                          value={Number(quantity.toFixed(2))}
-                          onChange={(event) => updateFromIngredient(item.amount!, Number(event.target.value))}
-                        />
-                        {item.unit ? <span>{item.unit}</span> : null}
-                      </label>
-                    )}
+                    <label className="viennoiserie-scaled-amount">
+                      <input
+                        aria-label={`${item.ingredient} amount`}
+                        inputMode="decimal"
+                        min={0}
+                        step={inputStep(baseAmount)}
+                        type="number"
+                        value={Number(quantity.toFixed(2))}
+                        onChange={(event) => updateFromIngredient(baseAmount, Number(event.target.value))}
+                      />
+                      {item.unit ? <span>{item.unit}</span> : null}
+                    </label>
                     {item.ingredient}
                   </li>
                 );
