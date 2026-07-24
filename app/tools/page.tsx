@@ -199,9 +199,9 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
         {kind === "ir" && <path className="tool-chart-line tool-chart-line-ir-load" d={ethanolIrPath} pathLength={1} />}
         {kind === "vle" && (
           <>
-            <path className="tool-chart-line tool-vle-curve-1" d="M12 70 C66 67 120 46 148 14" />
-            <path className="tool-chart-line tool-vle-curve-2" d="M12 70 C52 60 94 30 148 14" />
-            <path className="tool-chart-line tool-vle-tie" d="M79.4 42 H112.7" />
+            <path className="tool-chart-line tool-vle-curve-1" d="M12 72 C78 71 120 52 148 14" />
+            <path className="tool-chart-line tool-vle-curve-2" d="M12 72 C34 42 72 20 148 14" />
+            <path className="tool-chart-line tool-vle-tie" d="M41.6 44 H117.6" />
           </>
         )}
       </svg>

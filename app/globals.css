@@ -7771,7 +7771,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 }
 
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .is-cycle-steady .tool-cycle-track {
-  animation: tool-cycle-steady 9s cubic-bezier(0.7, 0, 0.2, 1) infinite;
+  animation: tool-cycle-steady 5.5s cubic-bezier(0.7, 0, 0.2, 1) infinite;
 }
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .is-cycle-fast .tool-cycle-track {
   animation: tool-cycle-fast 5.5s cubic-bezier(0.6, 0, 0.15, 1) infinite;
@@ -7782,7 +7782,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
    see nmrMorphKeyframes) and settles back on the phased spectrum. Where `d`
    animation is unsupported the path holds its final shape. */
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-nmr-morph {
-  animation: tool-nmr-phase-morph 8s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+  animation: tool-nmr-phase-morph 6.4s cubic-bezier(0.5, 0, 0.3, 1) infinite;
 }
 
 /* Chart draw-ons use a left→right clip wipe rather than stroke-dashoffset: a
@@ -7791,8 +7791,8 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
    leaves a partial-dash artefact. */
 .tool-chart-line-ir-load,
 .tool-vle-curve-1,
-.tool-vle-curve-2,
-.tool-vle-tie { clip-path: inset(-2% 0 -2% 0); stroke-linecap: butt; }
+.tool-vle-curve-2 { clip-path: inset(-2% 0 -2% 0); stroke-linecap: butt; }
+.tool-vle-tie { stroke-linecap: butt; transform-box: view-box; }
 
 @keyframes tool-wipe-in {
   from { clip-path: inset(-2% 100% -2% 0); }
@@ -7809,26 +7809,26 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   animation: tool-ir-wipe 8s var(--ease-standard) infinite;
 }
 
-/* VLE: bubble curve wipes in, then the dew curve, then the horizontal tie line
-   sweeps across between them. */
+/* VLE: bubble curve wipes in, then the dew curve, then the tie line rises up
+   from the lower-left into its resting place across the middle of the lens. */
 @keyframes tool-vle-wipe-1 {
   0% { clip-path: inset(-2% 100% -2% 0); }
-  28%, 100% { clip-path: inset(-2% 0 -2% 0); }
+  30%, 100% { clip-path: inset(-2% 0 -2% 0); }
 }
 
 @keyframes tool-vle-wipe-2 {
-  0%, 28% { clip-path: inset(-2% 100% -2% 0); }
-  56%, 100% { clip-path: inset(-2% 0 -2% 0); }
+  0%, 30% { clip-path: inset(-2% 100% -2% 0); }
+  60%, 100% { clip-path: inset(-2% 0 -2% 0); }
 }
 
-@keyframes tool-vle-wipe-tie {
-  0%, 60% { clip-path: inset(-2% 100% -2% 0); }
-  78%, 100% { clip-path: inset(-2% 0 -2% 0); }
+@keyframes tool-vle-tie-rise {
+  0%, 62% { transform: translate(-26px, 20px); opacity: 0; }
+  86%, 100% { transform: translate(0, 0); opacity: 1; }
 }
 
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-1 { animation: tool-vle-wipe-1 4.5s var(--ease-standard) infinite; }
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-2 { animation: tool-vle-wipe-2 4.5s var(--ease-standard) infinite; }
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-tie { animation: tool-vle-wipe-tie 4.5s linear infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-1 { animation: tool-vle-wipe-1 3s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-2 { animation: tool-vle-wipe-2 3s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-tie { animation: tool-vle-tie-rise 3s var(--ease-standard) infinite; }
 
 /* Course planner: sample classes get dragged onto the plan in turn, styled
    like the planner page's colored requirement bubbles. */
