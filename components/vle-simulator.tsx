@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { compounds } from "@/lib/compound-properties";
 import { generateVleDiagram, type DiagramType, type VleModel, type VleParameters } from "@/lib/vle";
 import { computeVlePhaseSplit } from "@/lib/vle-split";
+import { stripLeadingZeros } from "@/lib/number-input";
 import { VleChart } from "@/components/vle-chart";
 import { VlePhaseSplitPanel } from "@/components/vle-phase-split";
 
@@ -126,18 +127,18 @@ export function VleSimulator() {
         <aside className="vle-controls">
           <div className="vle-control-heading"><p>Binary mixture · {compounds.length} compounds available</p><h2>Choose two compounds</h2></div>
           <div className="vle-compound-inputs">
-            <label><span>Compound 1</span><input aria-invalid={!validFirst} list="vle-first-compounds" onChange={(event) => setFirstName(event.target.value)} placeholder="Type a name or formula" value={firstName} /><datalist id="vle-first-compounds">{compounds.filter((compound) => compound.name !== secondName).map((compound) => <option key={compound.name} value={compound.name}>{compound.formula}</option>)}</datalist></label>
+            <label><span>Compound 1</span><select onChange={(event) => setFirstName(event.target.value)} value={firstName}>{compounds.map((compound) => <option disabled={compound.name === secondName} key={compound.name} value={compound.name}>{compound.name} · {compound.formula}</option>)}</select></label>
             <button aria-label="Swap components" onClick={() => { setFirstName(secondName); setSecondName(firstName); }} type="button">⇄</button>
-            <label><span>Compound 2</span><input aria-invalid={!validSecond} list="vle-second-compounds" onChange={(event) => setSecondName(event.target.value)} placeholder="Type a name or formula" value={secondName} /><datalist id="vle-second-compounds">{compounds.filter((compound) => compound.name !== firstName).map((compound) => <option key={compound.name} value={compound.name}>{compound.formula}</option>)}</datalist></label>
+            <label><span>Compound 2</span><select onChange={(event) => setSecondName(event.target.value)} value={secondName}>{compounds.map((compound) => <option disabled={compound.name === firstName} key={compound.name} value={compound.name}>{compound.name} · {compound.formula}</option>)}</select></label>
           </div>
-          {!validPair && <p className="vle-selection-error">Choose two different compounds from the suggestions.</p>}
+          {!validPair && <p className="vle-selection-error">Choose two different compounds.</p>}
 
           <div className="vle-toggle" aria-label="Diagram type">
             <button className={type === "txy" ? "is-active" : ""} onClick={() => switchDiagram("txy")} type="button"><strong>T–x–y</strong><span>fixed pressure</span></button>
             <button className={type === "pxy" ? "is-active" : ""} onClick={() => switchDiagram("pxy")} type="button"><strong>P–x–y</strong><span>fixed temperature</span></button>
           </div>
 
-          <label className="vle-fixed-input"><span>{type === "txy" ? "System pressure" : "System temperature"}</span><div><input inputMode="decimal" onChange={(event) => setFixedInput(event.target.value)} type="number" value={fixedInput} /><b>{type === "txy" ? "bar" : "°C"}</b></div></label>
+          <label className="vle-fixed-input"><span>{type === "txy" ? "System pressure" : "System temperature"}</span><div><input inputMode="decimal" onChange={(event) => setFixedInput(stripLeadingZeros(event.target.value))} type="number" value={fixedInput} /><b>{type === "txy" ? "bar" : "°C"}</b></div></label>
 
           <label className="vle-model-select"><span>Thermodynamic model</span><select onChange={(event) => setModel(event.target.value as VleModel)} value={model}>{Object.entries(modelLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
 

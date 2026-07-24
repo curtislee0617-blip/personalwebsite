@@ -163,11 +163,11 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
     return (
       <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-water" aria-hidden="true">
         <div className="tool-property-heading"><span>Water state</span><small>Steam tables</small></div>
-        <div className="tool-state-inputs"><span><small>Temperature</small><strong><CycleValue values={["473 K", "573 K", "673 K", "623 K", "773 K", "723 K"]} /></strong></span><b>+</b><span><small>Pressure</small><strong><CycleValue values={["0.10 MPa", "0.50 MPa", "1.00 MPa", "2.50 MPa", "5.00 MPa", "10.0 MPa"]} /></strong></span></div>
+        <div className="tool-state-inputs"><span><small>Temperature</small><strong><CycleValue values={["573 K", "673 K", "623 K", "773 K", "723 K", "480 K"]} /></strong></span><b>+</b><span><small>Pressure</small><strong><CycleValue values={["0.50 MPa", "1.00 MPa", "2.50 MPa", "5.00 MPa", "10.0 MPa", "1.00 MPa"]} /></strong></span></div>
         <div className="tool-property-grid">
-          <span><small>v</small><strong><CycleValue values={["2.172 m³/kg", "0.523 m³/kg", "0.307 m³/kg", "0.110 m³/kg", "0.069 m³/kg", "0.030 m³/kg"]} /></strong></span>
-          <span><small>h</small><strong><CycleValue values={["2875 kJ/kg", "3064 kJ/kg", "3264 kJ/kg", "3126 kJ/kg", "3434 kJ/kg", "3241 kJ/kg"]} /></strong></span>
-          <span><small>s</small><strong><CycleValue values={["7.834 kJ/kg·K", "7.460 kJ/kg·K", "7.465 kJ/kg·K", "6.840 kJ/kg·K", "6.976 kJ/kg·K", "6.419 kJ/kg·K"]} /></strong></span>
+          <span><small>v</small><strong><CycleValue values={["0.523 m³/kg", "0.307 m³/kg", "0.110 m³/kg", "0.069 m³/kg", "0.030 m³/kg", "0.210 m³/kg"]} /></strong></span>
+          <span><small>h</small><strong><CycleValue values={["3064 kJ/kg", "3264 kJ/kg", "3126 kJ/kg", "3434 kJ/kg", "3241 kJ/kg", "2844 kJ/kg"]} /></strong></span>
+          <span><small>s</small><strong><CycleValue values={["7.460 kJ/kg·K", "7.465 kJ/kg·K", "6.840 kJ/kg·K", "6.976 kJ/kg·K", "6.419 kJ/kg·K", "6.726 kJ/kg·K"]} /></strong></span>
         </div>
       </div>
     );
@@ -191,7 +191,7 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
 
   return (
     <div className={`tool-thumbnail swipe-bubble-media tool-thumbnail-chart is-${kind}`} aria-hidden="true">
-      <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary T–x–y"}</span><i>{kind === "vle" ? "Bubble / dew" : kind === "ir" ? "Ethanol · liquid film" : "Ethanol · 89.56 MHz"}</i></div>
+      <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary P–x–y"}</span><i>{kind === "vle" ? "Acetone / chloroform · 80 °C" : kind === "ir" ? "Ethanol · liquid film" : "Ethanol · 89.56 MHz"}</i></div>
       {kind === "nmr" && <style>{nmrMorphKeyframes}</style>}
       <svg viewBox="0 0 160 90" preserveAspectRatio="none">
         <path className="tool-chart-grid" d="M8 18H152M8 45H152M8 72H152M32 10V80M72 10V80M112 10V80" />
@@ -199,9 +199,9 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
         {kind === "ir" && <path className="tool-chart-line tool-chart-line-ir-load" d={ethanolIrPath} pathLength={1} />}
         {kind === "vle" && (
           <>
-            <path className="tool-chart-line tool-vle-curve-1" d="M12 72 C78 71 120 52 148 14" />
-            <path className="tool-chart-line tool-vle-curve-2" d="M12 72 C34 42 72 20 148 14" />
-            <path className="tool-chart-line tool-vle-tie" d="M41.6 44 H117.6" />
+            <path className="tool-chart-line tool-vle-curve-1" d="M8.0 50.8 L14.0 54.4 L20.0 57.8 L26.0 61.1 L32.0 64.2 L38.0 66.9 L44.0 69.2 L50.0 71.1 L56.0 72.5 L62.0 73.2 L68.0 73.4 L74.0 72.9 L80.0 71.8 L86.0 70 L92.0 67.6 L98.0 64.5 L104.0 60.8 L110.0 56.6 L116.0 51.9 L122.0 46.8 L128.0 41.4 L134.0 35.8 L140.0 30 L146.0 24.3 L152.0 18.6" />
+            <path className="tool-chart-line tool-vle-curve-2" d="M8.0 50.8 L11.3 54.4 L15.2 57.8 L19.7 61.1 L24.9 64.2 L30.7 66.9 L37.2 69.2 L44.3 71.1 L52.0 72.5 L60.1 73.2 L68.6 73.4 L77.2 72.9 L85.8 71.8 L94.3 70 L102.5 67.6 L110.2 64.5 L117.4 60.8 L124.0 56.6 L129.9 51.9 L135.1 46.8 L139.7 41.4 L143.6 35.8 L146.9 30 L149.7 24.3 L152.0 18.6" />
+            <path className="tool-chart-line tool-vle-tie" d="M112.5 54.7 H126.6" />
           </>
         )}
       </svg>

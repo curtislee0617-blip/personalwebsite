@@ -1,4 +1,5 @@
 "use client";
+import { stripLeadingZeros } from "@/lib/number-input";
 
 import { useState } from "react";
 import {
@@ -78,7 +79,7 @@ function PropertyInput({
       </label>
       <label>
         <span>{unit}</span>
-        <input inputMode="decimal" onChange={(event) => onValueChange(event.target.value)} step="any" type="number" value={value} />
+        <input inputMode="decimal" onChange={(event) => onValueChange(stripLeadingZeros(event.target.value))} step="any" type="number" value={value} />
       </label>
     </div>
   );

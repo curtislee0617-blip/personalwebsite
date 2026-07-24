@@ -4369,6 +4369,15 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   color: rgb(var(--color-ink));
   font-size: 0.75rem;
 }
+.steam-input-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.85rem center;
+  background-size: 0.72rem;
+}
 .steam-input-group select:focus,
 .steam-input-group input:focus { border-color: rgb(var(--color-ink) / 0.45); box-shadow: 0 0 0 3px rgb(var(--color-ink) / 0.06); }
 .steam-calculate {
@@ -7792,7 +7801,11 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 .tool-chart-line-ir-load,
 .tool-vle-curve-1,
 .tool-vle-curve-2 { clip-path: inset(-2% 0 -2% 0); stroke-linecap: butt; }
-.tool-vle-tie { stroke-linecap: butt; transform-box: view-box; }
+/* Distinct colours: bubble (liquid) in moss, dew (vapour) in clay, and the tie
+   line neutral ink so it reads across both. */
+.tool-vle-curve-1 { stroke: rgb(var(--color-moss)); }
+.tool-vle-curve-2 { stroke: #bf6a4b; }
+.tool-vle-tie { stroke: rgb(var(--color-ink) / 0.7); stroke-linecap: butt; transform-box: view-box; }
 
 @keyframes tool-wipe-in {
   from { clip-path: inset(-2% 100% -2% 0); }
@@ -7850,10 +7863,10 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   97%, 100% { opacity: 0; transform: none; filter: none; }
 }
 
-/* Three waves of drops land ~0.9s apart, so the plan fills in about 3s. */
+/* Waves of drops land ~0.68s apart (25% quicker than before). */
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-planner-demo-chip {
-  animation: tool-planner-drag 4.5s var(--ease-standard) infinite both;
-  animation-delay: calc(var(--demo-index, 0) * 0.9s);
+  animation: tool-planner-drag 3.4s var(--ease-standard) infinite both;
+  animation-delay: calc(var(--demo-index, 0) * 0.68s);
 }
 
 /* The projects focus panel is keyed on the active card, so each carousel

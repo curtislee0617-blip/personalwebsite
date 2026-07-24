@@ -3,18 +3,15 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { COURSE_PLAN_STORAGE_KEY, fetchCoursePlan, loadStoredIdentity } from "@/lib/course-plan-sync";
 
-// Sample classes that loop a drag-and-drop demo into empty cells, styled as
-// the planner page's colored requirement bubbles; cells already holding real
-// plan entries are left alone. `wave` groups classes that drop together, so
-// several land at once and the whole plan fills quickly.
-const demoDrops: Record<string, { label: string; wave: number; color: string }> = {
-  "1-Fall": { label: "Ma 1a", wave: 0, color: "rgb(122 148 198 / 0.42)" },
-  "1-Winter": { label: "ChE 63a", wave: 0, color: "rgb(var(--color-moss) / 0.38)" },
-  "2-Spring": { label: "ACM 95a", wave: 1, color: "rgb(var(--color-clay) / 0.42)" },
-  "3-Fall": { label: "ChE 103a", wave: 1, color: "rgb(var(--color-moss) / 0.38)" },
-  "4-Fall": { label: "ChE 126", wave: 2, color: "rgb(122 148 198 / 0.42)" },
-  "4-Winter": { label: "BEM 103", wave: 2, color: "rgb(var(--color-clay) / 0.42)" },
-};
+// The drag-in animation uses the viewer's own saved schedule: one real class
+// per term (the first in each populated cell) drops into place as a colored
+// requirement bubble, staggered in waves so several land together. Terms with
+// no class are skipped entirely.
+const dropColors = [
+  "rgb(var(--color-moss) / 0.38)",
+  "rgb(var(--color-clay) / 0.42)",
+  "rgb(122 148 198 / 0.42)",
+];
 
 type ThumbnailClass = {
   id: string;
@@ -88,6 +85,23 @@ export function CoursePlannerThumbnail() {
   }, [classes]);
   const totalUnits = classes.reduce((sum, entry) => sum + entry.units, 0);
 
+  // Assign each populated term a drop order (two per wave) and a bubble colour,
+  // walking the grid in reading order. Empty terms take no slot.
+  const dropByCell = useMemo(() => {
+    const map = new Map<string, { wave: number; color: string }>();
+    let index = 0;
+    for (const year of YEARS) {
+      for (const term of TERMS) {
+        const cell = `${year}-${term}`;
+        if ((classesByCell.get(cell)?.length ?? 0) > 0) {
+          map.set(cell, { wave: Math.floor(index / 2), color: dropColors[index % dropColors.length] });
+          index += 1;
+        }
+      }
+    }
+    return map;
+  }, [classesByCell]);
+
   return (
     <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-planner" aria-hidden="true">
       <div className="tool-planner-heading">
@@ -102,16 +116,15 @@ export function CoursePlannerThumbnail() {
             {TERMS.map((term) => {
               const termClasses = classesByCell.get(`${year}-${term}`) ?? [];
               const shownClasses = termClasses.slice(0, 2);
-              const demo = termClasses.length === 0 ? demoDrops[`${year}-${term}`] : undefined;
+              const drop = dropByCell.get(`${year}-${term}`);
               return (
                 <span className={termClasses.length > 0 ? termClasses.every((entry) => entry.done) ? "is-accent" : "is-filled" : ""} key={term}>
-                  {shownClasses.map((entry) => <i key={entry.id}>{entry.label}</i>)}
+                  {shownClasses.map((entry, index) => index === 0 && drop ? (
+                    <i className="tool-planner-demo-chip" key={entry.id} style={{ "--demo-chip-bg": drop.color, "--demo-index": drop.wave } as CSSProperties}>{entry.label}</i>
+                  ) : (
+                    <i key={entry.id}>{entry.label}</i>
+                  ))}
                   {termClasses.length > shownClasses.length && <i>+{termClasses.length - shownClasses.length}</i>}
-                  {demo && (
-                    <i className="tool-planner-demo-chip" style={{ "--demo-chip-bg": demo.color, "--demo-index": demo.wave } as CSSProperties}>
-                      {demo.label}
-                    </i>
-                  )}
                 </span>
               );
             })}
