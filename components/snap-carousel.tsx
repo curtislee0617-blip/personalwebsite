@@ -50,34 +50,30 @@ export function SnapCarousel({ children, className, repeatEdges = true, onActive
           return;
         }
 
-        updateGutter();
-        const railRect = rail.getBoundingClientRect();
-        if (railRect.width === 0) return;
-        const railCenter = railRect.left + railRect.width / 2;
+        if (rail.clientWidth === 0) return;
+        const railCenter = rail.scrollLeft + rail.clientWidth / 2;
         const slots = Array.from(rail.querySelectorAll<HTMLElement>(".mobile-snap-slot:not(.is-clone)"));
         let closestSlotIndex = -1;
         let closestDistance = Number.POSITIVE_INFINITY;
 
         slots.forEach((slot, slotIndex) => {
-          const slotRect = slot.getBoundingClientRect();
-          if (slotRect.width === 0) return;
-          const slotCenter = slotRect.left + slotRect.width / 2;
+          if (slot.offsetWidth === 0) return;
+          const slotCenter = slot.offsetLeft + slot.offsetWidth / 2;
           const signedDistance = slotCenter - railCenter;
           const distance = Math.abs(signedDistance);
-          const progress = Math.max(0, 1 - distance / (slotRect.width * 1.15));
+          const normalizedDistance = Math.max(-1, Math.min(1, signedDistance / (slot.offsetWidth * 1.15)));
+          const progress = Math.max(0, 1 - Math.abs(normalizedDistance));
           const easedProgress = 1 - Math.pow(1 - progress, 2);
           const depth = slot.firstElementChild as HTMLElement | null;
 
           if (depth) {
-            const direction = Math.sign(signedDistance);
             const opacity = 0.34 + easedProgress * 0.66;
-            const blur = (1 - easedProgress) * 3.2;
             const scale = 0.76 + easedProgress * 0.24;
-            const shiftX = direction * (1 - easedProgress) * -18;
+            const directionalFalloff = normalizedDistance * Math.abs(normalizedDistance);
+            const shiftX = directionalFalloff * -18;
             const shiftY = (1 - easedProgress) * 18;
-            const rotateY = direction * (1 - easedProgress) * -7;
+            const rotateY = directionalFalloff * -7;
             depth.style.opacity = opacity.toFixed(3);
-            depth.style.filter = `blur(${blur.toFixed(2)}px)`;
             depth.style.transform = `translate3d(${shiftX.toFixed(2)}px, ${shiftY.toFixed(2)}px, 0) scale(${scale.toFixed(3)}) rotateY(${rotateY.toFixed(2)}deg)`;
             depth.style.zIndex = String(Math.round(easedProgress * 10));
           }

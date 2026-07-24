@@ -117,6 +117,7 @@ export function RecipeCard({
   linkedRecipes = [],
   idPrefix,
   showBackLink = false,
+  thumbnailScale = 1,
   variant = "default",
 }: {
   adminEditHref?: string;
@@ -126,6 +127,7 @@ export function RecipeCard({
   idPrefix?: string;
   linkedRecipes?: RecipeCardEntry[];
   showBackLink?: boolean;
+  thumbnailScale?: number;
   variant?: "default" | "shelf";
 }) {
   const shelf = variant === "shelf";
@@ -150,6 +152,7 @@ export function RecipeCard({
               poster={entry.media?.find((item) => item.src === entry.thumbnail)?.poster}
               src={entry.thumbnail}
               time={entry.thumbnailTime}
+              scale={thumbnailScale}
               zoom={entry.thumbnailZoom}
             />
           </div>

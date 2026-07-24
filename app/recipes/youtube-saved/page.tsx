@@ -78,6 +78,7 @@ export default async function YouTubeSavedRecipesPage() {
                   entry={entry}
                   idPrefix="youtube-all"
                   key={`all-${entry.recipeKey}`}
+                  thumbnailScale={1.18}
                   variant="shelf"
                 />
               ))}
@@ -106,6 +107,7 @@ export default async function YouTubeSavedRecipesPage() {
                       adminReturnTo="/recipes/youtube-saved"
                       entry={entry}
                       key={entry.recipeKey}
+                      thumbnailScale={1.18}
                       variant="shelf"
                     />
                   ))}

@@ -59,10 +59,12 @@ type SectionRailProps = {
 export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRailProps) {
   const [activeId, setActiveId] = useState(sections[0]?.id ?? "");
   const [isScrolling, setIsScrolling] = useState(false);
+  const [isScrollIdle, setIsScrollIdle] = useState(true);
   const [wavePosition, setWavePosition] = useState(0);
   const activeIdRef = useRef(sections[0]?.id ?? "");
   const wavePositionRef = useRef(0);
   const scrollEndTimer = useRef<number | null>(null);
+  const scrollIdleTimer = useRef<number | null>(null);
   const trackRef = useRef<HTMLOListElement>(null);
   const dragRef = useRef({ active: false, moved: false, index: -1, startY: 0 });
 
@@ -141,10 +143,13 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
         dragRef.current.active = false;
       }
       setIsScrolling(true);
+      setIsScrollIdle(false);
       updateActiveSection();
 
       if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
       scrollEndTimer.current = window.setTimeout(() => setIsScrolling(false), 180);
+      if (scrollIdleTimer.current) window.clearTimeout(scrollIdleTimer.current);
+      scrollIdleTimer.current = window.setTimeout(() => setIsScrollIdle(true), 1500);
     };
 
     updateActiveSection();
@@ -156,6 +161,7 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
       window.removeEventListener("resize", updateActiveSection);
       window.cancelAnimationFrame(animationFrame);
       if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
+      if (scrollIdleTimer.current) window.clearTimeout(scrollIdleTimer.current);
     };
   }, [sections]);
 
@@ -228,6 +234,8 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
     }
     if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
     scrollEndTimer.current = window.setTimeout(() => setIsScrolling(false), 360);
+    if (scrollIdleTimer.current) window.clearTimeout(scrollIdleTimer.current);
+    scrollIdleTimer.current = window.setTimeout(() => setIsScrollIdle(true), 1500);
   };
 
   if (sections.length < 2) return null;
@@ -239,7 +247,7 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
   return (
     <nav
       aria-label={ariaLabel}
-      className={`section-rail${isScrolling ? " is-scrolling" : ""}`}
+      className={`section-rail${isScrolling ? " is-scrolling" : ""}${isScrollIdle ? " is-scroll-idle" : ""}`}
       data-active-section={activeId}
       data-wave-position={wavePosition.toFixed(3)}
     >

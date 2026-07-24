@@ -15,6 +15,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
+  type WheelEvent as ReactWheelEvent,
 } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { recipeCategories } from "@/data/recipe-categories";
@@ -77,7 +78,44 @@ export const dashboardSections = [
           { href: "/recipes#recipe-books", label: "Recipe books" },
         ],
       },
-      { href: "/recipes#recipe-books", label: "Cookbooks", items: [{ href: "/recipes/core-basics", label: "Core" }, { href: "/recipes/frantzen", label: "Frantzén" }, { href: "/recipes/modernist-cuisine", label: "Modernist Cuisine" }, { href: "/recipes/pollen-street", label: "Pollen Street" }, { href: "/recipes/opera", label: "Opéra" }, { href: "/recipes/bachour", label: "Bachour" }, { href: "/recipes/benu", label: "Benu" }] },
+      {
+        href: "/recipes#recipe-books", label: "Cookbooks · Fine dining", items: [
+          { href: "/recipes/core-basics", label: "Core" },
+          { href: "/recipes/frantzen", label: "Frantzén" },
+          { href: "/recipes/modernist-cuisine", label: "Modernist Cuisine" },
+          { href: "/recipes/pollen-street", label: "Pollen Street" },
+          { href: "/recipes/benu", label: "Benu" },
+          { href: "/recipes/the-french-laundry-cookbook", label: "The French Laundry Cookbook" },
+        ],
+      },
+      {
+        href: "/recipes#recipe-books", label: "Cookbooks · Cuisines", items: [
+          { href: "/recipes/everyday-lebanese", label: "Everyday Lebanese" },
+          { href: "/recipes/japan-the-cookbook", label: "Japan: The Cookbook" },
+          { href: "/recipes/anatolia", label: "Anatolia" },
+          { href: "/recipes/thailand-the-cookbook", label: "Thailand: The Cookbook" },
+          { href: "/recipes/breakfast-the-cookbook", label: "Breakfast: The Cookbook" },
+          { href: "/recipes/tu-casa-mi-casa", label: "Tu Casa Mi Casa" },
+          { href: "/recipes/the-silver-spoon", label: "The Silver Spoon" },
+          { href: "/recipes/the-essential-new-york-times-cookbook", label: "The Essential New York Times Cookbook" },
+          { href: "/recipes/complete-book-of-pasta-sauces", label: "The Complete Book of Pasta Sauces" },
+          { href: "/recipes/spain-the-cookbook", label: "Spain: The Cookbook" },
+          { href: "/recipes/science-of-spice", label: "The Science of Spice" },
+          { href: "/recipes/sauces-reconsidered", label: "Sauces Reconsidered" },
+        ],
+      },
+      {
+        href: "/recipes#recipe-books", label: "Cookbooks · Baking", items: [
+          { href: "/recipes/modernist-pizza", label: "Modernist Pizza" },
+          { href: "/recipes/opera", label: "Opéra Pâtisserie" },
+          { href: "/recipes/bachour", label: "Bachour" },
+          { href: "/recipes/secrets-of-open-crumb", label: "Secrets of Open Crumb" },
+          { href: "/recipes/larousse-patisserie-and-baking", label: "Larousse Patisserie and Baking" },
+          { href: "/recipes/crumb-richard-bertinet", label: "Crumb" },
+          { href: "/recipes/advanced-professional-pastry-chef", label: "The Advanced Professional Pastry Chef" },
+        ],
+      },
+      { href: "/recipes/cocktail-books", label: "Cookbooks · Cocktails", items: [{ href: "/recipes/cocktail-books", label: "Cocktail books" }] },
     ],
   },
   {
@@ -284,6 +322,14 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     updateSidebarWidth(nextWidth, true);
   }
 
+  function scrollDashboardNavigation(event: ReactWheelEvent<HTMLElement>) {
+    const navigation = event.currentTarget.querySelector<HTMLElement>(".dashboard-sidebar-nav");
+    if (!navigation || event.deltaY === 0) return;
+
+    event.preventDefault();
+    navigation.scrollBy({ top: event.deltaY, behavior: "auto" });
+  }
+
   function followDashboardLink(event: ReactMouseEvent<HTMLAnchorElement>, href: string) {
     const [destination, hash] = href.split("#");
     if (!hash || hrefPath(destination) !== pathname) return;
@@ -346,11 +392,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <DashboardModeContext.Provider value={{ disableDashboard, enableDashboard, isDashboard }}>
-      <aside aria-hidden={!isDashboard} className="dashboard-sidebar">
+      <aside aria-hidden={!isDashboard} className="dashboard-sidebar" onWheel={scrollDashboardNavigation}>
         <div className="dashboard-sidebar-profile">
-          <Link aria-label="Go to dashboard home" className="dashboard-sidebar-portrait" href="/">
-            <img alt="Curtis Lee" src="/profile.webp" />
-          </Link>
           <div>
             <Link className="dashboard-sidebar-name" href="/">Curtis Lee</Link>
             <p>School, work and life</p>
@@ -366,7 +409,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             const isActive = activeHref === section.href;
             const isExpanded = expanded[section.href] ?? isActive;
             const canExpand = section.href !== "/contact";
-            const visibleGroups = section.groups.filter((group) => isRecipeAdmin || group.label !== "Cookbooks");
+            const visibleGroups = section.groups.filter((group) => isRecipeAdmin || !group.label.startsWith("Cookbooks"));
 
             return (
               <div className={`dashboard-sidebar-item ${isActive ? "is-active" : ""}`} data-dashboard-href={section.href} key={section.href}>

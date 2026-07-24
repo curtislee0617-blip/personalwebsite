@@ -165,20 +165,6 @@ function OldManTehSourcePage({ page, alt }: { page: number; alt: string }) {
   );
 }
 
-function OldManTehInlineDiagram({ page, alt, caption }: { page: number; alt: string; caption: string }) {
-  const src = `/recipes/viennoiserie/old-man-teh/page-${page}.png`;
-  const viewerHref = `/recipes/viennoiserie-guide/image?src=${encodeURIComponent(src)}&alt=${encodeURIComponent(alt)}`;
-
-  return (
-    <figure className="old-man-teh-inline-diagram">
-      <Link className="viennoiserie-photo-link" href={viewerHref} aria-label={`Open full-size diagram: ${alt}`}>
-        <Image src={src} alt={alt} width={1240} height={1754} quality={75} sizes="(max-width: 800px) 84vw, 40vw" />
-      </Link>
-      <figcaption>{caption}</figcaption>
-    </figure>
-  );
-}
-
 export default function ViennoiserieGuidePage() {
   return (
     <div className="guide-page">
@@ -301,7 +287,6 @@ export default function ViennoiserieGuidePage() {
           </div>
 
           <aside className="viennoiserie-source-note">
-            <p className="eyebrow">Source &amp; attribution</p>
             <p>This formula and workflow are by <strong>Old Man Teh</strong>, transcribed from <cite>OldmanTeh’s Croissant Workflow</cite>. The wording has been lightly arranged for the website while preserving the quantities, dimensions, temperatures and timings in the supplied document.</p>
           </aside>
 
@@ -343,11 +328,6 @@ export default function ViennoiserieGuidePage() {
                 <li>Place the 17 × 20 cm butter block in the middle of the dough. Cut both sides of the dough and place them over the butter. Press gently across the surface with a rolling pin, pinch the sides to seal, then roll to 75 cm long × 18 cm wide.</li>
                 <li>Perform a double fold, also called a book fold. Cut the sides to release tension. With the open end facing you, roll to 45 cm or longer, then rest in the freezer for 10–15 minutes.</li>
               </ol>
-              <OldManTehInlineDiagram
-                page={3}
-                alt="Old Man Teh lock-in and double book-fold diagram"
-                caption="Lock-in and double fold · exact source diagram"
-              />
             </article>
 
             <article className="viennoiserie-recipe-card">
@@ -356,11 +336,6 @@ export default function ViennoiserieGuidePage() {
                 <li>Roll the 45 cm dough to 80 cm long. Wrap and transfer it to the freezer for 10–15 minutes. Remove it and continue rolling in the same direction until it reaches 80 cm.</li>
                 <li>Perform a single fold, also called a letter fold. Rotate the dough so the open end faces you. Roll to 45–48 cm long and at least 35 cm wide, with a final thickness of 4 mm. Rest in the freezer for 30–40 minutes.</li>
               </ol>
-              <OldManTehInlineDiagram
-                page={4}
-                alt="Old Man Teh rolling and single letter-fold diagram"
-                caption="Rolling and single fold · exact source diagram"
-              />
             </article>
 
             <article className="viennoiserie-recipe-card">
@@ -391,7 +366,6 @@ export default function ViennoiserieGuidePage() {
           </div>
 
           <aside className="viennoiserie-source-note">
-            <p className="eyebrow">Source &amp; attribution</p>
             <p>
               This formula is credited in the supplied recipe sheet to <strong>Scott Megee of Artisan Crust</strong>. Quantities, percentages, temperatures and timings are reproduced from that sheet.
               {" "}<a href="https://www.theartisancrust.com" rel="noreferrer" target="_blank">Visit the Artisan Crust website ↗</a>

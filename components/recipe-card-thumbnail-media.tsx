@@ -8,19 +8,21 @@ export function RecipeCardThumbnailMedia({
   poster,
   src,
   time = 0,
+  scale = 1,
   zoom = 1,
 }: {
   position: string;
   poster?: string;
   src: string;
   time?: number;
+  scale?: number;
   zoom?: number;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideo = /\.(?:mp4|m4v|mov)(?:\?.*)?$/i.test(src);
 
   if (!isVideo) {
-    return <Image alt="" className="object-cover" fill sizes="(max-width: 768px) 50vw, 22vw" src={src} style={{ objectPosition: position, transform: `scale(${zoom})`, transformOrigin: position }} />;
+    return <Image alt="" className="object-cover" fill sizes="(max-width: 768px) 50vw, 22vw" src={src} style={{ objectPosition: position, transform: `scale(${zoom * scale})`, transformOrigin: position }} />;
   }
 
   return (
@@ -37,7 +39,7 @@ export function RecipeCardThumbnailMedia({
       preload="metadata"
       ref={videoRef}
       src={src}
-      style={{ objectPosition: position, transform: `scale(${zoom})`, transformOrigin: position }}
+      style={{ objectPosition: position, transform: `scale(${zoom * scale})`, transformOrigin: position }}
     />
   );
 }

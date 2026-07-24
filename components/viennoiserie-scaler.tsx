@@ -25,14 +25,8 @@ type ViennoiserieScalerProps = {
   max?: number;
 };
 
-function formatAmount(amount: number) {
-  const absoluteAmount = Math.abs(amount);
-  const maximumFractionDigits = absoluteAmount < 1 ? 2 : absoluteAmount < 10 ? 1 : 0;
-
-  return new Intl.NumberFormat("en-GB", {
-    maximumFractionDigits,
-    minimumFractionDigits: 0,
-  }).format(amount);
+function inputStep(amount: number) {
+  return amount < 1 ? 0.01 : amount < 10 ? 0.1 : 1;
 }
 
 export function ViennoiserieScaler({
@@ -48,6 +42,11 @@ export function ViennoiserieScaler({
   const [targetValue, setTargetValue] = useState(baseValue);
   const multiplier = useMemo(() => targetValue / baseValue, [baseValue, targetValue]);
   const titleId = `${id}-scaler-title`;
+
+  const updateFromIngredient = (baseAmount: number, nextValue: number) => {
+    if (!Number.isFinite(nextValue) || baseAmount <= 0) return;
+    setTargetValue(Math.max(step, Math.min(max, Number((baseValue * nextValue / baseAmount).toFixed(2)))));
+  };
 
   return (
     <section className="viennoiserie-scaler" aria-labelledby={titleId}>
@@ -99,13 +98,26 @@ export function ViennoiserieScaler({
             <h4>{group.title}</h4>
             <ul>
               {group.items.map((item) => {
-                const quantity = item.amount === undefined
-                  ? item.fixedAmount ?? "as needed"
-                  : `${formatAmount(item.amount * multiplier)}${item.unit ? ` ${item.unit}` : ""}`;
+                const quantity = item.amount === undefined ? null : item.amount * multiplier;
 
                 return (
                   <li key={`${group.title}-${item.ingredient}`}>
-                    <span>{quantity}</span>
+                    {quantity === null ? (
+                      <span>{item.fixedAmount ?? "as needed"}</span>
+                    ) : (
+                      <label className="viennoiserie-scaled-amount">
+                        <input
+                          aria-label={`${item.ingredient} amount`}
+                          inputMode="decimal"
+                          min={0}
+                          step={inputStep(item.amount)}
+                          type="number"
+                          value={Number(quantity.toFixed(2))}
+                          onChange={(event) => updateFromIngredient(item.amount!, Number(event.target.value))}
+                        />
+                        {item.unit ? <span>{item.unit}</span> : null}
+                      </label>
+                    )}
                     {item.ingredient}
                   </li>
                 );

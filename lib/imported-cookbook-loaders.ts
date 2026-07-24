@@ -1,10 +1,20 @@
 import type { ImportedCookbook } from "@/components/imported-cookbook-guide";
+import { scienceOfSpiceRegionalBlends } from "@/lib/imported-cookbooks/science-of-spice-blends";
 
 export const importedCookbookLoaders: Record<string, () => Promise<ImportedCookbook>> = {
   "everyday-lebanese": () => import("@/lib/imported-cookbooks/everyday-lebanese.json").then((module) => module.default as ImportedCookbook),
   "japan-the-cookbook": () => import("@/lib/imported-cookbooks/japan-the-cookbook.json").then((module) => module.default as ImportedCookbook),
   "anatolia": () => import("@/lib/imported-cookbooks/anatolia.json").then((module) => module.default as ImportedCookbook),
-  "science-of-spice": () => import("@/lib/imported-cookbooks/science-of-spice.json").then((module) => module.default as ImportedCookbook),
+  "science-of-spice": () => import("@/lib/imported-cookbooks/science-of-spice.json").then((module) => {
+    const book = module.default as ImportedCookbook;
+    return {
+      ...book,
+      description: "Recipes and regional local spice blends, separated from spice stories and reference pages.",
+      recipeCountLabel: `${book.recipes.length + scienceOfSpiceRegionalBlends.length} recipes`,
+      categories: ["Regional blends · Middle East", "Regional blends · Africa", "Regional blends · South Asia", "Regional blends · Southeast Asia", "Regional blends · East Asia", "Regional blends · Americas", "Regional blends · Europe", ...book.categories],
+      recipes: [...scienceOfSpiceRegionalBlends, ...book.recipes],
+    };
+  }),
   "secrets-of-open-crumb": () => import("@/lib/imported-cookbooks/secrets-of-open-crumb.json").then((module) => module.default as ImportedCookbook),
   "thailand-the-cookbook": () => import("@/lib/imported-cookbooks/thailand-the-cookbook.json").then((module) => module.default as ImportedCookbook),
   "breakfast-the-cookbook": () => import("@/lib/imported-cookbooks/breakfast-the-cookbook.json").then((module) => module.default as ImportedCookbook),
