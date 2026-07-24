@@ -130,17 +130,15 @@ export function CoursePlannerThumbnail() {
           <div className="tool-planner-row" key={year}>
             <strong>Year {year}</strong>
             {TERMS.map((term) => {
-              const termClasses = classesByCell.get(`${year}-${term}`) ?? [];
-              const shownClasses = termClasses.slice(0, 2);
+              const first = (classesByCell.get(`${year}-${term}`) ?? [])[0];
               const drop = dropByCell.get(`${year}-${term}`);
+              // Every cell is an empty block; on hover one class per populated
+              // term drops into its block. Empty terms stay empty.
               return (
-                <span className={termClasses.length > 0 ? termClasses.every((entry) => entry.done) ? "is-accent" : "is-filled" : ""} key={term}>
-                  {shownClasses.map((entry, index) => index === 0 && drop ? (
-                    <i className="tool-planner-demo-chip" key={entry.id} style={{ "--demo-chip-bg": `${drop.color}2b`, "--demo-chip-fg": drop.color, "--demo-index": drop.wave } as CSSProperties}>{entry.label}</i>
-                  ) : (
-                    <i key={entry.id}>{entry.label}</i>
-                  ))}
-                  {termClasses.length > shownClasses.length && <i>+{termClasses.length - shownClasses.length}</i>}
+                <span key={term}>
+                  {first && drop && (
+                    <i className="tool-planner-demo-chip" style={{ "--demo-chip-bg": `${drop.color}2b`, "--demo-chip-fg": drop.color, "--demo-index": drop.wave } as CSSProperties}>{first.label}</i>
+                  )}
                 </span>
               );
             })}
