@@ -30,11 +30,15 @@ export function SiteInteractions() {
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
+          // Elements taller than the viewport can never reach the 12% ratio,
+          // so reveal them as soon as any part scrolls into view.
+          const tall = entry.boundingClientRect.height > window.innerHeight * 0.8;
+          if (entry.intersectionRatio < 0.12 && !tall) return;
           entry.target.classList.add("is-revealed");
           observer.unobserve(entry.target);
         });
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
+      { rootMargin: "0px 0px -8% 0px", threshold: [0, 0.12] },
     );
 
     revealTargets.forEach((target) => {

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import { PageIntro } from "@/components/page-intro";
 import { RestaurantExplorer } from "@/components/restaurant-explorer";
 import { RestaurantRecommendationAdminList } from "@/components/restaurant-recommendation-admin-list";
@@ -45,7 +44,7 @@ export default async function RestaurantsPage() {
           Connect with me on Beli to see my scores and rankings <span aria-hidden="true">↗</span>
         </a>
       </div>
-      <section className="page-section restaurant-page-section" data-reveal id="restaurant-map" style={{ "--reveal-delay": "90ms" } as CSSProperties}>
+      <section className="page-section restaurant-page-section" id="restaurant-map">
         <RestaurantExplorer apiKey={apiKey} mapId={mapId} restaurants={savedRestaurants.length ? savedRestaurants : restaurants} />
       </section>
       <div className="page-shell pb-16 sm:pb-20 lg:pb-24" data-reveal id="restaurant-recommendations">
