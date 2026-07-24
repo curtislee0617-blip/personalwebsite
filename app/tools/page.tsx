@@ -135,12 +135,16 @@ const toolSections: ToolSection[] = [
   },
 ];
 
-// Odometer column: values stack vertically inside a one-line window and the
-// track scrolls to each in turn (the first value repeats at the end so the
-// loop wraps seamlessly). Scrolls only while the card is hovered/focused.
-function CycleValue({ values }: { values: readonly string[] }) {
+// Flip-clock column: values stack vertically inside a one-row window and the
+// track scrolls to each in turn (the first value repeats at the end so the loop
+// wraps seamlessly). Scrolls only while the card is hovered/focused. Variant
+// controls the rhythm — "steady" cycles evenly (water: six live states);
+// "fast" flips quickly through the list and holds on the last value (compound:
+// riffles through compounds and lands on Propane). Every column in a card must
+// share the same variant and value count so they stay in sync.
+function CycleValue({ values, variant = "steady" }: { values: readonly string[]; variant?: "steady" | "fast" }) {
   return (
-    <span className="tool-cycle">
+    <span className={`tool-cycle is-cycle-${variant}`}>
       <span className="tool-cycle-track">
         {[...values, values[0]].map((value, index) => (
           <span key={`${index}-${value}`}>{value}</span>
@@ -159,11 +163,11 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
     return (
       <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-water" aria-hidden="true">
         <div className="tool-property-heading"><span>Water state</span><small>Steam tables</small></div>
-        <div className="tool-state-inputs"><span><small>Temperature</small><strong><CycleValue values={["425 K", "475 K", "525 K", "575 K"]} /></strong></span><b>+</b><span><small>Pressure</small><strong>2.40 MPa</strong></span></div>
+        <div className="tool-state-inputs"><span><small>Temperature</small><strong><CycleValue values={["473 K", "573 K", "673 K", "623 K", "773 K", "723 K"]} /></strong></span><b>+</b><span><small>Pressure</small><strong><CycleValue values={["0.10 MPa", "0.50 MPa", "1.00 MPa", "2.50 MPa", "5.00 MPa", "10.0 MPa"]} /></strong></span></div>
         <div className="tool-property-grid">
-          <span><small>v</small><strong><CycleValue values={["0.091 m³/kg", "0.104 m³/kg", "0.117 m³/kg", "0.130 m³/kg"]} /></strong></span>
-          <span><small>h</small><strong><CycleValue values={["2821 kJ/kg", "2947 kJ/kg", "3070 kJ/kg", "3193 kJ/kg"]} /></strong></span>
-          <span><small>s</small><strong><CycleValue values={["6.93 kJ/kg·K", "7.20 kJ/kg·K", "7.44 kJ/kg·K", "7.66 kJ/kg·K"]} /></strong></span>
+          <span><small>v</small><strong><CycleValue values={["2.172 m³/kg", "0.523 m³/kg", "0.307 m³/kg", "0.110 m³/kg", "0.069 m³/kg", "0.030 m³/kg"]} /></strong></span>
+          <span><small>h</small><strong><CycleValue values={["2875 kJ/kg", "3064 kJ/kg", "3264 kJ/kg", "3126 kJ/kg", "3434 kJ/kg", "3241 kJ/kg"]} /></strong></span>
+          <span><small>s</small><strong><CycleValue values={["7.834 kJ/kg·K", "7.460 kJ/kg·K", "7.465 kJ/kg·K", "6.840 kJ/kg·K", "6.976 kJ/kg·K", "6.419 kJ/kg·K"]} /></strong></span>
         </div>
       </div>
     );
@@ -173,11 +177,11 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
     return (
       <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-compound" aria-hidden="true">
         <div className="tool-property-heading"><span>Compound lookup</span><small>Lee–Kesler</small></div>
-        <div className="tool-compound-search"><span><strong><CycleValue values={["Propane", "Ethanol", "Benzene", "Water"]} /></strong><small><CycleValue values={["C₃H₈", "C₂H₆O", "C₆H₆", "H₂O"]} /></small></span><b>⌕</b></div>
+        <div className="tool-compound-search"><span><strong><CycleValue values={["Water", "Methane", "Ethanol", "Benzene", "Ammonia", "Acetone", "Ethane", "Propane"]} variant="fast" /></strong><small><CycleValue values={["H₂O", "CH₄", "C₂H₆O", "C₆H₆", "NH₃", "C₃H₆O", "C₂H₆", "C₃H₈"]} variant="fast" /></small></span><b>⌕</b></div>
         <div className="tool-property-grid">
-          <span><small>Tc</small><strong><CycleValue values={["369.8 K", "513.9 K", "562.1 K", "647.1 K"]} /></strong></span>
-          <span><small>Pc</small><strong><CycleValue values={["4.25 MPa", "6.15 MPa", "4.89 MPa", "22.1 MPa"]} /></strong></span>
-          <span><small>ω</small><strong><CycleValue values={["0.152", "0.644", "0.212", "0.344"]} /></strong></span>
+          <span><small>Tc</small><strong><CycleValue values={["647.3 K", "190.6 K", "516.2 K", "562.1 K", "405.6 K", "508.1 K", "305.4 K", "370.0 K"]} variant="fast" /></strong></span>
+          <span><small>Pc</small><strong><CycleValue values={["22.05 MPa", "4.60 MPa", "6.38 MPa", "4.89 MPa", "11.28 MPa", "4.70 MPa", "4.87 MPa", "4.24 MPa"]} variant="fast" /></strong></span>
+          <span><small>ω</small><strong><CycleValue values={["0.344", "0.008", "0.635", "0.212", "0.250", "0.309", "0.099", "0.152"]} variant="fast" /></strong></span>
         </div>
       </div>
     );

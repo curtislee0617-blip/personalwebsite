@@ -7740,19 +7740,41 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 .tool-state-inputs strong:has(.tool-cycle) { overflow: visible; }
 
 .tool-cycle { display: block; overflow: hidden; height: 1.25em; line-height: 1.25em; }
+.tool-compound-search .tool-cycle, .tool-property-grid .tool-cycle, .tool-state-inputs .tool-cycle { display: block; }
 .tool-cycle-track { display: block; white-space: nowrap; }
 .tool-cycle-track > span { display: block; height: 1.25em; line-height: 1.25em; }
 
-@keyframes tool-cycle-scroll {
-  0%, 19% { transform: translateY(0); }
-  25%, 44% { transform: translateY(-1.25em); }
-  50%, 69% { transform: translateY(-2.5em); }
-  75%, 94% { transform: translateY(-3.75em); }
-  100% { transform: translateY(-5em); }
+/* Steady rhythm — six water states, each held then snapped (7 rows, the last
+   repeats the first so the wrap is seamless). */
+@keyframes tool-cycle-steady {
+  0%, 13% { transform: translateY(0); }
+  16.67%, 30% { transform: translateY(-1.25em); }
+  33.33%, 47% { transform: translateY(-2.5em); }
+  50%, 63% { transform: translateY(-3.75em); }
+  66.67%, 80% { transform: translateY(-5em); }
+  83.33%, 97% { transform: translateY(-6.25em); }
+  100% { transform: translateY(-7.5em); }
 }
 
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-cycle-track {
-  animation: tool-cycle-scroll 8s cubic-bezier(0.7, 0, 0.2, 1) infinite;
+/* Fast rhythm — riffle through seven compounds, then land on the eighth
+   (Propane) and hold before wrapping (9 rows, the last repeats the first). */
+@keyframes tool-cycle-fast {
+  0%, 3% { transform: translateY(0); }
+  6%, 8% { transform: translateY(-1.25em); }
+  11%, 13% { transform: translateY(-2.5em); }
+  16%, 18% { transform: translateY(-3.75em); }
+  21%, 23% { transform: translateY(-5em); }
+  26%, 28% { transform: translateY(-6.25em); }
+  31%, 33% { transform: translateY(-7.5em); }
+  36%, 93% { transform: translateY(-8.75em); }
+  100% { transform: translateY(-10em); }
+}
+
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .is-cycle-steady .tool-cycle-track {
+  animation: tool-cycle-steady 9s cubic-bezier(0.7, 0, 0.2, 1) infinite;
+}
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .is-cycle-fast .tool-cycle-track {
+  animation: tool-cycle-fast 5.5s cubic-bezier(0.6, 0, 0.15, 1) infinite;
 }
 
 /* NMR: idle shows the corrected spectrum; on hover the trace morphs fluidly
@@ -7804,9 +7826,9 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   78%, 100% { clip-path: inset(-2% 0 -2% 0); }
 }
 
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-1 { animation: tool-vle-wipe-1 8s var(--ease-standard) infinite; }
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-2 { animation: tool-vle-wipe-2 8s var(--ease-standard) infinite; }
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-tie { animation: tool-vle-wipe-tie 8s linear infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-1 { animation: tool-vle-wipe-1 4.5s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-2 { animation: tool-vle-wipe-2 4.5s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-tie { animation: tool-vle-wipe-tie 4.5s linear infinite; }
 
 /* Course planner: sample classes get dragged onto the plan in turn, styled
    like the planner page's colored requirement bubbles. */
