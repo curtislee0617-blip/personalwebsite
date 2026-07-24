@@ -3,12 +3,13 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { COURSE_PLAN_STORAGE_KEY, fetchCoursePlan, loadStoredIdentity } from "@/lib/course-plan-sync";
 
-// Sample classes that loop a drag-and-drop demo into empty cells;
-// cells already holding real plan entries are left alone.
-const demoDrops: Record<string, { label: string; index: number }> = {
-  "1-Winter": { label: "ChE 63a", index: 0 },
-  "2-Spring": { label: "ACM 95a", index: 1 },
-  "4-Fall": { label: "ChE 126", index: 2 },
+// Sample classes that loop a drag-and-drop demo into empty cells, styled as
+// the planner page's colored requirement bubbles; cells already holding real
+// plan entries are left alone.
+const demoDrops: Record<string, { label: string; index: number; color: string }> = {
+  "1-Winter": { label: "ChE 63a", index: 0, color: "rgb(var(--color-moss) / 0.38)" },
+  "2-Spring": { label: "ACM 95a", index: 1, color: "rgb(var(--color-clay) / 0.42)" },
+  "4-Fall": { label: "ChE 126", index: 2, color: "rgb(122 148 198 / 0.42)" },
 };
 
 type ThumbnailClass = {
@@ -103,7 +104,7 @@ export function CoursePlannerThumbnail() {
                   {shownClasses.map((entry) => <i key={entry.id}>{entry.label}</i>)}
                   {termClasses.length > shownClasses.length && <i>+{termClasses.length - shownClasses.length}</i>}
                   {demo && (
-                    <i className="tool-planner-demo-chip" style={{ "--demo-index": demo.index } as CSSProperties}>
+                    <i className="tool-planner-demo-chip" style={{ "--demo-chip-bg": demo.color, "--demo-index": demo.index } as CSSProperties}>
                       {demo.label}
                     </i>
                   )}

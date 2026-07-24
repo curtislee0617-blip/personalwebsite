@@ -49,22 +49,22 @@ function spectrumPath({
 }
 
 // AIST SDBS ethanol liquid-film IR: broad O–H, C–H stretches, bends,
-// and the dominant C–O region. Widths are deliberately softened at card size.
+// and the dominant C–O region, drawn sharp so peaks read at card size.
 const ethanolIrPath = spectrumPath({
   baseline: 20,
   direction: "down",
   domain: [4000, 500],
   peaks: [
-    { position: 3340, width: 250, intensity: 31 },
-    { position: 2975, width: 34, intensity: 18 },
-    { position: 2930, width: 30, intensity: 13 },
-    { position: 2880, width: 30, intensity: 11 },
-    { position: 1460, width: 34, intensity: 17 },
-    { position: 1380, width: 28, intensity: 13 },
-    { position: 1270, width: 24, intensity: 8 },
-    { position: 1090, width: 31, intensity: 25 },
-    { position: 1050, width: 28, intensity: 43 },
-    { position: 880, width: 25, intensity: 15 },
+    { position: 3340, width: 230, intensity: 38 },
+    { position: 2975, width: 28, intensity: 26 },
+    { position: 2930, width: 25, intensity: 18 },
+    { position: 2880, width: 25, intensity: 15 },
+    { position: 1460, width: 28, intensity: 24 },
+    { position: 1380, width: 23, intensity: 19 },
+    { position: 1270, width: 20, intensity: 12 },
+    { position: 1090, width: 26, intensity: 34 },
+    { position: 1050, width: 24, intensity: 56 },
+    { position: 880, width: 21, intensity: 22 },
   ],
 });
 
@@ -84,9 +84,9 @@ const ethanolNmrPeaks: SpectrumPeak[] = [
   { position: 1.146, width: 0.017, intensity: 20 },
 ];
 
-// The card cycles the zero-order phase toward the corrected spectrum:
-// fully inverted → dispersive → nearly phased → final absorption-mode.
-const ethanolNmrPhaseSteps = [180, 90, 35, 0].map((phaseDeg) => spectrumPath({
+// On hover the zero-order phase flicks through an oscillating hunt —
+// like working the phase knob — before settling on the corrected spectrum.
+const ethanolNmrPhaseFlicks = [180, 60, 130, 20, 80].map((phaseDeg) => spectrumPath({
   baseline: 72,
   direction: "up",
   domain: [10, 0],
@@ -94,6 +94,14 @@ const ethanolNmrPhaseSteps = [180, 90, 35, 0].map((phaseDeg) => spectrumPath({
   phaseDeg,
   samples: 520,
 }));
+
+const ethanolNmrFinalPath = spectrumPath({
+  baseline: 72,
+  direction: "up",
+  domain: [10, 0],
+  peaks: ethanolNmrPeaks,
+  samples: 520,
+});
 
 const toolSections: ToolSection[] = [
   {
@@ -119,14 +127,17 @@ const toolSections: ToolSection[] = [
   },
 ];
 
-// Stacked values that cycle in sync across a card (8s loop, 2s per state);
-// the first value keeps the layout width, the rest overlay it.
+// Odometer column: values stack vertically inside a one-line window and the
+// track scrolls to each in turn (the first value repeats at the end so the
+// loop wraps seamlessly). Scrolls only while the card is hovered/focused.
 function CycleValue({ values }: { values: readonly string[] }) {
   return (
     <span className="tool-cycle">
-      {values.map((value, index) => (
-        <span key={value} style={{ "--cycle-index": index } as CSSProperties}>{value}</span>
-      ))}
+      <span className="tool-cycle-track">
+        {[...values, values[0]].map((value, index) => (
+          <span key={`${index}-${value}`}>{value}</span>
+        ))}
+      </span>
     </span>
   );
 }
@@ -171,17 +182,20 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
       <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary T–x–y"}</span><i>{kind === "vle" ? "Bubble / dew" : kind === "ir" ? "Ethanol · liquid film" : "Ethanol · 89.56 MHz"}</i></div>
       <svg viewBox="0 0 160 90" preserveAspectRatio="none">
         <path className="tool-chart-grid" d="M8 18H152M8 45H152M8 72H152M32 10V80M72 10V80M112 10V80" />
-        {kind === "nmr" && ethanolNmrPhaseSteps.map((phasePath, index) => (
-          <path className="tool-chart-line tool-phase-step" d={phasePath} key={index} pathLength={1} style={{ "--cycle-index": index } as CSSProperties} />
-        ))}
+        {kind === "nmr" && (
+          <>
+            {ethanolNmrPhaseFlicks.map((phasePath, index) => (
+              <path className="tool-chart-line tool-phase-step" d={phasePath} key={index} pathLength={1} style={{ "--cycle-index": index } as CSSProperties} />
+            ))}
+            <path className="tool-chart-line tool-phase-final" d={ethanolNmrFinalPath} pathLength={1} />
+          </>
+        )}
         {kind === "ir" && <path className="tool-chart-line tool-chart-line-ir-load" d={ethanolIrPath} pathLength={1} />}
         {kind === "vle" && (
           <>
             <path className="tool-chart-line tool-vle-curve-1" d="M12 72 C29 68 43 49 62 33 C83 15 112 13 148 11" pathLength={1} />
             <path className="tool-chart-line tool-vle-curve-2" d="M12 72 C34 71 56 63 78 48 C101 31 122 18 148 11" pathLength={1} />
             <path className="tool-chart-line tool-vle-tie" d="M55 40 H85" pathLength={1} />
-            <circle className="tool-chart-point" cx="55" cy="40" r="2" />
-            <circle className="tool-chart-point" cx="85" cy="40" r="2" />
           </>
         )}
       </svg>

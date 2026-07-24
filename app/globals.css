@@ -7679,22 +7679,54 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 .page-intro-description { animation: page-intro-rise 640ms var(--ease-standard) 110ms backwards; }
 .page-intro-actions { animation: page-intro-rise 640ms var(--ease-standard) 210ms backwards; }
 
-/* Ambient tool-thumbnail demos, all on a shared 8s loop. On mobile only the
-   carousel card snapped into focus animates (SnapCarousel sets .is-focused).
-   The SVG chart paths carry pathLength={1} so dasharray draws are uniform. */
+/* Tool-thumbnail demos. Idle cards show a finished state; the demo plays
+   only while the card is hovered (desktop) or snapped into carousel focus
+   (mobile — SnapCarousel sets .is-focused). Removing the animation on
+   unhover snaps cleanly back to the idle state, and each hover restarts
+   the sequence from the beginning. Chart paths carry pathLength={1}. */
 
-/* Cycling readouts: each stacked value owns a 2s window of the loop. */
-@keyframes tool-cycle-step {
-  0%, 24.9% { opacity: 1; }
-  25%, 100% { opacity: 0; }
+/* Odometer readouts: a one-line window over a vertical track of values.
+   The first value repeats at the end so the loop wraps seamlessly. */
+.tool-cycle { display: inline-flex; overflow: hidden; height: 1.3em; }
+.tool-cycle-track { display: block; white-space: nowrap; }
+.tool-cycle-track > span { display: block; height: 1.3em; line-height: 1.3em; }
+
+@keyframes tool-cycle-scroll {
+  0%, 22% { transform: translateY(0); }
+  25%, 47% { transform: translateY(-1.3em); }
+  50%, 72% { transform: translateY(-2.6em); }
+  75%, 95% { transform: translateY(-3.9em); }
+  100% { transform: translateY(-5.2em); }
 }
 
-.tool-cycle { position: relative; display: inline-block; white-space: nowrap; }
-.tool-cycle > span { opacity: 0; animation: tool-cycle-step 8s linear infinite; animation-delay: calc(var(--cycle-index, 0) * 2s - 8s); }
-.tool-cycle > span + span { position: absolute; left: 0; top: 0; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-cycle-track {
+  animation: tool-cycle-scroll 8s var(--ease-standard) infinite;
+}
 
-/* NMR: the zero-order phase steps toward the corrected spectrum. */
-.tool-phase-step { opacity: 0; animation: tool-cycle-step 8s linear infinite; animation-delay: calc(var(--cycle-index, 0) * 2s - 8s); }
+/* NMR: idle shows the phased spectrum; on hover the zero-order phase flicks
+   through an oscillating hunt (0.48s per guess) before the corrected
+   spectrum lands and holds. */
+.tool-phase-step { opacity: 0; }
+.tool-phase-final { opacity: 1; }
+
+@keyframes tool-phase-flick {
+  0%, 5.9% { opacity: 1; }
+  6%, 100% { opacity: 0; }
+}
+
+@keyframes tool-phase-land {
+  0%, 29% { opacity: 0; }
+  30%, 100% { opacity: 1; }
+}
+
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-phase-step {
+  animation: tool-phase-flick 8s linear infinite;
+  animation-delay: calc(var(--cycle-index, 0) * 0.48s - 8s);
+}
+
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-phase-final {
+  animation: tool-phase-land 8s linear infinite;
+}
 
 /* IR: the trace acquires from the high-wavenumber end. */
 @keyframes tool-ir-load {
@@ -7702,10 +7734,12 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   42%, 100% { stroke-dasharray: 1 0; }
 }
 
-.tool-chart-line-ir-load { animation: tool-ir-load 8s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-chart-line-ir-load {
+  animation: tool-ir-load 8s var(--ease-standard) infinite;
+}
 
-/* VLE: bubble curve, then dew curve, then the horizontal tie line, then the
-   equilibrium points pop onto its ends. */
+/* VLE: bubble curve, then dew curve, then one smooth tie line sweeping in
+   from the left. */
 @keyframes tool-vle-draw-1 {
   0% { stroke-dasharray: 0 1; }
   25%, 100% { stroke-dasharray: 1 0; }
@@ -7717,21 +7751,26 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 }
 
 @keyframes tool-vle-draw-tie {
-  0%, 50% { stroke-dasharray: 0 1; }
-  62%, 100% { stroke-dasharray: 1 0; }
+  0%, 52% { stroke-dasharray: 0 1; }
+  70%, 100% { stroke-dasharray: 1 0; }
 }
 
-@keyframes tool-vle-point {
-  0%, 60% { opacity: 0; }
-  66%, 100% { opacity: 1; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-1 { animation: tool-vle-draw-1 8s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-curve-2 { animation: tool-vle-draw-2 8s var(--ease-standard) infinite; }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-vle-tie { animation: tool-vle-draw-tie 8s linear infinite; }
+
+/* Course planner: sample classes get dragged onto the plan in turn, styled
+   like the planner page's colored requirement bubbles. */
+.tool-planner-demo-chip {
+  position: relative;
+  z-index: 3;
+  padding: 0.05rem 0.2rem;
+  border-radius: 9999px;
+  background: var(--demo-chip-bg, rgb(var(--color-moss) / 0.38));
+  color: rgb(var(--color-ink) / 0.72);
 }
+.tool-planner-row > span:has(.tool-planner-demo-chip) { overflow: visible; }
 
-.tool-vle-curve-1 { animation: tool-vle-draw-1 8s var(--ease-standard) infinite; }
-.tool-vle-curve-2 { animation: tool-vle-draw-2 8s var(--ease-standard) infinite; }
-.tool-vle-tie { animation: tool-vle-draw-tie 8s var(--ease-standard) infinite; }
-.is-vle .tool-chart-point { animation: tool-vle-point 8s linear infinite; }
-
-/* Course planner: sample classes get dragged onto the plan in turn. */
 @keyframes tool-planner-drag {
   0% { opacity: 0; transform: translate(-2.4rem, -2rem) rotate(-4deg) scale(1.1); filter: drop-shadow(0 5px 7px rgb(32 35 31 / 0.3)); }
   5% { opacity: 1; }
@@ -7740,13 +7779,9 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   96%, 100% { opacity: 0; transform: none; filter: none; }
 }
 
-.tool-planner-demo-chip { position: relative; z-index: 3; animation: tool-planner-drag 9.6s var(--ease-standard) infinite both; animation-delay: calc(var(--demo-index, 0) * 3.2s); }
-.tool-planner-row > span:has(.tool-planner-demo-chip) { overflow: visible; }
-
-@media (max-width: 639px) {
-  .mobile-snap-slot:not(.is-focused) :is(.tool-cycle > span, .tool-phase-step, .tool-chart-line-ir-load, .tool-vle-curve-1, .tool-vle-curve-2, .tool-vle-tie, .is-vle .tool-chart-point, .tool-planner-demo-chip) {
-    animation-play-state: paused;
-  }
+:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-planner-demo-chip {
+  animation: tool-planner-drag 9.6s var(--ease-standard) infinite both;
+  animation-delay: calc(var(--demo-index, 0) * 3.2s);
 }
 
 /* The projects focus panel is keyed on the active card, so each carousel
@@ -7780,23 +7815,16 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .page-intro-description,
   .page-intro-actions,
   .project-focus-panel,
-  .tool-cycle > span,
+  .tool-cycle-track,
   .tool-phase-step,
+  .tool-phase-final,
   .tool-chart-line-ir-load,
   .tool-vle-curve-1,
   .tool-vle-curve-2,
   .tool-vle-tie,
-  .is-vle .tool-chart-point,
   .tool-planner-demo-chip {
-    animation: none;
+    animation: none !important;
   }
-
-  /* Static fallbacks: first reading, final phased spectrum, drawn charts,
-     and demo chips resting in place. */
-  .tool-cycle > span { opacity: 0; }
-  .tool-cycle > span:first-child { opacity: 1; }
-  .tool-phase-step { opacity: 0; }
-  .tool-phase-step:last-of-type { opacity: 1; }
 
   .contact-link-card:hover .contact-link-icon,
   .about-entry:hover .about-logo-badge {
