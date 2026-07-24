@@ -104,7 +104,18 @@ export function NmrSpectrumChart({ points, xMinimum, xMaximum, axis, mode, regio
         return <g className="nmr-peak-tag" key={`${peak.shift}-${index}`}><line x1={toX(peak.shift)} x2={toX(peak.shift)} y1={toY(peak.intensity) - 3} y2={labelY + 4} /><rect height="15" rx="5" width={axis === "ppm" ? 48 : 56} x={toX(peak.shift) - (axis === "ppm" ? 24 : 28)} y={labelY - 11} /><text textAnchor="middle" x={toX(peak.shift)} y={labelY}>{peak.shift.toFixed(axis === "ppm" ? 3 : 1)}</text></g>;
       })}
       {solventPeak !== undefined && solventPeak >= low && solventPeak <= high && <g className="nmr-solvent-marker"><line x1={toX(solventPeak)} x2={toX(solventPeak)} y1={margin.top} y2={height - margin.bottom} /><text textAnchor="middle" x={toX(solventPeak)} y={margin.top + 13}>solvent</text></g>}
-      {couplingPoints.map((shift, index) => shift >= low && shift <= high && <g className="nmr-coupling-marker" key={`${shift}-${index}`}><line x1={toX(shift)} x2={toX(shift)} y1={margin.top} y2={height - margin.bottom} /><text textAnchor="middle" x={toX(shift)} y={margin.top + 13}>J{index + 1}</text></g>)}
+      {couplingPoints.map((shift, index) => {
+        if (shift < low || shift > high) return null;
+        // Anchor the marker on the peak apex that was clicked, then drop the
+        // dotted line from that dot down to the baseline (not the full frame).
+        const apex = visible.length ? visible.reduce((best, point) => Math.abs(point.shift - shift) < Math.abs(best.shift - shift) ? point : best) : null;
+        const apexY = apex ? toY(apex.intensity) : margin.top;
+        return <g className="nmr-coupling-marker" key={`${shift}-${index}`}>
+          <line x1={toX(shift)} x2={toX(shift)} y1={apexY} y2={toY(0)} />
+          <circle cx={toX(shift)} cy={apexY} r="3.5" />
+          <text textAnchor="middle" x={toX(shift)} y={Math.max(margin.top + 10, apexY - 8)}>J{index + 1}</text>
+        </g>;
+      })}
       {selectionLow !== null && selectionHigh !== null && <rect className="nmr-drag-selection" height={innerHeight} width={Math.abs(toX(selectionLow) - toX(selectionHigh))} x={Math.min(toX(selectionLow), toX(selectionHigh))} y={margin.top} />}
       <text className="nmr-axis-title" textAnchor="middle" x={margin.left + innerWidth / 2} y={height - 13}>{axis === "ppm" ? "Chemical shift (ppm)" : "Frequency offset (Hz)"}</text>
       {hover && <g className="nmr-hover"><line x1={toX(hover.shift)} x2={toX(hover.shift)} y1={margin.top} y2={height - margin.bottom} /><circle cx={toX(hover.shift)} cy={toY(hover.intensity)} r="4" /></g>}

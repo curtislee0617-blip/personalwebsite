@@ -153,58 +153,128 @@ function transformFid(fid: ComplexFid, lineBroadeningHz: number, zeroFill: 1 | 2
   return { real, imaginary, size };
 }
 
+// Frequency ordering used everywhere the spectrum is walked left→right, so the
+// phase-fraction here matches processSpinsolveFid's displayed axis exactly.
+function displayFraction(displayIndex: number, size: number) {
+  return size > 1 ? displayIndex / (size - 1) : 0;
+}
+
+// Phase-correction quality: fraction of signed energy that is positive
+// (absorptive/upright) among significant points, for a given zero- and
+// first-order phase. phase1 is the total roll across the whole spectrum.
+function phaseScore(
+  real: Float64Array,
+  imaginary: Float64Array,
+  size: number,
+  threshold: number,
+  phase0Deg: number,
+  phase1Deg: number,
+) {
+  const phase0 = phase0Deg * Math.PI / 180;
+  const phase1 = phase1Deg * Math.PI / 180;
+  let signedEnergy = 0;
+  let totalEnergy = 0;
+  for (let displayIndex = 0; displayIndex < size; displayIndex += 1) {
+    const source = (displayIndex + size / 2) % size;
+    if (Math.hypot(real[source], imaginary[source]) < threshold) continue;
+    const angle = phase0 + phase1 * displayFraction(displayIndex, size);
+    const value = real[source] * Math.cos(angle) - imaginary[source] * Math.sin(angle);
+    const square = value * value;
+    signedEnergy += value >= 0 ? square : -square;
+    totalEnergy += square;
+  }
+  return totalEnergy > 0 ? signedEnergy / totalEnergy : -Infinity;
+}
+
+function refineZeroOrder(
+  real: Float64Array,
+  imaginary: Float64Array,
+  size: number,
+  threshold: number,
+  phase1Deg: number,
+) {
+  let bestPhase = 0;
+  let bestScore = -Infinity;
+  for (let phase = -180; phase <= 180; phase += 1) {
+    const candidate = phaseScore(real, imaginary, size, threshold, phase, phase1Deg);
+    if (candidate > bestScore) { bestPhase = phase; bestScore = candidate; }
+  }
+  for (let phase = bestPhase - 1; phase <= bestPhase + 1; phase += 0.1) {
+    const candidate = phaseScore(real, imaginary, size, threshold, phase, phase1Deg);
+    if (candidate > bestScore) { bestPhase = phase; bestScore = candidate; }
+  }
+  return { phase: Math.round(bestPhase * 10) / 10, score: bestScore };
+}
+
 export function estimateZeroOrderPhase(fid: ComplexFid, lineBroadeningHz = 0.2) {
+  return estimatePhaseCorrection(fid, lineBroadeningHz).phase0Degrees;
+}
+
+// Auto-phase both orders. A frequency-dependent (first-order) phase roll —
+// common on benchtop spectrometers from digital-filter group delay — leaves
+// peaks far from the carrier inverted no matter the zero-order value, which is
+// the usual source of stubborn negative peaks. Stage the search: solve the
+// zero-order phase, sweep the first-order roll, then re-refine the zero order.
+export function estimatePhaseCorrection(fid: ComplexFid, lineBroadeningHz = 0.2) {
   const { real, imaginary, size } = transformFid(fid, lineBroadeningHz, 1);
   let magnitudeMaximum = 0;
   for (let index = 0; index < size; index += 1) magnitudeMaximum = Math.max(magnitudeMaximum, Math.hypot(real[index], imaginary[index]));
   const threshold = magnitudeMaximum * 0.025;
-  const score = (degrees: number) => {
-    const radians = degrees * Math.PI / 180;
-    const cosine = Math.cos(radians);
-    const sine = Math.sin(radians);
-    let signedEnergy = 0;
-    let totalEnergy = 0;
-    for (let index = 0; index < size; index += 1) {
-      if (Math.hypot(real[index], imaginary[index]) < threshold) continue;
-      const value = real[index] * cosine - imaginary[index] * sine;
-      const square = value * value;
-      signedEnergy += value >= 0 ? square : -square;
-      totalEnergy += square;
-    }
-    return totalEnergy > 0 ? signedEnergy / totalEnergy : -Infinity;
-  };
-  let bestPhase = 0;
-  let bestScore = -Infinity;
-  for (let phase = -180; phase <= 180; phase += 1) {
-    const candidate = score(phase);
-    if (candidate > bestScore) { bestPhase = phase; bestScore = candidate; }
+
+  let phase0 = refineZeroOrder(real, imaginary, size, threshold, 0).phase;
+
+  let bestPhase1 = 0;
+  let bestScore = phaseScore(real, imaginary, size, threshold, phase0, 0);
+  for (let phase1 = -360; phase1 <= 360; phase1 += 10) {
+    const zeroOrder = refineZeroOrder(real, imaginary, size, threshold, phase1);
+    if (zeroOrder.score > bestScore) { bestScore = zeroOrder.score; bestPhase1 = phase1; phase0 = zeroOrder.phase; }
   }
-  const coarse = bestPhase;
-  for (let phase = coarse - 1; phase <= coarse + 1; phase += 0.1) {
-    const candidate = score(phase);
-    if (candidate > bestScore) { bestPhase = phase; bestScore = candidate; }
+  for (let phase1 = bestPhase1 - 10; phase1 <= bestPhase1 + 10; phase1 += 2) {
+    const zeroOrder = refineZeroOrder(real, imaginary, size, threshold, phase1);
+    if (zeroOrder.score > bestScore) { bestScore = zeroOrder.score; bestPhase1 = phase1; phase0 = zeroOrder.phase; }
   }
-  return Math.round(bestPhase * 10) / 10;
+
+  // Anchor upright on the tallest signal so a dispersive local optimum can't
+  // leave the whole spectrum inverted.
+  let tallestSource = 0;
+  let tallestMagnitude = 0;
+  for (let index = 0; index < size; index += 1) {
+    const magnitude = Math.hypot(real[index], imaginary[index]);
+    if (magnitude > tallestMagnitude) { tallestMagnitude = magnitude; tallestSource = index; }
+  }
+  const tallestDisplay = (tallestSource + size / 2) % size;
+  const tallestAngle = (phase0 + bestPhase1 * displayFraction(tallestDisplay, size)) * Math.PI / 180;
+  const tallestValue = real[tallestSource] * Math.cos(tallestAngle) - imaginary[tallestSource] * Math.sin(tallestAngle);
+  if (tallestValue < 0) phase0 += phase0 > 0 ? -180 : 180;
+
+  return { phase0Degrees: Math.round(phase0 * 10) / 10, phase1Degrees: Math.round(bestPhase1) };
 }
 
 export function processSpinsolveFid(
   fid: ComplexFid,
-  options: { lineBroadeningHz: number; phaseDegrees: number; zeroFill: 1 | 2 | 4; observationMHz?: number; carrierHz?: number },
+  options: { lineBroadeningHz: number; phaseDegrees: number; phase1Degrees?: number; zeroFill: 1 | 2 | 4; observationMHz?: number; carrierHz?: number },
 ) {
   const { real, imaginary, size } = transformFid(fid, options.lineBroadeningHz, options.zeroFill);
-  const phase = options.phaseDegrees * Math.PI / 180;
-  const phaseCos = Math.cos(phase);
-  const phaseSin = Math.sin(phase);
+  const phase0 = options.phaseDegrees * Math.PI / 180;
+  const phase1 = (options.phase1Degrees ?? 0) * Math.PI / 180;
   const sweepWidth = fid.dwellTime > 0 ? 1 / fid.dwellTime : 1;
   const carrier = options.carrierHz ?? 0;
   const points: NmrPoint[] = new Array(size);
+  // Normalize by the largest absolute excursion, not the largest signed value.
+  // A spectrum phased ~180° off has no positive peak, so a signed maximum stays
+  // 0, the old code skipped normalization, and raw negative intensities leaked
+  // straight to the chart. Absolute scaling always normalizes; the baseline
+  // clip below then removes the residual dispersive negatives for display.
   let scale = 0;
   for (let index = 0; index < size; index += 1) {
     const shifted = (index + size / 2) % size;
-    const phased = real[shifted] * phaseCos - imaginary[shifted] * phaseSin;
+    // Frequency-dependent phase: zero-order plus the first-order roll evaluated
+    // at this point's position along the displayed axis.
+    const angle = phase0 + phase1 * displayFraction(index, size);
+    const phased = real[shifted] * Math.cos(angle) - imaginary[shifted] * Math.sin(angle);
     const frequency = carrier - sweepWidth / 2 + sweepWidth * (size - 1 - index) / size;
     const shift = options.observationMHz ? frequency / options.observationMHz : frequency;
-    scale = Math.max(scale, phased);
+    scale = Math.max(scale, Math.abs(phased));
     points[index] = { shift, intensity: phased };
   }
   if (scale > 0) for (const point of points) point.intensity = Math.max(0, point.intensity / scale);

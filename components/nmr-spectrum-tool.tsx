@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { NmrSpectrumChart, type NmrInteractionMode, type NmrRegion } from "@/components/nmr-spectrum-chart";
 import { Nmr2dChart } from "@/components/nmr-2d-chart";
-import { estimateZeroOrderPhase, parseProcessingScript, parseSpinsolve1d, parseSpinsolve2d, parseSpinsolveParameters, pickNmr2dPeaks, pickNmrPeaks, processSpinsolve2d, processSpinsolveFid, type ComplexFid, type ComplexFid2d, type NmrPeak2d, type SpinsolveParameters } from "@/lib/nmr-spectrum";
+import { estimatePhaseCorrection, parseProcessingScript, parseSpinsolve1d, parseSpinsolve2d, parseSpinsolveParameters, pickNmr2dPeaks, pickNmrPeaks, processSpinsolve2d, processSpinsolveFid, type ComplexFid, type ComplexFid2d, type NmrPeak2d, type SpinsolveParameters } from "@/lib/nmr-spectrum";
 
 type NmrNucleus = "1H" | "13C";
 
@@ -38,6 +38,7 @@ export function NmrSpectrumTool() {
   const [observationMHz, setObservationMHz] = useState("");
   const [carrierHz, setCarrierHz] = useState("0");
   const [phaseDegrees, setPhaseDegrees] = useState(0);
+  const [phase1Degrees, setPhase1Degrees] = useState(0);
   const [lineBroadeningHz, setLineBroadeningHz] = useState(0.2);
   const [zeroFill, setZeroFill] = useState<1 | 2 | 4>(2);
   const [nucleus, setNucleus] = useState<NmrNucleus>("1H");
@@ -69,10 +70,11 @@ export function NmrSpectrumTool() {
   const rawPoints = useMemo(() => fid ? processSpinsolveFid(fid, {
     lineBroadeningHz,
     phaseDegrees,
+    phase1Degrees,
     zeroFill,
     observationMHz: observation > 0 ? observation : undefined,
     carrierHz: Number.isFinite(carrier) ? carrier : 0,
-  }) : [], [carrier, fid, lineBroadeningHz, observation, phaseDegrees, zeroFill]);
+  }) : [], [carrier, fid, lineBroadeningHz, observation, phase1Degrees, phaseDegrees, zeroFill]);
   const points = useMemo(() => rawPoints.map((point) => ({ ...point, shift: point.shift + calibrationOffset })), [calibrationOffset, rawPoints]);
   const peaks = useMemo(() => showPeakLabels ? pickNmrPeaks(points.filter((point) => point.shift >= Math.min(xMinimum, xMaximum) && point.shift <= Math.max(xMinimum, xMaximum)), peakProminence, 30, peakCount) : [], [peakCount, peakProminence, points, showPeakLabels, xMaximum, xMinimum]);
   const availableSolvents = solvents.filter((solvent) => nucleus === "1H" ? solvent.proton !== undefined : "carbon" in solvent && solvent.carbon !== undefined);
@@ -98,7 +100,8 @@ export function NmrSpectrumTool() {
       const nextParameters = acquFile ? parseSpinsolveParameters(await acquFile.text()) : {};
       const processing = scriptFile ? parseProcessingScript(await scriptFile.text()) : { phaseDegrees: undefined, lineBroadeningHz: undefined };
       const nextLineBroadening = processing.lineBroadeningHz ?? 0.2;
-      const automaticPhase = nextFid ? estimateZeroOrderPhase(nextFid, nextLineBroadening) : 0;
+      const automaticCorrection = nextFid ? estimatePhaseCorrection(nextFid, nextLineBroadening) : { phase0Degrees: 0, phase1Degrees: 0 };
+      const automaticPhase = automaticCorrection.phase0Degrees;
       const detectedNucleus: NmrNucleus = nextParameters.nucleus?.toUpperCase().includes("13C") ? "13C" : "1H";
       setFid(nextFid);
       setFid2d(nextFid2d);
@@ -120,6 +123,7 @@ export function NmrSpectrumTool() {
       setSelected2dPeak(null);
       setSplittingLabels({});
       setPhaseDegrees(automaticPhase);
+      setPhase1Degrees(automaticCorrection.phase1Degrees);
       setLineBroadeningHz(nextLineBroadening);
       setZeroFill(2);
       if (nextParameters.observationMHz) setObservationMHz(String(nextParameters.observationMHz));
@@ -152,7 +156,7 @@ export function NmrSpectrumTool() {
         setY2dRange(experiment2d === "hsqc" ? { low: 0, high: 220 } : { low: -10, high: 20 });
       }
       const descriptions = [nextFid ? `${nextFid.pointCount.toLocaleString()} 1D points` : "", nextFid2d ? `${nextFid2d.width} × ${nextFid2d.height} 2D matrix` : ""].filter(Boolean).join(" and ");
-      setMessage(`Read ${descriptions}${acquFile ? " with acquisition metadata" : ""}${nextFid ? `. Automatic phase: ${automaticPhase.toFixed(1)}°.` : "."}`);
+      setMessage(`Read ${descriptions}${acquFile ? " with acquisition metadata" : ""}${nextFid ? `. Automatic phase: ${automaticPhase.toFixed(1)}° (ϕ₀), ${automaticCorrection.phase1Degrees.toFixed(0)}° (ϕ₁).` : "."}`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "The NMR file could not be read.");
     }
@@ -230,12 +234,12 @@ export function NmrSpectrumTool() {
         <div className="nmr-nucleus-toggle" aria-label="NMR nucleus"><button className={nucleus === "1H" ? "is-active" : ""} onClick={() => changeNucleus("1H")} type="button">¹H NMR</button><button className={nucleus === "13C" ? "is-active" : ""} onClick={() => changeNucleus("13C")} type="button">¹³C NMR</button></div>
         <label><span>Observation frequency <small>MHz</small></span><input inputMode="decimal" onChange={(event) => changeObservationFrequency(event.target.value)} placeholder="Required for ppm" type="number" value={observationMHz} /></label>
         <label><span>Carrier offset <small>Hz</small></span><input inputMode="decimal" onChange={(event) => setCarrierHz(event.target.value)} type="number" value={carrierHz} /></label>
-        <div className="nmr-phase-control"><label><span>Zero-order phase <output>{phaseDegrees.toFixed(1)}°</output></span><input max="180" min="-180" onChange={(event) => setPhaseDegrees(Number(event.target.value))} step="0.1" type="range" value={phaseDegrees} /></label><button disabled={!fid} onClick={() => { if (!fid) return; const automatic = estimateZeroOrderPhase(fid, lineBroadeningHz); setPhaseDegrees(automatic); setMessage(`Automatic zero-order phase set to ${automatic.toFixed(1)}°; use the slider for manual refinement.`); }} type="button">Auto phase</button></div>
+        <div className="nmr-phase-control"><label><span>Zero-order phase ϕ₀ <output>{phaseDegrees.toFixed(1)}°</output></span><input max="180" min="-180" onChange={(event) => setPhaseDegrees(Number(event.target.value))} step="0.1" type="range" value={phaseDegrees} /></label><label><span>First-order phase ϕ₁ <output>{phase1Degrees.toFixed(0)}°</output></span><input max="400" min="-400" onChange={(event) => setPhase1Degrees(Number(event.target.value))} step="1" type="range" value={phase1Degrees} /></label><button disabled={!fid} onClick={() => { if (!fid) return; const automatic = estimatePhaseCorrection(fid, lineBroadeningHz); setPhaseDegrees(automatic.phase0Degrees); setPhase1Degrees(automatic.phase1Degrees); setMessage(`Automatic phase set to ${automatic.phase0Degrees.toFixed(1)}° (ϕ₀) and ${automatic.phase1Degrees.toFixed(0)}° (ϕ₁); use the sliders for manual refinement.`); }} type="button">Auto phase</button></div>
         <label><span>Line broadening <small>Hz</small></span><input min="0" onChange={(event) => setLineBroadeningHz(Number(event.target.value))} step="0.1" type="number" value={lineBroadeningHz} /></label>
         <fieldset><legend>Zero filling</legend><div className="nmr-segmented">{([1, 2, 4] as const).map((value) => <button className={zeroFill === value ? "is-active" : ""} key={value} onClick={() => setZeroFill(value)} type="button">{value}×</button>)}</div></fieldset>
         <fieldset className="nmr-peak-settings"><legend>Peak labels <label><input checked={showPeakLabels} onChange={(event) => setShowPeakLabels(event.target.checked)} type="checkbox" /> Show</label></legend><label><span>Maximum labels <output>{peakCount}</output></span><input max="30" min="1" onChange={(event) => setPeakCount(Number(event.target.value))} type="range" value={peakCount} /></label><label><span>Minimum prominence</span><input min="0.001" onChange={(event) => setPeakProminence(Number(event.target.value))} step="0.005" type="number" value={peakProminence} /></label></fieldset>
         <fieldset><legend>Displayed {axis === "ppm" ? "chemical shift" : "frequency"}</legend><div className="nmr-range"><label><span>High</span><input onChange={(event) => setXMaximum(Number(event.target.value))} step="any" type="number" value={Number(xMaximum.toFixed(4))} /></label><label><span>Low</span><input onChange={(event) => setXMinimum(Number(event.target.value))} step="any" type="number" value={Number(xMinimum.toFixed(4))} /></label></div></fieldset>
-        <button className="nmr-reset" onClick={() => { setLineBroadeningHz(0.2); setZeroFill(2); setPhaseDegrees(fid ? estimateZeroOrderPhase(fid, 0.2) : 0); }} type="button">Reset processing</button>
+        <button className="nmr-reset" onClick={() => { setLineBroadeningHz(0.2); setZeroFill(2); const correction = fid ? estimatePhaseCorrection(fid, 0.2) : { phase0Degrees: 0, phase1Degrees: 0 }; setPhaseDegrees(correction.phase0Degrees); setPhase1Degrees(correction.phase1Degrees); }} type="button">Reset processing</button>
         </> : <>
           <div className="nmr-2d-kind"><span>{spectrum2d?.experiment === "hsqc" ? "g-HSQC · ¹H / ¹³C" : "COSY · ¹H / ¹H"}</span><strong>{fid2d?.width} × {fid2d?.height}</strong></div>
           <label><span>Contour threshold <output>{Math.round(contourThreshold * 100)}%</output></span><input max="0.8" min="0.01" onChange={(event) => setContourThreshold(Number(event.target.value))} step="0.01" type="range" value={contourThreshold} /></label>

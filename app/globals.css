@@ -4760,6 +4760,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .nmr-solvent-marker line { stroke: #b56d3d; stroke-dasharray: 4 3; }
 .nmr-solvent-marker text { fill: #9a572c; font-size: 9px; font-weight: 700; }
 .nmr-coupling-marker line { stroke: #6e5c92; stroke-dasharray: 3 3; }
+.nmr-coupling-marker circle { fill: #6e5c92; stroke: rgb(var(--color-paper)); stroke-width: 1.5; }
 .nmr-coupling-marker text { fill: #6e5c92; font-size: 9px; font-weight: 700; }
 .nmr-drag-selection { fill: rgb(76 110 130 / 0.14); stroke: rgb(76 110 130 / 0.5); stroke-width: 1; }
 .nmr-peak-tag line { stroke: rgb(var(--color-ink) / 0.22); stroke-width: 0.8; }
