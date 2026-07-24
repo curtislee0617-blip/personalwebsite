@@ -49,8 +49,23 @@ function smoothReveal(value: number) {
   return progress ** 3 * (progress * (progress * 6 - 15) + 10);
 }
 
+// The moon disc is clipped in CSS to a 20-cell midpoint pixel circle. The lit
+// shape is built of whole cells on that same grid: each row's outer edge sits
+// exactly on the silhouette's row extent, and the terminator column is the
+// real phase position snapped to the grid — pixel-perfect, still accurate.
+const MOON_GRID = 20;
+
+const moonRowExtents = Array.from({ length: MOON_GRID }, (_, row) => {
+  const offset = row + 0.5 - MOON_GRID / 2;
+  const halfWidth = Math.sqrt((MOON_GRID / 2) ** 2 - offset ** 2);
+  return {
+    start: Math.round(MOON_GRID / 2 - halfWidth),
+    end: Math.round(MOON_GRID / 2 + halfWidth),
+    halfWidth,
+  };
+});
+
 function createMoonLitClipPath(phase: number) {
-  const steps = 32;
   const waxing = phase < 0.5;
   const outerSide = waxing ? 1 : -1;
   const rawTerminatorSide = waxing
@@ -59,29 +74,20 @@ function createMoonLitClipPath(phase: number) {
   const terminatorSide = outerSide * rawTerminatorSide > 0.65
     ? outerSide * 0.65
     : rawTerminatorSide;
-  const edge = (progress: number, side: number) => {
-    const halfWidth = 50 * Math.sin(Math.PI * progress);
-    return 50 + side * halfWidth;
-  };
-  const steppedSide = (side: number, reverse = false) => {
-    const bands = Array.from({ length: steps }, (_, index) => {
-      const band = reverse ? steps - index - 1 : index;
-      const start = band / steps;
-      const end = (band + 1) / steps;
-      const x = edge((start + end) / 2, side);
-      const firstY = reverse ? end : start;
-      const secondY = reverse ? start : end;
+  const cell = 100 / MOON_GRID;
+  const point = (column: number, gridY: number) =>
+    `${(column * cell).toFixed(2)}% ${(gridY * cell).toFixed(2)}%`;
+  const outer: string[] = [];
+  const terminator: string[] = [];
 
-      return [
-        `${x.toFixed(2)}% ${(firstY * 100).toFixed(2)}%`,
-        `${x.toFixed(2)}% ${(secondY * 100).toFixed(2)}%`,
-      ];
-    });
+  moonRowExtents.forEach(({ start, end, halfWidth }, row) => {
+    const outerColumn = outerSide > 0 ? end : start;
+    const rawColumn = MOON_GRID / 2 + terminatorSide * halfWidth;
+    const terminatorColumn = Math.min(end, Math.max(start, Math.round(rawColumn)));
 
-    return bands.flat();
-  };
-  const outer = steppedSide(outerSide);
-  const terminator = steppedSide(terminatorSide, true);
+    outer.push(point(outerColumn, row), point(outerColumn, row + 1));
+    terminator.unshift(point(terminatorColumn, row + 1), point(terminatorColumn, row));
+  });
 
   return `polygon(${[...outer, ...terminator].join(", ")})`;
 }
