@@ -173,20 +173,21 @@ export default function AboutPage() {
             {" "}I am a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics.
           </>
         }
+        actions={
+          <div className="about-resume-actions flex flex-wrap gap-3">
+            <a className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" download href="/curtis-lee-resume.pdf">
+              Download résumé ↓
+            </a>
+            <a className="rounded-full border border-ink/20 px-5 py-3 text-sm font-semibold transition hover:border-ink hover:bg-surface" href="https://www.linkedin.com/in/curtislee0617" rel="noreferrer" target="_blank">
+              LinkedIn ↗
+            </a>
+          </div>
+        }
       />
 
       <AboutSectionRail />
 
       <section className="about-page__content page-section pt-10 sm:pt-12 lg:pt-14">
-        <div className="about-resume-actions flex flex-wrap gap-3 border-b border-ink/10 pb-10">
-          <a className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" download href="/curtis-lee-resume.pdf">
-            Download résumé ↓
-          </a>
-          <a className="rounded-full border border-ink/20 px-5 py-3 text-sm font-semibold transition hover:border-ink hover:bg-surface" href="https://www.linkedin.com/in/curtislee0617" rel="noreferrer" target="_blank">
-            LinkedIn ↗
-          </a>
-        </div>
-
         <div className="about-main-grid mt-12 grid gap-14 lg:grid-cols-[minmax(0,2fr)_minmax(15rem,1fr)] lg:gap-20">
           <div className="about-primary">
             <section className="about-section about-section--education scroll-mt-24" id="about-education">

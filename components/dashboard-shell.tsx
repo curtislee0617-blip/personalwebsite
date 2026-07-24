@@ -18,6 +18,7 @@ import {
   type WheelEvent as ReactWheelEvent,
 } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SectionLoading, type SectionLoadingVariant } from "@/components/section-loading";
 import { recipeCategories } from "@/data/recipe-categories";
 import { navIconForPath } from "@/lib/page-cursors";
 
@@ -31,6 +32,12 @@ type DashboardRecipeItem = {
   title: string;
   href: string;
   categories: string[];
+};
+
+type DashboardRouteLoading = {
+  fromPath: string;
+  title: string;
+  variant: SectionLoadingVariant;
 };
 
 export const dashboardSections = [
@@ -145,10 +152,12 @@ const DashboardModeContext = createContext<DashboardModeContextValue>({
   disableDashboard: () => undefined,
 });
 
-const DEFAULT_SIDEBAR_WIDTH = 280;
+const DEFAULT_SIDEBAR_WIDTH = 322;
 const MIN_SIDEBAR_WIDTH = 220;
-const MAX_SIDEBAR_WIDTH = 420;
+const MAX_SIDEBAR_WIDTH = 480;
 const SIDEBAR_WIDTH_KEY = "dashboard-sidebar-width";
+const SIDEBAR_WIDTH_SCALE_KEY = "dashboard-sidebar-width-scale";
+const SIDEBAR_WIDTH_SCALE_VERSION = "1.15";
 
 function clampSidebarWidth(width: number) {
   return Math.min(MAX_SIDEBAR_WIDTH, Math.max(MIN_SIDEBAR_WIDTH, Math.round(width)));
@@ -167,6 +176,18 @@ function hrefPath(href: string) {
   return href.split(/[?#]/)[0] || "/";
 }
 
+function loadingDetailsForPath(path: string): Pick<DashboardRouteLoading, "title" | "variant"> {
+  if (path === "/") return { title: "Warming up the homepage", variant: "home" };
+  if (path.startsWith("/about")) return { title: "Waking up…", variant: "about" };
+  if (path.startsWith("/projects")) return { title: "Working on smth", variant: "projects" };
+  if (path.startsWith("/recipes")) return { title: "Preheating", variant: "recipes" };
+  if (path.startsWith("/restaurants")) return { title: "Setting the table", variant: "restaurants" };
+  if (path.startsWith("/tools")) return { title: "Adding final touches", variant: "tools" };
+  if (path.startsWith("/contact")) return { title: "Opening contact", variant: "contact" };
+  if (path.startsWith("/cv")) return { title: "Opening the CV", variant: "cv" };
+  return { title: "Loading", variant: "home" };
+}
+
 export function useDashboardMode() {
   return useContext(DashboardModeContext);
 }
@@ -179,6 +200,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
   const [dashboardRecipes, setDashboardRecipes] = useState<DashboardRecipeItem[]>([]);
   const [isRecipeAdmin, setIsRecipeAdmin] = useState(false);
+  const [routeLoading, setRouteLoading] = useState<DashboardRouteLoading | null>(null);
+  const routeLoadingStartedRef = useRef(0);
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
   const sidebarResizerRef = useRef<HTMLDivElement>(null);
   const resizingPointerRef = useRef<number | null>(null);
@@ -186,7 +209,19 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 1024px)");
     const storedWidth = Number.parseInt(window.localStorage.getItem(SIDEBAR_WIDTH_KEY) ?? "", 10);
-    const initialWidth = clampSidebarWidth(Number.isFinite(storedWidth) ? storedWidth : DEFAULT_SIDEBAR_WIDTH);
+    const hasStoredWidth = Number.isFinite(storedWidth);
+    const needsWidthScale = window.localStorage.getItem(SIDEBAR_WIDTH_SCALE_KEY) !== SIDEBAR_WIDTH_SCALE_VERSION;
+    const initialWidth = clampSidebarWidth(
+      hasStoredWidth && needsWidthScale
+        ? storedWidth * 1.15
+        : hasStoredWidth
+          ? storedWidth
+          : DEFAULT_SIDEBAR_WIDTH,
+    );
+    if (needsWidthScale) {
+      window.localStorage.setItem(SIDEBAR_WIDTH_KEY, String(initialWidth));
+      window.localStorage.setItem(SIDEBAR_WIDTH_SCALE_KEY, SIDEBAR_WIDTH_SCALE_VERSION);
+    }
     sidebarWidthRef.current = initialWidth;
     applySidebarWidth(initialWidth);
     sidebarResizerRef.current?.setAttribute("aria-valuenow", String(initialWidth));
@@ -200,6 +235,21 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     desktop.addEventListener("change", sync);
     return () => desktop.removeEventListener("change", sync);
   }, []);
+
+  useEffect(() => {
+    if (!routeLoading || routeLoading.fromPath === pathname) return;
+
+    const elapsed = performance.now() - routeLoadingStartedRef.current;
+    const timer = window.setTimeout(() => setRouteLoading(null), Math.max(0, 180 - elapsed));
+    return () => window.clearTimeout(timer);
+  }, [pathname, routeLoading]);
+
+  useEffect(() => {
+    if (!routeLoading) return;
+
+    const timer = window.setTimeout(() => setRouteLoading(null), 8000);
+    return () => window.clearTimeout(timer);
+  }, [routeLoading]);
 
   useEffect(() => {
     if (!isDashboard) return;
@@ -330,6 +380,31 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     navigation.scrollBy({ top: event.deltaY, behavior: "auto" });
   }
 
+  function beginDashboardNavigation(event: ReactMouseEvent<HTMLElement>) {
+    if (
+      event.button !== 0
+      || event.metaKey
+      || event.ctrlKey
+      || event.shiftKey
+      || event.altKey
+    ) return;
+
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const anchor = target.closest<HTMLAnchorElement>("a[href]");
+    if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
+
+    const destination = new URL(anchor.href, window.location.href);
+    if (destination.origin !== window.location.origin || destination.pathname === pathname) return;
+
+    routeLoadingStartedRef.current = performance.now();
+    setRouteLoading({
+      fromPath: pathname,
+      ...loadingDetailsForPath(destination.pathname),
+    });
+  }
+
   function followDashboardLink(event: ReactMouseEvent<HTMLAnchorElement>, href: string) {
     const [destination, hash] = href.split("#");
     if (!hash || hrefPath(destination) !== pathname) return;
@@ -392,7 +467,12 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <DashboardModeContext.Provider value={{ disableDashboard, enableDashboard, isDashboard }}>
-      <aside aria-hidden={!isDashboard} className="dashboard-sidebar" onWheel={scrollDashboardNavigation}>
+      <aside
+        aria-hidden={!isDashboard}
+        className="dashboard-sidebar"
+        onClickCapture={beginDashboardNavigation}
+        onWheel={scrollDashboardNavigation}
+      >
         <div className="dashboard-sidebar-profile">
           <div>
             <Link className="dashboard-sidebar-name" href="/">Curtis Lee</Link>
@@ -408,7 +488,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             const icon = navIconForPath(section.href);
             const isActive = activeHref === section.href;
             const isExpanded = expanded[section.href] ?? isActive;
-            const canExpand = section.href !== "/contact";
+            const canExpand = !["/about", "/restaurants", "/contact"].includes(section.href);
             const visibleGroups = section.groups.filter((group) => isRecipeAdmin || !group.label.startsWith("Cookbooks"));
 
             return (
@@ -506,6 +586,17 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           <span aria-hidden="true" />
         </div>
       </aside>
+
+      {routeLoading && (
+        <div className="dashboard-route-loading">
+          <SectionLoading
+            compact
+            description=""
+            title={routeLoading.title}
+            variant={routeLoading.variant}
+          />
+        </div>
+      )}
 
       <div className="site-app-shell">{children}</div>
     </DashboardModeContext.Provider>

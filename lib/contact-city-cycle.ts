@@ -330,8 +330,10 @@ function getCityCycleFromSolarTimes(minutes: number, solar: CitySolarTimes): Cit
   const cityNightBase = Math.max(1 - morningTransition, eveningTransition);
   // At exceptional latitudes where nautical dusk never occurs, retain a muted
   // twilight instead of showing a false full-night scene.
-  const cityNight = solar.hasNauticalNight ? cityNightBase : cityNightBase * 0.72;
-  const night = cityNight;
+  const night = solar.hasNauticalNight ? cityNightBase : cityNightBase * 0.72;
+  // Keep the pixel-art foreground crisp: use the day scene from sunrise until
+  // sunset, then switch directly to the night scene instead of cross-fading.
+  const cityNight = minutes < solar.sunrise || minutes >= solar.sunset ? 1 : 0;
   const dawnSpan = solar.sunrise - solar.nauticalDawn;
   const duskSpan = solar.nauticalDusk - solar.sunset;
   const dawn = band(minutes, solar.nauticalDawn, solar.sunrise - dawnSpan * 0.2, solar.sunrise + 15, solar.sunrise + 75);
@@ -344,7 +346,7 @@ function getCityCycleFromSolarTimes(minutes: number, solar: CitySolarTimes): Cit
       + band(minutes, solar.sunset - 25, solar.sunset, solar.nauticalDusk - duskSpan * 0.15, solar.nauticalDusk),
   ) * (1 - 0.72 * Math.max(dawn, sunset));
   const sunProgress = lingerNearMidday((minutes - solar.sunrise) / (solar.sunset - solar.sunrise));
-  const stars = cityNight;
+  const stars = night;
   const moonDuration = solar.nauticalDawn + 24 * 60 - solar.nauticalDusk;
   const moonElapsed = (minutes - solar.nauticalDusk + 24 * 60) % (24 * 60);
   const moonProgress = lingerNearMidday(clamp(moonElapsed / moonDuration));
@@ -357,8 +359,8 @@ function getCityCycleFromSolarTimes(minutes: number, solar: CitySolarTimes): Cit
     daylight,
     goldenHour,
     moonOpacity: stars,
-    moonX: 97 - 94 * moonProgress,
-    moonY: 55 - 32 * Math.sin(Math.PI * moonProgress) ** 0.86,
+    moonX: 92 - 84 * moonProgress,
+    moonY: 50 - 27 * Math.sin(Math.PI * moonProgress) ** 0.86,
     night,
     sunset,
     stars,
@@ -507,7 +509,7 @@ export function getContactCelestial(
     opacity: weightedValue("opacity") * handoffOpacity,
     owner: lead.owner,
     warmth: weightedValue("warmth"),
-    x: weightedValue("x"),
-    y: weightedValue("y"),
+    x: onlyKind === "moon" ? lead.x : weightedValue("x"),
+    y: onlyKind === "moon" ? lead.y : weightedValue("y"),
   };
 }

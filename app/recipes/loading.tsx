@@ -4,7 +4,7 @@ export default function Loading() {
   return (
     <SectionLoading
       variant="recipes"
-      title="Preheating the oven"
+      title="Preheating"
       description=""
     />
   );

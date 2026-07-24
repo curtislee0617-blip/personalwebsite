@@ -50,8 +50,7 @@ function smoothReveal(value: number) {
 }
 
 function createMoonLitClipPath(phase: number) {
-  const steps = 8;
-  const pixelStep = 6.25;
+  const steps = 32;
   const waxing = phase < 0.5;
   const outerSide = waxing ? 1 : -1;
   const rawTerminatorSide = waxing
@@ -62,8 +61,7 @@ function createMoonLitClipPath(phase: number) {
     : rawTerminatorSide;
   const edge = (progress: number, side: number) => {
     const halfWidth = 50 * Math.sin(Math.PI * progress);
-    const rawX = 50 + side * halfWidth;
-    return Math.round(rawX / pixelStep) * pixelStep;
+    return 50 + side * halfWidth;
   };
   const steppedSide = (side: number, reverse = false) => {
     const bands = Array.from({ length: steps }, (_, index) => {

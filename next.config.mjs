@@ -40,6 +40,24 @@ function rootMediaRedirect() {
   }];
 }
 
+function storageFallbackRewrites(bucket, prefixes) {
+  if (!publicStorageBase || process.env.NODE_ENV === "production") return [];
+
+  return prefixes.map((prefix) => ({
+    source: `/${prefix}/:path+`,
+    destination: `${publicStorageBase}/${bucket}/${prefix}/:path+`,
+  }));
+}
+
+function rootMediaFallbackRewrite() {
+  if (!publicStorageBase || process.env.NODE_ENV === "production") return [];
+
+  return [{
+    source: "/:file([^/]+\\.(?:avif|gif|jpe?g|mp4|pdf|png|svg|webm|webp))",
+    destination: `${publicStorageBase}/site-media/root/:file`,
+  }];
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -52,6 +70,17 @@ const nextConfig = {
       ...storageRedirects("site-media", publicSiteMediaPrefixes),
       ...rootMediaRedirect(),
     ];
+  },
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      afterFiles: [],
+      fallback: [
+        ...storageFallbackRewrites("recipe-media", publicRecipeMediaPrefixes),
+        ...storageFallbackRewrites("site-media", publicSiteMediaPrefixes),
+        ...rootMediaFallbackRewrite(),
+      ],
+    };
   },
 };
 

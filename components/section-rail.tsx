@@ -142,12 +142,13 @@ export function SectionRail({ sections, ariaLabel = "Page sections" }: SectionRa
       if (dragRef.current.active && !dragRef.current.moved) {
         dragRef.current.active = false;
       }
+      const scrollEndDelay = window.matchMedia("(max-width: 639px)").matches ? 420 : 180;
       setIsScrolling(true);
       setIsScrollIdle(false);
       updateActiveSection();
 
       if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
-      scrollEndTimer.current = window.setTimeout(() => setIsScrolling(false), 180);
+      scrollEndTimer.current = window.setTimeout(() => setIsScrolling(false), scrollEndDelay);
       if (scrollIdleTimer.current) window.clearTimeout(scrollIdleTimer.current);
       scrollIdleTimer.current = window.setTimeout(() => setIsScrollIdle(true), 1500);
     };
