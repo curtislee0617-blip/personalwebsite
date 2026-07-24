@@ -1310,14 +1310,14 @@ body.has-page-cursor * { cursor: inherit; }
   transition: --hk-blue-hour 1s linear, --hk-dawn 1s linear, --hk-daylight 1s linear, --hk-golden 1s linear, --hk-night 1s linear, --hk-stars 1s linear, --hk-sunset 1s linear, --london-blue-hour 1s linear, --london-dawn 1s linear, --london-daylight 1s linear, --london-golden 1s linear, --london-night 1s linear, --london-stars 1s linear, --london-sunset 1s linear, --la-blue-hour 1s linear, --la-dawn 1s linear, --la-daylight 1s linear, --la-golden 1s linear, --la-night 1s linear, --la-stars 1s linear, --la-sunset 1s linear;
 }
 /* While the sun is on the LA side (before the ~8:15am HKT curve flip) the
-   LA↔London border sits 15 points closer to LA and the London↔HK border 10
+   LA↔London border sits 10 points closer to LA and the London↔HK border 7
    points closer to London; the right-light values below the flip are as-is. */
 .contact-cities-picture[data-light-direction="left"] {
   --contact-transition-curve: ellipse 69.35194cqw 180cqw at 0cqw calc(50% - 12.8549061cqw);
-  --contact-near-end: 40.5%;
-  --contact-middle-start: 46.5%;
-  --contact-middle-end: 86.8%;
-  --contact-far-start: 92.8%;
+  --contact-near-end: 45.5%;
+  --contact-middle-start: 51.5%;
+  --contact-middle-end: 89.8%;
+  --contact-far-start: 95.8%;
 }
 .contact-cities-picture[data-time-source="preview"] { transition-duration: 140ms; }
 .contact-cities-picture[data-time-source="preview"] .contact-city-celestial,
