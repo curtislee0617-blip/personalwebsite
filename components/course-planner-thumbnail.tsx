@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { COURSE_PLAN_STORAGE_KEY, fetchCoursePlan, loadStoredIdentity } from "@/lib/course-plan-sync";
+
+// Sample classes that loop a drag-and-drop demo into empty cells;
+// cells already holding real plan entries are left alone.
+const demoDrops: Record<string, { label: string; index: number }> = {
+  "1-Winter": { label: "ChE 63a", index: 0 },
+  "2-Spring": { label: "ACM 95a", index: 1 },
+  "4-Fall": { label: "ChE 126", index: 2 },
+};
 
 type ThumbnailClass = {
   id: string;
@@ -89,10 +97,16 @@ export function CoursePlannerThumbnail() {
             {TERMS.map((term) => {
               const termClasses = classesByCell.get(`${year}-${term}`) ?? [];
               const shownClasses = termClasses.slice(0, 2);
+              const demo = termClasses.length === 0 ? demoDrops[`${year}-${term}`] : undefined;
               return (
                 <span className={termClasses.length > 0 ? termClasses.every((entry) => entry.done) ? "is-accent" : "is-filled" : ""} key={term}>
                   {shownClasses.map((entry) => <i key={entry.id}>{entry.label}</i>)}
                   {termClasses.length > shownClasses.length && <i>+{termClasses.length - shownClasses.length}</i>}
+                  {demo && (
+                    <i className="tool-planner-demo-chip" style={{ "--demo-index": demo.index } as CSSProperties}>
+                      {demo.label}
+                    </i>
+                  )}
                 </span>
               );
             })}

@@ -18,24 +18,31 @@ function spectrumPath({
   direction,
   domain,
   peaks,
+  phaseDeg = 0,
   samples = 240,
 }: {
   baseline: number;
   direction: "up" | "down";
   domain: [number, number];
   peaks: SpectrumPeak[];
+  phaseDeg?: number;
   samples?: number;
 }) {
   const [start, end] = domain;
+  const phase = (phaseDeg * Math.PI) / 180;
   const points = Array.from({ length: samples }, (_, index) => {
     const ratio = index / (samples - 1);
     const position = start + (end - start) * ratio;
     const signal = peaks.reduce((sum, peak) => {
       const scaled = (position - peak.position) / peak.width;
-      return sum + peak.intensity / (1 + scaled * scaled);
+      const absorption = 1 / (1 + scaled * scaled);
+      // Zero-order phase error mixes in the dispersive Lorentzian component.
+      return sum + peak.intensity * (Math.cos(phase) * absorption + Math.sin(phase) * scaled * absorption);
     }, 0);
     const x = 8 + ratio * 144;
-    const y = direction === "up" ? Math.max(12, baseline - signal) : Math.min(76, baseline + signal);
+    const y = direction === "up"
+      ? Math.min(88, Math.max(12, baseline - signal))
+      : Math.min(76, baseline + signal);
     return `${index === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`;
   });
   return points.join(" ");
@@ -62,26 +69,31 @@ const ethanolIrPath = spectrumPath({
 });
 
 // Experimental ethanol ¹H NMR peak list (89.56 MHz, CDCl₃), SDBS/HMDB.
-const ethanolNmrPath = spectrumPath({
+const ethanolNmrPeaks: SpectrumPeak[] = [
+  { position: 3.811, width: 0.018, intensity: 7 },
+  { position: 3.730, width: 0.018, intensity: 27 },
+  { position: 3.652, width: 0.018, intensity: 30 },
+  { position: 3.576, width: 0.018, intensity: 8 },
+  { position: 2.607, width: 0.022, intensity: 11 },
+  { position: 2.599, width: 0.022, intensity: 9 },
+  { position: 1.303, width: 0.017, intensity: 23 },
+  { position: 1.286, width: 0.017, intensity: 2 },
+  { position: 1.226, width: 0.017, intensity: 53 },
+  { position: 1.207, width: 0.017, intensity: 2 },
+  { position: 1.199, width: 0.017, intensity: 2 },
+  { position: 1.146, width: 0.017, intensity: 20 },
+];
+
+// The card cycles the zero-order phase toward the corrected spectrum:
+// fully inverted → dispersive → nearly phased → final absorption-mode.
+const ethanolNmrPhaseSteps = [180, 90, 35, 0].map((phaseDeg) => spectrumPath({
   baseline: 72,
   direction: "up",
   domain: [10, 0],
+  peaks: ethanolNmrPeaks,
+  phaseDeg,
   samples: 520,
-  peaks: [
-    { position: 3.811, width: 0.018, intensity: 7 },
-    { position: 3.730, width: 0.018, intensity: 27 },
-    { position: 3.652, width: 0.018, intensity: 30 },
-    { position: 3.576, width: 0.018, intensity: 8 },
-    { position: 2.607, width: 0.022, intensity: 11 },
-    { position: 2.599, width: 0.022, intensity: 9 },
-    { position: 1.303, width: 0.017, intensity: 23 },
-    { position: 1.286, width: 0.017, intensity: 2 },
-    { position: 1.226, width: 0.017, intensity: 53 },
-    { position: 1.207, width: 0.017, intensity: 2 },
-    { position: 1.199, width: 0.017, intensity: 2 },
-    { position: 1.146, width: 0.017, intensity: 20 },
-  ],
-});
+}));
 
 const toolSections: ToolSection[] = [
   {
@@ -107,6 +119,18 @@ const toolSections: ToolSection[] = [
   },
 ];
 
+// Stacked values that cycle in sync across a card (8s loop, 2s per state);
+// the first value keeps the layout width, the rest overlay it.
+function CycleValue({ values }: { values: readonly string[] }) {
+  return (
+    <span className="tool-cycle">
+      {values.map((value, index) => (
+        <span key={value} style={{ "--cycle-index": index } as CSSProperties}>{value}</span>
+      ))}
+    </span>
+  );
+}
+
 function ToolThumbnail({ kind }: { kind: ToolKind }) {
   if (kind === "planner") {
     return <CoursePlannerThumbnail />;
@@ -116,9 +140,11 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
     return (
       <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-water" aria-hidden="true">
         <div className="tool-property-heading"><span>Water state</span><small>Steam tables</small></div>
-        <div className="tool-state-inputs"><span><small>Temperature</small><strong>425 K</strong></span><b>+</b><span><small>Pressure</small><strong>2.40 MPa</strong></span></div>
+        <div className="tool-state-inputs"><span><small>Temperature</small><strong><CycleValue values={["425 K", "475 K", "525 K", "575 K"]} /></strong></span><b>+</b><span><small>Pressure</small><strong>2.40 MPa</strong></span></div>
         <div className="tool-property-grid">
-          <span><small>v</small><strong>0.091 m³/kg</strong></span><span><small>h</small><strong>2821 kJ/kg</strong></span><span><small>s</small><strong>6.93 kJ/kg·K</strong></span>
+          <span><small>v</small><strong><CycleValue values={["0.091 m³/kg", "0.104 m³/kg", "0.117 m³/kg", "0.130 m³/kg"]} /></strong></span>
+          <span><small>h</small><strong><CycleValue values={["2821 kJ/kg", "2947 kJ/kg", "3070 kJ/kg", "3193 kJ/kg"]} /></strong></span>
+          <span><small>s</small><strong><CycleValue values={["6.93 kJ/kg·K", "7.20 kJ/kg·K", "7.44 kJ/kg·K", "7.66 kJ/kg·K"]} /></strong></span>
         </div>
       </div>
     );
@@ -128,19 +154,16 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
     return (
       <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-properties is-compound" aria-hidden="true">
         <div className="tool-property-heading"><span>Compound lookup</span><small>Lee–Kesler</small></div>
-        <div className="tool-compound-search"><span><strong>Propane</strong><small>C₃H₈</small></span><b>⌕</b></div>
+        <div className="tool-compound-search"><span><strong><CycleValue values={["Propane", "Ethanol", "Benzene", "Water"]} /></strong><small><CycleValue values={["C₃H₈", "C₂H₆O", "C₆H₆", "H₂O"]} /></small></span><b>⌕</b></div>
         <div className="tool-property-grid">
-          <span><small>Tc</small><strong>369.8 K</strong></span><span><small>Pc</small><strong>4.25 MPa</strong></span><span><small>ω</small><strong>0.152</strong></span>
+          <span><small>Tc</small><strong><CycleValue values={["369.8 K", "513.9 K", "562.1 K", "647.1 K"]} /></strong></span>
+          <span><small>Pc</small><strong><CycleValue values={["4.25 MPa", "6.15 MPa", "4.89 MPa", "22.1 MPa"]} /></strong></span>
+          <span><small>ω</small><strong><CycleValue values={["0.152", "0.644", "0.212", "0.344"]} /></strong></span>
         </div>
       </div>
     );
   }
 
-  const paths: Record<"vle" | "ir" | "nmr", string> = {
-    vle: "M12 72 C29 68 43 49 62 33 C83 15 112 13 148 11 M12 72 C34 71 56 63 78 48 C101 31 122 18 148 11",
-    ir: ethanolIrPath,
-    nmr: ethanolNmrPath,
-  };
   const axis = kind === "ir" ? ["4000", "3000", "2000", "1000", "cm⁻¹"] : kind === "nmr" ? ["10", "8", "6", "4", "2", "0 ppm"] : ["0", "0.25", "0.5", "0.75", "1.0", "x₁"];
 
   return (
@@ -148,8 +171,19 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
       <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary T–x–y"}</span><i>{kind === "vle" ? "Bubble / dew" : kind === "ir" ? "Ethanol · liquid film" : "Ethanol · 89.56 MHz"}</i></div>
       <svg viewBox="0 0 160 90" preserveAspectRatio="none">
         <path className="tool-chart-grid" d="M8 18H152M8 45H152M8 72H152M32 10V80M72 10V80M112 10V80" />
-        <path className="tool-chart-line" d={paths[kind]} pathLength={1} />
-        {kind === "vle" && <><circle className="tool-chart-point" cx="62" cy="33" r="2" /><circle className="tool-chart-point" cx="78" cy="48" r="2" /></>}
+        {kind === "nmr" && ethanolNmrPhaseSteps.map((phasePath, index) => (
+          <path className="tool-chart-line tool-phase-step" d={phasePath} key={index} pathLength={1} style={{ "--cycle-index": index } as CSSProperties} />
+        ))}
+        {kind === "ir" && <path className="tool-chart-line tool-chart-line-ir-load" d={ethanolIrPath} pathLength={1} />}
+        {kind === "vle" && (
+          <>
+            <path className="tool-chart-line tool-vle-curve-1" d="M12 72 C29 68 43 49 62 33 C83 15 112 13 148 11" pathLength={1} />
+            <path className="tool-chart-line tool-vle-curve-2" d="M12 72 C34 71 56 63 78 48 C101 31 122 18 148 11" pathLength={1} />
+            <path className="tool-chart-line tool-vle-tie" d="M55 40 H85" pathLength={1} />
+            <circle className="tool-chart-point" cx="55" cy="40" r="2" />
+            <circle className="tool-chart-point" cx="85" cy="40" r="2" />
+          </>
+        )}
       </svg>
       <div className="tool-chart-axis">{axis.map((label) => <span key={label}>{label}</span>)}</div>
     </div>
