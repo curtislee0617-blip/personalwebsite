@@ -28,11 +28,16 @@ const loadingMarks: Partial<Record<SectionLoadingVariant, string>> = {
 
 function LoadingMark({ variant }: { variant: SectionLoadingVariant }) {
   if (variant === "tools") {
+    // The same artwork as the /tools page cursor, so the loading screen
+    // hands off seamlessly to the pointer once the page arrives.
     return (
-      <span className="section-loading-screwdriver" aria-hidden="true">
-        <i />
-        <b />
-      </span>
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        alt=""
+        aria-hidden="true"
+        className="section-loading-screwdriver"
+        src="/cursors/screwdriver-loading.png"
+      />
     );
   }
 

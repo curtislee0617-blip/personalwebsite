@@ -90,9 +90,8 @@ export const dashboardSections: readonly DashboardSection[] = [
     href: "/recipes", label: "Recipes", subtitle: "Personal recipes, detailed guides, and transcribed cookbooks.",
     groups: [
       {
-        href: "/recipes#recipe-collection",
-        label: "Recipes",
-        dynamicItems: "recipe-categories",
+        href: "/recipes#recipe-guides",
+        label: "Guides",
         items: [
           { href: "/recipes/pasta-guide", label: "Pasta guide" },
           { href: "/recipes/sushi-guide", label: "Sushi guide" },
@@ -100,6 +99,12 @@ export const dashboardSections: readonly DashboardSection[] = [
           { href: "/recipes/sourdough-guide", label: "Sourdough guide" },
           { href: "/projects/cook-enterprise?from=recipes", label: "cook.enterprise cookbook" },
         ],
+      },
+      {
+        href: "/recipes#recipe-collection",
+        label: "Recipes",
+        dynamicItems: "recipe-categories",
+        items: [],
       },
       {
         href: "/recipes#recipe-media-saved",
