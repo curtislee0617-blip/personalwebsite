@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent, type UIEvent } f
 import { ContactCityArtwork } from "@/components/contact-city-artwork";
 import { ContactPresenceProvider } from "@/components/contact-presence";
 import { dashboardSections, useDashboardMode } from "@/components/dashboard-shell";
+import { ScrollingPhotoBackground } from "@/components/scrolling-photo-background";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cursorCss, navIconForPath, pageCursors } from "@/lib/page-cursors";
 import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
@@ -32,6 +33,7 @@ const mobileOrbitLinks = [
 
 const mobileAboutIndex = 2;
 const showHomePhotoGrid = true;
+const mobileBackgroundPages = ["about", "projects", "recipes", "tools", "restaurants"] as const;
 
 const quickAccessGroups = [
   { label: "Personal", sections: [dashboardSections[3], dashboardSections[4], dashboardSections[2]] },
@@ -68,170 +70,6 @@ function positionMobileCarousel(scroller: HTMLElement) {
   return closestIndex;
 }
 
-const placeholderColors = [
-  ["#d8e4dc", "#94aa9c"], ["#ead8cb", "#c58f74"], ["#dce4ed", "#8fa7bd"],
-  ["#e7dfbd", "#b7a86f"], ["#ded7e9", "#9f91b2"], ["#d7e5e8", "#7fa1a7"],
-] as const;
-
-const logoPhoto = "/logos/caltech-collage-orange.png";
-
-function mixNumber(value: number) {
-  let mixed = value + 0x6d2b79f5;
-  mixed = Math.imul(mixed ^ (mixed >>> 15), mixed | 1);
-  mixed ^= mixed + Math.imul(mixed ^ (mixed >>> 7), mixed | 61);
-  return (mixed ^ (mixed >>> 14)) >>> 0;
-}
-
-function blockDistance(first: number, second: number, rows: number) {
-  const firstRow = first % rows;
-  const secondRow = second % rows;
-  const firstColumn = Math.floor(first / rows);
-  const secondColumn = Math.floor(second / rows);
-  return Math.max(Math.abs(firstRow - secondRow), Math.abs(firstColumn - secondColumn));
-}
-
-function createLogoPlacements(itemCount: number, rows: number) {
-  const candidates = Array.from({ length: itemCount }, (_, index) => index).sort(
-    (first, second) => mixNumber(first) - mixNumber(second),
-  );
-  const placements: number[] = [];
-  const priorTargetCount = Math.max(
-    1,
-    Math.ceil(Math.ceil(Math.ceil(itemCount / 13) * (2 / 3)) * (2 / 3) * (2 / 3)),
-  );
-  const targetCount = Math.max(1, Math.floor(priorTargetCount * 0.65));
-  const rowCounts = Array.from({ length: rows }, () => 0);
-  const basePerRow = Math.floor(targetCount / rows);
-  const extraRows = targetCount % rows;
-  const rowPriority = Array.from({ length: rows }, (_, row) => row).sort(
-    (first, second) => mixNumber(itemCount + first * 37) - mixNumber(itemCount + second * 37),
-  );
-  const rowTargets = Array.from({ length: rows }, () => basePerRow);
-
-  for (let index = 0; index < extraRows; index += 1) {
-    rowTargets[rowPriority[index]] += 1;
-  }
-
-  for (const position of candidates) {
-    const row = position % rows;
-    if (rowCounts[row] >= rowTargets[row]) continue;
-
-    const allowed = placements.every((existingPosition) =>
-      blockDistance(position, existingPosition, rows) > 3,
-    );
-
-    if (allowed) {
-      placements.push(position);
-      rowCounts[row] += 1;
-    }
-
-    if (placements.length >= targetCount) break;
-  }
-
-  if (placements.length < targetCount) {
-    for (const position of candidates) {
-      if (placements.includes(position)) continue;
-
-      const allowed = placements.every((existingPosition) =>
-        blockDistance(position, existingPosition, rows) > 3,
-      );
-
-      if (allowed) placements.push(position);
-
-      if (placements.length >= targetCount) break;
-    }
-  }
-
-  return placements.sort((first, second) => mixNumber(first + 211) - mixNumber(second + 211));
-}
-
-function PhotoGridBackground({ photos }: { photos: string[] }) {
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-  const [itemCount, setItemCount] = useState(120);
-  const [rowCount, setRowCount] = useState(8);
-
-  useEffect(() => {
-    const updateDensity = () => {
-      const mobile = window.matchMedia("(max-width: 639px)").matches;
-      setIsMobile(mobile);
-      const rows = mobile ? 5 : 8;
-      const columnWidth = mobile
-        ? Math.max(72, window.innerHeight * 0.15)
-        : Math.max(46, (window.innerHeight - 73) * 0.075);
-      // One viewport plus a small overlap is enough because the track is
-      // duplicated. Avoid building hundreds of off-screen image nodes.
-      const columns = Math.ceil(window.innerWidth / columnWidth) + (mobile ? 3 : 2);
-      setRowCount(rows);
-      setItemCount(rows * columns);
-    };
-
-    updateDensity();
-    window.addEventListener("resize", updateDensity);
-    return () => window.removeEventListener("resize", updateDensity);
-  }, []);
-
-  if (isMobile === null) return <div className="home-photo-grid" aria-hidden="true" />;
-
-  if (isMobile) {
-    return (
-      <div className="home-photo-grid" aria-hidden="true">
-        <div className="mobile-photo-collage" />
-      </div>
-    );
-  }
-
-  const items = Array.from({ length: itemCount }, (_, index) => ({
-    photo: photos.length ? photos[index % photos.length] : null,
-    isLogo: false,
-  }));
-
-  for (const position of createLogoPlacements(itemCount, rowCount)) {
-    items[position] = {
-      photo: logoPhoto,
-      isLogo: true,
-    };
-  }
-
-  return (
-    <div className="home-photo-grid" aria-hidden="true">
-      <div className="photo-grid-rail">
-        {[0, 1].map((copy) => (
-          <div className="photo-grid-track" key={copy}>
-            {items.map(({ photo, isLogo }, index) => {
-              const shuffledIndex = (index * 47) % itemCount;
-              const colors = placeholderColors[shuffledIndex % placeholderColors.length];
-              const style = photo
-                ? { backgroundImage: `url("${photo}")` }
-                : { backgroundImage: `linear-gradient(145deg, ${colors[0]}, ${colors[1]})` };
-
-              return (
-                <span
-                  className={`photo-grid-tile ${isLogo ? "is-logo" : ""} ${photo === logoPhoto ? "is-caltech-logo" : ""}`}
-                  key={`${copy}-${index}`}
-                >
-                  {photo ? (
-                    <img
-                      alt=""
-                      className="photo-grid-image"
-                      decoding="async"
-                      loading={copy === 0 && index < 18 ? "eager" : "lazy"}
-                      src={photo}
-                    />
-                  ) : (
-                    <span className="photo-grid-placeholder" style={style}>
-                      {String(shuffledIndex + 1).padStart(3, "0")}
-                    </span>
-                  )}
-                </span>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profilePhoto: string }) {
   const router = useRouter();
   const { enableDashboard } = useDashboardMode();
@@ -240,9 +78,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
   const mobileScrollFrame = useRef(0);
   const [entryMode, setEntryMode] = useState<"pending" | "center" | "menu" | "mobile-return">("pending");
   const [mobileActiveIndex, setMobileActiveIndex] = useState(mobileAboutIndex);
-  const [isDark, setIsDark] = useState(
-    () => typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
-  );
+  const [isDark, setIsDark] = useState(false);
   const bubbleCursors = useMemo(() => new Map(orbitLinks.map((item) => {
     const match = pageCursors.find((entry) => entry.match(item.href));
     return [item.href, match ? cursorCss(match, isDark) : undefined];
@@ -273,10 +109,33 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
   useEffect(() => {
     const el = document.documentElement;
-    const observer = new MutationObserver(() => setIsDark(el.classList.contains("dark")));
+    const syncTheme = () => setIsDark(el.classList.contains("dark"));
+    const observer = new MutationObserver(syncTheme);
+    syncTheme();
     observer.observe(el, { attributes: true, attributeFilter: ["class"] });
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 639px)").matches) return;
+
+    const preload = () => {
+      const theme = isDark ? "dark" : "light";
+      mobileBackgroundPages.forEach((page) => {
+        const image = new window.Image();
+        image.decoding = "async";
+        image.src = `/mobile-page-backgrounds/${page}-${theme}.png?v=20260727`;
+      });
+    };
+
+    if ("requestIdleCallback" in window) {
+      const idle = window.requestIdleCallback(preload, { timeout: 1600 });
+      return () => window.cancelIdleCallback(idle);
+    }
+
+    const timer = setTimeout(preload, 750);
+    return () => clearTimeout(timer);
+  }, [isDark]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -532,7 +391,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
   return (
     <section id="top" className={`home-orbit home-entry-${entryMode} home-mobile-focus-${mobileOrbitLinks[mobileActiveIndex]?.href.slice(1) ?? "contact"}`}>
-      {showHomePhotoGrid && <PhotoGridBackground photos={photos} />}
+      {showHomePhotoGrid && <ScrollingPhotoBackground photos={photos} />}
 
       <button className="dashboard-mode-launch" onClick={enterDashboardMode} type="button">
         <span aria-hidden="true" className="dashboard-mode-launch-icon"><i /><i /><i /></span>

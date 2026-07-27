@@ -6,9 +6,20 @@ const args = process.argv.slice(2);
 const inputPath = args.find((arg) => !arg.startsWith("--")) ?? "imports/google-maps/staging/enriched-restaurants.json";
 const syncPublished = args.includes("--sync");
 const env = Object.fromEntries(
-  fs.readFileSync(".env.local", "utf8").split(/\r?\n/).filter(Boolean).map((line) => {
+  fs.readFileSync(".env.local", "utf8").split(/\r?\n/).flatMap((rawLine) => {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) return [];
     const separator = line.indexOf("=");
-    return [line.slice(0, separator), line.slice(separator + 1)];
+    if (separator < 1) return [];
+    const key = line.slice(0, separator).trim().replace(/^export\s+/, "");
+    const rawValue = line.slice(separator + 1).trim();
+    const value = (
+      (rawValue.startsWith("\"") && rawValue.endsWith("\""))
+      || (rawValue.startsWith("'") && rawValue.endsWith("'"))
+    )
+      ? rawValue.slice(1, -1)
+      : rawValue;
+    return [[key, value]];
   }),
 );
 
@@ -23,7 +34,11 @@ const categoryPriority = [
   "Southeast Asian", "Middle Eastern", "African", "Barbecue", "Deli", "Casual", "Unclassified",
 ];
 const source = JSON.parse(fs.readFileSync(inputPath, "utf8"));
-const confirmed = source.restaurants.filter((item) => item.status === "ready" && item.placeId && item.position);
+const confirmed = source.restaurants.filter((item) =>
+  item.status === "ready"
+  && item.placeId
+  && item.position
+  && !["CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY"].includes(item.businessStatus));
 const merged = new Map();
 
 function descriptionFor(item) {
@@ -143,6 +158,7 @@ const rows = Array.from(merged.values()).map((item) => ({
   google_maps_url: item.googleMapsUrl,
   opening_hours: null,
   hours_updated_at: null,
+  business_status: item.businessStatus ?? "OPERATIONAL",
   is_published: true,
   updated_at: new Date().toISOString(),
 }));

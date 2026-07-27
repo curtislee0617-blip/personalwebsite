@@ -11,7 +11,37 @@ const reviewPath = args.find((arg) => arg.startsWith("--review="))?.split("=").s
 const concurrency = Math.max(1, Math.min(6, Number(args.find((arg) => arg.startsWith("--concurrency="))?.split("=")[1] ?? 4)));
 const limit = Math.max(0, Number(args.find((arg) => arg.startsWith("--limit="))?.split("=")[1] ?? 0));
 const selectedIds = new Set((args.find((arg) => arg.startsWith("--ids="))?.split("=").slice(1).join("=") ?? "").split(",").filter(Boolean));
+const fresh = args.includes("--fresh");
+const useLegacyDecisions = !args.includes("--no-legacy-decisions");
+const verifyPlaces = args.includes("--verify-places");
 const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/137 Safari/537.36";
+
+function readEnv() {
+  if (!fs.existsSync(".env.local")) return {};
+  return Object.fromEntries(
+    fs.readFileSync(".env.local", "utf8").split(/\r?\n/).flatMap((rawLine) => {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#")) return [];
+      const separator = line.indexOf("=");
+      if (separator < 1) return [];
+      const key = line.slice(0, separator).trim().replace(/^export\s+/, "");
+      const rawValue = line.slice(separator + 1).trim();
+      const value = (
+        (rawValue.startsWith("\"") && rawValue.endsWith("\""))
+        || (rawValue.startsWith("'") && rawValue.endsWith("'"))
+      )
+        ? rawValue.slice(1, -1)
+        : rawValue;
+      return [[key, value]];
+    }),
+  );
+}
+
+const env = readEnv();
+if (verifyPlaces && !env.GOOGLE_PLACES_API_KEY) {
+  console.error("GOOGLE_PLACES_API_KEY is required with --verify-places");
+  process.exit(1);
+}
 
 const manualCategories = new Map([
   ["takeout-0013", "Western Nicer"],
@@ -138,7 +168,7 @@ async function resolveCid(cid, fallbackName) {
 }
 
 function classifyResolved(item, resolved) {
-  if (manualCategories.has(item.importId)) {
+  if (useLegacyDecisions && manualCategories.has(item.importId)) {
     return { category: manualCategories.get(item.importId), reason: "user review decision" };
   }
   if (resolved.placeTypes.includes("food_court")) {
@@ -157,6 +187,88 @@ function classifyResolved(item, resolved) {
   return { category: suggestion.category, reason: suggestion.reason };
 }
 
+function toPriceLevel(value) {
+  switch (value) {
+    case "PRICE_LEVEL_INEXPENSIVE":
+      return 1;
+    case "PRICE_LEVEL_MODERATE":
+      return 2;
+    case "PRICE_LEVEL_EXPENSIVE":
+      return 3;
+    case "PRICE_LEVEL_VERY_EXPENSIVE":
+      return 4;
+    default:
+      return null;
+  }
+}
+
+function addressComponent(components, wantedTypes) {
+  return components?.find((component) =>
+    wantedTypes.some((type) => component.types?.includes(type)))?.longText ?? null;
+}
+
+async function fetchPlaceDetails(placeId) {
+  let lastError;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      const response = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
+        headers: {
+          "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
+          "X-Goog-FieldMask": [
+            "id",
+            "displayName",
+            "formattedAddress",
+            "addressComponents",
+            "location",
+            "googleMapsUri",
+            "primaryType",
+            "types",
+            "priceLevel",
+            "businessStatus",
+          ].join(","),
+        },
+        signal: AbortSignal.timeout(30000),
+      });
+      const body = await response.json();
+      if (response.ok) return body;
+      throw new Error(body.error?.message ?? `Places API returned ${response.status}`);
+    } catch (error) {
+      lastError = error;
+      if (attempt < 4) {
+        await new Promise((resolve) => setTimeout(resolve, 1000 * (attempt + 1)));
+      }
+    }
+  }
+  throw lastError;
+}
+
+async function verifyResolvedPlace(resolved) {
+  if (!verifyPlaces) return resolved;
+  const place = await fetchPlaceDetails(resolved.placeId);
+  const address = place.formattedAddress ?? resolved.address;
+  const components = place.addressComponents ?? [];
+  return {
+    ...resolved,
+    name: place.displayName?.text ?? resolved.name,
+    address,
+    area: addressComponent(components, ["neighborhood", "sublocality", "sublocality_level_1"])
+      ?? resolved.area,
+    city: addressComponent(components, ["locality", "postal_town", "administrative_area_level_2"])
+      ?? resolved.city,
+    country: addressComponent(components, ["country"]) ?? resolved.country,
+    position: {
+      latitude: place.location?.latitude ?? resolved.position.latitude,
+      longitude: place.location?.longitude ?? resolved.position.longitude,
+    },
+    primaryType: place.primaryType ?? resolved.primaryType,
+    placeTypes: place.types ?? resolved.placeTypes,
+    googleMapsUrl: place.googleMapsUri ?? resolved.googleMapsUrl,
+    businessStatus: place.businessStatus ?? "UNKNOWN",
+    googlePriceLevel: toPriceLevel(place.priceLevel),
+    placesVerifiedAt: new Date().toISOString(),
+  };
+}
+
 function canReuseCachedResult(item, cached) {
   if (!cached?.resolutionMethod && !(cached?.placeId && cached?.position)) return false;
   if (cached.status === "excluded_manual") return true;
@@ -169,7 +281,7 @@ let candidates = source.restaurants;
 if (selectedIds.size) candidates = candidates.filter((item) => selectedIds.has(item.importId));
 if (limit > 0) candidates = candidates.slice(0, limit);
 
-const previous = fs.existsSync(outputPath) && !selectedIds.size && limit === 0
+const previous = !fresh && fs.existsSync(outputPath) && !selectedIds.size && limit === 0
   ? JSON.parse(fs.readFileSync(outputPath, "utf8")).restaurants ?? []
   : [];
 const completedById = new Map(previous.map((item) => [item.importId, item]));
@@ -184,6 +296,7 @@ function writeProgress() {
     ready: restaurants.filter((item) => item.status === "ready").length,
     needsReview: restaurants.filter((item) => item.status === "needs_review").length,
     excludedNonFood: restaurants.filter((item) => item.status === "excluded_non_food").length,
+    excludedClosed: restaurants.filter((item) => item.status === "excluded_closed").length,
     excludedManual: restaurants.filter((item) => item.status === "excluded_manual").length,
   };
   const payload = { generatedAt: new Date().toISOString(), source: path.basename(inputPath), summary, restaurants };
@@ -203,7 +316,7 @@ async function worker() {
     const item = candidates[index];
     const cached = completedById.get(item.importId);
     const originalCoordinates = coordinatesFromUrl(item.googleMapsUrl);
-    if (excludedIds.has(item.importId)) {
+    if (useLegacyDecisions && excludedIds.has(item.importId)) {
       results[index] = { ...item, status: "excluded_manual", reviewReason: "Removed by user", resolutionMethod: "user_decision" };
     } else if (canReuseCachedResult(item, cached)) {
       const classification = classifyResolved(item, cached);
@@ -253,10 +366,14 @@ async function worker() {
         results[index] = { ...item, status: "needs_review", reviewReason: "Original Google Maps URL has no CID" };
       } else {
         try {
-          const resolved = await resolveCid(cid, item.name);
-          const foodVenue = isFoodVenue(resolved.placeTypes) || manualCategories.has(item.importId);
+          const exactPin = await resolveCid(cid, item.name);
+          const resolved = await verifyResolvedPlace(exactPin);
+          const foodVenue = isFoodVenue(resolved.placeTypes)
+            || (useLegacyDecisions && manualCategories.has(item.importId));
+          const closed = ["CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY"].includes(resolved.businessStatus);
           const classification = classifyResolved(item, resolved);
           const needsCategoryReview = foodVenue && classification.category === "Unclassified";
+          const priceLevel = resolved.googlePriceLevel ?? estimatedPrice(classification.category);
           results[index] = {
             ...item,
             ...resolved,
@@ -265,10 +382,18 @@ async function worker() {
             confidence: 1,
             classificationReason: classification.reason,
             matchConfidence: 1,
-            priceLevel: estimatedPrice(classification.category),
-            priceLevelSource: "category estimate",
-            status: needsCategoryReview ? "needs_review" : foodVenue ? "ready" : "excluded_non_food",
-            reviewReason: needsCategoryReview
+            priceLevel,
+            priceLevelSource: resolved.googlePriceLevel ? "Google Places" : "category estimate",
+            status: closed
+              ? "excluded_closed"
+              : needsCategoryReview
+                ? "needs_review"
+                : foodVenue
+                  ? "ready"
+                  : "excluded_non_food",
+            reviewReason: closed
+              ? `Google Places reports ${resolved.businessStatus}`
+              : needsCategoryReview
               ? "Exact pin resolved; category is still uncertain"
               : foodVenue ? null : `Original pin type is ${resolved.placeTypes.join(", ") || "unknown"}`,
             matchCandidates: [],

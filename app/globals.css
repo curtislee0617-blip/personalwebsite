@@ -1194,13 +1194,39 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-cities-copy > div > p:last-child { max-width: 28rem; margin-top: 1rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.82rem; line-height: 1.7; }
 .contact-city-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
 .contact-page {
+  position: relative;
   display: grid;
   min-height: calc(100svh - 73px);
+  overflow: hidden;
   padding-top: clamp(1.25rem, 4vw, 3.25rem);
   padding-bottom: clamp(1.25rem, 4vw, 3.25rem);
   place-items: center;
+  isolation: isolate;
+}
+.contact-page::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 50% 44%, rgb(var(--color-paper) / 0.16), rgb(var(--color-paper) / 0.68) 72%),
+    linear-gradient(180deg, rgb(var(--color-paper) / 0.34), rgb(var(--color-paper) / 0.58));
+  content: "";
+  pointer-events: none;
+}
+.contact-page .contact-photo-background {
+  display: block;
+  opacity: 0.3;
+  filter: saturate(0.82) contrast(0.94);
+}
+.dark .contact-page .contact-photo-background {
+  opacity: 0.22;
+}
+.contact-page .mobile-photo-collage {
+  display: block;
 }
 .contact-composition {
+  position: relative;
+  z-index: 2;
   width: min(100%, 60rem);
   overflow: hidden;
   border: 1px solid rgb(var(--color-ink) / 0.12);
@@ -1281,17 +1307,29 @@ body.has-page-cursor * { cursor: inherit; }
 }
 
 @media (max-width: 639px) {
-  .contact-page { min-height: 0; padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+  .contact-page {
+    min-height: 100svh;
+    overflow: clip;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    align-items: start;
+    justify-items: center;
+  }
   .contact-composition { border-radius: 1.35rem; box-shadow: 0 16px 44px rgb(var(--color-ink) / 0.1); }
   .contact-art-frame .contact-cities-art { min-height: 10rem; }
-  .contact-link-grid { width: calc(100% - 0.9rem); padding: 0.48rem 0 0.58rem; gap: 0.45rem; }
-  .contact-link-card { min-height: 7.25rem; padding: 0.68rem; border-radius: 0.95rem; }
-  .contact-link-heading { gap: 0.4rem; }
+  .contact-link-grid {
+    width: calc(100% - 0.9rem);
+    padding: 0.52rem 0 0.62rem;
+    gap: 0.42rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .contact-link-card { min-height: 4.7rem; padding: 0.65rem 0.72rem; border-radius: 0.95rem; }
+  .contact-link-heading { align-items: center; gap: 0.4rem; }
   .contact-link-heading h2 { margin-top: 0.28rem; font-size: 0.75rem; }
   .contact-link-icon { width: 2.15rem !important; height: 2.15rem !important; border-radius: 0.72rem !important; }
   .contact-link-icon svg { width: 1.05rem; height: 1.05rem; }
   .contact-link-detail { display: none; }
-  .contact-link-label { padding-top: 0.55rem; font-size: 0.52rem; }
+  .contact-link-label { margin-top: 0.28rem; padding-top: 0; font-size: 0.52rem; }
 }
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
 .contact-city-chips i { display: inline-grid; width: 1.12rem; height: 1rem; flex: none; place-items: center; font-style: normal; }
@@ -4949,6 +4987,9 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .section-rail { display: none; }
 }
 
+.course-requirement-picker-arrow { display: inline-block; transition: transform 180ms ease; }
+.course-requirement-picker-category[open] .course-requirement-picker-arrow { transform: rotate(180deg); }
+
 @media (max-width: 639px) {
   :root {
     --radius-card: 1rem;
@@ -4961,6 +5002,47 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .course-plan-mobile-terms > div { scrollbar-width: none; }
   .course-plan-mobile-terms > div::-webkit-scrollbar { display: none; }
   .course-plan-mobile .course-class-units input { width: 2.65rem; }
+  .course-planner-shell { row-gap: 1.35rem; }
+  .course-planner-setup-card { padding: 0.72rem; border-radius: 1rem; }
+  .course-planner-setup-card > div,
+  .course-planner-setup-card > div > div { min-width: 0; }
+  .course-planner-setup-description { margin-top: 0.35rem; line-height: 1.45; }
+  .course-planner-privacy { margin-top: 0.3rem; line-height: 1.35; }
+  .course-planner-setup-grid { margin-top: 0.72rem; gap: 0.58rem; }
+  .course-planner-setup-grid > div,
+  .course-planner-setup-card .basis-full { padding: 0.62rem; border-radius: 0.8rem; }
+  .course-planner-core-block > div { gap: 0.45rem; }
+  .course-planner-core-block > div > div:first-child p:last-child { display: none; }
+  .course-planner-core-block .inline-flex { padding: 0.15rem; font-size: 0.55rem; }
+  .course-planner-core-block .inline-flex button { padding: 0.28rem 0.5rem; }
+  .course-planner-major-block { margin-top: 0.55rem; padding-top: 0.55rem; }
+  .course-major-selector {
+    display: grid;
+    margin-top: 0.35rem;
+    gap: 0.28rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .course-major-group {
+    min-width: 0 !important;
+    border-radius: 0.55rem;
+  }
+  .course-major-group[open] { grid-column: 1 / -1; }
+  .course-major-group > summary { padding: 0.34rem 0.4rem; gap: 0.15rem; font-size: 0.55rem; }
+  .course-major-group > summary > span:last-child { font-size: 0.45rem; }
+  .course-major-group > div { padding: 0.5rem; gap: 0.45rem; }
+  .course-major-group > div > div { gap: 0.25rem; }
+  .course-planner-cloud-fields {
+    margin-top: 0.55rem;
+    gap: 0.42rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .course-planner-cloud-fields > label:last-child { grid-column: 1 / -1; }
+  .course-planner-cloud-fields input { height: 2.2rem; margin-top: 0.2rem; padding-inline: 0.65rem; }
+  .course-planner-cloud-fields > label:last-child > span { display: none; }
+  .course-planner-cloud-submit { margin-top: 0.55rem; }
+  .course-planner-cloud-submit button { width: 100%; height: 2.2rem; }
+  .course-requirement-picker { padding: 0.3rem; }
+  .course-requirement-picker-category summary { padding: 0.4rem 0.5rem; }
   main .text-xs,
   footer .text-xs,
   .site-menu-panel .text-xs { font-size: 0.6rem !important; }
@@ -5062,42 +5144,42 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .home-orbit[class*="home-mobile-focus-"]::before {
     inset: 0;
     animation: none;
-    background-position: center;
-    background-size: cover;
+    background-position: center, top center;
+    background-size: 100% 100%, 100% auto;
     background-repeat: no-repeat;
     filter: blur(2px) saturate(0.86) contrast(0.96);
     opacity: 0.8;
-    transform: scale(1.025);
+    transform: none;
     will-change: auto;
   }
   .home-orbit.home-mobile-focus-about::before {
-    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/about-light.png");
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/about-light.png?v=20260727");
   }
   .home-orbit.home-mobile-focus-projects::before {
-    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/projects-light.png");
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/projects-light.png?v=20260727");
   }
   .home-orbit.home-mobile-focus-contact::before {
-    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/contact-light.png");
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/contact-light.png?v=20260727");
   }
   .home-orbit.home-mobile-focus-recipes::before {
-    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/recipes-light.png");
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/recipes-light.png?v=20260727");
   }
   .home-orbit.home-mobile-focus-tools::before {
-    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/tools-light.png");
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/tools-light.png?v=20260727");
   }
   .home-orbit.home-mobile-focus-restaurants::before {
-    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/restaurants-light.png");
+    background-image: linear-gradient(rgb(var(--color-paper) / 0.3), rgb(var(--color-paper) / 0.3)), url("/mobile-page-backgrounds/restaurants-light.png?v=20260727");
   }
   .dark .home-orbit[class*="home-mobile-focus-"]::before {
     filter: blur(2px) saturate(0.8) contrast(0.96);
     opacity: 0.8;
   }
-  .dark .home-orbit.home-mobile-focus-about::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/about-dark.png"); }
-  .dark .home-orbit.home-mobile-focus-projects::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/projects-dark.png"); }
-  .dark .home-orbit.home-mobile-focus-contact::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/contact-dark.png"); }
-  .dark .home-orbit.home-mobile-focus-recipes::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/recipes-dark.png"); }
-  .dark .home-orbit.home-mobile-focus-tools::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/tools-dark.png"); }
-  .dark .home-orbit.home-mobile-focus-restaurants::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/restaurants-dark.png"); }
+  .dark .home-orbit.home-mobile-focus-about::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/about-dark.png?v=20260727"); }
+  .dark .home-orbit.home-mobile-focus-projects::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/projects-dark.png?v=20260727"); }
+  .dark .home-orbit.home-mobile-focus-contact::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/contact-dark.png?v=20260727"); }
+  .dark .home-orbit.home-mobile-focus-recipes::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/recipes-dark.png?v=20260727"); }
+  .dark .home-orbit.home-mobile-focus-tools::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/tools-dark.png?v=20260727"); }
+  .dark .home-orbit.home-mobile-focus-restaurants::before { background-image: linear-gradient(rgb(var(--color-paper) / 0.24), rgb(var(--color-paper) / 0.24)), url("/mobile-page-backgrounds/restaurants-dark.png?v=20260727"); }
   .photo-grid-rail { display: none; }
   .mobile-photo-collage {
     position: absolute;
@@ -5422,11 +5504,25 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     min-height: 4.55rem;
     padding: 0.55rem 0.7rem 0.62rem !important;
   }
+  /* A narrow desktop window still reports a fine pointer, so desktop hover
+     lift, shadow, and spotlight effects can clip against the carousel's
+     scrolling viewport. Keep the depth/focus animation, but neutralize those
+     decorative hover treatments at the mobile layout breakpoint. */
+  .mobile-snap-carousel .swipe-bubble-card:hover {
+    border-color: rgb(var(--color-ink) / 0.1) !important;
+    background: rgb(var(--color-surface) / 0.55) !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  .mobile-snap-carousel .swipe-bubble-card[data-spotlight-active]::after {
+    opacity: 0 !important;
+  }
 
   .tool-card { padding: 0 !important; border-radius: 1rem !important; }
   .tool-thumbnail { display: block !important; height: 4.8rem; background-color: rgb(var(--color-mist)); }
   .tool-thumbnail-planner { display: grid !important; }
   .tool-thumbnail-properties { display: grid !important; }
+  .tool-thumbnail-chart:is(.is-ir, .is-nmr) .tool-chart-line { stroke-width: 1.1; }
   .tool-thumbnail-planner { padding: 0.22rem 0.34rem 0.25rem; gap: 0.06rem; }
   .tool-planner-heading { font-size: 0.29rem; }
   .tool-planner-heading small { font-size: 0.22rem; }
@@ -5702,6 +5798,39 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   .recipe-anchor-tabs { gap: 0.24rem !important; }
   .recipe-anchor-tab { padding: 0.22rem 0.4rem !important; font-size: 0.47rem !important; }
   .restaurant-map-layout { border-radius: 1.4rem; }
+  .restaurant-beli-row { margin-top: 0.5rem !important; }
+  .restaurant-page-section { padding-top: 0.6rem !important; }
+  .restaurant-explorer { gap: 0.55rem; }
+  .restaurant-filter-panel { gap: 0.42rem; }
+  .restaurant-filter-panel label,
+  .restaurant-search { gap: 0.18rem; }
+  .restaurant-filter-panel label > span { font-size: 0.5rem; letter-spacing: 0.07em; }
+  .restaurant-filter-panel input,
+  .restaurant-filter-panel select {
+    height: 2.05rem;
+    padding: 0 0.55rem;
+    border-radius: 0.65rem;
+  }
+  .restaurant-search-control { gap: 0.25rem; }
+  .restaurant-search-control button {
+    height: 2.05rem;
+    min-width: 2.35rem;
+    padding: 0 0.55rem;
+    border-radius: 0.65rem;
+    font-size: 0.58rem;
+  }
+  .restaurant-export {
+    height: 2.05rem;
+    padding: 0 0.6rem;
+    border-radius: 0.65rem;
+    font-size: 0.56rem;
+  }
+  .restaurant-filter-row { gap: 0.3rem; padding-bottom: 0.12rem; }
+  .restaurant-filter {
+    padding: 0.3rem 0.52rem;
+    font-size: 0.58rem;
+  }
+  .restaurant-export-note { margin-top: -0.35rem; font-size: 0.52rem; line-height: 1.35; }
   .restaurant-map-shell,
   .restaurant-map { min-height: 65svh; }
   .restaurant-map-card { left: 0.65rem; bottom: 0.65rem; width: calc(100% - 1.3rem); padding: 0.8rem; }
@@ -7646,22 +7775,9 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
    Layered on top of the existing design language (see SiteInteractions).
    ========================================================================== */
 
-/* Content is always visible without JS; the hide only applies once the
-   reveal controller has mounted and only when motion is allowed. */
-html.js-reveal-ready [data-reveal] {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 620ms var(--ease-standard),
-    transform 620ms var(--ease-standard);
-  transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
-}
-
-html.js-reveal-ready [data-reveal].is-revealed {
-  opacity: 1;
-  transform: none;
-}
+/* Reveal targets are visible in the source HTML. SiteInteractions applies a
+   one-time Web Animation without adding hydration-sensitive classes. */
+[data-reveal] { opacity: 1; transform: none; }
 
 [data-reveal-child] > * {
   opacity: 0;
@@ -7714,7 +7830,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.js-reveal-ready [data-reveal],
+  [data-reveal],
   [data-reveal-child] > * {
     opacity: 1 !important;
     transform: none !important;
@@ -7808,14 +7924,6 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 }
 :is(.tool-card:hover, .mobile-snap-slot.is-focused) .is-cycle-fast6 .tool-cycle-track {
   animation: tool-cycle-fast6 5.5s cubic-bezier(0.6, 0, 0.15, 1) infinite;
-}
-
-/* NMR: idle shows the corrected spectrum; on hover the trace morphs fluidly
-   through a phase sweep (CSS `d` interpolation over the injected keyframes,
-   see nmrMorphKeyframes) and settles back on the phased spectrum. Where `d`
-   animation is unsupported the path holds its final shape. */
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-nmr-morph {
-  animation: tool-nmr-phase-morph 4.1s cubic-bezier(0.5, 0, 0.3, 1) infinite;
 }
 
 /* Chart draw-ons use a left→right clip wipe rather than stroke-dashoffset: a
@@ -7929,7 +8037,6 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .page-intro-actions,
   .project-focus-panel,
   .tool-cycle-track,
-  .tool-nmr-morph,
   .tool-chart-line-ir-load,
   .tool-vle-curve-1,
   .tool-vle-curve-2,

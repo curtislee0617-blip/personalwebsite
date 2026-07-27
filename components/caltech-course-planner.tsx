@@ -367,7 +367,7 @@ function SubjectDropdown({ group, selectedMajors, onToggleMajor }: MajorSelector
   );
 
   return (
-    <details className="min-w-64 rounded-2xl border border-ink/20 bg-surface text-xs text-ink/70" onToggle={(event) => setOpen(event.currentTarget.open)} open={open}>
+    <details className="course-major-group min-w-64 rounded-2xl border border-ink/20 bg-surface text-xs text-ink/70" onToggle={(event) => setOpen(event.currentTarget.open)} open={open}>
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-1.5 font-medium marker:hidden">
         <span>{group.title}</span>
         <span className="text-[0.62rem] font-semibold text-ink/40">{countLabel(selectedCount, "selected", "choose")}</span>
@@ -397,7 +397,7 @@ function SubjectDropdown({ group, selectedMajors, onToggleMajor }: MajorSelector
 
 function MajorSelector({ selectedMajors, onToggleMajor }: MajorSelectorProps) {
   return (
-    <div className="mt-1 flex flex-wrap items-start gap-2">
+    <div className="course-major-selector mt-1 flex flex-wrap items-start gap-2">
       {SUBJECT_GROUPS.map((group) => (
         <SubjectDropdown group={group} key={group.title} onToggleMajor={onToggleMajor} selectedMajors={selectedMajors} />
       ))}
@@ -479,17 +479,24 @@ type RequirementPickerProps = {
 
 function RequirementPicker({ classId, categories, templates, currentIds, owners, onToggle }: RequirementPickerProps) {
   return (
-    <div className="mt-2 max-h-56 space-y-2.5 overflow-y-auto rounded-lg border border-ink/10 bg-paper/70 p-2" onClick={(event) => event.stopPropagation()}>
+    <div className="course-requirement-picker mt-2 space-y-1.5 rounded-lg border border-ink/10 bg-paper/70 p-1.5" onClick={(event) => event.stopPropagation()}>
       {categories.map((category) => {
         const items = templates.filter((template) => template.categoryId === category.id);
         if (items.length === 0) return null;
+        const selectedCount = items.filter((template) => currentIds.includes(template.id)).length;
         return (
-          <div key={category.id}>
-            <p className="flex items-center gap-1.5 text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-ink/45">
-              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: category.color }} />
-              {category.shortLabel}
-            </p>
-            <div className="mt-1 space-y-0.5">
+          <details className="course-requirement-picker-category overflow-hidden rounded-md border border-ink/10 bg-surface/40" key={category.id}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-2 py-1.5 marker:hidden">
+              <span className="flex min-w-0 items-center gap-1.5 text-[0.6rem] font-semibold text-ink/60">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: category.color }} />
+                <span className="truncate">{category.shortLabel}</span>
+              </span>
+              <span className="flex shrink-0 items-center gap-1 text-[0.55rem] text-ink/40">
+                {selectedCount ? `${selectedCount} tagged` : `${items.length}`}
+                <span className="course-requirement-picker-arrow">▾</span>
+              </span>
+            </summary>
+            <div className="max-h-44 space-y-0.5 overflow-y-auto border-t border-ink/10 px-1.5 py-1.5">
               {items.map((template) => {
                 const owner = owners.get(template.id);
                 const checked = currentIds.includes(template.id);
@@ -497,13 +504,13 @@ function RequirementPicker({ classId, categories, templates, currentIds, owners,
                 return (
                   <label className={`flex items-center gap-1.5 rounded px-1 py-0.5 text-[0.68rem] ${disabled ? "text-ink/30" : "text-ink/75 hover:bg-ink/5"}`} key={template.id}>
                     <input checked={checked} className="h-3 w-3 shrink-0" disabled={disabled} onChange={() => onToggle(classId, template.id)} type="checkbox" />
-                    <span className="min-w-0 flex-1 truncate">{template.label}</span>
+                    <span className="min-w-0 flex-1">{template.label}</span>
                     {disabled && <span className="shrink-0 text-[0.55rem] italic text-ink/35">via {owner!.className}</span>}
                   </label>
                 );
               })}
             </div>
-          </div>
+          </details>
         );
       })}
     </div>
@@ -797,13 +804,10 @@ export function CaltechCoursePlanner() {
 
   const signOut = useCallback(() => {
     saveStoredIdentity(null);
-    setIdentity(null);
-    setSyncStatus("idle");
-    setSyncError(null);
-    setLoginFirstName("");
-    setLoginLastName("");
-    setLoginPassword("");
-    setLoginMajors([]);
+    window.localStorage.removeItem(COURSE_PLAN_STORAGE_KEY);
+    window.localStorage.removeItem(LOCAL_MAJORS_STORAGE_KEY);
+    window.dispatchEvent(new CustomEvent("caltech-course-plan-updated"));
+    window.location.reload();
   }, []);
 
   const updateProfileMajors = useCallback((nextMajors: MajorId[]) => {
@@ -1051,8 +1055,8 @@ export function CaltechCoursePlanner() {
   );
 
   return (
-    <div className="space-y-10">
-      <section className="rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
+    <div className="course-planner-shell space-y-8">
+      <section className="course-planner-setup-card rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 sm:p-5">
         {identity ? (
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -1080,22 +1084,28 @@ export function CaltechCoursePlanner() {
               <p className="mt-1 max-w-2xl text-xs leading-5 text-ink/45">
                 Changes apply immediately and save to the cloud automatically. Checked-off classes are kept and retagged where possible; unchecked classes outside the new requirements are removed.
               </p>
-              <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
-              <div className="mt-4 border-t border-ink/10 pt-4">
+              <div className="course-planner-core-block mt-3">
                 {renderCoreScheduleToggle()}
+              </div>
+              <div className="course-planner-major-block mt-3 border-t border-ink/10 pt-3">
+                <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
               </div>
             </div>
           </div>
         ) : (
           <div>
             <p className="eyebrow">Planner setup</p>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-ink/60">
+            <p className="course-planner-setup-description mt-2 max-w-2xl text-sm leading-6 text-ink/60">
               Choose majors, tracks, or minors to load their requirements into the planner immediately. No account is required, and your choices and plan stay saved in this browser. Cloud save is optional if you want to use the same plan on another device.
             </p>
-            <p className="mt-2 text-xs leading-5 text-ink/45">
+            <p className="course-planner-privacy mt-2 text-xs leading-5 text-ink/45">
               Names and schedules are only used for this course scheduler. <a className="font-semibold text-moss hover:text-ink" href="/privacy">Privacy policy</a>
             </p>
-            <div className="mt-5 grid gap-4">
+            <div className="course-planner-setup-grid mt-5 grid gap-4">
+              <div className="course-planner-core-block rounded-2xl border border-ink/10 bg-paper/45 p-3">
+                {renderCoreScheduleToggle()}
+              </div>
+
               <div className="rounded-2xl border border-ink/10 bg-paper/45 p-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-xs font-semibold text-ink/55">Major(s) / minor(s)</p>
@@ -1115,7 +1125,7 @@ export function CaltechCoursePlanner() {
               <div className="border-t border-ink/10 pt-4">
                 <p className="text-xs font-semibold text-ink/55">Optional cloud save</p>
                 <p className="mt-1 text-xs leading-5 text-ink/45">Enter the same details to reopen an account. A new combination creates a new account with the selections above.</p>
-                <div className="mt-3 grid gap-3 md:grid-cols-[minmax(0,10rem)_minmax(0,10rem)_minmax(0,13rem)]">
+                <div className="course-planner-cloud-fields mt-3 grid gap-3 md:grid-cols-[minmax(0,10rem)_minmax(0,10rem)_minmax(0,13rem)]">
                   <label className="text-xs font-medium text-ink/55">
                     First name
                     <input className="mt-1 block h-10 w-full rounded-full border border-ink/20 bg-surface px-3 text-sm text-ink" onChange={(event) => setLoginFirstName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && signIn()} placeholder="First name" value={loginFirstName} />
@@ -1130,7 +1140,7 @@ export function CaltechCoursePlanner() {
                     <span className="mt-1 block text-[0.62rem] leading-4 text-ink/40">Just separates profiles with the same name.</span>
                   </label>
                 </div>
-                <div className="mt-4 flex justify-end">
+                <div className="course-planner-cloud-submit mt-4 flex justify-end">
                   <button
                     className="h-10 rounded-full bg-ink px-5 text-xs font-semibold text-paper transition hover:bg-moss disabled:cursor-not-allowed disabled:opacity-40"
                     disabled={!loginFirstName.trim() || !loginLastName.trim() || !loginPassword.trim() || syncStatus === "loading"}
@@ -1143,9 +1153,6 @@ export function CaltechCoursePlanner() {
               </div>
             </div>
             {syncStatus === "error" && <p className="mt-3 text-xs text-clay">{syncError}</p>}
-            <div className="mt-5 border-t border-ink/10 pt-4">
-              {renderCoreScheduleToggle()}
-            </div>
           </div>
         )}
       </section>
@@ -1288,7 +1295,7 @@ export function CaltechCoursePlanner() {
             </div>
           </div>
 
-          <div className="course-plan-mobile mt-3 space-y-2 sm:hidden">
+          <div className="course-plan-mobile mt-3 space-y-1.5 sm:hidden">
             {YEARS.map((year) => {
               const isCollapsed = !!collapsedYears[year];
               const classCount = Object.values(classes).filter((cls) => cls.cell.startsWith(`${year}-`)).length;
@@ -1297,7 +1304,7 @@ export function CaltechCoursePlanner() {
                 <section className="overflow-hidden rounded-xl border border-ink/10 bg-surface/35" key={year}>
                   <button
                     aria-expanded={!isCollapsed}
-                    className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left"
+                    className="flex w-full items-center justify-between gap-3 px-2.5 py-1.5 text-left"
                     onClick={() => setCollapsedYears((current) => ({ ...current, [year]: !current[year] }))}
                     type="button"
                   >
@@ -1311,7 +1318,7 @@ export function CaltechCoursePlanner() {
                     <div className="course-plan-mobile-terms border-t border-ink/10">
                       <div className="flex snap-x snap-mandatory gap-2 overflow-x-auto px-2 pb-2 pt-2">
                         {TERMS.map((term) => (
-                          <div className="w-[74vw] max-w-[17rem] shrink-0 snap-start" key={term}>
+                          <div className="w-[62vw] max-w-[14rem] shrink-0 snap-start" key={term}>
                             <p className="mb-1.5 px-1 text-[0.58rem] font-semibold uppercase tracking-[0.08em] text-ink/45">{term}</p>
                             {renderPlanCell(year, term, true)}
                           </div>
