@@ -1,0 +1,59 @@
+# Permanently closed restaurants — Google Maps Takeout 2026-07-27
+
+Generated 2026-07-27T10:39:04.823Z. This report lists saved food/drink venues that Google Places reported as permanently closed. They are excluded from the published restaurant map.
+
+- Permanently closed: 49
+- Temporarily closed and excluded from publication, but not listed below: 41
+
+| Restaurant | Status | Category | Location | Saved lists | Google Maps |
+|---|---|---|---|---|---|
+| 104 Restaurant by Richard Wilkins | CLOSED_PERMANENTLY | Fine Dining | London, London, United Kingdom, GB | Fine dining | [Open](https://www.google.com/maps?cid=13793556771380823894) |
+| Aimsir Restaurant | CLOSED_PERMANENTLY | Fine Dining | Celbridge, Celbridge, Kildare, Ireland, IE | Fine dining | [Open](https://www.google.com/maps?cid=13860623384891253432) |
+| Aqua | CLOSED_PERMANENTLY | Fine Dining | Wolfsburg, Wolfsburg, Germany, DE | Fine dining | [Open](https://www.google.com/maps?cid=12320993425187922892) |
+| Aster by poppy | CLOSED_PERMANENTLY | Casual | Sheung Wan, Sheung Wan, Hong Kong, HK | Casual | [Open](https://www.google.com/maps?cid=18225677624001802714) |
+| Atariya Foods Swiss Cottage | CLOSED_PERMANENTLY | East Asian | London, London, United Kingdom, GB | Asian casual | [Open](https://www.google.com/maps?cid=15868523065770596343) |
+| Bee Taqueria | CLOSED_PERMANENTLY | Tacos | Los Angeles, Los Angeles, CA, US | Casual | [Open](https://www.google.com/maps?cid=1636857605384209803) |
+| Bibimbap Soho | CLOSED_PERMANENTLY | East Asian | London, London, United Kingdom, GB | Asian casual | [Open](https://www.google.com/maps?cid=16111280407732112692) |
+| Bún riêu Cô Hoàn Hàng Lược | CLOSED_PERMANENTLY | East Asian | Ha Noi, Ha Noi, Vietnam, VN | Asian casual | [Open](https://www.google.com/maps?cid=13521808902393553804) |
+| Cellar Hand | CLOSED_PERMANENTLY | Western Nicer | San Diego, San Diego, CA, US | Western nicer | [Open](https://www.google.com/maps?cid=9226179269568386231) |
+| Cornerstone by Chef Tom Brown | CLOSED_PERMANENTLY | Fine Dining | London, London, United Kingdom, GB | Fine dining | [Open](https://www.google.com/maps?cid=14186025298836375533) |
+| Cranes | CLOSED_PERMANENTLY | Fine Dining | Washington, Washington, DC, US | Fine dining | [Open](https://www.google.com/maps?cid=11709105612582276121) |
+| Dear Margaret | CLOSED_PERMANENTLY | Western Nicer | Chicago, Chicago, IL, US | Western nicer | [Open](https://www.google.com/maps?cid=3856183172024083219) |
+| Del Popolo | CLOSED_PERMANENTLY | Pizza | San Francisco, San Francisco, CA, US | Casual | [Open](https://www.google.com/maps?cid=7315423096143948808) |
+| Euphoria | CLOSED_PERMANENTLY | Bars | Singapore, SG | Fine dining | [Open](https://www.google.com/maps?cid=14443642169104586628) |
+| Gem House | CLOSED_PERMANENTLY | Fine Dining | New York, New York, NY, US | Fine dining | [Open](https://www.google.com/maps?cid=17714142584117221207) |
+| Gish Bac | CLOSED_PERMANENTLY | Casual | Los Angeles, Los Angeles, CA, US | Casual | [Open](https://www.google.com/maps?cid=17271870151626132386) |
+| Hock Lye Noodles House & Fishii Tales | CLOSED_PERMANENTLY | East Asian | Singapore, SG | Asian casual | [Open](https://www.google.com/maps?cid=15625648190286790280) |
+| III Mas Bakery & Deli | CLOSED_PERMANENTLY | Bakeries | Glendale, Glendale, CA, US | Casual | [Open](https://www.google.com/maps?cid=8526005014735801812) |
+| ILUKA | CLOSED_PERMANENTLY | Western Nicer | Copenhagen, Copenhagen, Denmark, DK | Western nicer | [Open](https://www.google.com/maps?cid=1713513729408931244) |
+| Ippodo Tea Tokyo Marunouchi | CLOSED_PERMANENTLY | Casual | Chiyoda City, Chiyoda City, Tokyo, Japan, JP | Default list | [Open](https://www.google.com/maps?cid=16654370579445220779) |
+| Japanese Steak Bowl | CLOSED_PERMANENTLY | Steakhouse | Shibuya, Shibuya, Tokyo, Japan, JP | Asian casual | [Open](https://www.google.com/maps?cid=10837670444514107895) |
+| Kappo Ando | CLOSED_PERMANENTLY | East Asian | Copenhagen, Copenhagen, Denmark, DK | Asian casual | [Open](https://www.google.com/maps?cid=12087727312917300947) |
+| Keller Bangkok | CLOSED_PERMANENTLY | Fine Dining | Sathon, Sathon, Bangkok, Thailand, TH | Fine dining, Western nicer | [Open](https://www.google.com/maps?cid=7785478465307653569) |
+| Koks Restaurant | CLOSED_PERMANENTLY | Fine Dining | Leynavatn, Leynavatn, Faroe Islands, FO | Fine dining | [Open](https://www.google.com/maps?cid=17000018150059922878) |
+| Kothai Republic | CLOSED_PERMANENTLY | East Asian | San Francisco, San Francisco, CA, US | Asian casual | [Open](https://www.google.com/maps?cid=3525553847657381592) |
+| La Dame de Pic | CLOSED_PERMANENTLY | Fine Dining | Singapore, SG | Fine dining | [Open](https://www.google.com/maps?cid=466200803740249736) |
+| Liu's Creamery | CLOSED_PERMANENTLY | Desserts | Los Angeles, Los Angeles, CA, US | Dessert | [Open](https://www.google.com/maps?cid=1780614564838440586) |
+| Local Kitchens | CLOSED_PERMANENTLY | Casual | Davis, Davis, CA, US | Casual | [Open](https://www.google.com/maps?cid=4099338951913140819) |
+| Meat People | CLOSED_PERMANENTLY | Casual | London, London, United Kingdom, GB | Casual | [Open](https://www.google.com/maps?cid=4666256196228165423) |
+| Noble Palace | CLOSED_PERMANENTLY | Asian Fancy | London, London, United Kingdom, GB | Asian fancy | [Open](https://www.google.com/maps?cid=12101369370110486481) |
+| Norikaya | CLOSED_PERMANENTLY | Asian Fancy | Los Angeles, Los Angeles, CA, US | Asian fancy | [Open](https://www.google.com/maps?cid=9595228757764572217) |
+| Ode | CLOSED_PERMANENTLY | Fine Dining | Shibuya, Shibuya, Tokyo, Japan, JP | Fine dining | [Open](https://www.google.com/maps?cid=9373089482181306202) |
+| Oncore by Clare Smyth | CLOSED_PERMANENTLY | Fine Dining | Barangaroo, Barangaroo NSW, Australia, AU | Fine dining | [Open](https://www.google.com/maps?cid=988570212768792983) |
+| Pad Thai Fai Ta Lu @Siam Square Soi 10 | CLOSED_PERMANENTLY | Southeast Asian | Pathum Wan, Pathum Wan, Bangkok, Thailand, TH | Asian casual | [Open](https://www.google.com/maps?cid=13460909451144831282) |
+| Restaurant Khiri | CLOSED_PERMANENTLY | Asian Fancy | Singapore, SG | Asian fancy | [Open](https://www.google.com/maps?cid=13574579761905411513) |
+| Restaurante Tohqa | CLOSED_PERMANENTLY | Western Nicer | El Puerto de Santa María, El Puerto de Santa María, Spain, ES | Western nicer | [Open](https://www.google.com/maps?cid=12781293516301723892) |
+| Shah's Halal Food | CLOSED_PERMANENTLY | Middle Eastern | Davis, Davis, CA, US | Casual | [Open](https://www.google.com/maps?cid=9911175041224788219) |
+| SOLA | CLOSED_PERMANENTLY | Fine Dining | London, London, United Kingdom, GB | Fine dining | [Open](https://www.google.com/maps?cid=10781209593645376486) |
+| Spectrum | CLOSED_PERMANENTLY | Fine Dining | Amsterdam, Amsterdam, Netherlands, NL | Fine dining | [Open](https://www.google.com/maps?cid=7582517631839791706) |
+| St. Hubertus | CLOSED_PERMANENTLY | Fine Dining | San Ciascian, San Ciascian, Autonomous Province of Bolzano – South Tyrol, Italy, IT | Fine dining | [Open](https://www.google.com/maps?cid=5779714225916086962) |
+| Stretch Pizza | CLOSED_PERMANENTLY | Pizza | New York, New York, NY, US | Casual | [Open](https://www.google.com/maps?cid=11431806183407285912) |
+| Sushi Ginza Onodera | CLOSED_PERMANENTLY | Sushi | West Hollywood, West Hollywood, CA, US | Asian fancy | [Open](https://www.google.com/maps?cid=9107130831087238952) |
+| Tacos Los Palomos | CLOSED_PERMANENTLY | Tacos | El Monte, El Monte, CA, US | Casual | [Open](https://www.google.com/maps?cid=18382149793948363388) |
+| Tambi Restaurant | CLOSED_PERMANENTLY | Western Nicer | Singapore, SG | Western nicer | [Open](https://www.google.com/maps?cid=13394961466800609194) |
+| temporaire | CLOSED_PERMANENTLY | Fine Dining | Baiersbronn, Baiersbronn, Germany, DE | Fine dining | [Open](https://www.google.com/maps?cid=11015096363762951515) |
+| Tempura Araki | CLOSED_PERMANENTLY | Asian Fancy | Central, Central, Hong Kong, HK | Asian fancy | [Open](https://www.google.com/maps?cid=16539309510432286182) |
+| TSURE GUESTHOUSE & LUNCH | CLOSED_PERMANENTLY | Southeast Asian | Osaka, Osaka, Japan, JP | Asian casual | [Open](https://www.google.com/maps?cid=17905285451457225747) |
+| Uoichiba Handroll | CLOSED_PERMANENTLY | Sushi | Culver City, Culver City, CA, US | Asian casual | [Open](https://www.google.com/maps?cid=8783761293478792007) |
+| yam'Tcha | CLOSED_PERMANENTLY | Asian Fancy | Paris, Paris, France, FR | Asian fancy | [Open](https://www.google.com/maps?cid=14586914733544526039) |
+

@@ -8,7 +8,7 @@ const outputPath = args.find((arg) => arg.startsWith("--output="))?.split("=").s
   ?? "imports/google-maps/staging/resolved-pins.json";
 const reviewPath = args.find((arg) => arg.startsWith("--review="))?.split("=").slice(1).join("=")
   ?? "imports/google-maps/staging/review-required.json";
-const concurrency = Math.max(1, Math.min(6, Number(args.find((arg) => arg.startsWith("--concurrency="))?.split("=")[1] ?? 4)));
+const concurrency = Math.max(1, Math.min(12, Number(args.find((arg) => arg.startsWith("--concurrency="))?.split("=")[1] ?? 6)));
 const limit = Math.max(0, Number(args.find((arg) => arg.startsWith("--limit="))?.split("=")[1] ?? 0));
 const selectedIds = new Set((args.find((arg) => arg.startsWith("--ids="))?.split("=").slice(1).join("=") ?? "").split(",").filter(Boolean));
 const fresh = args.includes("--fresh");
@@ -38,8 +38,9 @@ function readEnv() {
 }
 
 const env = readEnv();
-if (verifyPlaces && !env.GOOGLE_PLACES_API_KEY) {
-  console.error("GOOGLE_PLACES_API_KEY is required with --verify-places");
+const placesApiKey = env.GOOGLE_PLACES_API_KEY ?? env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+if (verifyPlaces && !placesApiKey) {
+  console.error("GOOGLE_PLACES_API_KEY or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is required with --verify-places");
   process.exit(1);
 }
 
@@ -98,8 +99,79 @@ function slugType(label = "") {
     .replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
 }
 
-function isFoodVenue(types) {
-  return types.some((type) => /(^|_)(restaurant|cafe|coffee_shop|bakery|food_court|bar|pub|dessert|ice_cream|pastry|confectionery|tea_house|meal_takeaway|meal_delivery|deli|sandwich_shop|food)(_|$)/.test(type));
+const excludedPrimaryTypes = new Set([
+  "cannery",
+  "cheese_shop",
+  "club",
+  "farmers_market",
+  "food_and_beverage_exporter",
+  "food_manufacturer",
+  "food_products_supplier",
+  "gourmet_grocery_store",
+  "grocery_store",
+  "hiking_area",
+  "indian_grocery_store",
+  "italian_grocery_store",
+  "kitchen_supply_store",
+  "liquor_store",
+  "market",
+  "organic_food_store",
+  "restaurant_supply_store",
+  "store",
+  "supermarket",
+  "vineyard",
+  "wholesale_florist",
+  "wholesale_food_store",
+  "wholesale_market",
+]);
+
+const knownFoodVenueNames = new Set([
+  "barbacoa estilo hidalgo",
+  "birrieria el jalisciense",
+  "da vittorio saigon",
+  "los sabrosos al horno",
+  "mariscos los corchos",
+  "oteque",
+  "pablo modern mexican cocina",
+  "plaa",
+  "ror coffee roasters roastery",
+  "ultraviolet by paul pairet",
+]);
+
+const knownNonFoodVenueNames = new Set([
+  "ambonnay",
+  "bike barn",
+  "historic center of mexico city",
+  "huacachina",
+  "le mesnil-sur-oger",
+  "marche des enfants rouges",
+  "ninh binh",
+  "ojai",
+  "old bagan",
+  "old phuket town",
+  "san simeon",
+  "tombe de camille saint-saens",
+  "trikala",
+  "wicker park",
+]);
+
+function normalizedVenueName(name = "") {
+  return name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("en").trim();
+}
+
+function isKnownFoodVenue(name) {
+  return knownFoodVenueNames.has(normalizedVenueName(name));
+}
+
+function isKnownNonFoodVenue(name) {
+  return knownNonFoodVenueNames.has(normalizedVenueName(name));
+}
+
+function isFoodVenue(types, primaryType = types[0], name = "") {
+  if (isKnownFoodVenue(name)) return true;
+  if (isKnownNonFoodVenue(name)) return false;
+  if (excludedPrimaryTypes.has(primaryType)) return false;
+  return types.some((type) => /(^|_)(restaurant|cafe|coffee_shop|bakery|patisserie|food_court|bar|pub|dessert|ice_cream|frozen_yogurt|donut|bubble_tea|juice_shop|pastry|confectionery|chocolate_shop|candy_store|tea_house|meal_takeaway|meal_delivery|deli|sandwich_shop|food)(_|$)/.test(type));
 }
 
 function estimatedPrice(category) {
@@ -112,6 +184,30 @@ function estimatedPrice(category) {
 function addressPart(address, indexFromEnd) {
   const parts = address.split(",").map((part) => part.trim()).filter(Boolean);
   return parts.at(indexFromEnd) ?? null;
+}
+
+function mapsBusinessStatus(place) {
+  const editActions = place?.[96]?.[5] ?? [];
+  const isMarkedClosed = editActions.some((action) => action?.[2] === "Reopen this place");
+  return isMarkedClosed ? "CLOSED_UNVERIFIED" : "OPERATIONAL";
+}
+
+function mapsPriceLevel(place) {
+  let result = null;
+  function visit(value) {
+    if (result) return;
+    if (typeof value === "string" && /^\${1,4}$/.test(value)) {
+      result = value.length;
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+    } else if (value && typeof value === "object") {
+      Object.values(value).forEach(visit);
+    }
+  }
+  visit(place);
+  return result;
 }
 
 async function fetchWithRetry(url) {
@@ -152,6 +248,7 @@ async function resolveCid(cid, fallbackName) {
 
   const address = place[39] ?? place[18] ?? place[2]?.filter(Boolean).join(", ") ?? "";
   const placeTypes = (place[13] ?? []).map(slugType).filter(Boolean);
+  const googlePriceLevel = mapsPriceLevel(place);
   return {
     placeId,
     name,
@@ -164,14 +261,19 @@ async function resolveCid(cid, fallbackName) {
     placeTypes,
     featureId: place[10] ?? null,
     googleMapsUrl: `https://www.google.com/maps?cid=${cid}`,
+    businessStatus: mapsBusinessStatus(place),
+    googlePriceLevel,
+    placesVerifiedAt: new Date().toISOString(),
+    verificationSource: "Google Maps exact pin",
   };
 }
 
 function classifyResolved(item, resolved) {
+  const placeTypes = resolved.placeTypes ?? [];
   if (useLegacyDecisions && manualCategories.has(item.importId)) {
     return { category: manualCategories.get(item.importId), reason: "user review decision" };
   }
-  if (resolved.placeTypes.includes("food_court")) {
+  if (placeTypes.includes("food_court")) {
     return { category: "Casual", reason: "all food courts are Casual" };
   }
   if (item.sourceLists.includes("Coffee") && /\b(bakery|bakehouse|boulangerie|patisserie|pastry)\b/i.test(resolved.name)) {
@@ -181,7 +283,7 @@ function classifyResolved(item, resolved) {
   const suggestion = suggestRestaurantCategory({
     name: resolved.name,
     primaryType: resolved.primaryType,
-    placeTypes: resolved.placeTypes,
+    placeTypes,
     sourceCategory: item.category,
   });
   return { category: suggestion.category, reason: suggestion.reason };
@@ -213,7 +315,7 @@ async function fetchPlaceDetails(placeId) {
     try {
       const response = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
         headers: {
-          "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
+          "X-Goog-Api-Key": placesApiKey,
           "X-Goog-FieldMask": [
             "id",
             "displayName",
@@ -322,21 +424,37 @@ async function worker() {
       const classification = classifyResolved(item, cached);
       const updatedCategory = classification.category;
       const updatedEmoji = categoryEmojis[updatedCategory] ?? cached.emoji ?? "❓";
-      const needsCategoryReview = cached.status === "ready" && updatedCategory === "Unclassified";
-      const retainedStatus = cached.status === "ready" && !needsCategoryReview
-        ? "ready"
-        : cached.status === "excluded_non_food"
+      const cachedPlaceTypes = cached.placeTypes ?? [];
+      const cachedFoodVenue = isFoodVenue(cachedPlaceTypes, cached.primaryType, cached.name);
+      const cachedKnownNonFood = isKnownNonFoodVenue(cached.name);
+      const cachedClosed = ["CLOSED_UNVERIFIED", "CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY"].includes(cached.businessStatus);
+      const needsCategoryReview = cachedFoodVenue && updatedCategory === "Unclassified";
+      const retainedStatus = cachedPlaceTypes.length === 0 && !isKnownFoodVenue(cached.name) && !cachedKnownNonFood
+        ? "needs_review"
+        : !cachedFoodVenue
           ? "excluded_non_food"
-          : cached.status;
+          : cachedClosed
+            ? "excluded_closed"
+            : needsCategoryReview ? "needs_review" : "ready";
+      const cachedPriceLevel = cached.googlePriceLevel ?? cached.priceLevel ?? estimatedPrice(updatedCategory);
       results[index] = {
         ...cached,
         ...item,
         category: updatedCategory,
         emoji: updatedEmoji,
         classificationReason: classification.reason,
-        priceLevel: estimatedPrice(updatedCategory),
+        priceLevel: cachedPriceLevel,
+        priceLevelSource: cached.googlePriceLevel
+          ? "Google Places"
+          : cached.priceLevelSource ?? "category estimate",
         status: retainedStatus,
-        reviewReason: needsCategoryReview ? "Exact pin resolved; category is still uncertain" : cached.reviewReason,
+        reviewReason: needsCategoryReview
+          ? "Exact pin resolved; category is still uncertain"
+          : cachedPlaceTypes.length === 0 && !isKnownFoodVenue(cached.name) && !cachedKnownNonFood
+            ? "Exact pin resolved without a venue type; food relevance needs review"
+            : retainedStatus === "excluded_non_food"
+              ? `Original pin type is ${cachedPlaceTypes.join(", ")}`
+              : cached.reviewReason,
       };
     } else if (originalCoordinates) {
       results[index] = {
@@ -349,16 +467,38 @@ async function worker() {
       };
     } else if (cached?.resolutionMethod === "original_google_maps_cid") {
       const classification = classifyResolved(item, cached);
-      const needsCategoryReview = cached.status === "ready" && classification.category === "Unclassified";
-      const categoryWasReviewed = cached.status === "needs_review" && classification.category !== "Unclassified";
+      const cachedPlaceTypes = cached.placeTypes ?? [];
+      const cachedFoodVenue = isFoodVenue(cachedPlaceTypes, cached.primaryType, cached.name);
+      const cachedKnownNonFood = isKnownNonFoodVenue(cached.name);
+      const cachedClosed = ["CLOSED_UNVERIFIED", "CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY"].includes(cached.businessStatus);
+      const needsCategoryReview = cachedFoodVenue && classification.category === "Unclassified";
+      const retainedStatus = cachedPlaceTypes.length === 0 && !isKnownFoodVenue(cached.name) && !cachedKnownNonFood
+        ? "needs_review"
+        : !cachedFoodVenue
+          ? "excluded_non_food"
+          : cachedClosed
+            ? "excluded_closed"
+            : needsCategoryReview ? "needs_review" : "ready";
+      const cachedPriceLevel = cached.googlePriceLevel ?? cached.priceLevel ?? estimatedPrice(classification.category);
       results[index] = {
         ...cached,
         category: classification.category,
         emoji: categoryEmojis[classification.category] ?? "❓",
         classificationReason: classification.reason,
-        priceLevel: estimatedPrice(classification.category),
-        status: needsCategoryReview ? "needs_review" : categoryWasReviewed ? "ready" : cached.status,
-        reviewReason: needsCategoryReview ? "Exact pin resolved; category is still uncertain" : categoryWasReviewed ? null : cached.reviewReason,
+        priceLevel: cachedPriceLevel,
+        priceLevelSource: cached.googlePriceLevel
+          ? "Google Places"
+          : cached.priceLevelSource ?? "category estimate",
+        status: retainedStatus,
+        reviewReason: cachedPlaceTypes.length === 0 && !isKnownFoodVenue(cached.name) && !cachedKnownNonFood
+          ? "Exact pin resolved without a venue type; food relevance needs review"
+          : !cachedFoodVenue
+            ? `Original pin type is ${cachedPlaceTypes.join(", ")}`
+            : cachedClosed
+              ? `Google Places reports ${cached.businessStatus}`
+              : needsCategoryReview
+                ? "Exact pin resolved; category is still uncertain"
+                : null,
       };
     } else {
       const cid = cidFromUrl(item.googleMapsUrl);
@@ -368,9 +508,10 @@ async function worker() {
         try {
           const exactPin = await resolveCid(cid, item.name);
           const resolved = await verifyResolvedPlace(exactPin);
-          const foodVenue = isFoodVenue(resolved.placeTypes)
+          const foodVenue = isFoodVenue(resolved.placeTypes, resolved.primaryType, resolved.name)
             || (useLegacyDecisions && manualCategories.has(item.importId));
-          const closed = ["CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY"].includes(resolved.businessStatus);
+          const knownNonFood = isKnownNonFoodVenue(resolved.name);
+          const closed = ["CLOSED_UNVERIFIED", "CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY"].includes(resolved.businessStatus);
           const classification = classifyResolved(item, resolved);
           const needsCategoryReview = foodVenue && classification.category === "Unclassified";
           const priceLevel = resolved.googlePriceLevel ?? estimatedPrice(classification.category);
@@ -384,18 +525,24 @@ async function worker() {
             matchConfidence: 1,
             priceLevel,
             priceLevelSource: resolved.googlePriceLevel ? "Google Places" : "category estimate",
-            status: closed
-              ? "excluded_closed"
-              : needsCategoryReview
+            status: resolved.placeTypes.length === 0 && !isKnownFoodVenue(resolved.name) && !knownNonFood
+              ? "needs_review"
+              : !foodVenue
+              ? "excluded_non_food"
+              : closed
+                ? "excluded_closed"
+                : needsCategoryReview
                 ? "needs_review"
-                : foodVenue
-                  ? "ready"
-                  : "excluded_non_food",
-            reviewReason: closed
-              ? `Google Places reports ${resolved.businessStatus}`
-              : needsCategoryReview
+                : "ready",
+            reviewReason: resolved.placeTypes.length === 0 && !isKnownFoodVenue(resolved.name) && !knownNonFood
+              ? "Exact pin resolved without a venue type; food relevance needs review"
+              : !foodVenue
+              ? `Original pin type is ${resolved.placeTypes.join(", ") || "unknown"}`
+              : closed
+                ? `Google Places reports ${resolved.businessStatus}`
+                : needsCategoryReview
               ? "Exact pin resolved; category is still uncertain"
-              : foodVenue ? null : `Original pin type is ${resolved.placeTypes.join(", ") || "unknown"}`,
+              : null,
             matchCandidates: [],
             resolutionMethod: "original_google_maps_cid",
           };

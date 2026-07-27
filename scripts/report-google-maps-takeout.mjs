@@ -82,14 +82,29 @@ if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
 
 const source = JSON.parse(fs.readFileSync(inputPath, "utf8"));
 const sourceRestaurants = source.restaurants ?? [];
-const ready = sourceRestaurants.filter((item) =>
+const readyCandidates = sourceRestaurants.filter((item) =>
   item.status === "ready"
   && item.placeId
   && item.position
   && !["CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY"].includes(item.businessStatus));
-const closed = sourceRestaurants.filter((item) =>
-  item.status === "excluded_closed"
-  || ["CLOSED_TEMPORARILY", "CLOSED_PERMANENTLY"].includes(item.businessStatus));
+const readyById = new Map();
+for (const item of readyCandidates) {
+  const existing = readyById.get(item.placeId);
+  if (!existing) {
+    readyById.set(item.placeId, {
+      ...item,
+      sourceLists: [...(item.sourceLists ?? [])],
+      sourceTags: [...(item.sourceTags ?? [])],
+    });
+    continue;
+  }
+  existing.sourceLists = [...new Set([...(existing.sourceLists ?? []), ...(item.sourceLists ?? [])])];
+  existing.sourceTags = [...new Set([...(existing.sourceTags ?? []), ...(item.sourceTags ?? [])])];
+}
+const ready = [...readyById.values()];
+const closed = sourceRestaurants.filter((item) => item.status === "excluded_closed");
+const permanentlyClosed = closed.filter((item) => item.businessStatus === "CLOSED_PERMANENTLY");
+const temporarilyClosed = closed.filter((item) => item.businessStatus === "CLOSED_TEMPORARILY");
 const nonFood = sourceRestaurants.filter((item) => item.status === "excluded_non_food");
 const unresolved = sourceRestaurants.filter((item) => item.status === "needs_review");
 
@@ -124,24 +139,23 @@ for (const item of ready) {
 
 const categoryNames = [...categoryGroups.keys()].sort((a, b) => a.localeCompare(b));
 const generatedAt = new Date().toISOString();
-const closedMarkdownPath = path.join(outputDirectory, `closed-restaurants-${dateLabel}.md`);
+const closedMarkdownPath = path.join(outputDirectory, `permanently-closed-restaurants-${dateLabel}.md`);
 const allMarkdownPath = path.join(outputDirectory, `all-restaurants-and-categories-${dateLabel}.md`);
-const closedCsvPath = path.join(outputDirectory, `closed-restaurants-${dateLabel}.csv`);
+const closedCsvPath = path.join(outputDirectory, `permanently-closed-restaurants-${dateLabel}.csv`);
 const allCsvPath = path.join(outputDirectory, `all-restaurants-and-categories-${dateLabel}.csv`);
 const reconciliationPath = "imports/google-maps/staging/takeout-reconciliation.json";
 
 const closedLines = [
-  `# Closed restaurants — Google Maps Takeout ${dateLabel}`,
+  `# Permanently closed restaurants — Google Maps Takeout ${dateLabel}`,
   "",
-  `Generated ${generatedAt}. This report lists saved food/drink venues that Google Places reported as temporarily or permanently closed. They are excluded from the published restaurant map.`,
+  `Generated ${generatedAt}. This report lists saved food/drink venues that Google Places reported as permanently closed. They are excluded from the published restaurant map.`,
   "",
-  `- Closed venues: ${closed.length}`,
-  `- Permanently closed: ${closed.filter((item) => item.businessStatus === "CLOSED_PERMANENTLY").length}`,
-  `- Temporarily closed: ${closed.filter((item) => item.businessStatus === "CLOSED_TEMPORARILY").length}`,
+  `- Permanently closed: ${permanentlyClosed.length}`,
+  `- Temporarily closed and excluded from publication, but not listed below: ${temporarilyClosed.length}`,
   "",
   "| Restaurant | Status | Category | Location | Saved lists | Google Maps |",
   "|---|---|---|---|---|---|",
-  ...sortedByName(closed).map((item) => {
+  ...sortedByName(permanentlyClosed).map((item) => {
     const link = mapsLink(item);
     return `| ${markdownCell(item.name)} | ${markdownCell(item.businessStatus)} | ${markdownCell(item.category)} | ${markdownCell(areaLabel(item))} | ${markdownCell((item.sourceLists ?? []).join(", "))} | ${link ? `[Open](${link})` : "—"} |`;
   }),
@@ -179,11 +193,24 @@ const allLines = [
     }),
     "",
   ]),
+  ...(unresolved.length > 0 ? [
+    "## Manual review required",
+    "",
+    "These Takeout entries could not be identified reliably, so they were not published or guessed.",
+    "",
+    "| Saved name | Reason | Saved lists | Google Maps |",
+    "|---|---|---|---|",
+    ...sortedByName(unresolved).map((item) => {
+      const link = mapsLink(item);
+      return `| ${markdownCell(item.name)} | ${markdownCell(item.reviewReason)} | ${markdownCell((item.sourceLists ?? []).join(", "))} | ${link ? `[Open](${link})` : "—"} |`;
+    }),
+    "",
+  ] : []),
 ];
 
 const closedCsv = [
   ["name", "status", "category", "location", "source_lists", "google_maps_url"],
-  ...sortedByName(closed).map((item) => [
+  ...sortedByName(permanentlyClosed).map((item) => [
     item.name,
     item.businessStatus,
     item.category,
@@ -194,10 +221,11 @@ const closedCsv = [
 ].map((row) => row.map(csvCell).join(",")).join("\n");
 
 const allCsv = [
-  ["name", "category", "price_level", "price_label", "price_source", "location", "primary_type", "source_lists", "google_maps_url"],
+  ["name", "status", "category", "price_level", "price_label", "price_source", "location", "primary_type", "source_lists", "google_maps_url", "review_reason"],
   ...categoryNames.flatMap((category) =>
     sortedByName(categoryGroups.get(category)).map((item) => [
       item.name,
+      "ready",
       category,
       item.priceLevel,
       priceLabel(item.priceLevel),
@@ -206,7 +234,21 @@ const allCsv = [
       item.primaryType,
       (item.sourceLists ?? []).join("; "),
       mapsLink(item),
+      "",
     ])),
+  ...sortedByName(unresolved).map((item) => [
+    item.name,
+    "needs_review",
+    "Manual review required",
+    "",
+    "Not available",
+    "",
+    areaLabel(item),
+    item.primaryType,
+    (item.sourceLists ?? []).join("; "),
+    mapsLink(item),
+    item.reviewReason,
+  ]),
 ].map((row) => row.map(csvCell).join(",")).join("\n");
 
 fs.mkdirSync(outputDirectory, { recursive: true });
@@ -220,12 +262,16 @@ fs.writeFileSync(reconciliationPath, `${JSON.stringify({
   source: path.basename(inputPath),
   summary: {
     sourceCandidates: sourceRestaurants.length,
+    readyCandidateRows: readyCandidates.length,
+    duplicateReadyRowsMerged: readyCandidates.length - ready.length,
     currentPublished: published.length,
     ready: ready.length,
     retained: retained.length,
     additions: additions.length,
     removals: removals.length,
     closed: closed.length,
+    permanentlyClosed: permanentlyClosed.length,
+    temporarilyClosed: temporarilyClosed.length,
     nonFood: nonFood.length,
     unresolved: unresolved.length,
   },
@@ -256,12 +302,16 @@ fs.writeFileSync(reconciliationPath, `${JSON.stringify({
 
 console.log(JSON.stringify({
   sourceCandidates: sourceRestaurants.length,
+  readyCandidateRows: readyCandidates.length,
+  duplicateReadyRowsMerged: readyCandidates.length - ready.length,
   currentPublished: published.length,
   ready: ready.length,
   retained: retained.length,
   additions: additions.length,
   removals: removals.length,
   closed: closed.length,
+  permanentlyClosed: permanentlyClosed.length,
+  temporarilyClosed: temporarilyClosed.length,
   nonFood: nonFood.length,
   unresolved: unresolved.length,
 }, null, 2));
