@@ -4776,6 +4776,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   }
 
   .home-dashboard-pixel-art {
+    align-self: center;
     min-width: 0;
     overflow: hidden;
     border: 1px solid rgb(var(--color-ink) / 0.09);
@@ -4784,8 +4785,10 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   }
 
   .home-dashboard-pixel-art > .home-dashboard-pixel-artwork {
-    height: clamp(7.5rem, 16vw, 9.5rem);
+    width: 100%;
+    height: auto;
     min-height: 0;
+    aspect-ratio: 1916 / 821;
   }
 
   .home-dashboard-groups {
