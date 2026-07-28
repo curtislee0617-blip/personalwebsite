@@ -7,13 +7,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent, type UIEvent } from "react";
 import { ContactCityArtwork } from "@/components/contact-city-artwork";
 import { ContactPresenceProvider } from "@/components/contact-presence";
-import { dashboardSections, useDashboardMode } from "@/components/dashboard-shell";
+import { dashboardSections } from "@/components/dashboard-shell";
 import { ScrollingPhotoBackground } from "@/components/scrolling-photo-background";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cursorCss, navIconForPath, pageCursors } from "@/lib/page-cursors";
 import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
-const orbitLinks = [
+const homeLinks = [
   { href: "/about", label: "CV" },
   { href: "/projects", label: "Projects" },
   { href: "/recipes", label: "Recipes" },
@@ -22,16 +22,16 @@ const orbitLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-const mobileOrbitLinks = [
-  orbitLinks[0],
-  orbitLinks[1],
-  orbitLinks[5],
-  orbitLinks[2],
-  orbitLinks[4],
-  orbitLinks[3],
+const mobileHomeLinks = [
+  homeLinks[0],
+  homeLinks[1],
+  homeLinks[5],
+  homeLinks[2],
+  homeLinks[4],
+  homeLinks[3],
 ];
 
-const mobileAboutIndex = 2;
+const mobileInitialIndex = 2;
 const showHomePhotoGrid = true;
 const mobileBackgroundPages = ["about", "projects", "recipes", "tools", "restaurants"] as const;
 
@@ -42,7 +42,7 @@ const quickAccessGroups = [
 
 function positionMobileCarousel(scroller: HTMLElement) {
   const center = scroller.scrollTop + scroller.clientHeight / 2;
-  const items = Array.from(scroller.querySelectorAll<HTMLElement>("[data-mobile-orbit-item]"));
+  const items = Array.from(scroller.querySelectorAll<HTMLElement>("[data-mobile-home-item]"));
   const itemStep = items.length > 1 ? Math.max(1, items[1].offsetTop - items[0].offsetTop) : 68;
   let closestIndex = 0;
   let closestDistance = Number.POSITIVE_INFINITY;
@@ -70,23 +70,18 @@ function positionMobileCarousel(scroller: HTMLElement) {
   return closestIndex;
 }
 
-export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profilePhoto: string }) {
+export function HomeLanding({ photos }: { photos: string[] }) {
   const router = useRouter();
-  const { enableDashboard } = useDashboardMode();
   const isLeaving = useRef(false);
   const mobileNavRef = useRef<HTMLElement>(null);
   const mobileScrollFrame = useRef(0);
-  const [entryMode, setEntryMode] = useState<"pending" | "center" | "menu" | "mobile-return">("pending");
-  const [mobileActiveIndex, setMobileActiveIndex] = useState(mobileAboutIndex);
+  const [entryMode, setEntryMode] = useState<"pending" | "center" | "mobile-return">("pending");
+  const [mobileActiveIndex, setMobileActiveIndex] = useState(mobileInitialIndex);
   const [isDark, setIsDark] = useState(false);
-  const bubbleCursors = useMemo(() => new Map(orbitLinks.map((item) => {
+  const linkCursors = useMemo(() => new Map(homeLinks.map((item) => {
     const match = pageCursors.find((entry) => entry.match(item.href));
     return [item.href, match ? cursorCss(match, isDark) : undefined];
   })), [isDark]);
-
-  function menuAnchor() {
-    return { x: window.innerWidth - 44, y: 44 };
-  }
 
   function prefetchRoute(href: string) {
     try {
@@ -162,7 +157,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
 
       const alignAbout = () => {
         const scroller = mobileNavRef.current;
-        const about = scroller?.querySelectorAll<HTMLElement>("[data-mobile-orbit-item]")[mobileAboutIndex];
+        const about = scroller?.querySelectorAll<HTMLElement>("[data-mobile-home-item]")[mobileInitialIndex];
         if (!scroller || !about) return;
 
         scroller.scrollTop = about.offsetTop + about.offsetHeight / 2 - scroller.clientHeight / 2;
@@ -240,54 +235,6 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
     };
   }, [entryMode]);
 
-  useEffect(() => {
-    if (entryMode !== "menu") return;
-
-    const frame = window.requestAnimationFrame(() => {
-      const source = menuAnchor();
-      const bubbles = document.querySelectorAll<HTMLElement>(".orbit-link");
-      const menuGlyph = document.querySelector<HTMLElement>(".home-menu-glyph");
-
-      // Read every position before starting any animation to avoid repeated layout work.
-      const bubbleGeometry = Array.from(bubbles).map((bubble) => {
-        const box = bubble.getBoundingClientRect();
-        return {
-          bubble,
-          moveX: source.x - (box.left + box.width / 2),
-          moveY: source.y - (box.top + box.height / 2),
-        };
-      });
-
-      bubbleGeometry.forEach(({ bubble, moveX, moveY }, index) => {
-        bubble.animate(
-          [
-            { translate: `${moveX}px ${moveY}px`, scale: "0", rotate: "-180deg", opacity: 0 },
-            { offset: 0.2, opacity: 0.75 },
-            { offset: 0.78, scale: "1.08", opacity: 1 },
-            { translate: "0 0", scale: "1", rotate: "0deg", opacity: 1 },
-          ],
-          {
-            duration: 620,
-            delay: 60 + index * 28,
-            easing: "cubic-bezier(.16, 1, .3, 1)",
-            fill: "forwards",
-          },
-        );
-      });
-
-      menuGlyph?.animate(
-        [
-          { opacity: 1, scale: "1", rotate: "0deg" },
-          { offset: 0.55, opacity: 1, scale: "0.9", rotate: "-5deg" },
-          { opacity: 0, scale: "0.15", rotate: "25deg" },
-        ],
-        { duration: 320, delay: 40, easing: "cubic-bezier(.22, 1, .36, 1)", fill: "forwards" },
-      );
-    });
-
-    return () => window.cancelAnimationFrame(frame);
-  }, [entryMode]);
-
   async function leaveHome(event: MouseEvent<HTMLAnchorElement>, href: string) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
@@ -300,146 +247,37 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
       return;
     }
 
-    const selectedBubble = event.currentTarget;
-    const bubbles = Array.from(document.querySelectorAll<HTMLElement>(".orbit-link, .home-mobile-link"))
-      .filter((bubble) => bubble.offsetParent !== null);
-    const profile = document.querySelector<HTMLElement>(".home-profile");
+    const selectedLink = event.currentTarget;
+    const links = Array.from(document.querySelectorAll<HTMLElement>(".home-mobile-link"))
+      .filter((link) => link.offsetParent !== null);
     const photoGrid = document.querySelector<HTMLElement>(".home-photo-grid");
     const themeToggle = document.querySelector<HTMLElement>(".theme-toggle");
 
     await runRouteBubbleTransition({
       href,
       router,
-      source: selectedBubble,
+      source: selectedLink,
       fadeOut: [
-        ...bubbles.filter((bubble) => bubble !== selectedBubble),
-        profile,
+        ...links.filter((link) => link !== selectedLink),
         photoGrid,
         themeToggle,
       ],
     });
   }
 
-  async function enterDashboardMode() {
-    if (!window.matchMedia("(min-width: 1024px)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      enableDashboard();
-      return;
-    }
-
-    const root = document.documentElement;
-    const bubbles = Array.from(document.querySelectorAll<HTMLElement>(".orbit-link"));
-    const profile = document.querySelector<HTMLElement>(".home-profile");
-    const launch = document.querySelector<HTMLElement>(".dashboard-mode-launch");
-    const animations: Animation[] = [];
-
-    root.classList.add("dashboard-target-preview");
-    const targetRows = new Map<string, DOMRect | undefined>(dashboardSections.map((section) => {
-      const target = document.querySelector<HTMLElement>(`.dashboard-sidebar-item[data-dashboard-href="${section.href}"]`);
-      return [section.href, target?.getBoundingClientRect()] as const;
-    }));
-    const profileTarget = document.querySelector<HTMLElement>(".dashboard-sidebar-profile")?.getBoundingClientRect();
-    root.classList.remove("dashboard-target-preview");
-
-    bubbles.forEach((bubble, index) => {
-      const href = bubble.getAttribute("href") ?? "";
-      const target = targetRows.get(href);
-      if (!target) return;
-      const box = bubble.getBoundingClientRect();
-      const moveX = target.left + 24 - (box.left + box.width / 2);
-      const moveY = target.top + 23 - (box.top + box.height / 2);
-
-      animations.push(bubble.animate(
-        [
-          { opacity: 1, rotate: "0deg", scale: "1", translate: "0 0" },
-          { offset: 0.72, opacity: 0.85, rotate: "-3deg", scale: "0.36", translate: `${moveX - 12}px ${moveY + 3}px` },
-          { opacity: 0.08, rotate: "0deg", scale: "0.26", translate: `${moveX}px ${moveY}px` },
-        ],
-        {
-          duration: 680,
-          delay: index * 34,
-          easing: "cubic-bezier(.16, 1, .3, 1)",
-          fill: "forwards",
-        },
-      ));
-    });
-
-    if (profile && profileTarget) {
-      const box = profile.getBoundingClientRect();
-      const moveX = profileTarget.left + profileTarget.width / 2 - (box.left + box.width / 2);
-      const moveY = profileTarget.top + profileTarget.height / 2 - (box.top + box.height / 2);
-      animations.push(profile.animate(
-        [
-          { opacity: 1, scale: "1", translate: "0 0" },
-          { opacity: 0.08, scale: "0.35", translate: `${moveX}px ${moveY}px` },
-        ],
-        { duration: 650, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" },
-      ));
-    }
-
-    if (launch) {
-      animations.push(launch.animate(
-        [{ opacity: 1, translate: "0 0" }, { opacity: 0, translate: "-1rem 0" }],
-        { duration: 260, easing: "ease", fill: "forwards" },
-      ));
-    }
-
-    await Promise.allSettled(animations.map((animation) => animation.finished));
-    enableDashboard();
-    animations.forEach((animation) => animation.cancel());
-  }
-
   return (
-    <section id="top" className={`home-orbit home-entry-${entryMode} home-mobile-focus-${mobileOrbitLinks[mobileActiveIndex]?.href.slice(1) ?? "contact"}`}>
+    <section id="top" className={`home-landing home-entry-${entryMode} home-mobile-focus-${mobileHomeLinks[mobileActiveIndex]?.href.slice(1) ?? "contact"}`}>
       {showHomePhotoGrid && <ScrollingPhotoBackground photos={photos} />}
 
-      <button className="dashboard-mode-launch" onClick={enterDashboardMode} type="button">
-        <span aria-hidden="true" className="dashboard-mode-launch-icon"><i /><i /><i /></span>
-        <span><strong>Dashboard mode</strong><small>Switch to a compact workspace</small></span>
-      </button>
-
-      <span className="home-menu-glyph" aria-hidden="true">
-        <i /><i /><i />
-      </span>
-
-      <div className="home-orbit-stage">
-        <div className="home-profile">
-          <h1 className="home-name">Curtis Lee</h1>
-
-          <div className="home-portrait" aria-label="Curtis Lee profile photo">
-            <div
-              className="home-portrait-inner has-photo"
-              style={{ backgroundImage: `url("${profilePhoto}")` }}
-            />
-          </div>
-
-          <p className="home-intro">School, work and life</p>
-        </div>
-
-        <nav className="home-orbit-nav" aria-label="Explore the website">
-          {orbitLinks.map((item) => (
-            <Link
-              className="orbit-link"
-              href={item.href}
-              key={item.href}
-              onClick={(event) => leaveHome(event, item.href)}
-              onFocus={() => prefetchRoute(item.href)}
-              onPointerEnter={() => prefetchRoute(item.href)}
-              style={{ cursor: bubbleCursors.get(item.href) }}
-            >
-              <span className="orbit-link-label">{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-
+      <div className="home-mobile-stage">
         <nav className="home-mobile-nav" aria-label="Explore the website" onScroll={updateMobileCarousel} ref={mobileNavRef}>
           <h1 className="sr-only">Curtis Lee</h1>
           <ol className="home-mobile-nav-list">
-            {mobileOrbitLinks.map((item, index) => {
+            {mobileHomeLinks.map((item, index) => {
               const icon = navIconForPath(item.href);
 
               return (
-                <li data-mobile-orbit-item key={item.href}>
+                <li data-mobile-home-item key={item.href}>
                   <Link
                     className="home-mobile-link"
                     data-active={index === mobileActiveIndex ? "true" : "false"}
@@ -450,7 +288,7 @@ export function HomeOrbit({ photos, profilePhoto }: { photos: string[]; profileP
                       event.currentTarget.parentElement?.scrollIntoView({ behavior: "smooth", block: "center" });
                     }}
                     onPointerEnter={() => prefetchRoute(item.href)}
-                    style={{ cursor: bubbleCursors.get(item.href) }}
+                    style={{ cursor: linkCursors.get(item.href) }}
                   >
                     {icon && <img alt="" aria-hidden="true" className="home-mobile-link-icon" src={icon} />}
                     <span className="home-mobile-link-label">{item.label}</span>

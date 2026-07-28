@@ -67,7 +67,7 @@ export const importedRecipeMediaEntries = [
     "categories": [
       "bread"
     ],
-    "thumbnail": "/recipes/personal-import/personal-banhmi/01-baguettes.jpg",
+    "thumbnail": "/recipes/personal-import/personal-banhmi/02-banhmi.jpg",
     "media": [
       {
         "src": "/recipes/personal-import/personal-banhmi/01-baguettes.jpg",

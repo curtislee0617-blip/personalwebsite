@@ -5,8 +5,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  createContext,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -189,18 +187,6 @@ export const dashboardSections: readonly DashboardSection[] = [
   },
 ];
 
-type DashboardModeContextValue = {
-  isDashboard: boolean;
-  enableDashboard: () => void;
-  disableDashboard: () => void;
-};
-
-const DashboardModeContext = createContext<DashboardModeContextValue>({
-  isDashboard: false,
-  enableDashboard: () => undefined,
-  disableDashboard: () => undefined,
-});
-
 const DEFAULT_SIDEBAR_WIDTH = 322;
 const MIN_SIDEBAR_WIDTH = 220;
 const MAX_SIDEBAR_WIDTH = 480;
@@ -214,11 +200,6 @@ function clampSidebarWidth(width: number) {
 
 function applySidebarWidth(width: number) {
   document.documentElement.style.setProperty("--dashboard-sidebar-width", `${width}px`);
-}
-
-function applyDashboardMode(enabled: boolean) {
-  document.documentElement.classList.toggle("dashboard-mode", enabled);
-  window.localStorage.setItem("site-layout", enabled ? "dashboard" : "bubbles");
 }
 
 function hrefPath(href: string) {
@@ -256,10 +237,6 @@ function loadingDetailsForPath(path: string): Pick<DashboardRouteLoading, "title
   return { title: "Loading", variant: "home" };
 }
 
-export function useDashboardMode() {
-  return useContext(DashboardModeContext);
-}
-
 export function DashboardShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [isDashboard, setIsDashboard] = useState(false);
@@ -275,7 +252,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const resizingPointerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 1024px)");
+    const desktop = window.matchMedia("(min-width: 1200px) and (hover: hover) and (pointer: fine)");
     const storedWidth = Number.parseInt(window.localStorage.getItem(SIDEBAR_WIDTH_KEY) ?? "", 10);
     const hasStoredWidth = Number.isFinite(storedWidth);
     const needsWidthScale = window.localStorage.getItem(SIDEBAR_WIDTH_SCALE_KEY) !== SIDEBAR_WIDTH_SCALE_VERSION;
@@ -377,26 +354,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const activeHref = useMemo(() => {
     return dashboardSections.find((section) => pathname === section.href || pathname.startsWith(`${section.href}/`))?.href;
   }, [pathname]);
-
-  function enableDashboard() {
-    applyDashboardMode(true);
-    setIsDashboard(true);
-  }
-
-  function disableDashboard() {
-    const change = () => {
-      applyDashboardMode(false);
-      setIsDashboard(false);
-    };
-    const doc = document as Document & { startViewTransition?: (callback: () => void) => { finished: Promise<void> } };
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || typeof doc.startViewTransition !== "function") {
-      change();
-      return;
-    }
-
-    doc.startViewTransition(change);
-  }
 
   function updateSidebarWidth(width: number, persist = false) {
     const nextWidth = clampSidebarWidth(width);
@@ -534,7 +491,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <DashboardModeContext.Provider value={{ disableDashboard, enableDashboard, isDashboard }}>
+    <>
       <aside
         aria-hidden={!isDashboard}
         className="dashboard-sidebar"
@@ -664,6 +621,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       )}
 
       <div className="site-app-shell">{children}</div>
-    </DashboardModeContext.Provider>
+    </>
   );
 }
