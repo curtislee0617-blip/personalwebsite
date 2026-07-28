@@ -148,7 +148,15 @@ export async function saveRecipeCard(formData: FormData) {
   const originalMediaBySrc = new Map(originalMedia.map((item) => [item.src, item]));
   let mediaItems = originalMedia;
   try {
-    const submitted = JSON.parse(String(formData.get("media_items") ?? "[]")) as Array<{ src?: unknown; type?: unknown; caption?: unknown; position?: unknown; zoom?: unknown }>;
+    const submitted = JSON.parse(String(formData.get("media_items") ?? "[]")) as Array<{
+      src?: unknown;
+      type?: unknown;
+      caption?: unknown;
+      position?: unknown;
+      zoom?: unknown;
+      trimStart?: unknown;
+      trimEnd?: unknown;
+    }>;
     const ordered = submitted.flatMap((item) => {
       if (typeof item.src !== "string" || (item.type !== "image" && item.type !== "video")) return [];
       const original = originalMediaBySrc.get(item.src);
@@ -158,11 +166,23 @@ export async function saveRecipeCard(formData: FormData) {
         : original.position;
       const rawZoom = Number(item.zoom ?? original.zoom ?? 1);
       const zoom = Number.isFinite(rawZoom) ? Math.min(4, Math.max(1, rawZoom)) : 1;
+      const rawTrimStart = Number(item.trimStart ?? original.trimStart ?? 0);
+      const trimStart = item.type === "video" && Number.isFinite(rawTrimStart)
+        ? Math.min(3600, Math.max(0, rawTrimStart))
+        : undefined;
+      const rawTrimEnd = item.trimEnd === undefined || item.trimEnd === null || item.trimEnd === ""
+        ? undefined
+        : Number(item.trimEnd);
+      const trimEnd = item.type === "video" && typeof rawTrimEnd === "number" && Number.isFinite(rawTrimEnd) && rawTrimEnd > (trimStart ?? 0)
+        ? Math.min(3600, rawTrimEnd)
+        : undefined;
       return [{
         ...original,
         caption: typeof item.caption === "string" ? item.caption.trim().slice(0, 200) : undefined,
         position,
         zoom,
+        trimStart,
+        trimEnd,
       }];
     });
     const included = new Set(ordered.map((item) => item.src));

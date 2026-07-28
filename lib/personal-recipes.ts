@@ -125,6 +125,12 @@ function mediaFromJson(value: Json, fallback?: RecipeCardEntry["media"]): Recipe
       caption: typeof item.caption === "string" ? item.caption.slice(0, 200) : undefined,
       position: typeof item.position === "string" && /^\d{1,3}(?:\.\d+)?%\s+\d{1,3}(?:\.\d+)?%$/.test(item.position) ? item.position : original?.position,
       zoom: typeof item.zoom === "number" && Number.isFinite(item.zoom) ? Math.min(4, Math.max(1, item.zoom)) : original?.zoom,
+      trimStart: item.type === "video" && typeof item.trimStart === "number" && Number.isFinite(item.trimStart)
+        ? Math.min(3600, Math.max(0, item.trimStart))
+        : original?.trimStart,
+      trimEnd: item.type === "video" && typeof item.trimEnd === "number" && Number.isFinite(item.trimEnd)
+        ? Math.min(3600, Math.max(0, item.trimEnd))
+        : original?.trimEnd,
     });
   }
   const included = new Set(parsed.map((item) => item.src));
@@ -184,6 +190,8 @@ function siteRecipeCards(): RecipeCardEntry[] {
     };
   });
   const banhMiBreadSource = youtubeSavedRecipes.find((entry) => entry.recipeKey === "youtube-saved-wwbW3zibmMI");
+  const roastPorkBanhMi = importedWithHighlightMetadata.find((entry) => entry.recipeKey === "personal-banhmi");
+  const roastPorkBanhMiFirstGalleryImage = roastPorkBanhMi?.media?.find((item) => item.type === "image")?.src;
   const banhMiBreadRecipe: RecipeCardEntry[] = banhMiBreadSource ? [{
     ...banhMiBreadSource,
     recipeKey: "personal-banh-mi-baguettes",
@@ -193,6 +201,7 @@ function siteRecipeCards(): RecipeCardEntry[] {
     date: instagramHighlightRecipeMetadata["personal-banhmi"]?.date,
     category: undefined,
     categories: ["bread"],
+    thumbnail: roastPorkBanhMiFirstGalleryImage ?? roastPorkBanhMi?.thumbnail ?? banhMiBreadSource.thumbnail,
   }] : [];
   const vietnameseButterRecipe: RecipeCardEntry = {
     recipeKey: "personal-vietnamese-butter",

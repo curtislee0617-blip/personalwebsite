@@ -28,7 +28,7 @@ export function RecipeCardThumbnailMedia({
   return (
     <video
       aria-hidden="true"
-      className="h-full w-full object-cover"
+      className="recipe-thumbnail-video h-full w-full object-cover"
       muted
       onLoadedMetadata={() => {
         const video = videoRef.current;
