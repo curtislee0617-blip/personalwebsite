@@ -25,6 +25,21 @@ export type ProjectEntry = {
 
 export const projects: ProjectEntry[] = [
   {
+    slug: "supercritical-water-gasification",
+    eyebrow: "Process design concept",
+    title: "Co-Valorization of Bauxite Residue and Soybean Processing Waste",
+    shortTitle: "SCWG concept",
+    year: "July 2026",
+    description:
+      "An interactive process-design concept: supercritical water gasification co-processing red mud and okara, with a scroll-driven flowsheet, siting analysis, and strict placeholder discipline on unclosed balances.",
+    detail: [
+      "Two individually awkward waste streams become tractable when co-processed: okara is 80–85 wt% water, which suits supercritical water gasification, while bauxite residue supplies iron redox capacity and alkalinity.",
+      "The page descends through the plant as you scroll, block by block, and is explicit about what is unvalidated: the mass and energy balances are not yet written, so every unclosed figure is rendered as a flagged placeholder rather than an invented number.",
+    ],
+    tags: ["Chemical engineering", "Process design", "Supercritical water", "Red mud", "Waste valorization"],
+    previews: [],
+  },
+  {
     slug: "biodiesel-from-used-cooking-oil",
     eyebrow: "Chemical Engineering",
     title: "Biodiesel from used cooking oil",
