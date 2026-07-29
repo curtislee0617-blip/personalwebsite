@@ -1,4 +1,5 @@
 import { scwgRegulatoryIntro, scwgRegulatoryPanels } from "@/lib/scwg-regulatory";
+import { scwgUi } from "@/lib/scwg-meta";
 
 // Act 1 — the compliance landscape. Server component; a timeline rail runs down
 // the left and each framework reveals via the site-wide `data-reveal` observer
@@ -8,8 +9,8 @@ export function ScwgRegulatoryTimeline() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
       <div className="lg:sticky lg:top-28 lg:self-start">
-        <p className="eyebrow">Act 1</p>
-        <h2 className="section-title mt-3">Why this is being built</h2>
+        <p className="eyebrow">{scwgUi.acts.regulatory.eyebrow}</p>
+        <h2 className="section-title mt-3">{scwgUi.acts.regulatory.title}</h2>
         <p className="mt-4 max-w-prose text-sm leading-7 text-ink/60">{scwgRegulatoryIntro}</p>
       </div>
 

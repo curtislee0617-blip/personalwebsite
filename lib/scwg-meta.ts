@@ -17,3 +17,74 @@ export const scwgMeta = {
     literature: "Literature — an anchor value from a cited source, resolving to the references.",
   },
 } as const;
+
+/**
+ * Where the work sits. This concept came out of the Towngas Green Fuels &
+ * Chemicals internship; VENEX is that division's green-methanol venture.
+ * Logos are vendored in `public/logos/`.
+ */
+export const scwgAffiliation = {
+  eyebrow: "Affiliation",
+  note: "This concept was developed during a process engineering internship with the Green Fuels & Chemicals division of The Hong Kong and China Gas Company (Towngas), and its green-methanol venture VENEX, across Foshan, Guangdong and Jungar Banner, Inner Mongolia.",
+  disclaimer:
+    "A personal study. The analysis, the design decisions and any errors are the author's own, and it is not a Towngas or VENEX publication.",
+  logos: [
+    { src: "/logos/towngas.png", alt: "Towngas logo", width: 244, height: 70 },
+    { src: "/logos/venex.png", alt: "VENEX logo", width: 568, height: 129 },
+  ],
+} as const;
+
+/**
+ * Section headings and UI labels. These live here, not in the .tsx files, so
+ * that rewriting any user-facing text means editing a lib/scwg-* file only.
+ */
+export const scwgUi = {
+  abstractLabel: "Abstract",
+  legendPlaceholderLabel: "Placeholder.",
+  legendLiteratureLabel: "Literature.",
+  acts: {
+    regulatory: { eyebrow: "Act 1", title: "Why this is being built" },
+    siting: { eyebrow: "Act 2", title: "Where the two wastes actually are" },
+    process: { eyebrow: "Act 3", title: "The plant" },
+    products: { eyebrow: "Act 4", title: "Product slate" },
+    openQuestions: { eyebrow: "Act 5", title: "Open questions & references" },
+  },
+  siting: {
+    overlaysLabel: "Overlays",
+    payloadLabel: "The analytical payload",
+    haulLabel: "Haul-distance calculator",
+    haulHelp: "Pick a candidate site; distances are great-circle to the nearest source in each active overlay.",
+    overlayOn: "on",
+    overlayOff: "off by default",
+    noOverlays: "No point-source overlays active.",
+    mapAriaLabel: "Choropleth of China: red mud and okara sources by province",
+  },
+  process: {
+    diagramAriaLabel:
+      "Process flow diagram: eight unit operations from feed preparation to red mud regeneration, flowing top to bottom",
+    inletLabel: "Inlet streams",
+    outletLabel: "Outlet streams",
+    contextValuesLabel: "Context values",
+    needsValidationBadge: "Needs validation",
+  },
+  references: {
+    heading: "References",
+    key: "verified against a primary source",
+    keyUnverified: "unverified attribution",
+  },
+  products: { detailsOpen: "Show less", detailsClosed: "Details" },
+  /** Callout kind → heading, keyed by BlockFlag["kind"]. */
+  flagLabels: {
+    "needs-validation": "Needs validation",
+    warning: "Warning",
+    decision: "Decision",
+    note: "Note",
+  },
+  /** How well supported a sub-claim is, keyed by BlockRole["support"]. */
+  supportLabels: {
+    "best-supported": "Best supported",
+    supported: "Supported",
+    "requires-qualification": "Requires qualification",
+    unvalidated: "Unvalidated",
+  },
+} as const;

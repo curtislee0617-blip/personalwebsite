@@ -9,6 +9,7 @@ import topo from "@/data/scwg-china-provinces.json";
 import mapData from "@/data/scwg-map-sites.json";
 import { scwgSitingCandidates, scwgSitingOverlays } from "@/lib/scwg-siting";
 import { nearestSource } from "@/lib/scwg-geo";
+import { scwgUi } from "@/lib/scwg-meta";
 import type { SitingOverlayId } from "@/lib/scwg-types";
 
 // Act 2 — the siting map. An analytical choropleth (no API key, no network): the
@@ -88,7 +89,7 @@ export function ScwgSitingMap() {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/40 p-3">
-        <svg aria-label="Choropleth of China: red mud and okara sources by province" className="h-auto w-full" role="img" viewBox={viewBox}>
+        <svg aria-label={scwgUi.siting.mapAriaLabel} className="h-auto w-full" role="img" viewBox={viewBox}>
           {/* provinces + fragmented shading */}
           <g>
             {provinces.features.map((f, i) => {
@@ -151,7 +152,7 @@ export function ScwgSitingMap() {
 
       <div className="space-y-5">
         <div>
-          <p className="eyebrow mb-2">Overlays</p>
+          <p className="eyebrow mb-2">{scwgUi.siting.overlaysLabel}</p>
           <div className="flex flex-wrap gap-2">
             {scwgSitingOverlays.map((o) => (
               <button
@@ -173,8 +174,8 @@ export function ScwgSitingMap() {
         </div>
 
         <div>
-          <p className="eyebrow mb-2">Haul-distance calculator</p>
-          <p className="mb-3 text-xs leading-6 text-ink/55">Pick a candidate site; distances are great-circle to the nearest source in each active overlay.</p>
+          <p className="eyebrow mb-2">{scwgUi.siting.haulLabel}</p>
+          <p className="mb-3 text-xs leading-6 text-ink/55">{scwgUi.siting.haulHelp}</p>
           <div className="flex flex-col gap-2">
             {scwgSitingCandidates.map((c) => (
               <button
@@ -198,7 +199,7 @@ export function ScwgSitingMap() {
             <p className="mt-1 text-xs leading-6 text-ink/55">{candidate.note}</p>
             <dl className="mt-3 space-y-2">
               {hauls.length === 0 ? (
-                <p className="text-xs text-ink/50">No point-source overlays active.</p>
+                <p className="text-xs text-ink/50">{scwgUi.siting.noOverlays}</p>
               ) : (
                 hauls.map((h) => (
                   <div className="flex items-baseline justify-between gap-3 text-sm" key={h.overlay}>

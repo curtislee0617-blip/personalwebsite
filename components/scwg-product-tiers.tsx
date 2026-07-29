@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { ProductItem } from "@/lib/scwg-types";
 import { scwgProductGroups } from "@/lib/scwg-products";
+import { scwgUi } from "@/lib/scwg-meta";
 
 // Act 4 — product slate. Client component only for the expand/collapse and the
 // sortable Tier 3 table. All prose comes from lib/scwg-products.ts.
@@ -74,7 +75,7 @@ function ProductCard({ item }: { item: ProductItem }) {
         onClick={() => setOpen((value) => !value)}
         type="button"
       >
-        {open ? "Show less" : "Details"}
+        {open ? scwgUi.products.detailsOpen : scwgUi.products.detailsClosed}
         <span aria-hidden="true">{open ? "▲" : "▼"}</span>
       </button>
 

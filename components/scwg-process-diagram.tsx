@@ -5,6 +5,7 @@ import type { ProcessBlock } from "@/lib/scwg-types";
 import { BlockGlyph } from "@/components/scwg-diagram-symbols";
 import { SCWG_VIEW_W, scwgBoxes, scwgViewHeight } from "@/lib/scwg-diagram-layout";
 import { buildScwgConnectors } from "@/lib/scwg-diagram-connectors";
+import { scwgUi } from "@/lib/scwg-meta";
 
 // Wrap a block name to at most two lines of ~ maxChars, so long names fit the box.
 function wrapName(name: string, maxChars = 22): string[] {
@@ -51,7 +52,7 @@ export const ScwgProcessDiagram = forwardRef<SVGSVGElement, Props>(function Scwg
 
   return (
     <svg
-      aria-label="Process flow diagram: eight unit operations from feed preparation to red mud regeneration, flowing top to bottom"
+      aria-label={scwgUi.process.diagramAriaLabel}
       className="h-full w-full text-ink"
       preserveAspectRatio="xMidYMid meet"
       ref={ref}

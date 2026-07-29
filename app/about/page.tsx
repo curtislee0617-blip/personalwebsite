@@ -72,7 +72,7 @@ const experience: TimelineItem[] = [
     dates: "June 2026 - Present",
     role: "Process Engineering Intern",
     organisation: "The Hong Kong and China Gas Company Limited (Towngas)",
-    detail: "Interning with Towngas's Green Fuels & Chemicals division across Foshan, Guangdong and Ordos, Inner Mongolia. Working on process design and safety and environmental analysis for a new green-fuels plant in Foshan, while supporting daily operations at an operating green-methanol plant in Inner Mongolia. Also investigating the feasibility of producing synthetic natural gas from biomass-derived syngas.",
+    detail: "Interning with Towngas's Green Fuels & Chemicals division across Foshan, Guangdong and Jungar Banner, Inner Mongolia. Working on process design and safety and environmental analysis for a new green-fuels plant in Foshan, while supporting daily operations at an operating green-methanol plant in Inner Mongolia. Also investigating the feasibility of producing synthetic natural gas from biomass-derived syngas.",
     logo: { src: "/logos/towngas.png", alt: "Towngas logo", fallback: "TG", fitClassName: "h-11 w-[3.25rem]", alignClassName: "object-center", frameClassName: "bg-white" },
   },
   {

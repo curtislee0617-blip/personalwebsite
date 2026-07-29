@@ -1,6 +1,7 @@
 import type { BlockFlag, ProcessBlock } from "@/lib/scwg-types";
 import { ScwgRange, ScwgValue } from "@/components/scwg-value";
 import { ScwgStreamTable } from "@/components/scwg-stream-table";
+import { scwgUi } from "@/lib/scwg-meta";
 
 // Server component. Renders one block's right-column content generically from
 // block data: header, conditions, function, roles, stream tables, duty, metrics,
@@ -12,20 +13,6 @@ const FLAG_STYLE: Record<BlockFlag["kind"], string> = {
   decision: "border-moss bg-moss/8 text-ink/80",
   note: "border-ink/15 bg-ink/5 text-ink/70",
 };
-
-const FLAG_LABEL: Record<BlockFlag["kind"], string> = {
-  "needs-validation": "Needs validation",
-  warning: "Warning",
-  decision: "Decision",
-  note: "Note",
-};
-
-const SUPPORT_LABEL = {
-  "best-supported": "Best supported",
-  supported: "Supported",
-  "requires-qualification": "Requires qualification",
-  unvalidated: "Unvalidated",
-} as const;
 
 export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
   return (
@@ -44,7 +31,7 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
           </div>
           {block.needsValidation ? (
             <span className="rounded-full border border-clay/40 bg-clay/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-clay">
-              Needs validation
+              {scwgUi.process.needsValidationBadge}
             </span>
           ) : null}
         </div>
@@ -80,7 +67,7 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <p className="font-semibold text-ink/80">{role.title}</p>
                   <span className="rounded-full bg-ink/8 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-ink/55">
-                    {SUPPORT_LABEL[role.support]}
+                    {scwgUi.supportLabels[role.support]}
                   </span>
                 </div>
                 <p className="mt-2 text-sm leading-7 text-ink/65">{role.body}</p>
@@ -90,8 +77,8 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
         ) : null}
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <ScwgStreamTable rows={block.inlet} title="Inlet streams" />
-          <ScwgStreamTable rows={block.outlet} title="Outlet streams" />
+          <ScwgStreamTable rows={block.inlet} title={scwgUi.process.inletLabel} />
+          <ScwgStreamTable rows={block.outlet} title={scwgUi.process.outletLabel} />
         </div>
 
         {block.duty || block.metrics ? (
@@ -119,7 +106,7 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
 
         {block.contextValues ? (
           <div className="mt-5 rounded-[1.25rem] border border-dashed border-ink/15 bg-paper/40 p-4">
-            <p className="eyebrow mb-2">Context values</p>
+            <p className="eyebrow mb-2">{scwgUi.process.contextValuesLabel}</p>
             <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
               {block.contextValues.map((entry) => (
                 <div className="flex items-baseline justify-between gap-3" key={entry.label}>
@@ -137,7 +124,7 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
           <ul className="mt-5 space-y-3">
             {block.flags.map((flag) => (
               <li className={`rounded-[1.25rem] border-l-2 px-4 py-3 ${FLAG_STYLE[flag.kind]}`} key={flag.title}>
-                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] opacity-70">{FLAG_LABEL[flag.kind]}</p>
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] opacity-70">{scwgUi.flagLabels[flag.kind]}</p>
                 <p className="mt-1 text-sm font-medium leading-6">{flag.title}</p>
                 <p className="mt-1 text-sm leading-6 opacity-90">{flag.body}</p>
               </li>
