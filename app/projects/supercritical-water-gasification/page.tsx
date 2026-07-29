@@ -4,7 +4,9 @@ import { PageIntro } from "@/components/page-intro";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { ScwgRegulatoryTimeline } from "@/components/scwg-regulatory-timeline";
 import { ScwgSitingMap } from "@/components/scwg-siting-map";
+import { ScwgFeedstock } from "@/components/scwg-feedstock";
 import { ScwgProcessScroller } from "@/components/scwg-process-scroller";
+import { ScwgReportStructure } from "@/components/scwg-report-structure";
 import { ScwgProductTiers } from "@/components/scwg-product-tiers";
 import { ScwgValueLegend } from "@/components/scwg-value";
 import { scwgAffiliation, scwgMeta, scwgUi } from "@/lib/scwg-meta";
@@ -21,7 +23,8 @@ import {
   scwgOpenQuestions,
   scwgOpenQuestionsIntro,
 } from "@/lib/scwg-open-questions";
-import { scwgReferences } from "@/lib/scwg-references";
+import { scwgReferences, scwgReferencesNote } from "@/lib/scwg-references";
+import { scwgReportMeta } from "@/lib/scwg-report-structure";
 
 export const metadata: Metadata = {
   title: scwgMeta.title,
@@ -46,10 +49,34 @@ export default function SupercriticalWaterGasificationPage() {
               <p key={index}>{paragraph}</p>
             ))}
           </div>
+          <dl className="mt-6 grid gap-x-8 gap-y-2 border-t border-ink/10 pt-5 text-sm sm:grid-cols-2">
+            <div className="flex items-baseline justify-between gap-3">
+              <dt className="text-ink/50">Document</dt>
+              <dd className="text-right text-ink/75">{scwgReportMeta.kind}</dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-3">
+              <dt className="text-ink/50">Date</dt>
+              <dd className="text-right font-mono tabular-nums text-ink/75">{scwgReportMeta.date}</dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-3 sm:col-span-2">
+              <dt className="shrink-0 text-ink/50">Status</dt>
+              <dd className="text-right text-ink/75">{scwgReportMeta.deliverableStatus}</dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-3 sm:col-span-2">
+              <dt className="shrink-0 text-ink/50">Feedstock case</dt>
+              <dd className="text-right text-ink/75">{scwgReportMeta.feedstockCase}</dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-3 sm:col-span-2">
+              <dt className="shrink-0 text-ink/50">Compliance frame</dt>
+              <dd className="text-right text-ink/75">{scwgReportMeta.complianceFrame}</dd>
+            </div>
+          </dl>
+
           <div className="mt-6 rounded-[1.25rem] border border-dashed border-ink/15 bg-paper/50 p-4 sm:p-5">
             <p className="eyebrow mb-2">{scwgMeta.legend.heading}</p>
             <div className="space-y-1.5 text-sm leading-6 text-ink/60">
               <p><strong className="font-semibold text-ink/75">{scwgUi.legendPlaceholderLabel}</strong> {scwgMeta.legend.placeholder}</p>
+              <p><strong className="font-semibold text-ink/75">{scwgUi.legendIndicativeLabel}</strong> {scwgMeta.legend.indicative}</p>
               <p><strong className="font-semibold text-ink/75">{scwgUi.legendLiteratureLabel}</strong> {scwgMeta.legend.literature}</p>
             </div>
           </div>
@@ -128,7 +155,16 @@ export default function SupercriticalWaterGasificationPage() {
         </div>
       </section>
 
-      {/* Act 3 — the plant */}
+      {/* Act 3 — feedstock characterization (report Section 1) */}
+      <section className="page-section pt-4" id="scwg-act-feedstock">
+        <p className="eyebrow">{scwgUi.acts.feedstock.eyebrow}</p>
+        <h2 className="section-title mt-3">{scwgUi.acts.feedstock.title}</h2>
+        <div className="mt-8">
+          <ScwgFeedstock />
+        </div>
+      </section>
+
+      {/* Act 4 — the plant */}
       <section className="page-section pt-4" id="scwg-act-process">
         <p className="eyebrow">{scwgUi.acts.process.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.process.title}</h2>
@@ -182,8 +218,13 @@ export default function SupercriticalWaterGasificationPage() {
           ))}
         </ol>
 
+        <div className="mt-8">
+          <ScwgReportStructure />
+        </div>
+
         <div className="mt-10">
           <h3 className="section-title text-2xl">{scwgUi.references.heading}</h3>
+          <p className="mt-2 max-w-prose text-sm leading-6 text-ink/55">{scwgReferencesNote}</p>
           <p className="mt-2 text-sm text-ink/55">
             <span className="text-moss">✓</span> {scwgUi.references.key} ·{" "}
             <span className="text-clay">°</span> {scwgUi.references.keyUnverified}

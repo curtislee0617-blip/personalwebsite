@@ -12,12 +12,19 @@
  */
 export type ProcessValue =
   | { value: number; unit: string; status: "placeholder"; note?: string }
-  | { value: number; unit: string; status: "literature"; source: string };
+  | { value: number; unit: string; status: "literature"; source: string }
+  // "indicative" mirrors the source report's own convention: a real number drawn
+  // from general engineering knowledge that is NOT yet traceable to a primary
+  // source and must not survive to a final version without a citation. `note` is
+  // required for the same reason `source` is required on a literature value —
+  // an unexplained indicative number is exactly what this type exists to prevent.
+  | { value: number; unit: string; status: "indicative"; note: string };
 
 /** A range placeholder — two endpoints share one status. Used for T/P windows. */
 export type ProcessRange =
   | { min: number; max: number; unit: string; status: "placeholder"; note?: string }
-  | { min: number; max: number; unit: string; status: "literature"; source: string };
+  | { min: number; max: number; unit: string; status: "literature"; source: string }
+  | { min: number; max: number; unit: string; status: "indicative"; note: string };
 
 // ── Act 1 — regulatory ──────────────────────────────────────────────────────
 
@@ -58,6 +65,64 @@ export type SitingNarrative = {
   /** The analytical-payload side panel, verbatim from the spec. */
   payload: string[];
   candidatesIntro: string;
+};
+
+// ── Feedstock characterization (report Section 1) ────────────────────────────
+
+/** A measured or quoted analysis line, e.g. "82.8 wt% moisture". */
+export type AnalysisEntry = {
+  label: string;
+  value: string;
+  /** Reference marker resolving to scwg-references.ts; omit when indicative. */
+  source?: string;
+  /** Set when the figure is not yet traceable to a primary source. */
+  indicative?: boolean;
+};
+
+export type FeedstockProfile = {
+  id: string;
+  name: string;
+  subtitle: string;
+  paragraphs: string[];
+  /** Named consequences that follow from the characterization. */
+  consequences?: { title: string; body: string }[];
+  analyses?: AnalysisEntry[];
+};
+
+/** Table 1.1 — the three constraints that bound the blend ratio. */
+export type BlendConstraint = {
+  constraint: string;
+  boundingVariable: string;
+  designWindow: string;
+  binding: string;
+  indicative?: boolean;
+};
+
+/** Table 1.2 — red mud composition and the function assigned to each oxide. */
+export type CompositionRow = {
+  component: string;
+  typicalRange: string;
+  representative: string;
+  functionNote: string;
+};
+
+/** Table 1.3 — every heteroatom gets a named destination and a responsible unit. */
+export type HeteroatomFate = {
+  element: string;
+  source: string;
+  form: string;
+  fate: string;
+  /** Flagged where the data gap materially affects design. */
+  dataGap?: boolean;
+};
+
+// ── Report structure (report Table A.1) ──────────────────────────────────────
+
+export type ReportSection = {
+  number: number;
+  title: string;
+  argument: string;
+  status: "drafted" | "outlined";
 };
 
 // ── Act 3 — process ─────────────────────────────────────────────────────────

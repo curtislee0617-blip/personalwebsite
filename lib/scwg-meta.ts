@@ -15,6 +15,8 @@ export const scwgMeta = {
     placeholder:
       "Placeholder — pending balance closure. The mass and energy balances are not yet written; these figures are structural placeholders, not results.",
     literature: "Literature — an anchor value from a cited source, resolving to the references.",
+    indicative:
+      "Indicative — a real figure drawn from general engineering knowledge, not yet traceable to a primary source. Carried over from the report's own provenance convention; it must not survive into a final version without a citation.",
   },
 } as const;
 
@@ -41,13 +43,32 @@ export const scwgAffiliation = {
 export const scwgUi = {
   abstractLabel: "Abstract",
   legendPlaceholderLabel: "Placeholder.",
+  legendIndicativeLabel: "Indicative.",
   legendLiteratureLabel: "Literature.",
   acts: {
     regulatory: { eyebrow: "Act 1", title: "Why this is being built" },
     siting: { eyebrow: "Act 2", title: "Where the two wastes actually are" },
-    process: { eyebrow: "Act 3", title: "The plant" },
-    products: { eyebrow: "Act 4", title: "Product slate" },
-    openQuestions: { eyebrow: "Act 5", title: "Open questions & references" },
+    feedstock: { eyebrow: "Act 3", title: "What goes in" },
+    process: { eyebrow: "Act 4", title: "The plant" },
+    products: { eyebrow: "Act 5", title: "Product slate" },
+    openQuestions: { eyebrow: "Act 6", title: "State of the work" },
+  },
+  feedstock: {
+    synergyLabel: "The load-bearing claim",
+    compositionLabel: "Red mud composition and assigned function",
+    compositionCaption:
+      "Ranges from Wang & Liu (2012); representative Chinese Bayer residue analysis and scandium content from Zhang et al. (2016, 2017).",
+    blendLabel: "Blend design constraints",
+    heteroatomLabel: "Contaminant inventory and assigned fate",
+    dataGapBadge: "data gap",
+  },
+  reportStructure: {
+    label: "Report structure",
+    statusDrafted: "Drafted",
+    statusOutlined: "Outlined",
+    columnSection: "Section",
+    columnArgument: "Argument it must carry",
+    columnStatus: "Status",
   },
   siting: {
     overlaysLabel: "Overlays",

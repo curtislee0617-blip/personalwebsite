@@ -10,6 +10,8 @@ import { scwgReferenceByMarker } from "@/lib/scwg-references";
 // - Literature: normal weight, superscript citation marker resolving to a source.
 
 const PLACEHOLDER_TITLE = "Placeholder — pending balance closure.";
+const INDICATIVE_TITLE =
+  "Indicative — general engineering knowledge, not yet traceable to a primary source. Must not survive to a final version without a citation.";
 
 function formatNumber(value: number) {
   // Placeholders are stored as 0; show an em dash instead of a fake number.
@@ -57,6 +59,27 @@ export function ScwgValue({ data }: { data: ProcessValue }) {
     );
   }
 
+  if (data.status === "indicative") {
+    return (
+      <span
+        className="group inline-flex items-baseline gap-1 font-mono tabular-nums text-ink/70 [border-bottom:1px_dashed_rgb(var(--color-clay)/0.7)] focus-within:text-ink/90 hover:text-ink/90"
+        tabIndex={0}
+        title={`${INDICATIVE_TITLE} ${data.note}`}
+      >
+        <span>
+          {formatNumber(data.value)}
+          <span className="ml-1">{data.unit}</span>
+        </span>
+        <span
+          aria-label="indicative, not yet traceable to a primary source"
+          className="rounded-[0.3rem] bg-clay/12 px-1 py-px font-sans text-[0.6em] font-semibold uppercase tracking-[0.12em] text-clay"
+        >
+          ind.
+        </span>
+      </span>
+    );
+  }
+
   return (
     <span className="inline-flex items-baseline font-mono tabular-nums text-ink/85">
       <span>
@@ -94,6 +117,26 @@ export function ScwgRange({ data }: { data: ProcessRange }) {
     );
   }
 
+  if (data.status === "indicative") {
+    return (
+      <span
+        className="group inline-flex items-baseline gap-1 font-mono tabular-nums text-ink/70 [border-bottom:1px_dashed_rgb(var(--color-clay)/0.7)] focus-within:text-ink/90 hover:text-ink/90"
+        tabIndex={0}
+        title={`${INDICATIVE_TITLE} ${data.note}`}
+      >
+        <span>
+          {body} {data.unit}
+        </span>
+        <span
+          aria-label="indicative, not yet traceable to a primary source"
+          className="rounded-[0.3rem] bg-clay/12 px-1 py-px font-sans text-[0.6em] font-semibold uppercase tracking-[0.12em] text-clay"
+        >
+          ind.
+        </span>
+      </span>
+    );
+  }
+
   return (
     <span className="inline-flex items-baseline font-mono tabular-nums text-ink/85">
       <span>
@@ -112,6 +155,11 @@ export function ScwgValueLegend() {
         <span className="font-mono text-ink/45 [border-bottom:1px_dotted_rgb(var(--color-ink)/0.4)]">000</span>
         <span className="rounded-[0.3rem] bg-ink/8 px-1 py-px text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-ink/50">est.</span>
         <span>Placeholder — pending balance closure</span>
+      </span>
+      <span className="inline-flex items-baseline gap-1.5">
+        <span className="font-mono text-ink/70 [border-bottom:1px_dashed_rgb(var(--color-clay)/0.7)]">000</span>
+        <span className="rounded-[0.3rem] bg-clay/12 px-1 py-px text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-clay">ind.</span>
+        <span>Indicative — needs a citation</span>
       </span>
       <span className="inline-flex items-baseline gap-1.5">
         <span className="font-mono text-ink/85">000<sup className="ml-0.5 text-[0.62em] font-semibold text-moss">[src]</sup></span>
