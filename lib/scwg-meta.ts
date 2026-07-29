@@ -23,16 +23,35 @@ export const scwgMeta = {
 /**
  * Where the work sits. This concept came out of the Towngas Green Fuels &
  * Chemicals internship; VENEX is that division's green-methanol venture.
- * Logos are vendored in `public/logos/`.
+ *
+ * The logos are taken from the VENEX site and are deliberately page-specific
+ * (`scwg-` prefix) so they are independent of the Towngas logo the CV uses —
+ * changing one must never change the other. `/logos/*` is proxied to Supabase
+ * storage, so these files also have to exist in the `site-media` bucket.
  */
 export const scwgAffiliation = {
   eyebrow: "Affiliation",
-  note: "This concept was developed during a process engineering internship with the Green Fuels & Chemicals division of The Hong Kong and China Gas Company (Towngas), and its green-methanol venture VENEX, across Foshan, Guangdong and Jungar Banner, Inner Mongolia.",
+  note: "Developed during a process engineering internship with the Green Fuels & Chemicals division of The Hong Kong and China Gas Company (Towngas), and its green-methanol venture VENEX, across Foshan, Guangdong and Jungar Banner, Inner Mongolia.",
   disclaimer:
     "A personal study. The analysis, the design decisions and any errors are the author's own, and it is not a Towngas or VENEX publication.",
+  // `heightClass` optically matches the two marks. The Towngas PNG carries more
+  // internal padding than the VENEX one, so an identical box height renders it
+  // visibly smaller; it is scaled up to compensate.
   logos: [
-    { src: "/logos/towngas.png", alt: "Towngas logo", width: 244, height: 70 },
-    { src: "/logos/venex.png", alt: "VENEX logo", width: 568, height: 129 },
+    {
+      src: "/logos/scwg-towngas.png",
+      alt: "Towngas logo",
+      width: 244,
+      height: 70,
+      heightClass: "h-11 sm:h-[3.4rem]",
+    },
+    {
+      src: "/logos/scwg-venex.png",
+      alt: "VENEX logo",
+      width: 568,
+      height: 129,
+      heightClass: "h-8 sm:h-10",
+    },
   ],
 } as const;
 
@@ -47,11 +66,24 @@ export const scwgUi = {
   legendLiteratureLabel: "Literature.",
   acts: {
     regulatory: { eyebrow: "Act 1", title: "Why this is being built" },
-    siting: { eyebrow: "Act 2", title: "Where the two wastes actually are" },
-    feedstock: { eyebrow: "Act 3", title: "What goes in" },
-    process: { eyebrow: "Act 4", title: "The plant" },
-    products: { eyebrow: "Act 5", title: "Product slate" },
-    openQuestions: { eyebrow: "Act 6", title: "State of the work" },
+    rationale: { eyebrow: "Act 2", title: "Why these two wastes" },
+    siting: { eyebrow: "Act 3", title: "Where the two wastes actually are" },
+    feedstock: { eyebrow: "Act 4", title: "What goes in" },
+    process: { eyebrow: "Act 5", title: "The plant" },
+    waste: { eyebrow: "Act 6", title: "What must not leave" },
+    products: { eyebrow: "Act 7", title: "Product slate" },
+    openQuestions: { eyebrow: "Act 8", title: "State of the work" },
+  },
+  rationale: {
+    contributionLabel: "What it brings",
+    synergyLabel: "Why the pairing works",
+    productsLabel: "What can be made",
+  },
+  waste: {
+    waterLabel: "Water discharge",
+    airLabel: "Air emissions",
+    streamsLabel: "Stream-by-stream disposition",
+    verifyBadge: "verify",
   },
   feedstock: {
     synergyLabel: "The load-bearing claim",
@@ -79,6 +111,12 @@ export const scwgUi = {
     overlayOff: "off by default",
     noOverlays: "No point-source overlays active.",
     mapAriaLabel: "Choropleth of China: red mud and okara sources by province",
+    markLegendLabel: "Reading the marks",
+    markFilled:
+      "Filled and larger — a site with a recorded capacity; radius scales with it. Only Fangchenggang (Guangxi, ~2.4 Mt/y) currently carries one, which is why it is the single large mark in the south.",
+    markHollow: "Hollow and uniform — capacity unverified, which is every other site on this map.",
+    markDotted:
+      "Dotted outlines — neighbouring countries and Taiwan, shown for geographic context only; no data is attached to them.",
   },
   process: {
     diagramAriaLabel:

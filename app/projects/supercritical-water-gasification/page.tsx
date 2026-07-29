@@ -3,10 +3,12 @@ import Image from "next/image";
 import { PageIntro } from "@/components/page-intro";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { ScwgRegulatoryTimeline } from "@/components/scwg-regulatory-timeline";
+import { ScwgRationale } from "@/components/scwg-rationale";
 import { ScwgSitingMap } from "@/components/scwg-siting-map";
 import { ScwgFeedstock } from "@/components/scwg-feedstock";
 import { ScwgProcessScroller } from "@/components/scwg-process-scroller";
 import { ScwgReportStructure } from "@/components/scwg-report-structure";
+import { ScwgWasteTreatment } from "@/components/scwg-waste-treatment";
 import { ScwgProductTiers } from "@/components/scwg-product-tiers";
 import { ScwgValueLegend } from "@/components/scwg-value";
 import { scwgAffiliation, scwgMeta, scwgUi } from "@/lib/scwg-meta";
@@ -34,8 +36,26 @@ export const metadata: Metadata = {
 
 export default function SupercriticalWaterGasificationPage() {
   return (
-    <>
-      <PageIntro eyebrow={scwgMeta.eyebrow} title={scwgMeta.title} description={scwgMeta.subtitle} />
+    <div className="scwg-page">
+      <PageIntro
+        actions={
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+            {scwgAffiliation.logos.map((logo) => (
+              <Image
+                alt={logo.alt}
+                className={`w-auto object-contain ${logo.heightClass}`}
+                height={logo.height}
+                key={logo.src}
+                src={logo.src}
+                width={logo.width}
+              />
+            ))}
+          </div>
+        }
+        eyebrow={scwgMeta.eyebrow}
+        title={scwgMeta.title}
+        description={scwgMeta.subtitle}
+      />
 
       {/* Act 0 — hero abstract */}
       <section className="page-section pt-10 sm:pt-14">
@@ -70,7 +90,13 @@ export default function SupercriticalWaterGasificationPage() {
               <dt className="shrink-0 text-ink/50">Compliance frame</dt>
               <dd className="text-right text-ink/75">{scwgReportMeta.complianceFrame}</dd>
             </div>
+            <div className="flex items-baseline justify-between gap-3 sm:col-span-2">
+              <dt className="shrink-0 text-ink/50">{scwgAffiliation.eyebrow}</dt>
+              <dd className="text-right text-ink/75">{scwgAffiliation.note}</dd>
+            </div>
           </dl>
+
+          <p className="mt-4 text-xs leading-6 text-ink/45">{scwgAffiliation.disclaimer}</p>
 
           <div className="mt-6 rounded-[1.25rem] border border-dashed border-ink/15 bg-paper/50 p-4 sm:p-5">
             <p className="eyebrow mb-2">{scwgMeta.legend.heading}</p>
@@ -82,25 +108,6 @@ export default function SupercriticalWaterGasificationPage() {
           </div>
         </article>
 
-        {/* Affiliation — the internship this concept came out of. */}
-        <article className="mt-6 rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
-          <p className="eyebrow">{scwgAffiliation.eyebrow}</p>
-          <div className="mt-5 flex flex-wrap items-center gap-x-10 gap-y-6">
-            {scwgAffiliation.logos.map((logo) => (
-              <span className="inline-flex items-center" key={logo.src}>
-                <Image
-                  alt={logo.alt}
-                  className="h-9 w-auto object-contain sm:h-11"
-                  height={logo.height}
-                  src={logo.src}
-                  width={logo.width}
-                />
-              </span>
-            ))}
-          </div>
-          <p className="mt-5 max-w-prose text-sm leading-7 text-ink/65">{scwgAffiliation.note}</p>
-          <p className="mt-2 max-w-prose text-xs leading-6 text-ink/45">{scwgAffiliation.disclaimer}</p>
-        </article>
       </section>
 
       {/* Act 1 — compliance landscape */}
@@ -108,7 +115,16 @@ export default function SupercriticalWaterGasificationPage() {
         <ScwgRegulatoryTimeline />
       </section>
 
-      {/* Act 2 — siting problem */}
+      {/* Act 2 — why these two wastes */}
+      <section className="page-section pt-4" id="scwg-act-rationale">
+        <p className="eyebrow">{scwgUi.acts.rationale.eyebrow}</p>
+        <h2 className="section-title mt-3">{scwgUi.acts.rationale.title}</h2>
+        <div className="mt-8">
+          <ScwgRationale />
+        </div>
+      </section>
+
+      {/* Act 3 — siting problem */}
       <section className="page-section pt-4" id="scwg-act-siting">
         <p className="eyebrow">{scwgUi.acts.siting.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.siting.title}</h2>
@@ -155,7 +171,7 @@ export default function SupercriticalWaterGasificationPage() {
         </div>
       </section>
 
-      {/* Act 3 — feedstock characterization (report Section 1) */}
+      {/* Act 4 — feedstock characterization (report Section 1) */}
       <section className="page-section pt-4" id="scwg-act-feedstock">
         <p className="eyebrow">{scwgUi.acts.feedstock.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.feedstock.title}</h2>
@@ -164,21 +180,30 @@ export default function SupercriticalWaterGasificationPage() {
         </div>
       </section>
 
-      {/* Act 4 — the plant */}
+      {/* Act 5 — the plant */}
       <section className="page-section pt-4" id="scwg-act-process">
         <p className="eyebrow">{scwgUi.acts.process.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.process.title}</h2>
         <p className="mt-4 max-w-prose text-sm leading-7 text-ink/65">{scwgProcessIntro}</p>
 
         {/* Placeholder-discipline legend: sticky above the diagram for all of Act 3. */}
-        <div className="sticky top-16 z-30 -mx-1 mt-6 rounded-[1.25rem] border border-ink/10 bg-paper px-4 py-3 shadow-soft">
+        <div className="sticky top-0 z-30 -mx-1 mt-6 rounded-b-[1rem] border border-ink/10 bg-paper px-4 py-2 shadow-soft">
           <ScwgValueLegend />
         </div>
 
         <ScwgProcessScroller blocks={scwgProcessBlocks} />
       </section>
 
-      {/* Act 4 — product slate */}
+      {/* Act 6 — waste treatment and discharge compliance */}
+      <section className="page-section pt-4" id="scwg-act-waste">
+        <p className="eyebrow">{scwgUi.acts.waste.eyebrow}</p>
+        <h2 className="section-title mt-3">{scwgUi.acts.waste.title}</h2>
+        <div className="mt-8">
+          <ScwgWasteTreatment />
+        </div>
+      </section>
+
+      {/* Act 7 — product slate */}
       <section className="page-section pt-4" id="scwg-act-products">
         <p className="eyebrow">{scwgUi.acts.products.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.products.title}</h2>
@@ -188,7 +213,7 @@ export default function SupercriticalWaterGasificationPage() {
         </div>
       </section>
 
-      {/* Act 5 — open questions and references */}
+      {/* Act 8 — state of the work */}
       <section className="page-section pt-4" id="scwg-act-open-questions">
         <p className="eyebrow">{scwgUi.acts.openQuestions.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.openQuestions.title}</h2>
@@ -241,6 +266,6 @@ export default function SupercriticalWaterGasificationPage() {
           </ol>
         </div>
       </section>
-    </>
+    </div>
   );
 }

@@ -7991,3 +7991,16 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
     stroke-dasharray: none;
   }
 }
+
+/* Supercritical water gasification page — the affiliation logos sit to the right
+   of the title on wide screens. PageIntro's two-column actions layout is scoped
+   to .about-page, so this page opts in for itself. */
+@media (min-width: 1024px) {
+  .scwg-page .page-intro--with-actions {
+    align-items: end;
+    column-gap: clamp(1.5rem, 3vw, 3rem);
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .scwg-page .page-intro-actions { justify-self: end; padding-bottom: 0.35rem; }
+}

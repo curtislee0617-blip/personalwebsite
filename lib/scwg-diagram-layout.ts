@@ -49,7 +49,7 @@ export function scwgViewBoxFor(box: ScwgBox | undefined, count: number): [number
   const viewH = scwgViewHeight(count);
   if (!box) return [0, 0, SCWG_VIEW_W, viewH];
   const vw = SCWG_VIEW_W;
-  const vh = SCWG_CELL_H * 2.5; // show the active block plus a neighbour above and below
+  const vh = SCWG_CELL_H * 3.4; // taller sticky panel — show the active block plus more context
   let vy = box.cy - vh / 2;
   vy = Math.max(0, Math.min(vy, viewH - vh));
   return [0, vy, vw, vh];
