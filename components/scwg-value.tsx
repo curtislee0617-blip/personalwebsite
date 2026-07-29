@@ -95,7 +95,9 @@ export function ScwgValue({ data }: { data: ProcessValue }) {
 export function ScwgRange({ data }: { data: ProcessRange }) {
   const isPlaceholder = data.status === "placeholder";
   const single = data.min === data.max;
-  const body = single ? formatNumber(data.min) : `${formatNumber(data.min)}–${formatNumber(data.max)}`;
+  // "to" instead of an en dash when an endpoint is negative: "-60–-30" is unreadable.
+  const separator = data.min < 0 || data.max < 0 ? " to " : "–";
+  const body = single ? formatNumber(data.min) : `${formatNumber(data.min)}${separator}${formatNumber(data.max)}`;
 
   if (isPlaceholder) {
     return (

@@ -193,8 +193,6 @@ export type ProcessBlock = {
     /** Free-text condition line when a range does not fit, e.g. "Ambient → 25 MPa". */
     summary: string;
   };
-  /** Position of this block on the diagram grid, 0-indexed left→right / top→bottom. */
-  diagram: { col: number; row: number };
   needsValidation: boolean;
   /** Function prose — the block description. */
   function: string[];

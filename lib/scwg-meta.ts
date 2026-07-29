@@ -107,8 +107,6 @@ export const scwgUi = {
     payloadLabel: "The analytical payload",
     haulLabel: "Haul-distance calculator",
     haulHelp: "Great-circle distance to the nearest source in each active overlay.",
-    overlayOn: "on",
-    overlayOff: "off by default",
     noOverlays: "No point-source overlays active.",
     mapAriaLabel: "Choropleth of China: red mud and douzha sources by province",
     markLegendLabel: "Reading the marks",

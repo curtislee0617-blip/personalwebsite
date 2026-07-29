@@ -21,7 +21,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 0.1, max: 25, unit: "MPa", status: "literature", source: "SWG-feed" },
       summary: "Ambient → 25 MPa",
     },
-    diagram: { col: 0, row: 0 },
     needsValidation: false,
     function: [
       "Straw is milled and blended into douzha to 18–22 wt% total solids; red mud is dosed; the slurry is pressurised by positive-displacement pump. Feed–effluent exchange recovers reactor outlet heat.",
@@ -61,7 +60,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 25, max: 25, unit: "MPa", status: "placeholder", note: "Set by the Section 3 severity study." },
       summary: "600–650 °C, 25 MPa (placeholder)",
     },
-    diagram: { col: 1, row: 0 },
     needsValidation: true,
     function: [
       "Biomass gasifies to CH₄, CO₂ and H₂. Red mud plays three roles simultaneously, and the page is honest that they are not equally well supported.",
@@ -128,7 +126,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     conditions: {
       summary: "Supercritical; cooled-wall or cyclonic",
     },
-    diagram: { col: 2, row: 0 },
     needsValidation: true,
     function: [
       "Inorganic salt solubility collapses above the critical point, and salt deposition is the dominant plugging and corrosion failure mode of continuous supercritical water systems.",
@@ -176,7 +173,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 3, max: 25, unit: "MPa", status: "placeholder", note: "Let-down from reactor pressure to ~3 MPa." },
       summary: "25 MPa → ~3 MPa",
     },
-    diagram: { col: 3, row: 0 },
     needsValidation: false,
     function: [
       "Gas/liquid/solid split across a let-down valve and flash drum. The ammonia-bearing aqueous phase goes to nitrogen recovery; spent red mud goes to B8.",
@@ -207,7 +203,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 3, max: 3, unit: "MPa", status: "placeholder" },
       summary: "−30 to −60 °C, ~3 MPa",
     },
-    diagram: { col: 4, row: 0 },
     needsValidation: false,
     function: [
       "Two findings drive this block. First, the negative finding, because it is counterintuitive: in-bed calcium capture does not work in supercritical water. The hydrolysis CaS + 2H₂O ⇌ Ca(OH)₂ + H₂S is well established and is used deliberately as a CaS stabilization route; a supercritical water gasifier is close to an ideal reactor for running it. Lime dosed into B2 would capture sulfur and release it again. Moving calcium downstream into dry warm gas would function, but imports a consumable, creates a spent-sorbent disposal stream, and competes with HCl for capacity across the whole sorbent life cycle.",
@@ -246,7 +241,7 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     ],
     outlet: [
       { tag: "12", name: "Clean syngas", phase: "gas", components: "CH₄ + H₂ + metered CO₂, ≤0.1 ppm S → B6", quantity: { value: 0.1, unit: "ppm S", status: "literature", source: "Rectisol" } },
-      { tag: "13", name: "CO₂ (separated)", phase: "gas", components: "Separated CO₂ → B6 feed (recycle / vent split)" },
+      { tag: "13", name: "Separated CO₂", phase: "gas", components: "Rectisol CO₂ → B6 feed (recycle / vent split)" },
       { tag: "14", name: "Elemental sulfur", phase: "solid", components: "From S3 liquid-redox recovery" },
     ],
     metrics: [
@@ -288,7 +283,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 1, max: 3, unit: "MPa", status: "placeholder" },
       summary: "800–900 °C, 1–3 MPa (placeholder)",
     },
-    diagram: { col: 5, row: 0 },
     needsValidation: true,
     function: [
       "Supercritical water gasification produces essentially no CO — water-gas shift equilibrium in a medium that is overwhelmingly water sits hard on the product side. OXZEO consumes CO. The two blocks are chemically incompatible as directly coupled units, and this block exists to resolve that.",
@@ -296,8 +290,8 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     ],
     inlet: [
       { tag: "12", name: "Clean syngas", phase: "gas", components: "CH₄ + H₂" },
-      { tag: "13", name: "CO₂ (from B5)", phase: "gas", components: "Dry-reforming oxidant" },
-      { tag: "16", name: "CO₂-rich recycle (from B7)", phase: "gas", components: "OXZEO co-product CO₂" },
+      { tag: "13", name: "Separated CO₂", phase: "gas", components: "Dry-reforming oxidant, metered from B5" },
+      { tag: "16", name: "CO₂-rich recycle", phase: "gas", components: "OXZEO co-product CO₂, returned from B7" },
       { tag: "17", name: "Steam", phase: "gas", components: "Free from hydrothermal island; coking mitigation" },
     ],
     outlet: [
@@ -347,7 +341,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 2.5, max: 4, unit: "MPa", status: "literature", source: "OXZEO-2" },
       summary: "~400 °C, 2.5–4 MPa",
     },
-    diagram: { col: 6, row: 0 },
     needsValidation: false,
     function: [
       "Oxide–zeolite bifunctional conversion of syngas to C₂–C₄ olefins, exceeding the Anderson–Schulz–Flory selectivity limit. Unconverted syngas is recycled.",
@@ -355,12 +348,12 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     ],
     inlet: [
       { tag: "15", name: "Reformed syngas", phase: "gas", components: "CO + H₂ at target ratio" },
-      { tag: "18", name: "Recycled syngas", phase: "gas", components: "Unconverted CO + H₂" },
+      { tag: "18", name: "Unconverted syngas recycle", phase: "gas", components: "Unconverted CO + H₂" },
     ],
     outlet: [
       { tag: "19", name: "C₂–C₄ olefins", phase: "gas", components: "Light olefins → product slate" },
       { tag: "16", name: "CO₂-rich recycle", phase: "gas", components: "OXZEO co-product CO₂ → B6" },
-      { tag: "18", name: "Unconverted syngas", phase: "gas", components: "CO + H₂ → recycle" },
+      { tag: "18", name: "Unconverted syngas recycle", phase: "gas", components: "CO + H₂ → recycle" },
     ],
     metrics: [
       {
@@ -399,7 +392,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     conditions: {
       summary: "Air oxidation, then hydrometallurgy",
     },
-    diagram: { col: 7, row: 0 },
     needsValidation: false,
     function: [
       "Reduced iron phases are re-oxidised with heat recovery; a bleed stream leaves as product.",
@@ -410,7 +402,7 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       { tag: "20", name: "Air", phase: "gas", components: "Oxidant for re-oxidation" },
     ],
     outlet: [
-      { tag: "21", name: "Regenerated bed", phase: "solid", components: "Re-oxidised red mud → recycle to B1" },
+      { tag: "21", name: "Regenerated red mud bed", phase: "solid", components: "Re-oxidised red mud → recycle to B1" },
       { tag: "22", name: "Residue bleed", phase: "solid", components: "Dealkalized residue → product slate (Tiers 1–3)" },
     ],
     duty: {

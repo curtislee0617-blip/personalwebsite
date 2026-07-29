@@ -8025,10 +8025,28 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   --scwg-navy: 10 35 115;
 }
 
-.dark .scwg-page {
-  --color-moss: 82 186 126;
-  --color-clay: 226 145 107;
-  --scwg-navy: 150 176 240;
+/* Dark mode is disabled for this page: the VENEX palette, the plant photo and
+   the engineering-drawing linework are designed against paper. When the site is
+   dark and this page is present, the whole document reverts to the light
+   tokens. */
+.dark:has(.scwg-page) {
+  color-scheme: light;
+  --color-paper: 250 249 246;
+  --color-ink: 32 35 31;
+  --color-moss: 82 107 70;
+  --color-lime: 219 233 189;
+  --color-clay: 215 122 85;
+  --color-mist: 220 232 229;
+  --color-surface: 255 254 251;
+  --color-map-industrial: 47 106 160;
+  --color-map-context: 122 88 168;
+  --color-map-port: 176 106 24;
+}
+
+.dark:has(.scwg-page) .scwg-page {
+  --color-moss: 0 115 54;
+  --color-clay: 186 88 34;
+  --scwg-navy: 10 35 115;
 }
 
 /* Section headings take the navy; the page title stays on the ink token so it

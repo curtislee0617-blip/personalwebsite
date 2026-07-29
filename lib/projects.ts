@@ -39,7 +39,7 @@ export const projects: ProjectEntry[] = [
     tags: ["Chemical engineering", "Process design", "Supercritical water", "Red mud", "Waste valorization"],
     previews: [
       {
-        src: "/photos/scwg-hero.webp",
+        src: "/photos/scwg-hero-card.webp",
         alt: "Aerial view of the green-methanol plant at Jungar Banner, Inner Mongolia",
       },
     ],
