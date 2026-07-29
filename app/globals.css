@@ -2791,6 +2791,10 @@ html.dashboard-mode .section-rail {
   min-width: 0;
   max-width: none;
 }
+.recipe-media-gallery--single {
+  width: min(100%, 24rem);
+  grid-template-columns: minmax(0, 1fr);
+}
 .recipe-media-item { overflow: hidden; width: 100%; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1rem; background: rgb(var(--color-paper) / 0.62); }
 .recipe-media-video { position: relative; aspect-ratio: 4 / 3; }
 .recipe-media-video video { width: 100%; height: 100%; object-fit: cover; }
@@ -2818,6 +2822,9 @@ html.dashboard-mode .section-rail {
   }
   .recipe-media-gallery {
     grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  }
+  .recipe-media-gallery--single {
+    grid-template-columns: minmax(0, 1fr);
   }
   .recipe-shelf-card[open] > .recipe-card-expanded-content:has(> .recipe-instagram-section):has(> .recipe-card-structured-content) {
     align-items: start;

@@ -75,11 +75,12 @@ function RecipeVideo({ item, title }: { item: RecipeMediaItem; title: string }) 
 
 export function RecipeMediaGallery({ media, title }: { media: RecipeMediaItem[]; title: string }) {
   if (media.length === 0) return null;
+  const singleMedia = media.length === 1;
 
   return (
-    <section className="recipe-media-section">
+    <section className={`recipe-media-section ${singleMedia ? "recipe-media-section--single" : ""}`}>
       <p className="eyebrow">Photos &amp; videos</p>
-      <div className="recipe-media-gallery">
+      <div className={`recipe-media-gallery ${singleMedia ? "recipe-media-gallery--single" : ""}`}>
         {media.map((item, index) => item.type === "video" ? (
           <RecipeVideo item={item} key={`${item.src}-${index}`} title={title} />
         ) : (
