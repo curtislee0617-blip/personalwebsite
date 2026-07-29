@@ -37,7 +37,12 @@ export const projects: ProjectEntry[] = [
       "The page descends through the plant as you scroll, block by block, and is explicit about what is unvalidated: the mass and energy balances are not yet written, so every unclosed figure is rendered as a flagged placeholder rather than an invented number.",
     ],
     tags: ["Chemical engineering", "Process design", "Supercritical water", "Red mud", "Waste valorization"],
-    previews: [],
+    previews: [
+      {
+        src: "/photos/scwg-hero.webp",
+        alt: "Aerial view of the green-methanol plant at Jungar Banner, Inner Mongolia",
+      },
+    ],
   },
   {
     slug: "biodiesel-from-used-cooking-oil",
