@@ -17,10 +17,23 @@ import type { SitingOverlayId } from "@/lib/scwg-types";
 // mark SHAPES, not colour alone. The haul calculator reports great-circle
 // distance from a candidate site to the nearest source in each active overlay.
 
+// Canvas proportioned to mainland China's aspect under this projection, so the
+// landmass fills the frame rather than sitting in a band of dead space.
 const W = 760;
-const H = 620;
+const H = 660;
 const shading = mapData.fragmentedShading as Record<string, number>;
 type Site = (typeof mapData.sites)[number];
+
+// One clearly distinct hue per overlay, paired with a distinct mark shape so the
+// distinction survives colour-blindness and high-contrast modes. Values are the
+// repo's existing RGB-triple tokens; `--color-map-*` are added in globals.css for
+// the two overlays with no suitable existing token.
+const OVERLAY_COLOR: Record<SitingOverlayId, string> = {
+  redmud: "var(--color-clay)", // warm red — red mud
+  "okara-industrial": "var(--color-map-industrial)", // blue — industrial okara plants
+  "okara-fragmented": "var(--color-moss)", // green — shading only
+  context: "var(--color-map-context)", // violet — straw / origin context
+};
 
 export function ScwgSitingMap() {
   const [active, setActive] = useState<Record<SitingOverlayId, boolean>>(() =>
@@ -34,6 +47,12 @@ export function ScwgSitingMap() {
   );
   const projection = useMemo(() => geoConicEqualArea().parallels([25, 47]).rotate([-105, 0]).fitSize([W, H], provinces), [provinces]);
   const path = useMemo(() => geoPath(projection), [projection]);
+  // Tighten the viewBox to the projected landmass so it fills the frame.
+  const viewBox = useMemo(() => {
+    const [[x0, y0], [x1, y1]] = path.bounds(provinces);
+    const pad = 12;
+    return `${x0 - pad} ${y0 - pad} ${x1 - x0 + pad * 2} ${y1 - y0 + pad * 2}`;
+  }, [path, provinces]);
 
   const candidate = scwgSitingCandidates.find((c) => c.id === candidateId) ?? null;
 
@@ -53,12 +72,13 @@ export function ScwgSitingMap() {
     const overlay = scwgSitingOverlays.find((o) => o.id === site.overlay);
     const filled = site.capacity != null;
     const r = site.capacity != null ? 5 + Math.min(6, site.capacity * 2) : 4.5;
+    // Distinct hue AND distinct shape per overlay — colour is never the sole cue.
+    const color = OVERLAY_COLOR[site.overlay as SitingOverlayId] ?? "var(--color-ink)";
     const common = {
-      className: site.overlay === "redmud" ? "text-moss" : site.overlay === "okara-industrial" ? "text-clay" : "text-ink",
-      fill: filled ? "currentColor" : "rgb(var(--color-paper))",
-      fillOpacity: filled ? 0.85 : 1,
-      stroke: "currentColor",
-      strokeWidth: 1.4,
+      fill: filled ? `rgb(${color})` : "rgb(var(--color-paper))",
+      fillOpacity: filled ? 0.9 : 1,
+      stroke: `rgb(${color})`,
+      strokeWidth: 1.8,
     };
     if (overlay?.mark === "square") return <rect {...common} height={r * 1.8} width={r * 1.8} x={x - r * 0.9} y={y - r * 0.9} />;
     if (overlay?.mark === "triangle") return <path {...common} d={`M ${x} ${y - r} L ${x + r} ${y + r} L ${x - r} ${y + r} Z`} />;
@@ -68,7 +88,7 @@ export function ScwgSitingMap() {
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/40 p-3">
-        <svg aria-label="Choropleth of China: red mud and okara sources by province" className="h-auto w-full" role="img" viewBox={`0 0 ${W} ${H}`}>
+        <svg aria-label="Choropleth of China: red mud and okara sources by province" className="h-auto w-full" role="img" viewBox={viewBox}>
           {/* provinces + fragmented shading */}
           <g>
             {provinces.features.map((f, i) => {
@@ -76,7 +96,7 @@ export function ScwgSitingMap() {
               return (
                 <path
                   d={path(f) ?? undefined}
-                  fill={intensity ? `rgb(var(--color-clay) / ${(intensity * 0.4).toFixed(3)})` : "rgb(var(--color-surface))"}
+                  fill={intensity ? `rgb(var(--color-moss) / ${(intensity * 0.45).toFixed(3)})` : "rgb(var(--color-surface))"}
                   key={i}
                   stroke="rgb(var(--color-ink) / 0.18)"
                   strokeWidth={0.6}
@@ -136,14 +156,17 @@ export function ScwgSitingMap() {
             {scwgSitingOverlays.map((o) => (
               <button
                 aria-pressed={active[o.id]}
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                   active[o.id] ? "border-ink/25 bg-ink/8 text-ink" : "border-ink/12 bg-paper/70 text-ink/50 hover:text-ink/75"
                 }`}
                 key={o.id}
                 onClick={() => setActive((prev) => ({ ...prev, [o.id]: !prev[o.id] }))}
                 type="button"
               >
-                {o.mark === "shade" ? "▦" : o.mark === "square" ? "■" : o.mark === "triangle" ? "▲" : "●"} {o.label}
+                <span aria-hidden="true" style={{ color: `rgb(${OVERLAY_COLOR[o.id]})` }}>
+                  {o.mark === "shade" ? "▦" : o.mark === "square" ? "■" : o.mark === "triangle" ? "▲" : "●"}
+                </span>
+                {o.label}
               </button>
             ))}
           </div>

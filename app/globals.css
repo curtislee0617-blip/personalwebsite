@@ -51,6 +51,10 @@
   --color-clay: 215 122 85;
   --color-mist: 220 232 229;
   --color-surface: 255 254 251;
+  /* SCWG siting map only: two extra hues so each overlay is clearly distinct.
+     Paired with distinct mark shapes, so colour is never the sole carrier. */
+  --color-map-industrial: 47 106 160;
+  --color-map-context: 122 88 168;
 }
 
 .dark {
@@ -62,6 +66,8 @@
   --color-clay: 226 145 107;
   --color-mist: 32 40 36;
   --color-surface: 38 40 31;
+  --color-map-industrial: 122 176 226;
+  --color-map-context: 178 152 224;
 }
 
 html { scroll-behavior: smooth; }

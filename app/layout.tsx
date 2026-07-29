@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Script from "next/script";
-import { SiteHeader } from "@/components/site-header";
-import { DashboardShell } from "@/components/dashboard-shell";
-import { BackToTopButton } from "@/components/back-to-top-button";
-import { FooterAdminLogin } from "@/components/footer-admin-login";
-import { FooterFeedbackLink } from "@/components/footer-feedback-link";
+import { SiteChrome } from "@/components/site-chrome";
 import { PageCursor } from "@/components/page-cursor";
 import { ScrollPositionRestorer } from "@/components/scroll-position-restorer";
 import { SiteInteractions } from "@/components/site-interactions";
@@ -69,22 +64,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ScrollPositionRestorer />
         <SiteInteractions />
         <PageCursor />
-        <DashboardShell>
-          <div className="flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <footer className="border-t border-ink/10">
-              <div className="page-shell flex flex-col gap-4 py-8 text-sm text-ink/55 sm:flex-row sm:items-center sm:justify-between">
-                <FooterAdminLogin />
-                <nav aria-label="Footer" className="flex items-center gap-5">
-                  <Link className="footer-link" href="/contact">Say hello</Link>
-                  <FooterFeedbackLink />
-                  <BackToTopButton />
-                </nav>
-              </div>
-            </footer>
-          </div>
-        </DashboardShell>
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );
