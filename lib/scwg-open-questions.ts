@@ -1,0 +1,52 @@
+import type { DecisionTaken, OpenQuestion } from "@/lib/scwg-types";
+
+// Act 5 — decisions taken, then open questions. A reader sees what is settled
+// before what is not. The three design conflicts are RESOLVED by decision and
+// belong here as decisions, not as open items.
+
+export const scwgDecisionsIntro =
+  "Decisions taken. The three design conflicts the concept turns on — the CO deficit, CaS hydrolysis, and red mud's three assigned roles — are settled. Each is presented in Act 3 as problem → decision → what it cost. They are not open.";
+
+export const scwgDecisionsTaken: DecisionTaken[] = [
+  {
+    conflict: "Conflict 1 — the salt separator",
+    decision:
+      "The salt separator (B3) is a purposeful product unit, not a protective device. Sodium removal is deliberate and metered, and red mud dosing is co-determined by its dealkalization/brine duty.",
+  },
+  {
+    conflict: "Conflict 2 — the CO deficit",
+    decision:
+      "Bi-reforming (B6) is the design basis. Upstream methanation suppression — running B2 hotter and shorter — is evaluated and rejected. The flowsheet shows one committed architecture.",
+  },
+  {
+    conflict: "Conflict 3 — sulfur capture",
+    decision:
+      "Calcium is removed from the flowsheet in favour of a conventional acid gas wash (Rectisol, B5). In-bed calcium capture fails in supercritical water via CaS hydrolysis.",
+  },
+];
+
+export const scwgOpenQuestionsIntro =
+  "Honest state of the work. These are the items that remain genuinely open — not the settled conflicts above.";
+
+export const scwgOpenQuestions: OpenQuestion[] = [
+  {
+    title: "Rectisol versus MDEA is undecided",
+    body: "Rectisol meets the OXZEO specification outright and handles CO₂ in the same unit; MDEA is far cheaper but needs the guard bed and gives no CO₂ control. This is the largest open capital question.",
+  },
+  {
+    title: "Measured ultimate analyses are missing",
+    body: "For the specific okara and straw sources, including sulfur and chloride. Sulfur now sets the acid gas removal duty and the liquid-redox unit size; chloride sets materials selection.",
+  },
+  {
+    title: "Supercritical dealkalization is unvalidated",
+    body: "At biomass-gasification residence times. If it fails, the concept reverts to a conventional wet-biomass gasifier with a cheap iron catalyst.",
+  },
+  {
+    title: "The ISO 14067 waste classification pathway is unconfirmed",
+    body: "For bauxite residue — and it decides which of two very different value propositions this project is.",
+  },
+  {
+    title: "Feedstock geography is unresolved",
+    body: "No site holds red mud and okara together at scale, and the Guangxi–Guangdong versus Henan trade-off is undecided.",
+  },
+];

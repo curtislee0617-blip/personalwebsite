@@ -24,6 +24,9 @@ const config: Config = {
       fontFamily: {
         sans: ["Roboto", "Arial", "sans-serif"],
         serif: ["Roboto", "Arial", "sans-serif"],
+        // Numerals, stream tags and units on the SCWG page use the repo's existing
+        // --font-code stack (see globals.css) so they render as monospace tabular figures.
+        mono: ["var(--font-code)"],
       },
       boxShadow: {
         soft: "0 24px 60px rgba(32, 35, 31, 0.08)",

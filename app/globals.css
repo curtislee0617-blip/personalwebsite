@@ -7943,3 +7943,22 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
     transform: none;
   }
 }
+
+/* Supercritical water gasification page — active-stream flow dashes. Applied by
+   the diagram only to streams touching the active block; disabled under reduced
+   motion (the scroller also skips it, this is defence in depth). */
+.scwg-stream-active {
+  stroke-dasharray: 7 6;
+  animation: scwg-stream-flow 900ms linear infinite;
+}
+
+@keyframes scwg-stream-flow {
+  to { stroke-dashoffset: -13; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scwg-stream-active {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}

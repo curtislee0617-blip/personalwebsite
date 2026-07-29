@@ -1,0 +1,46 @@
+{
+  "_comment": "Facility coordinates, capacities, overlay membership, source status. EVERY entry is status:'unverified' — approximate coordinates not confirmed against a primary source. Surfaced as such in the UI. Capacity in Mt/y (red mud, order-of-magnitude) or null where unknown; capacity drives pin radius, hollow pins where null.",
+  "sites": [
+    { "id": "rm-binzhou", "overlay": "redmud", "name": "Binzhou / Zouping (Weiqiao)", "province": "Shandong", "lon": 118.0, "lat": 37.4, "capacity": null, "status": "unverified", "note": "Largest provincial capacity" },
+    { "id": "rm-chiping", "overlay": "redmud", "name": "Chiping (Xinfa)", "province": "Shandong", "lon": 116.0, "lat": 36.5, "capacity": null, "status": "unverified" },
+    { "id": "rm-zibo", "overlay": "redmud", "name": "Zibo", "province": "Shandong", "lon": 118.1, "lat": 36.8, "capacity": null, "status": "unverified" },
+    { "id": "rm-jiaokou", "overlay": "redmud", "name": "Jiaokou / Lüliang (Xinfa)", "province": "Shanxi", "lon": 111.2, "lat": 37.0, "capacity": null, "status": "unverified" },
+    { "id": "rm-xiaoyi", "overlay": "redmud", "name": "Xiaoyi", "province": "Shanxi", "lon": 111.8, "lat": 37.1, "capacity": null, "status": "unverified" },
+    { "id": "rm-hejin", "overlay": "redmud", "name": "Hejin", "province": "Shanxi", "lon": 110.7, "lat": 35.6, "capacity": null, "status": "unverified" },
+    { "id": "rm-zhengzhou", "overlay": "redmud", "name": "Zhengzhou", "province": "Henan", "lon": 113.6, "lat": 34.7, "capacity": null, "status": "unverified" },
+    { "id": "rm-sanmenxia", "overlay": "redmud", "name": "Sanmenxia", "province": "Henan", "lon": 111.2, "lat": 34.8, "capacity": null, "status": "unverified" },
+    { "id": "rm-jiaozuo", "overlay": "redmud", "name": "Jiaozuo", "province": "Henan", "lon": 113.2, "lat": 35.2, "capacity": null, "status": "unverified" },
+    { "id": "rm-baise", "overlay": "redmud", "name": "Baise", "province": "Guangxi", "lon": 106.6, "lat": 23.9, "capacity": null, "status": "unverified" },
+    { "id": "rm-pingguo", "overlay": "redmud", "name": "Pingguo", "province": "Guangxi", "lon": 107.6, "lat": 23.3, "capacity": null, "status": "unverified" },
+    { "id": "rm-fangchenggang", "overlay": "redmud", "name": "Fangchenggang (Xinfa)", "province": "Guangxi", "lon": 108.4, "lat": 21.7, "capacity": 2.4, "status": "unverified", "note": "~2.4 Mt/y reported" },
+    { "id": "rm-guiyang", "overlay": "redmud", "name": "Guiyang", "province": "Guizhou", "lon": 106.7, "lat": 26.6, "capacity": null, "status": "unverified" },
+    { "id": "rm-zunyi", "overlay": "redmud", "name": "Zunyi (Chinalco)", "province": "Guizhou", "lon": 106.9, "lat": 27.7, "capacity": null, "status": "unverified" },
+
+    { "id": "ok-vitasoy-shanghai", "overlay": "okara-industrial", "name": "Vitasoy Shanghai", "province": "Shanghai", "lon": 121.5, "lat": 31.2, "capacity": null, "status": "unverified" },
+    { "id": "ok-vitasoy-wuhan", "overlay": "okara-industrial", "name": "Vitasoy Wuhan", "province": "Hubei", "lon": 114.3, "lat": 30.6, "capacity": null, "status": "unverified", "note": "Opened 2016, ~105,000 m², largest" },
+    { "id": "ok-vitasoy-shenzhen", "overlay": "okara-industrial", "name": "Vitasoy Shenzhen", "province": "Guangdong", "lon": 114.1, "lat": 22.6, "capacity": null, "status": "unverified" },
+    { "id": "ok-vitasoy-foshan", "overlay": "okara-industrial", "name": "Vitasoy Foshan", "province": "Guangdong", "lon": 113.1, "lat": 23.0, "capacity": null, "status": "unverified", "note": "Opened 2011" },
+    { "id": "ok-vitasoy-dongguan", "overlay": "okara-industrial", "name": "Vitasoy Dongguan", "province": "Guangdong", "lon": 113.7, "lat": 23.0, "capacity": null, "status": "unverified" },
+    { "id": "ok-joyoung", "overlay": "okara-industrial", "name": "Joyoung (placeholder — author to complete)", "province": "—", "lon": 116.9, "lat": 36.6, "capacity": null, "status": "unverified" },
+    { "id": "ok-dali", "overlay": "okara-industrial", "name": "Dali / Doubendou (placeholder — author to complete)", "province": "—", "lon": 118.6, "lat": 24.9, "capacity": null, "status": "unverified" },
+    { "id": "ok-weiwei", "overlay": "okara-industrial", "name": "Weiwei (placeholder — author to complete)", "province": "—", "lon": 117.4, "lat": 34.3, "capacity": null, "status": "unverified" },
+
+    { "id": "ctx-straw-heilongjiang", "overlay": "context", "name": "Soybean straw — Heilongjiang", "province": "Heilongjiang", "lon": 127.5, "lat": 47.0, "capacity": null, "status": "unverified", "note": "Northeast spring-sowing region" },
+    { "id": "ctx-straw-jilin", "overlay": "context", "name": "Soybean straw — Jilin", "province": "Jilin", "lon": 125.3, "lat": 43.9, "capacity": null, "status": "unverified" },
+    { "id": "ctx-straw-liaoning", "overlay": "context", "name": "Soybean straw — Liaoning", "province": "Liaoning", "lon": 123.4, "lat": 41.8, "capacity": null, "status": "unverified" },
+    { "id": "ctx-nongm-origin", "overlay": "context", "name": "Non-GM food-grade soybean origin", "province": "Heilongjiang", "lon": 126.6, "lat": 45.8, "capacity": null, "status": "unverified", "note": "GMO-free planting region; not where okara appears" }
+  ],
+  "fragmentedShading": {
+    "Henan": 0.95,
+    "Shandong": 0.85,
+    "Jiangsu": 0.8,
+    "Guangdong": 0.9,
+    "Sichuan": 0.75,
+    "Hebei": 0.7,
+    "Anhui": 0.6,
+    "Hunan": 0.6,
+    "Hubei": 0.6,
+    "Zhejiang": 0.65,
+    "Shanghai": 0.7
+  }
+}
