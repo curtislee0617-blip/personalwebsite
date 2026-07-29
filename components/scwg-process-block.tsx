@@ -54,7 +54,9 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
           ) : null}
         </div>
 
-        <div className="mt-5 space-y-3 text-sm leading-7 text-ink/65">
+        {/* Prose stays at a 65–75 character measure even though the column is wide;
+            tables and metric grids below are free to use the full width. */}
+        <div className="mt-5 max-w-prose space-y-3 text-sm leading-7 text-ink/65">
           {block.function.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
@@ -70,7 +72,7 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
                     {scwgUi.supportLabels[role.support]}
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-7 text-ink/65">{role.body}</p>
+                <p className="mt-2 max-w-prose text-sm leading-7 text-ink/65">{role.body}</p>
               </li>
             ))}
           </ul>

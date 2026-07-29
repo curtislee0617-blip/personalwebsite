@@ -30,6 +30,14 @@ export const scwgSitingOverlays: SitingOverlay[] = [
       "Larger tonnage, harder supply chain. Tofu production is fragmented across thousands of small workshops sited close to consumption because the product is perishable, so this overlay follows urban population density rather than industrial capacity. This overlay is where the ISCC risk lives: fragmented, self-declaring, small waste sources are exactly the supply profile where feedstock integrity fails at audit.",
   },
   {
+    id: "ports",
+    label: "Major ports",
+    mark: "diamond",
+    defaultOn: true,
+    blurb:
+      "The coast explains both feedstocks better than the inland map does. China refines alumina largely from imported bauxite, which is why capacity clusters behind the northern bulk terminals — Yantai, Longkou, Rizhao, Qingdao for Shandong — and behind Fangchenggang in Guangxi, a port that is itself a red mud site on this map. Imported soybean lands at these same terminals and is crushed for oil and meal at Rizhao, Nantong and Dongguan, which is precisely why those complexes yield no okara. The ports are where the bauxite arrives and where the wrong soybean arrives.",
+  },
+  {
     id: "context",
     label: "Context layers (straw, non-GM origin)",
     mark: "triangle",

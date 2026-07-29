@@ -639,6 +639,6 @@ The page is assembled so that content changes never require touching a component
 | **Rewrite Act 4 (product slate, tiers, tables, callouts)** | `lib/scwg-products.ts` |
 | **Rewrite Act 5 (decisions taken, open questions)** | `lib/scwg-open-questions.ts` |
 | **Add or verify a reference** | `lib/scwg-references.ts`. The `marker` is what a `ProcessValue.source` points at; set `status` to `"verified"` (✓) or `"unverified"` (°). |
-| **Restyle** | Use the existing tokens — `ink`, `surface`, `paper`, `moss` (active/accent), `clay` (warning/flagged), `mist`, `lime`. Card idiom is `rounded-[2rem] border border-ink/10 bg-surface/55`. Placeholder/literature styling lives in one place: `components/scwg-value.tsx`. Stream-dash animation and the two map hues are in `app/globals.css`. |
+| **Restyle** | Use the existing tokens — `ink`, `surface`, `paper`, `moss` (active/accent), `clay` (warning/flagged), `mist`, `lime`. Card idiom is `rounded-[2rem] border border-ink/10 bg-surface/55`. Placeholder/literature styling lives in one place: `components/scwg-value.tsx`. Stream-dash animation and the three map hues (`--color-map-industrial`, `--color-map-context`, `--color-map-port`) are in `app/globals.css`. |
 | **Make the page full-bleed (or restore site chrome)** | `components/site-chrome.tsx` → `STANDALONE_ROUTES`. |
 | **Change the projects-index card** | `lib/projects.ts` → the `supercritical-water-gasification` entry. |

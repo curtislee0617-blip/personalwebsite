@@ -33,13 +33,13 @@ export type RegulatoryPanel = {
 
 // ── Act 2 — siting ──────────────────────────────────────────────────────────
 
-export type SitingOverlayId = "redmud" | "okara-industrial" | "okara-fragmented" | "context";
+export type SitingOverlayId = "redmud" | "okara-industrial" | "okara-fragmented" | "ports" | "context";
 
 export type SitingOverlay = {
   id: SitingOverlayId;
   label: string;
   /** Distinct SVG mark shape per overlay — never colour alone. */
-  mark: "circle" | "square" | "triangle" | "shade";
+  mark: "circle" | "square" | "triangle" | "diamond" | "shade";
   /** Off by default for the secondary context layers. */
   defaultOn: boolean;
   blurb: string;

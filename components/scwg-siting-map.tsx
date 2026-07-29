@@ -33,6 +33,7 @@ const OVERLAY_COLOR: Record<SitingOverlayId, string> = {
   redmud: "var(--color-clay)", // warm red — red mud
   "okara-industrial": "var(--color-map-industrial)", // blue — industrial okara plants
   "okara-fragmented": "var(--color-moss)", // green — shading only
+  ports: "var(--color-map-port)", // amber — major ports
   context: "var(--color-map-context)", // violet — straw / origin context
 };
 
@@ -83,6 +84,7 @@ export function ScwgSitingMap() {
     };
     if (overlay?.mark === "square") return <rect {...common} height={r * 1.8} width={r * 1.8} x={x - r * 0.9} y={y - r * 0.9} />;
     if (overlay?.mark === "triangle") return <path {...common} d={`M ${x} ${y - r} L ${x + r} ${y + r} L ${x - r} ${y + r} Z`} />;
+    if (overlay?.mark === "diamond") return <path {...common} d={`M ${x} ${y - r} L ${x + r} ${y} L ${x} ${y + r} L ${x - r} ${y} Z`} />;
     return <circle {...common} cx={x} cy={y} r={r} />;
   }
 
@@ -165,7 +167,7 @@ export function ScwgSitingMap() {
                 type="button"
               >
                 <span aria-hidden="true" style={{ color: `rgb(${OVERLAY_COLOR[o.id]})` }}>
-                  {o.mark === "shade" ? "▦" : o.mark === "square" ? "■" : o.mark === "triangle" ? "▲" : "●"}
+                  {o.mark === "shade" ? "▦" : o.mark === "square" ? "■" : o.mark === "triangle" ? "▲" : o.mark === "diamond" ? "◆" : "●"}
                 </span>
                 {o.label}
               </button>

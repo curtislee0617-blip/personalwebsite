@@ -55,6 +55,7 @@
      Paired with distinct mark shapes, so colour is never the sole carrier. */
   --color-map-industrial: 47 106 160;
   --color-map-context: 122 88 168;
+  --color-map-port: 176 106 24;
 }
 
 .dark {
@@ -68,6 +69,7 @@
   --color-surface: 38 40 31;
   --color-map-industrial: 122 176 226;
   --color-map-context: 178 152 224;
+  --color-map-port: 224 168 82;
 }
 
 html { scroll-behavior: smooth; }

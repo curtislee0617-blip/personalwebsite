@@ -71,12 +71,14 @@ export function ScwgProcessScroller({ blocks }: { blocks: ProcessBlock[] }) {
     select(svg).transition().duration(560).attr("viewBox", target);
   }, [activeId, blocks, reducedMotion]);
 
+  // The diagram is a reference figure, not the payload — the reading column gets
+  // the majority of the width.
   return (
-    <div className="mt-8 lg:grid lg:grid-cols-[minmax(0,55%)_minmax(0,45%)] lg:gap-8">
+    <div className="mt-8 lg:grid lg:grid-cols-[minmax(0,34%)_minmax(0,66%)] lg:gap-10">
       {/* Sticky below the legend bar. Opaque background: the text column scrolls
           underneath it on narrow screens, so it must not be see-through. */}
-      <div className="sticky top-[7.5rem] z-20 mb-6 self-start lg:top-[7rem] lg:mb-0 lg:h-[calc(100vh-9rem)]">
-        <div className="h-[38vh] overflow-hidden rounded-[2rem] border border-ink/10 bg-paper p-3 shadow-soft lg:h-full lg:bg-surface/40 lg:p-5 lg:shadow-none">
+      <div className="sticky top-[7.5rem] z-20 mb-6 self-start lg:top-[7rem] lg:mb-0">
+        <div className="h-[34vh] overflow-hidden rounded-[2rem] border border-ink/10 bg-paper p-3 shadow-soft lg:h-[58vh] lg:bg-surface/40 lg:p-4 lg:shadow-none">
           <ScwgProcessDiagram activeId={activeId} blocks={blocks} ref={svgRef} reducedMotion={reducedMotion} />
         </div>
       </div>
