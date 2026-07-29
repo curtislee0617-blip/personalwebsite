@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
 import { getPersonalRecipeCards } from "@/lib/personal-recipes";
 import { recipeSearchItems } from "@/lib/recipe-search";
-import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { isPrivateCookbookHref } from "@/lib/cookbook-access";
+import { hasPrivateRecipeLibraryAccess } from "@/lib/cookbook-auth";
+import { getCocktailLibrarySearchItems } from "@/lib/cocktail-books";
+import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const [personalRecipes, authenticated] = await Promise.all([
+  const [personalRecipes, privateLibraryAccess, wishlistRecipes] = await Promise.all([
     getPersonalRecipeCards(),
-    isRecipeAdminAuthenticated(),
+    hasPrivateRecipeLibraryAccess(),
+    getRecipeWishlistEntries(),
   ]);
   const personalItems = personalRecipes.map((entry) => ({
     title: entry.title,
@@ -25,11 +28,18 @@ export async function GET() {
     ].join(" "),
   }));
 
-  const visibleLibraryItems = authenticated
-    ? recipeSearchItems
+  const visibleLibraryItems = privateLibraryAccess
+    ? [...recipeSearchItems, ...getCocktailLibrarySearchItems()]
     : recipeSearchItems.filter((item) => !isPrivateCookbookHref(item.href));
+  const wishlistItems = wishlistRecipes.map((entry) => ({
+    title: entry.title,
+    context: entry.bookTitle ? `Public wishlist recipe · ${entry.bookTitle}` : "Recipe wishlist",
+    kind: "Wishlist",
+    href: entry.href ?? "/recipes#recipe-wishlist",
+    searchText: [entry.note, entry.bookTitle].filter(Boolean).join(" "),
+  }));
 
-  return NextResponse.json([...visibleLibraryItems, ...personalItems], {
+  return NextResponse.json([...visibleLibraryItems, ...personalItems, ...wishlistItems], {
     headers: { "Cache-Control": "no-store" },
   });
 }

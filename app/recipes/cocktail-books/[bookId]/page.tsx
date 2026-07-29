@@ -6,6 +6,7 @@ import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { cocktailCodexStyleHref, cocktailCodexStyles } from "@/lib/cocktail-codex";
 import { getCocktailBook, getCocktailPublications } from "@/lib/cocktail-books";
+import { isCookbookAuthenticated } from "@/lib/cookbook-auth";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,11 @@ export async function generateMetadata({ params }: { params: Promise<{ bookId: s
 }
 
 export default async function CocktailBookPage({ params }: { params: Promise<{ bookId: string }> }) {
-  const authenticated = await isRecipeAdminAuthenticated();
+  const [adminAuthenticated, cookbookAuthenticated] = await Promise.all([
+    isRecipeAdminAuthenticated(),
+    isCookbookAuthenticated(),
+  ]);
+  const authenticated = adminAuthenticated || cookbookAuthenticated;
   const { bookId } = await params;
   const book = getCocktailBook(bookId);
   if (!book) notFound();
@@ -28,8 +33,8 @@ export default async function CocktailBookPage({ params }: { params: Promise<{ b
   if (!authenticated) {
     return (
       <div className="page-shell py-16 sm:py-20">
-        <h1 className="section-title">Admin login required</h1>
-        <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">The full source-book recipes are kept private.</p>
+        <h1 className="section-title">Private library login required</h1>
+        <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">The full source-book recipes are available after cookbook or admin login.</p>
         <HistoryBackButton className="mt-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
       </div>
     );
@@ -83,7 +88,11 @@ export default async function CocktailBookPage({ params }: { params: Promise<{ b
             </div>
           </nav>
         )}
-        <CocktailBookBrowser book={book} initiallyPublished={initiallyPublished} />
+        <CocktailBookBrowser
+          book={book}
+          canAdminister={adminAuthenticated}
+          initiallyPublished={initiallyPublished}
+        />
       </section>
     </>
   );

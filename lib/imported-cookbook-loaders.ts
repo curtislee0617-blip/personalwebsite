@@ -28,4 +28,5 @@ export const importedCookbookLoaders: Record<string, () => Promise<ImportedCookb
   "the-french-laundry-cookbook": () => import("@/lib/imported-cookbooks/the-french-laundry-cookbook.json").then((module) => module.default as ImportedCookbook),
   "spain-the-cookbook": () => import("@/lib/imported-cookbooks/spain-the-cookbook.json").then((module) => module.default as ImportedCookbook),
   "sauces-reconsidered": () => import("@/lib/imported-cookbooks/sauces-reconsidered.json").then((module) => module.default as ImportedCookbook),
+  "bao-the-cookbook": () => import("@/lib/imported-cookbooks/bao-the-cookbook.json").then((module) => module.default as ImportedCookbook),
 };

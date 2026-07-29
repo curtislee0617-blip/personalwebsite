@@ -186,11 +186,100 @@ function siteRecipeCards(): RecipeCardEntry[] {
       categories: categories ? [...categories] : recipeEntry.categories,
       description: [recipeEntry.description.trim(), storyText ? `Instagram story note: ${storyText}` : ""]
         .filter(Boolean)
-        .join(" "),
+      .join(" "),
+    };
+  });
+  const importedWithRecipeUpdates = importedWithHighlightMetadata.map((entry): RecipeCardEntry => {
+    if (entry.recipeKey !== "personal-taiwanesefriedchicken") return entry;
+
+    return {
+      ...entry,
+      title: "Taiwanese Fried Chicken",
+      description: "BAO London’s Taiwanese fried chicken recipe, paired here with their burnt green chilli sauce. The tapioca coating is deliberately left loose and craggy before a two-stage fry.",
+      sourceLabel: "BAO: The Cookbook",
+      sourceLinkLabel: "Adapted from",
+      sourceUrl: "/recipes/bao-the-cookbook#bao-the-cookbook-taiwanese-fried-chicken",
+      categories: ["poultry"],
+      ingredientGroups: [
+        {
+          title: "Burnt green chilli sauce",
+          items: [
+            "60 g green chillies",
+            "60 g fresh ginger, sliced",
+            "60 g garlic cloves",
+            "25 ml lemon juice",
+            "1½ tsp chopped coriander",
+            "1 tsp Dijon mustard",
+            "55 ml rapeseed or canola oil",
+            "½ tsp salt",
+            "3 tbsp light muscovado sugar",
+          ],
+        },
+        {
+          title: "Marinated chicken",
+          items: [
+            "200 ml soy milk, plus extra if needed",
+            "1 garlic clove, grated",
+            "2.5 cm piece fresh ginger, peeled and grated",
+            "2 tsp cornflour",
+            "1 tsp ground cumin",
+            "1 tsp five-spice powder",
+            "1 tbsp soy sauce",
+            "1 tsp rice vinegar",
+            "300 g skinless, boneless chicken thighs, cut into 10 equal pieces",
+          ],
+        },
+        {
+          title: "Spiced tapioca flour",
+          items: [
+            "200 g tapioca flour",
+            "1 tsp red Sichuan peppercorns, finely ground",
+            "1 tsp cayenne pepper",
+            "¼ tsp garlic powder",
+            "½ tsp five-spice powder",
+            "1 tbsp salt",
+          ],
+        },
+        {
+          title: "To fry and serve",
+          items: [
+            "Vegetable oil, for deep-frying",
+            "Burnt green chilli sauce, from above",
+          ],
+        },
+      ],
+      methodGroups: [
+        {
+          title: "Burnt green chilli sauce",
+          steps: [
+            "Blacken the green chillies over a gas burner or beneath a very hot grill. Let them cool, then peel away the burnt skins.",
+            "Blend the chillies with the ginger, garlic, lemon juice, coriander, Dijon mustard, oil, salt, and muscovado sugar at high speed until emulsified and smooth.",
+            "Refrigerate in a sterilized jar for up to 1 week, or freeze for up to 3 months.",
+          ],
+        },
+        {
+          title: "Marinate",
+          steps: [
+            "Mix the soy milk, garlic, ginger, cornflour, cumin, five spice, soy sauce, and rice vinegar in a large non-reactive bowl. Add the chicken and stir to coat.",
+            "Cover and marinate overnight in the refrigerator, or for 1 hour at room temperature if short on time.",
+            "Before coating, run your fingers through the chicken to separate overlapping pieces. Add a little more soy milk if needed so every piece remains submerged and wet with marinade.",
+          ],
+        },
+        {
+          title: "Coat and double-fry",
+          steps: [
+            "Mix all the spiced tapioca-flour ingredients in a wide bowl until the seasonings are evenly distributed.",
+            "Lift one chicken piece straight from the marinade and roll it lightly through the flour to make a craggy nugget shape. Do not flatten it or press the coating firmly onto it. Repeat with the remaining chicken.",
+            "Heat the frying oil to 160°C. Shake off only the loosest excess flour, then fry the chicken in 2 batches for about 3 minutes, until cooked through, lightly golden, and crisp.",
+            "Drain on paper towels and let the chicken cool completely. Raise the oil to 190°C and fry again for 2 minutes.",
+            "Drain, place in a shallow serving bowl, and drizzle with the burnt green chilli sauce.",
+          ],
+        },
+      ],
     };
   });
   const banhMiBreadSource = youtubeSavedRecipes.find((entry) => entry.recipeKey === "youtube-saved-wwbW3zibmMI");
-  const roastPorkBanhMi = importedWithHighlightMetadata.find((entry) => entry.recipeKey === "personal-banhmi");
+  const roastPorkBanhMi = importedWithRecipeUpdates.find((entry) => entry.recipeKey === "personal-banhmi");
   const roastPorkBanhMiFirstGalleryImage = roastPorkBanhMi?.media?.find((item) => item.type === "image")?.src;
   const banhMiBreadRecipe: RecipeCardEntry[] = banhMiBreadSource ? [{
     ...banhMiBreadSource,
@@ -244,7 +333,7 @@ function siteRecipeCards(): RecipeCardEntry[] {
     ],
     source: "site",
   };
-  const bossamAndJjampong = importedWithHighlightMetadata.find((entry) => entry.recipeKey === "personal-bossam-jjampong");
+  const bossamAndJjampong = importedWithRecipeUpdates.find((entry) => entry.recipeKey === "personal-bossam-jjampong");
   const bossamAndJjampongCopy: RecipeCardEntry[] = bossamAndJjampong ? [{
     ...bossamAndJjampong,
     recipeKey: "personal-bossam-jjampong-copy",
@@ -335,7 +424,7 @@ function siteRecipeCards(): RecipeCardEntry[] {
     ],
     media: bossamAndJjampong.media?.map((item) => ({ ...item })),
   }] : [];
-  return [...writtenRecipes, ...importedWithHighlightMetadata, ...banhMiBreadRecipe, vietnameseButterRecipe, ...bossamAndJjampongCopy];
+  return [...writtenRecipes, ...importedWithRecipeUpdates, ...banhMiBreadRecipe, vietnameseButterRecipe, ...bossamAndJjampongCopy];
 }
 
 const getUploadedRecipes = unstable_cache(async (): Promise<RecipeCardEntry[]> => {

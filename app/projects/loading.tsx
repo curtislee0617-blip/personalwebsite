@@ -4,7 +4,7 @@ export default function Loading() {
   return (
     <SectionLoading
       variant="projects"
-      title="Working on smth"
+      title="Workin on smth"
       description=""
     />
   );

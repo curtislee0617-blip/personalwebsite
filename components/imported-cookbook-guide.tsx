@@ -213,7 +213,7 @@ function CalledForRecipe({
       </summary>
 
       <div className="grid gap-4 border-t border-moss/15 p-4">
-        {recipe.subtitle && <p className="text-xs leading-5 text-ink/55">{recipe.subtitle}</p>}
+        {recipe.subtitle && <p className="line-clamp-4 text-xs leading-5 text-ink/55">{recipe.subtitle}</p>}
         <ScaleControl onChange={setFactorText} value={factorText} />
 
         <div className="grid gap-4 lg:grid-cols-2">
@@ -354,7 +354,7 @@ function RecipeCard({
         >
           <span className="min-w-0">
             <span className="block text-sm font-semibold leading-snug tracking-tight sm:text-base">{recipe.title}</span>
-            {recipe.subtitle && <span className="mt-1 line-clamp-2 block text-[0.68rem] leading-5 text-ink/48">{recipe.subtitle}</span>}
+            {recipe.subtitle && <span className="mt-1 line-clamp-4 text-[0.68rem] leading-5 text-ink/48">{recipe.subtitle}</span>}
             <span className="mt-1.5 block text-[0.6rem] font-semibold uppercase tracking-[0.1em] text-ink/35">
               {ingredientCount} {ingredientCount === 1 ? "ingredient" : "ingredients"} · {recipe.yield ?? sourceLabel}
             </span>
@@ -402,7 +402,7 @@ function RecipeCard({
             <header>
               <p className="eyebrow">{recipe.yield ?? sourceLabel}</p>
               <h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{recipe.title}</h3>
-              {recipe.subtitle && <p className="mt-2 text-sm leading-6 text-ink/55">{recipe.subtitle}</p>}
+              {recipe.subtitle && <p className="mt-2 line-clamp-4 max-w-3xl text-sm leading-6 text-ink/55">{recipe.subtitle}</p>}
               {timing && <p className="mt-2 text-xs font-semibold text-ink/42">{timing}</p>}
             </header>
           ) : (
@@ -716,6 +716,56 @@ export function ImportedCookbookGuide({ cookbook }: { cookbook: ImportedCookbook
           No recipes match “{query}”.
         </p>
       )}
+    </div>
+  );
+}
+
+export function PublicCookbookWishlistRecipe({
+  cookbook,
+  imageSrc,
+  recipe,
+}: {
+  cookbook: ImportedCookbook;
+  imageSrc?: string;
+  recipe: ImportedCookbookRecipe;
+}) {
+  const [open, setOpen] = useState(true);
+  const publicRecipe = useMemo(
+    () => ({ ...recipe, image: recipe.image && imageSrc ? imageSrc : null }),
+    [imageSrc, recipe],
+  );
+  const publicCookbook = useMemo<ImportedCookbook>(
+    () => ({
+      ...cookbook,
+      categories: [recipe.category],
+      description: "",
+      recipeCountLabel: "1 public wishlist recipe",
+      recipes: [publicRecipe],
+      sourceDocument: undefined,
+      sourceDocuments: undefined,
+    }),
+    [cookbook, publicRecipe, recipe.category],
+  );
+  const referenceIndex = useMemo(
+    () => createCookbookReferenceIndex(publicCookbook),
+    [publicCookbook],
+  );
+
+  return (
+    <div className="mx-auto w-full max-w-5xl">
+      <RecipeCard
+        calledForRecipes={[]}
+        cookbook={publicCookbook}
+        index={0}
+        isAdmin={false}
+        isWishlistPending={false}
+        isWishlisted
+        onToggle={() => setOpen((current) => !current)}
+        onToggleWishlist={() => undefined}
+        open={open}
+        recipe={publicRecipe}
+        referenceIndex={referenceIndex}
+      />
     </div>
   );
 }

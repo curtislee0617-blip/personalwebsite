@@ -76,3 +76,30 @@ export function getCocktailMatcherRecipes() {
     ingredients: recipe.ingredientGroups.flatMap((group) => group.lines),
   })));
 }
+
+export function getCocktailLibrarySearchItems() {
+  return [
+    {
+      title: "Private cocktail library",
+      context: `${cocktailBooks.length} cocktail books`,
+      kind: "Book",
+      href: "/recipes/cocktail-books",
+      searchText: cocktailBooks.flatMap((book) => [book.title, book.author]).join(" "),
+    },
+    ...cocktailBooks.flatMap((book) => book.recipes.map((recipe) => ({
+      title: recipe.title,
+      context: `${book.title} · ${recipe.section}${recipe.subsection ? ` · ${recipe.subsection}` : ""}`,
+      kind: "Cocktail book recipe",
+      href: `/recipes/cocktail-books/${book.id}#cocktail-recipe-${recipe.id}`,
+      searchText: [
+        recipe.description,
+        recipe.attribution,
+        recipe.section,
+        recipe.subsection,
+        ...recipe.tags,
+        ...recipe.ingredientGroups.flatMap((group) => [group.heading, ...group.lines]),
+        ...recipe.methodGroups.flatMap((group) => [group.heading, ...group.steps]),
+      ].filter(Boolean).join(" "),
+    }))),
+  ];
+}

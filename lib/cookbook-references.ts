@@ -44,6 +44,13 @@ const REFERENCE_ALIASES: Record<string, Record<string, string[]>> = {
     "fermented-soybeans": ["Fermented Soybean", "Fermented Soybean Sheet"],
     "fried-shallots": ["Fried Shallot"],
   },
+  "bao-the-cookbook": {
+    "bao": ["Gua BAO", "Gua BAOs", "BAO dough", "Tangzhong"],
+    "hot-dog-bao": ["Hot Dog BAOs"],
+    "soho-house-pickles": ["Soy-pickled Cucumber", "Soy-pickled Cucumber sticks"],
+    "pao-tsai-pickles": ["Pickled Daikon", "Yellow Pickled Fennel", "Red Chilli Pickle"],
+    "taiwanese-golden-kimchi": ["Golden Kimchi"],
+  },
 };
 
 const REFERENCE_STOP_WORDS = new Set([

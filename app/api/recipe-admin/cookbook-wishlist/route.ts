@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { getImportedCookbook, hasImportedCookbook } from "@/lib/imported-cookbooks";
+import { cookbookWishlistRecipeHref } from "@/lib/cookbook-wishlist-public";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -61,7 +62,7 @@ export async function POST(request: Request) {
       source_key: sourceKey,
       title: recipe.title,
       note: recipe.subtitle?.trim() || `${recipe.category} recipe from ${cookbook.title}.`,
-      href: `/recipes/${cookbook.id}#${cookbook.id}-${recipe.id}`,
+      href: cookbookWishlistRecipeHref(cookbook.id, recipe.id),
       image_url: recipe.image ?? null,
       cookbook_id: cookbook.id,
       recipe_id: recipe.id,

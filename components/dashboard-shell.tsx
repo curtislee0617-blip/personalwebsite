@@ -37,7 +37,7 @@ type DashboardGroup = {
   href: string;
   label: string;
   items: readonly DashboardGroupItem[];
-  adminOnly?: boolean;
+  cookbookAccessOnly?: boolean;
   dynamicItems?: "recipe-categories";
 };
 
@@ -92,6 +92,7 @@ export const dashboardSections: readonly DashboardSection[] = [
         label: "Guides",
         items: [
           { href: "/recipes/pasta-guide", label: "Pasta guide" },
+          { href: "/recipes/coffee-guide", label: "Coffee guide" },
           { href: "/recipes/sushi-guide", label: "Sushi guide" },
           { href: "/recipes/viennoiserie-guide", label: "Viennoiserie guide" },
           { href: "/recipes/sourdough-guide", label: "Sourdough guide" },
@@ -116,7 +117,7 @@ export const dashboardSections: readonly DashboardSection[] = [
       {
         href: "/recipes#recipe-books",
         label: "Recipe books",
-        adminOnly: true,
+        cookbookAccessOnly: true,
         items: [
           {
             href: "/recipes#recipe-books",
@@ -146,6 +147,7 @@ export const dashboardSections: readonly DashboardSection[] = [
               { href: "/recipes/spain-the-cookbook", label: "Spain: The Cookbook" },
               { href: "/recipes/science-of-spice", label: "The Science of Spice" },
               { href: "/recipes/sauces-reconsidered", label: "Sauces Reconsidered" },
+              { href: "/recipes/bao-the-cookbook", label: "BAO: The Cookbook" },
             ],
           },
           {
@@ -228,7 +230,7 @@ function dashboardTreeNodeMatchesPath(node: DashboardTreeNode, pathname: string,
 function loadingDetailsForPath(path: string): Pick<DashboardRouteLoading, "title" | "variant"> {
   if (path === "/") return { title: "Warming up the homepage", variant: "home" };
   if (path.startsWith("/about")) return { title: "Waking up…", variant: "about" };
-  if (path.startsWith("/projects")) return { title: "Working on smth", variant: "projects" };
+  if (path.startsWith("/projects")) return { title: "Workin on smth", variant: "projects" };
   if (path.startsWith("/recipes")) return { title: "Preheating", variant: "recipes" };
   if (path.startsWith("/restaurants")) return { title: "Setting the table", variant: "restaurants" };
   if (path.startsWith("/tools")) return { title: "Adding final touches", variant: "tools" };
@@ -244,7 +246,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
   const [dashboardRecipes, setDashboardRecipes] = useState<DashboardRecipeItem[]>([]);
-  const [isRecipeAdmin, setIsRecipeAdmin] = useState(false);
+  const [hasCookbookAccess, setHasCookbookAccess] = useState(false);
   const [routeLoading, setRouteLoading] = useState<DashboardRouteLoading | null>(null);
   const routeLoadingStartedRef = useRef(0);
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
@@ -326,18 +328,18 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    const syncRecipeAdminSession = () => {
-      void fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+    const syncCookbookSession = () => {
+      void fetch("/api/cookbook-access/session", { cache: "no-store", signal: controller.signal })
         .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
-        .then((result) => setIsRecipeAdmin(result.authenticated === true))
+        .then((result) => setHasCookbookAccess(result.authenticated === true))
         .catch(() => undefined);
     };
 
-    syncRecipeAdminSession();
-    window.addEventListener("recipe-admin-session-changed", syncRecipeAdminSession);
+    syncCookbookSession();
+    window.addEventListener("cookbook-access-session-changed", syncCookbookSession);
     return () => {
       controller.abort();
-      window.removeEventListener("recipe-admin-session-changed", syncRecipeAdminSession);
+      window.removeEventListener("cookbook-access-session-changed", syncCookbookSession);
     };
   }, []);
 
@@ -514,7 +516,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             const isActive = activeHref === section.href;
             const isExpanded = expanded[section.href] ?? isActive;
             const canExpand = !["/about", "/restaurants", "/contact"].includes(section.href);
-            const visibleGroups = section.groups.filter((group) => isRecipeAdmin || !group.adminOnly);
+            const visibleGroups = section.groups.filter((group) => hasCookbookAccess || !group.cookbookAccessOnly);
 
             return (
               <div className={`dashboard-sidebar-item ${isActive ? "is-active" : ""}`} data-dashboard-href={section.href} key={section.href}>

@@ -18,7 +18,6 @@ type SectionLoadingProps = {
 
 const loadingMarks: Partial<Record<SectionLoadingVariant, string>> = {
   home: "✦",
-  projects: "✎",
   recipes: "🍳",
   restaurants: "🍴",
   contact: "👋",
@@ -27,6 +26,8 @@ const loadingMarks: Partial<Record<SectionLoadingVariant, string>> = {
 };
 
 function LoadingMark({ variant }: { variant: SectionLoadingVariant }) {
+  if (variant === "projects") return null;
+
   if (variant === "tools") {
     // The same artwork as the /tools page cursor, so the loading screen
     // hands off seamlessly to the pointer once the page arrives.

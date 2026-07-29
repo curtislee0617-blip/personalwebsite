@@ -4,8 +4,8 @@ import {
   isPrivateCookbookMediaPathname,
   isPublicCookbookMediaPathname,
 } from "@/lib/cookbook-access";
+import { hasPrivateRecipeLibraryAccess } from "@/lib/cookbook-auth";
 import { COOKBOOK_MEDIA_BUCKET } from "@/lib/media-storage";
-import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -24,7 +24,7 @@ export async function GET(
     return NextResponse.json({ error: "Invalid cookbook media path." }, { status: 400 });
   }
 
-  if (!isPublicCookbookMediaPathname(pathname) && !(await isRecipeAdminAuthenticated())) {
+  if (!isPublicCookbookMediaPathname(pathname) && !(await hasPrivateRecipeLibraryAccess())) {
     return new NextResponse(null, { status: 404 });
   }
 

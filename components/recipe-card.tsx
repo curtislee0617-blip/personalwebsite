@@ -1,11 +1,12 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { InstagramPostEmbed } from "@/components/instagram-post-embed";
 import { MediaSavedWishlistButton } from "@/components/media-saved-wishlist";
 import { RecipeDeleteButton } from "@/components/recipe-delete-button";
 import { RecipeMediaGallery } from "@/components/recipe-media-gallery";
 import { RecipeCardThumbnailMedia } from "@/components/recipe-card-thumbnail-media";
-import type { RecipeCardEntry } from "@/lib/recipe-card-types";
+import type { RecipeCardEntry, RecipeMediaItem } from "@/lib/recipe-card-types";
 
 export type { RecipeCardEntry } from "@/lib/recipe-card-types";
 
@@ -132,7 +133,13 @@ export function RecipeCard({
 }) {
   const shelf = variant === "shelf";
   const hasStructuredContent = Boolean(entry.ingredientGroups?.length || entry.methodGroups?.length);
-  const media = entry.media ?? (entry.imageUrls ?? []).map((src) => ({ src, type: "image" as const }));
+  const media: RecipeMediaItem[] = entry.media ?? (entry.imageUrls ?? []).map((src) => ({ src, type: "image" }));
+  const thumbnailMedia = entry.thumbnail
+    ? media.find((item) => item.src === entry.thumbnail || item.poster === entry.thumbnail)
+    : undefined;
+  const videoFilter = entry.recipeKey === "personal-murghmakhani"
+    ? "saturate(1.12) contrast(1.03)"
+    : "saturate(1.22) contrast(1.04)";
   const hasExpandedContent = hasStructuredContent
     || media.length > 0
     || Boolean(entry.instagramPostId)
@@ -143,13 +150,18 @@ export function RecipeCard({
   const cardId = `${idPrefix ? `${idPrefix}-` : ""}recipe-${entry.slug}`;
 
   return (
-    <details className={`recipe-card scroll-mt-24 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""} ${!entry.thumbnail ? "recipe-card-text-only" : ""}`} id={cardId}>
+    <details
+      className={`recipe-card scroll-mt-24 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-4 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-5 ${shelf ? "recipe-shelf-card" : ""} ${!entry.thumbnail ? "recipe-card-text-only" : ""}`}
+      id={cardId}
+      style={{ "--recipe-video-filter": videoFilter } as CSSProperties}
+    >
       <summary className="recipe-card-summary recipes-section-summary cursor-pointer list-none marker:hidden">
         {entry.thumbnail && <div className="recipe-card-thumbnail relative overflow-hidden rounded-[1rem] border border-ink/10 bg-paper/70">
           <div className="relative aspect-[4/3]">
             <RecipeCardThumbnailMedia
+              colorAsVideo={thumbnailMedia?.type === "video"}
               position={entry.thumbnailPosition ?? "50% 50%"}
-              poster={entry.media?.find((item) => item.src === entry.thumbnail)?.poster}
+              poster={thumbnailMedia?.poster}
               src={entry.thumbnail}
               time={entry.thumbnailTime}
               scale={thumbnailScale}

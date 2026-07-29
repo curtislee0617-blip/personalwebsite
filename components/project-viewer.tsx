@@ -3,6 +3,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { HistoryBackButton } from "@/components/history-back-button";
 
 type ProjectViewerProps =
   | {
@@ -10,30 +11,35 @@ type ProjectViewerProps =
       title: string;
       pages: string[];
       pdfHref: string;
+      backHref: string;
     }
   | {
       mode: "book";
       title: string;
       pages: string[];
       pdfHref: string;
+      backHref: string;
     };
 
 export function ProjectViewer(props: ProjectViewerProps) {
   if (props.mode === "poster") {
-    return <PosterViewer pages={props.pages} pdfHref={props.pdfHref} title={props.title} />;
+    return <PosterViewer backHref={props.backHref} pages={props.pages} pdfHref={props.pdfHref} title={props.title} />;
   }
 
   return <BookViewer pages={props.pages} pdfHref={props.pdfHref} title={props.title} />;
 }
 
-function PosterViewer({ pages, pdfHref, title }: { pages: string[]; pdfHref: string; title: string }) {
+function PosterViewer({ backHref, pages, pdfHref, title }: { backHref: string; pages: string[]; pdfHref: string; title: string }) {
   const [zoom, setZoom] = useState(1);
   const page = pages[0];
 
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 pb-4 pt-20 sm:px-6 sm:pb-5 sm:pt-24">
-        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+          <HistoryBackButton className="project-viewer-exit" fallbackHref={backHref}>
+            ← Exit poster
+          </HistoryBackButton>
           <a
             className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold text-white transition hover:border-white/45 hover:bg-surface/10 sm:px-4 sm:py-2 sm:text-sm"
             download

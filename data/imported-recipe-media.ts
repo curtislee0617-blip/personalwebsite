@@ -2382,9 +2382,41 @@ export const importedRecipeMediaEntries = [
     "recipeKey": "personal-tempura",
     "slug": "personal-tempura",
     "title": "Tempura",
-    "description": "",
+    "description": "A light, deliberately lumpy tempura batter and frying method from Niki Nakayama, chef-owner of n/naka in Los Angeles.",
+    "sourceLabel": "Niki Nakayama · n/naka, Los Angeles",
     "categories": [
       "bread"
+    ],
+    "ingredientGroups": [
+      {
+        "title": "Niki Nakayama's batter",
+        "items": [
+          "1 cup flour",
+          "1 tsp baking soda",
+          "2 tsp potato starch",
+          "1 egg",
+          "1 cup ice water"
+        ]
+      }
+    ],
+    "methodGroups": [
+      {
+        "title": "Batter",
+        "steps": [
+          "Set a bowl over an ice bath. Sift in the flour, baking soda and potato starch.",
+          "Separately mix the egg with the ice water, then stir it into the flour mixture with chopsticks for under a minute. Leave small lumps in the batter.",
+          "The batter should coat a spoon thinly but run off easily. Keep it on ice throughout; add a splash of cold water if it thickens.",
+          "Dust the ingredients in potato starch before dipping to remove excess moisture."
+        ]
+      },
+      {
+        "title": "Frying and key tips",
+        "steps": [
+          "Fry at 350°F / 177°C.",
+          "Add a little sesame oil to the frying oil for aroma.",
+          "Skim out stray batter bits as you fry so they do not lower the oil temperature."
+        ]
+      }
     ],
     "thumbnail": "/recipes/personal-import/personal-tempura/01-tempura.jpg",
     "media": [

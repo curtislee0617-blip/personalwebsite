@@ -54,7 +54,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
                 <span className="project-card-number">{String(index + 1).padStart(2, "0")}</span>
               </div>
               <div className="project-card-copy swipe-bubble-copy">
-                <p className="eyebrow">{project.eyebrow}</p>
+                <p className="eyebrow">{project.eyebrow} · {project.year}</p>
                 <div className="mt-3">
                   <h2>{project.title}</h2>
                 </div>

@@ -47,6 +47,15 @@ export const recipeEntries: RecipeEntry[] = [
     href: "/recipes/pasta-guide",
   },
   {
+    slug: "coffee-guide",
+    kind: "guide",
+    title: "The science of coffee",
+    description:
+      "An unfinished guide to coffee botany, processing, roasting, flavour chemistry, terroir, extraction, crema, and water.",
+    status: "published",
+    href: "/recipes/coffee-guide",
+  },
+  {
     slug: "sushi-guide",
     kind: "guide",
     title: "Sushi guide",
@@ -190,6 +199,8 @@ export type WishlistEntry = {
   href?: string;
   image?: string;
   bookTitle?: string;
+  cookbookId?: string;
+  recipeId?: string;
 };
 
 export const wishlistEntries: WishlistEntry[] = [];
