@@ -10,15 +10,15 @@ import type {
 // sequentially, because alkali loading couples all three.
 
 export const scwgFeedstockIntro =
-  "Okara, soybean straw and red mud are characterized here on a common basis, and the blend ratio is set by three independent constraints rather than optimized against any one of them. Every heteroatom entering the system is given a named destination and a responsible unit — in a process whose products are sold against ISCC and ISO 14067 claims, \"somewhere\" has to be documented rather than assumed.";
+  "Douzha, soybean straw and red mud are characterized here on a common basis, and the blend ratio is set by three independent constraints rather than optimized against any one of them. Every heteroatom entering the system is given a named destination and a responsible unit — in a process whose products are sold against ISCC and ISO 14067 claims, \"somewhere\" has to be documented rather than assumed.";
 
 export const scwgFeedstockProfiles: FeedstockProfile[] = [
   {
-    id: "okara",
-    name: "Okara",
+    id: "douzha",
+    name: "Douzha",
     subtitle: "A feed defined by its water",
     paragraphs: [
-      "Okara is the insoluble residue remaining after soybeans are ground, extracted and screened in soymilk and tofu manufacture. It is produced in very large volume across East Asia and is disposed of at cost or fed to livestock at low value, both of which set a favourable gate price for a conversion process.",
+      "Douzha is the insoluble residue remaining after soybeans are ground, extracted and screened in soymilk and tofu manufacture. It is produced in very large volume across East Asia and is disposed of at cost or fed to livestock at low value, both of which set a favourable gate price for a conversion process.",
       "The defining physical property is water content. An independent characterization reports 46.3% dietary fibre, 17.8% protein, 5.9% lipid and 3.9% ash on a dry basis, which brackets the variability introduced by cultivar and extraction severity.",
     ],
     analyses: [
@@ -41,15 +41,15 @@ export const scwgFeedstockProfiles: FeedstockProfile[] = [
     consequences: [
       {
         title: "The moisture is an asset, not a penalty",
-        body: "At 80–85 wt% water, okara arrives at roughly the concentration a supercritical water gasifier wants. Any dry gasification route would spend more energy evaporating this water than the resulting gas contains — the standard argument for hydrothermal processing of wet feeds, and here it is decisive rather than marginal.",
+        body: "At 80–85 wt% water, douzha arrives at roughly the concentration a supercritical water gasifier wants. Any dry gasification route would spend more energy evaporating this water than the resulting gas contains — the standard argument for hydrothermal processing of wet feeds, and here it is decisive rather than marginal.",
       },
       {
         title: "Lignin is essentially absent",
-        body: "Okara's fibre is cellulosic and pectic rather than lignified. Lignin is the fraction most resistant to hydrothermal depolymerization and the dominant char precursor, so its absence predicts high carbon conversion and low char at comparatively mild severity.",
+        body: "Douzha's fibre is cellulosic and pectic rather than lignified. Lignin is the fraction most resistant to hydrothermal depolymerization and the dominant char precursor, so its absence predicts high carbon conversion and low char at comparatively mild severity.",
       },
       {
         title: "Nitrogen and sulfur are structural",
-        body: "At roughly 27 wt% protein the C/N ratio is approximately 5.8, and the sulfur-bearing amino acids cysteine and methionine put organic sulfur into the feed. Both heteroatoms report to the aqueous and gas phases and both must be given a designed destination. A measured ultimate analysis of the specific okara source is required.",
+        body: "At roughly 27 wt% protein the C/N ratio is approximately 5.8, and the sulfur-bearing amino acids cysteine and methionine put organic sulfur into the feed. Both heteroatoms report to the aqueous and gas phases and both must be given a designed destination. A measured ultimate analysis of the specific douzha source is required.",
       },
     ],
   },
@@ -58,7 +58,7 @@ export const scwgFeedstockProfiles: FeedstockProfile[] = [
     name: "Soybean straw",
     subtitle: "The dry-solids and carbon-density partner",
     paragraphs: [
-      "Soybean straw is the field residue — stems, pods and petioles — left after grain harvest. It is lignocellulosic and carries a potassium- and silica-bearing ash typical of agricultural residues. Its C/N ratio is the mirror image of okara's, which is the reason the two are blended rather than run separately.",
+      "Soybean straw is the field residue — stems, pods and petioles — left after grain harvest. It is lignocellulosic and carries a potassium- and silica-bearing ash typical of agricultural residues. Its C/N ratio is the mirror image of douzha's, which is the reason the two are blended rather than run separately.",
       "Soybean straw is a demonstrated supercritical water gasification substrate in its own right. Catalytic supercritical water gasification over Ni-based catalysts with varied supports and promoters has been reported, with ZrO₂ the most effective support for H₂ yield and selectivity among activated carbon, carbon nanotubes, ZrO₂, Al₂O₃, SiO₂ and Al₂O₃–SiO₂ at 10 wt% Ni loading. That work is the closest published analogue to the biomass half of this system.",
     ],
     analyses: [
@@ -106,7 +106,7 @@ export const scwgBlendConstraints: BlendConstraint[] = [
   },
   {
     constraint: "C/N ratio",
-    boundingVariable: "Okara : straw mass ratio (dry)",
+    boundingVariable: "Douzha : straw mass ratio (dry)",
     designWindow: "Combined C/N 15–25",
     binding: "Soft",
   },
@@ -118,14 +118,14 @@ export const scwgBlendConstraints: BlendConstraint[] = [
   },
   {
     constraint: "Sulfur loading",
-    boundingVariable: "Okara protein fraction",
+    boundingVariable: "Douzha protein fraction",
     designWindow: "Sets the sulfur train, not the blend",
     binding: "No",
   },
 ];
 
 export const scwgBlendNotes = [
-  "Constraint 1 — pumpability sets the upper bound on solids. Feeding solids into a 25 MPa reactor is the recurring practical failure of supercritical water gasification at scale. Okara is the rheological advantage: its fine, hydrated fibre particles form a pumpable paste rather than a settling suspension, which is exactly the behaviour that corn starch paste was added to sewage sludge to create. Okara can therefore act as the carrier medium for milled straw that would otherwise settle and bridge.",
+  "Constraint 1 — pumpability sets the upper bound on solids. Feeding solids into a 25 MPa reactor is the recurring practical failure of supercritical water gasification at scale. Douzha is the rheological advantage: its fine, hydrated fibre particles form a pumpable paste rather than a settling suspension, which is exactly the behaviour that corn starch paste was added to sewage sludge to create. Douzha can therefore act as the carrier medium for milled straw that would otherwise settle and bridge.",
   "Constraint 2 — C/N balance. Unlike anaerobic digestion, supercritical water gasification is not inhibited by ammonia in the way a methanogenic consortium is, so C/N is not a hard operating constraint. It matters for two downstream reasons: the ammonia concentration in the aqueous effluent determines whether nitrogen recovery is worthwhile, and the nitrogen loading determines the corrosivity and composition of the salt-separator brine. Blending to a combined C/N of 15–25 puts the brine into a directly fertilizer-compatible band.",
   "Constraint 3 — alkali loading. Red mud brings its own sodium; the straw brings potassium. Together these set the total alkali the salt separator must remove per unit of feed, and that duty scales the separator rather than the reactor. Alkali loading is the constraint that couples the biomass blend to the red mud dosing, and it is why the three feed streams have to be specified together rather than sequentially.",
 ];
@@ -181,13 +181,13 @@ export const scwgHeteroatomIntro =
 export const scwgHeteroatomFates: HeteroatomFate[] = [
   {
     element: "N",
-    source: "Okara protein (dominant); straw (minor)",
+    source: "Douzha protein (dominant); straw (minor)",
     form: "NH₃, some N₂; ammonia is the stable intermediate under hydrothermal conditions",
     fate: "Aqueous phase → salt separator brine → fertilizer-grade N-K-P-S product, or ammonium sulfate via the sulfur train",
   },
   {
     element: "S",
-    source: "Okara cysteine / methionine",
+    source: "Douzha cysteine / methionine",
     form: "Aqueous sulfide / sulfate under alkaline reducing conditions; balance as H₂S with traces of COS and thiophenes",
     fate: "Calcium-free three-stage train: bulk capture into the B3 brine as the S of N-K-P-S → dealkalized red mud polishing → ZnO guard to OXZEO specification",
   },
@@ -212,7 +212,7 @@ export const scwgHeteroatomFates: HeteroatomFate[] = [
   },
   {
     element: "P",
-    source: "Okara phytate",
+    source: "Douzha phytate",
     form: "Phosphate",
     fate: "Brine — completes the N-P-K fertilizer specification",
   },

@@ -59,7 +59,7 @@ export const scwgReferences: Reference[] = [
     id: "ref-li-2012",
     marker: "Li-2012",
     citation:
-      "Li, B., Qiao, M. & Lu, F. (2012). Composition, nutrition, and utilization of okara (soybean residue). Food Reviews International.",
+      "Li, B., Qiao, M. & Lu, F. (2012). Composition, nutrition, and utilization of douzha (soybean residue). Food Reviews International. Published under the Japanese term \"okara\" — search on that spelling to retrieve it.",
     status: "unverified",
   },
   {

@@ -10,8 +10,8 @@ import type { SitingOverlayId } from "@/lib/scwg-types";
 // suitable existing token.
 export const OVERLAY_COLOR: Record<SitingOverlayId, string> = {
   redmud: "var(--color-clay)", // warm red — red mud
-  "okara-industrial": "var(--color-map-industrial)", // blue — industrial okara plants
-  "okara-fragmented": "var(--color-moss)", // green — shading only
+  "douzha-industrial": "var(--color-map-industrial)", // blue — industrial douzha plants
+  "douzha-fragmented": "var(--color-moss)", // green — shading only
   ports: "var(--color-map-port)", // amber — major ports
   context: "var(--color-map-context)", // violet — straw / origin context
 };

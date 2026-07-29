@@ -35,7 +35,7 @@ export const scwgOpenQuestions: OpenQuestion[] = [
   },
   {
     title: "Measured ultimate analyses are missing",
-    body: "For the specific okara and straw sources, including sulfur and chloride. Three values in Section 1 are currently indicative. Sulfur now sets the acid gas removal duty and the liquid-redox unit size; chloride sets materials selection and the red mud bed sizing.",
+    body: "For the specific douzha and straw sources, including sulfur and chloride. Three values in Section 1 are currently indicative. Sulfur now sets the acid gas removal duty and the liquid-redox unit size; chloride sets materials selection and the red mud bed sizing.",
   },
   {
     title: "Supercritical dealkalization is unvalidated",
@@ -47,7 +47,7 @@ export const scwgOpenQuestions: OpenQuestion[] = [
   },
   {
     title: "Feedstock traceability must be designed in, not retrofitted",
-    body: "ISCC certification integrity at the feedstock self-declaration stage is a known weak point, and okara sourced from many small tofu and soymilk producers is precisely the fragmented, self-declared supply profile where that weakness bites. A traceability protocol belongs in the procurement model from the start rather than at audit.",
+    body: "ISCC certification integrity at the feedstock self-declaration stage is a known weak point, and douzha sourced from many small tofu and soymilk producers is precisely the fragmented, self-declared supply profile where that weakness bites. A traceability protocol belongs in the procurement model from the start rather than at audit.",
   },
   {
     title: "The EU Green Claims Directive status is contested",
@@ -55,6 +55,6 @@ export const scwgOpenQuestions: OpenQuestion[] = [
   },
   {
     title: "Feedstock geography is unresolved",
-    body: "No site holds red mud and okara together at scale, and the Guangxi–Guangdong versus Henan trade-off is undecided.",
+    body: "No site holds red mud and douzha together at scale, and the Guangxi–Guangdong versus Henan trade-off is undecided.",
   },
 ];

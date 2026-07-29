@@ -26,7 +26,7 @@ function StandardTable({ label, rows }: { label: string; rows: WasteStandard[] }
               </span>
             </div>
             <p className="mt-1 text-sm font-medium text-ink/75">{row.title}</p>
-            <p className="mt-2 max-w-prose text-sm leading-7 text-ink/60">{row.relevance}</p>
+            <p className="mt-2 text-sm leading-7 text-ink/60">{row.relevance}</p>
           </li>
         ))}
       </ul>
@@ -37,9 +37,9 @@ function StandardTable({ label, rows }: { label: string; rows: WasteStandard[] }
 export function ScwgWasteTreatment() {
   return (
     <div className="space-y-8">
-      <p className="max-w-prose text-sm leading-7 text-ink/65">{scwgWasteIntro}</p>
+      <p className="text-sm leading-7 text-ink/65">{scwgWasteIntro}</p>
 
-      <p className="max-w-prose rounded-[1.25rem] border-l-2 border-clay bg-clay/8 px-4 py-3 text-sm font-medium leading-6 text-ink/80">
+      <p className="rounded-[1.25rem] border-l-2 border-clay bg-clay/8 px-4 py-3 text-sm font-medium leading-6 text-ink/80">
         {scwgWasteCaveat}
       </p>
 
@@ -76,7 +76,7 @@ export function ScwgWasteTreatment() {
         </div>
       </div>
 
-      <p className="max-w-prose text-sm leading-7 text-ink/70">{scwgWasteClosing}</p>
+      <p className="text-sm leading-7 text-ink/70">{scwgWasteClosing}</p>
     </div>
   );
 }

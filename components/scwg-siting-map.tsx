@@ -21,10 +21,34 @@ import type { SitingOverlayId } from "@/lib/scwg-types";
 // mark SHAPES, not colour alone. The haul calculator reports great-circle
 // distance from a candidate site to the nearest source in each active overlay.
 
-// Canvas proportioned to mainland China's aspect under this projection, so the
-// landmass fills the frame rather than sitting in a band of dead space.
-const W = 760;
-const H = 660;
+// Canvas proportioned to the framed region's aspect (≈1.08 wide to tall).
+const W = 560;
+const H = 518;
+const PAD = 2;
+
+/**
+ * The frame. Deliberately NOT the whole country — it covers the eastern half,
+ * from Guangxi and Hainan up to Heilongjiang, which is where every site in the
+ * dataset sits. Xinjiang, Tibet and the far west carry no data and are cropped,
+ * and the South China Sea islands fall outside it too.
+ *
+ * The ring is densified along each edge because d3 treats polygon edges as great
+ * circles: a bare four-corner box bulges well outside the intended frame once
+ * projected, which shrinks the map to a fraction of the canvas.
+ */
+function frameGrid(west: number, south: number, east: number, north: number) {
+  const step = 1;
+  const coordinates: [number, number][] = [];
+  for (let lon = west; lon <= east; lon += step) coordinates.push([lon, south], [lon, north]);
+  for (let lat = south; lat <= north; lat += step) coordinates.push([west, lat], [east, lat]);
+  return {
+    type: "Feature" as const,
+    properties: {},
+    geometry: { type: "MultiPoint" as const, coordinates },
+  };
+}
+
+const MAINLAND_FOCUS = frameGrid(97, 19, 133, 48);
 const shading = mapData.fragmentedShading as Record<string, number>;
 
 export function ScwgSitingMap() {
@@ -46,14 +70,23 @@ export function ScwgSitingMap() {
       ) as FeatureCollection<Geometry, { name: string }>,
     [],
   );
-  const projection = useMemo(() => geoConicEqualArea().parallels([25, 47]).rotate([-105, 0]).fitSize([W, H], provinces), [provinces]);
+  // Fit to mainland China rather than to the province set. The provinces file
+  // includes a South China Sea islands feature reaching ~3°N, so fitting to it
+  // stretched the frame over 50° of latitude and left a tall column of empty
+  // ocean below the landmass. Framing on an explicit mainland box crops that
+  // tail; anything outside the box is simply clipped by the viewBox.
+  const projection = useMemo(
+    () => geoConicEqualArea().parallels([25, 47]).rotate([-105, 0]).fitExtent(
+      [
+        [PAD, PAD],
+        [W - PAD, H - PAD],
+      ],
+      MAINLAND_FOCUS,
+    ),
+    [],
+  );
   const path = useMemo(() => geoPath(projection), [projection]);
-  // Tighten the viewBox to the projected landmass so it fills the frame.
-  const viewBox = useMemo(() => {
-    const [[x0, y0], [x1, y1]] = path.bounds(provinces);
-    const pad = 12;
-    return `${x0 - pad} ${y0 - pad} ${x1 - x0 + pad * 2} ${y1 - y0 + pad * 2}`;
-  }, [path, provinces]);
+  const viewBox = `0 0 ${W} ${H}`;
 
   const candidate = scwgSitingCandidates.find((c) => c.id === candidateId) ?? null;
 
@@ -70,15 +103,11 @@ export function ScwgSitingMap() {
   }, [candidate, active]);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      {/* Card hugs the projected landmass so the height cap does not leave wide
-          empty margins either side. */}
-      <div className="mx-auto w-full max-w-[36rem] overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/40 p-3">
-        {/* Height-capped so the whole country fits in one screen without
-            scrolling; `meet` letterboxes rather than cropping. */}
+    <div className="grid items-start gap-6 lg:grid-cols-2">
+      <div className="w-full overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/40 p-3">
         <svg
           aria-label={scwgUi.siting.mapAriaLabel}
-          className="mx-auto block h-[62vh] max-h-[640px] w-full"
+          className="block h-auto w-full"
           preserveAspectRatio="xMidYMid meet"
           role="img"
           viewBox={viewBox}
@@ -102,7 +131,7 @@ export function ScwgSitingMap() {
             {provinces.features.map((f, i) => {
               const isTaiwan = f.properties.name === "Taiwan";
               const intensity =
-                active["okara-fragmented"] && !isTaiwan ? shading[f.properties.name] ?? 0 : 0;
+                active["douzha-fragmented"] && !isTaiwan ? shading[f.properties.name] ?? 0 : 0;
               return (
                 <path
                   d={path(f) ?? undefined}
@@ -166,25 +195,33 @@ export function ScwgSitingMap() {
         </svg>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-3">
         <div>
           <p className="eyebrow mb-2">{scwgUi.siting.overlaysLabel}</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-1.5">
             {scwgSitingOverlays.map((o) => (
-              <button
-                aria-pressed={active[o.id]}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
-                  active[o.id] ? "border-ink/25 bg-ink/8 text-ink" : "border-ink/12 bg-paper/70 text-ink/50 hover:text-ink/75"
-                }`}
-                key={o.id}
-                onClick={() => setActive((prev) => ({ ...prev, [o.id]: !prev[o.id] }))}
-                type="button"
-              >
-                <span aria-hidden="true" style={{ color: `rgb(${OVERLAY_COLOR[o.id]})` }}>
-                  {o.mark === "shade" ? "▦" : o.mark === "square" ? "■" : o.mark === "triangle" ? "▲" : o.mark === "diamond" ? "◆" : "●"}
-                </span>
-                {o.label}
-              </button>
+              <details className="w-full rounded-[0.9rem] border border-ink/12 bg-paper/70 px-3 py-1.5" key={o.id}>
+                <summary className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-ink/70 marker:content-['']">
+                  <button
+                    aria-label={`Toggle ${o.label}`}
+                    aria-pressed={active[o.id]}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 transition ${
+                      active[o.id] ? "bg-ink/8 text-ink" : "text-ink/45"
+                    }`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setActive((prev) => ({ ...prev, [o.id]: !prev[o.id] }));
+                    }}
+                    type="button"
+                  >
+                    <span aria-hidden="true" style={{ color: `rgb(${OVERLAY_COLOR[o.id]})` }}>
+                      {o.mark === "shade" ? "▦" : o.mark === "square" ? "■" : o.mark === "triangle" ? "▲" : o.mark === "diamond" ? "◆" : "●"}
+                    </span>
+                    {o.label}
+                  </button>
+                </summary>
+                <p className="mt-1.5 text-xs leading-5 text-ink/55">{o.blurb}</p>
+              </details>
             ))}
           </div>
         </div>

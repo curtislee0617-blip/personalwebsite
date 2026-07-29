@@ -11,7 +11,7 @@ export function ScwgRegulatoryTimeline() {
       <div className="lg:sticky lg:top-28 lg:self-start">
         <p className="eyebrow">{scwgUi.acts.regulatory.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.regulatory.title}</h2>
-        <p className="mt-4 max-w-prose text-sm leading-7 text-ink/60">{scwgRegulatoryIntro}</p>
+        <p className="mt-4 text-sm leading-7 text-ink/60">{scwgRegulatoryIntro}</p>
       </div>
 
       <ol className="relative space-y-6 border-l border-ink/15 pl-6 sm:pl-8">

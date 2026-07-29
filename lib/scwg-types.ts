@@ -40,7 +40,7 @@ export type RegulatoryPanel = {
 
 // ── Act 2 — siting ──────────────────────────────────────────────────────────
 
-export type SitingOverlayId = "redmud" | "okara-industrial" | "okara-fragmented" | "ports" | "context";
+export type SitingOverlayId = "redmud" | "douzha-industrial" | "douzha-fragmented" | "ports" | "context";
 
 export type SitingOverlay = {
   id: SitingOverlayId;

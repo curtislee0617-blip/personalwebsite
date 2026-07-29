@@ -6,7 +6,7 @@ export const scwgMeta = {
   subtitle:
     "Supercritical water gasification with a multifunctional red mud bed, conventional acid gas removal, and reforming-coupled OXZEO olefin synthesis",
   abstractParagraphs: [
-    "Two waste streams that are individually awkward become tractable when co-processed. Okara — the residue from soymilk and tofu manufacture — is 80–85 wt% water, a liability for any dry thermochemical route but an asset for supercritical water gasification, where water is the reaction medium rather than a drying burden. Bauxite residue is alkaline, iron-rich, and impounded at roughly 170 Mt per year globally with under 3% utilization; its Fe₂O₃ content makes it a credible low-cost oxygen carrier and its residual sodium alkalinity makes it a tar cracker — but that same alkalinity is what makes it a liability and what must be removed before the residue can be sold.",
+    "Two waste streams that are individually awkward become tractable when co-processed. Douzha — the residue from soymilk and tofu manufacture — is 80–85 wt% water, a liability for any dry thermochemical route but an asset for supercritical water gasification, where water is the reaction medium rather than a drying burden. Bauxite residue is alkaline, iron-rich, and impounded at roughly 170 Mt per year globally with under 3% utilization; its Fe₂O₃ content makes it a credible low-cost oxygen carrier and its residual sodium alkalinity makes it a tar cracker — but that same alkalinity is what makes it a liability and what must be removed before the residue can be sold.",
     "This work proposes that the supercritical water gasifier performs both duties at once: it gasifies the biomass using red mud as redox mediator and tar cracker, and in the same pass it dealkalizes the red mud, transferring sodium into a separable, saleable brine. The gasifier is simultaneously a biomass converter and a bauxite residue treatment unit.",
   ],
   /** Legend copy for the sticky placeholder-discipline header. */
@@ -106,17 +106,16 @@ export const scwgUi = {
     overlaysLabel: "Overlays",
     payloadLabel: "The analytical payload",
     haulLabel: "Haul-distance calculator",
-    haulHelp: "Pick a candidate site; distances are great-circle to the nearest source in each active overlay.",
+    haulHelp: "Great-circle distance to the nearest source in each active overlay.",
     overlayOn: "on",
     overlayOff: "off by default",
     noOverlays: "No point-source overlays active.",
-    mapAriaLabel: "Choropleth of China: red mud and okara sources by province",
+    mapAriaLabel: "Choropleth of China: red mud and douzha sources by province",
     markLegendLabel: "Reading the marks",
     markFilled:
-      "Filled and larger — a site with a recorded capacity; radius scales with it. Only Fangchenggang (Guangxi, ~2.4 Mt/y) currently carries one, which is why it is the single large mark in the south.",
-    markHollow: "Hollow and uniform — capacity unverified, which is every other site on this map.",
-    markDotted:
-      "Dotted outlines — neighbouring countries and Taiwan, shown for geographic context only; no data is attached to them.",
+      "Filled, sized by capacity. Only Fangchenggang (~2.4 Mt/y) has one — hence the single large mark.",
+    markHollow: "Hollow — capacity unverified, i.e. every other site.",
+    markDotted: "Dotted — neighbours and Taiwan, context only.",
   },
   process: {
     diagramAriaLabel:

@@ -11,23 +11,23 @@ export const scwgSitingOverlays: SitingOverlay[] = [
     mark: "circle",
     defaultOn: true,
     blurb:
-      "Generated at alumina refineries. Shandong, Shanxi, Henan, Guangxi and Guizhou account for roughly 95% of Chinese alumina capacity; Shandong, Shanxi and Guangxi together exceed 70%. Large, few, permanently sited point sources with enormous per-site tonnage — the easy half of the problem to map.",
+      "Alumina refineries. Shandong, Shanxi, Henan, Guangxi and Guizhou hold roughly 95% of Chinese capacity. Large, few, permanently sited point sources — the easy half of the problem.",
   },
   {
-    id: "okara-industrial",
-    label: "Okara, industrial (large soymilk plants)",
+    id: "douzha-industrial",
+    label: "Douzha, industrial (large soymilk plants)",
     mark: "square",
     defaultOn: true,
     blurb:
-      "Okara is not a crushing by-product. China's soybean supply is sharply segmented: roughly 90% of imported GM soybean is crushed for oil and meal — producing no okara. Okara arises only from soymilk and tofu manufacture, which uses non-GM domestic beans. Industrial okara comes from a small number of large beverage plants — clean point sources with single-supplier traceability, which matters directly for the ISCC self-declaration weakness raised in Act 1.",
+      "Douzha is not a crushing by-product: ~90% of imported GM soybean is crushed for oil and meal, producing none. It arises only from soymilk and tofu manufacture on non-GM domestic beans. A few large beverage plants — clean point sources with single-supplier traceability.",
   },
   {
-    id: "okara-fragmented",
-    label: "Okara, fragmented (tofu manufacture)",
+    id: "douzha-fragmented",
+    label: "Douzha, fragmented (tofu manufacture)",
     mark: "shade",
     defaultOn: true,
     blurb:
-      "Larger tonnage, harder supply chain. Tofu production is fragmented across thousands of small workshops sited close to consumption because the product is perishable, so this overlay follows urban population density rather than industrial capacity. This overlay is where the ISCC risk lives: fragmented, self-declaring, small waste sources are exactly the supply profile where feedstock integrity fails at audit.",
+      "Larger tonnage, harder supply chain. Thousands of small workshops sited close to consumption, so this follows population rather than capacity. This is where the ISCC risk lives — fragmented, self-declaring sources are exactly where feedstock integrity fails at audit.",
   },
   {
     id: "ports",
@@ -35,7 +35,7 @@ export const scwgSitingOverlays: SitingOverlay[] = [
     mark: "diamond",
     defaultOn: true,
     blurb:
-      "The coast explains both feedstocks better than the inland map does. China refines alumina largely from imported bauxite, which is why capacity clusters behind the northern bulk terminals — Yantai, Longkou, Rizhao, Qingdao for Shandong — and behind Fangchenggang in Guangxi, a port that is itself a red mud site on this map. Imported soybean lands at these same terminals and is crushed for oil and meal at Rizhao, Nantong and Dongguan, which is precisely why those complexes yield no okara. The ports are where the bauxite arrives and where the wrong soybean arrives.",
+      "China refines alumina largely from imported bauxite, which is why capacity clusters behind the northern terminals — Yantai, Longkou, Rizhao, Qingdao — and behind Fangchenggang. The same terminals land the imported soybean crushed at Rizhao, Nantong and Dongguan. The ports are where the bauxite arrives, and where the wrong soybean arrives.",
   },
   {
     id: "context",
@@ -43,7 +43,7 @@ export const scwgSitingOverlays: SitingOverlay[] = [
     mark: "triangle",
     defaultOn: false,
     blurb:
-      "Secondary, off by default. Soybean straw is field residue following cultivation — Heilongjiang, Jilin, Liaoning, eastern Inner Mongolia. Non-GM food-grade soybean origin is Heilongjiang, a designated GMO-free planting region: the origin of the beans that eventually become okara, but not where the okara appears.",
+      "Off by default. Soybean straw follows cultivation — Heilongjiang, Jilin, Liaoning. Heilongjiang is also the non-GM food-grade origin: where the beans start, not where the douzha appears.",
   },
 ];
 
@@ -53,38 +53,37 @@ export const scwgSitingCandidates: SitingCandidate[] = [
     label: "Guangxi–Guangdong corridor",
     lon: 108.3,
     lat: 23.9,
-    note: "Red mud at Guangxi refineries, industrial okara in the Pearl River Delta — by far the shortest credible link between the two wastes.",
+    note: "Red mud at Guangxi refineries, industrial douzha in the Pearl River Delta — by far the shortest credible link between the two wastes.",
   },
   {
     id: "henan",
     label: "Henan (Zhengzhou / Jiaozuo)",
     lon: 113.4,
     lat: 34.8,
-    note: "Red mud and fragmented okara co-located — no haul at all, but a fragmented, hard-to-certify supply. Certification burden high.",
+    note: "Red mud and fragmented douzha co-located — no haul at all, but a fragmented, hard-to-certify supply. Certification burden high.",
   },
   {
     id: "shandong",
     label: "Shandong (Binzhou/Zouping)",
     lon: 117.9,
     lat: 37.4,
-    note: "Maximum red mud, but the soybean industry here crushes imported beans for meal, which yields no okara. Okara must be hauled or the feedstock reconsidered.",
+    note: "Maximum red mud, but the soybean industry here crushes imported beans for meal, which yields no douzha. Douzha must be hauled or the feedstock reconsidered.",
   },
 ];
 
 export const scwgSitingNarrative: SitingNarrative = {
   intro: [
-    "This is not a decorative map, and it is not a synergy story. Two feedstocks, two completely different geographies. The analytical point is a problem, and the map exists to make that problem legible.",
-    "Toggle the overlays. Red mud is a handful of huge inland point sources. Industrial okara is a handful of coastal beverage plants. Fragmented tofu okara follows people. The context layers sit a thousand kilometres further north again.",
+    "Not a synergy story. Two feedstocks, two completely different geographies — red mud is a handful of huge inland point sources, industrial douzha a handful of coastal beverage plants, fragmented tofu douzha follows people. Toggle the overlays; the point is the mismatch.",
   ],
   payload: [
-    "Red mud sits inland and north — Shandong, Shanxi, Henan — plus Guangxi and Guizhou in the south. Industrial okara sits in the Pearl River Delta, Shanghai and Wuhan. Fragmented tofu okara follows population. Soybean straw is a thousand kilometres further north again, in Heilongjiang and Jilin. No province holds red mud and okara at scale together.",
-    "Two pairings are worth examining rather than one. Guangxi (Baise, Pingguo, Fangchenggang) to Guangdong (Foshan, Dongguan, Shenzhen) is roughly 400–700 km and pairs real alumina capacity with three industrial soymilk plants — by far the shortest credible link between the two wastes. Henan is the dark horse: it has alumina refining at Zhengzhou, Sanmenxia and Jiaozuo and very high population density, so fragmented tofu okara is generated on top of the red mud — no haul at all, but a fragmented, hard-to-certify supply. The apparent Shandong option is a trap: its alumina capacity is the largest in China, but its soybean industry is crushing imported beans for meal, which yields no okara.",
-    "Which stream moves is a live design decision. Red mud is dense, cheap and moves badly. Okara is 80% water and moves worse — and spoils. Straw is bulky and low-density. This constrains siting more than any thermodynamic consideration in the flowsheet.",
+    "No province holds red mud and douzha at scale together. Red mud sits inland and north — Shandong, Shanxi, Henan — plus Guangxi and Guizhou. Industrial douzha sits in the Pearl River Delta, Shanghai and Wuhan. Straw is a thousand kilometres further north again.",
+    "Two pairings are worth examining. Guangxi to Guangdong is roughly 400–700 km and pairs real alumina capacity with three industrial soymilk plants — the shortest credible link. Henan is the dark horse: alumina refining and very high population density, so fragmented tofu douzha is generated on top of the red mud — no haul, but a hard-to-certify supply. Shandong is a trap: the largest alumina capacity in China, but its soybean industry crushes imported beans for meal, which yields no douzha.",
+    "Which stream moves is a live design decision. Red mud is dense, cheap and moves badly. Douzha is 80% water, moves worse, and spoils. This constrains siting more than any thermodynamic consideration in the flowsheet.",
   ],
-  candidatesIntro:
-    "Pick a candidate site. The panel computes the great-circle distance from that site to the nearest source in each active overlay. Three pre-set candidates:",
+
+  candidatesIntro: "Three pre-set candidates.",
 };
 
 /** Surfaced prominently in the UI: the whole dataset is unverified. */
 export const scwgSitingDataCaveat =
-  "Every coordinate and capacity below is flagged status: \"unverified\". These have not been confirmed against a primary source. The map says so rather than implying a precision it does not have.";
+  "Every coordinate and capacity is flagged unverified — none confirmed against a primary source.";

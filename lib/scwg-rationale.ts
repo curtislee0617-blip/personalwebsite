@@ -3,17 +3,17 @@
 // two in particular, and what the pairing actually buys.
 
 export const scwgRationaleIntro =
-  "Two wastes, picked for each other rather than separately. Each one is awkward on its own in a way the other happens to fix, and the pairing is what makes a single reactor do two jobs at once. This section sets out why okara and bauxite residue, what each contributes, and what the combination can actually be turned into.";
+  "Two wastes, picked for each other rather than separately. Each one is awkward on its own in a way the other happens to fix, and the pairing is what makes a single reactor do two jobs at once. This section sets out why douzha and bauxite residue, what each contributes, and what the combination can actually be turned into.";
 
 /** Each feed's problem, and what the other feed does about it. */
 export const scwgWhyPairs = [
   {
-    id: "okara",
-    feed: "Okara",
+    id: "douzha",
+    feed: "Douzha",
     problem: "Too wet to burn, too perishable to store",
-    body: "Okara leaves a soymilk or tofu line at 80–85 wt% water. Every dry thermochemical route has to evaporate that water first, and doing so costs more energy than the resulting gas carries — which is why okara is normally fed to livestock at nominal value or paid to dispose of. It also spoils quickly, so it cannot be stockpiled or hauled far.",
+    body: "Douzha leaves a soymilk or tofu line at 80–85 wt% water. Every dry thermochemical route has to evaporate that water first, and doing so costs more energy than the resulting gas carries — which is why douzha is normally fed to livestock at nominal value or paid to dispose of. It also spoils quickly, so it cannot be stockpiled or hauled far.",
     contribution:
-      "In supercritical water the water stops being a cost and becomes the reaction medium. Okara arrives at almost exactly the concentration the gasifier wants. Its fine hydrated fibre also forms a pumpable paste rather than a settling suspension, which is what makes it possible to feed solids into a 25 MPa reactor at all — okara is the carrier that lets milled straw go in with it.",
+      "In supercritical water the water stops being a cost and becomes the reaction medium. Douzha arrives at almost exactly the concentration the gasifier wants. Its fine hydrated fibre also forms a pumpable paste rather than a settling suspension, which is what makes it possible to feed solids into a 25 MPa reactor at all — douzha is the carrier that lets milled straw go in with it.",
   },
   {
     id: "red-mud",
@@ -32,7 +32,7 @@ export const scwgSynergyPoints = [
   },
   {
     title: "Each feed supplies what the other lacks",
-    body: "Okara is nitrogen-rich at C/N ≈ 5.8 and carries almost no lignin, so it gasifies readily but is thin on carbon density. Straw is the mirror image at C/N ≈ 60–80. Red mud brings iron and alkali but no carbon at all. Blended, they hit a combined C/N of 15–25, which puts the recovered brine straight into a fertilizer-compatible band rather than making it an effluent problem.",
+    body: "Douzha is nitrogen-rich at C/N ≈ 5.8 and carries almost no lignin, so it gasifies readily but is thin on carbon density. Straw is the mirror image at C/N ≈ 60–80. Red mud brings iron and alkali but no carbon at all. Blended, they hit a combined C/N of 15–25, which puts the recovered brine straight into a fertilizer-compatible band rather than making it an effluent problem.",
   },
   {
     title: "The catalyst is a waste, so the catalyst is free",
@@ -40,7 +40,7 @@ export const scwgSynergyPoints = [
   },
   {
     title: "The alkali problem and the sulfur problem partly cancel",
-    body: "Sulfur from okara's cysteine and methionine partitions into the same alkaline brine as the sodium, so some of it leaves before the gas ever reaches the acid gas train. That is physics rather than a designed mechanism, and the downstream wash is deliberately sized without relying on it — but it is a real credit against the duty.",
+    body: "Sulfur from douzha's cysteine and methionine partitions into the same alkaline brine as the sodium, so some of it leaves before the gas ever reaches the acid gas train. That is physics rather than a designed mechanism, and the downstream wash is deliberately sized without relying on it — but it is a real credit against the duty.",
   },
 ];
 

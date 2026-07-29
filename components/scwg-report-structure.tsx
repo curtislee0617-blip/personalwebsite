@@ -20,7 +20,7 @@ export function ScwgReportStructure() {
         </p>
       </div>
 
-      <p className="mt-3 max-w-prose text-sm leading-7 text-ink/65">{scwgReportStructureIntro}</p>
+      <p className="mt-3 text-sm leading-7 text-ink/65">{scwgReportStructureIntro}</p>
 
       <div className="mt-5 overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm">
@@ -59,7 +59,7 @@ export function ScwgReportStructure() {
 
       <div className="mt-5 rounded-[1.25rem] border border-dashed border-ink/15 bg-paper/50 p-4">
         <p className="text-sm font-semibold text-ink/75">{scwgProvenanceConvention.title}</p>
-        <p className="mt-1 max-w-prose text-sm leading-6 text-ink/60">{scwgProvenanceConvention.body}</p>
+        <p className="mt-1 text-sm leading-6 text-ink/60">{scwgProvenanceConvention.body}</p>
       </div>
     </div>
   );

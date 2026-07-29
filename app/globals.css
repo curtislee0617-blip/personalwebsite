@@ -8004,3 +8004,105 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 
   .scwg-page .page-intro-actions { justify-self: end; padding-bottom: 0.35rem; }
 }
+
+/* ---------------------------------------------------------------------------
+   Supercritical water gasification page — VENEX-derived theme.
+
+   Scoped to .scwg-page so the rest of the site is untouched. Rather than editing
+   components, this remaps the two accent tokens the page already uses, so every
+   existing accent (active block, decision callouts, eyebrows, map overlays)
+   picks up the new palette without any structural or content change.
+
+     moss  → VENEX green  #007336   (accent, active, "decision"/positive)
+     navy  → VENEX navy   #0A2373   (headings and structural emphasis)
+     clay  → retained as the warning hue, warmed slightly toward the VENEX orange
+
+   Dark-mode variants are lightened so both stay legible on the dark surface.
+--------------------------------------------------------------------------- */
+.scwg-page {
+  --color-moss: 0 115 54;
+  --color-clay: 186 88 34;
+  --scwg-navy: 10 35 115;
+}
+
+.dark .scwg-page {
+  --color-moss: 82 186 126;
+  --color-clay: 226 145 107;
+  --scwg-navy: 150 176 240;
+}
+
+/* Section headings take the navy; the page title stays on the ink token so it
+   reads black against the paper, as the rest of the site does. */
+.scwg-page .section-title {
+  color: rgb(var(--scwg-navy));
+}
+
+
+/* Hero backdrop — the plant photo sits behind the title and abstract only, and
+   stops cleanly before Act 1. A heavy paper wash keeps the copy legible; the
+   image is decorative, so it is a background rather than an <img>. */
+.scwg-hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.scwg-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgb(var(--color-paper) / 0.32) 0%,
+      rgb(var(--color-paper) / 0.45) 55%,
+      rgb(var(--color-paper) / 0.97) 100%
+    ),
+    url("/photos/scwg-hero.webp");
+  background-size: cover, cover;
+  background-position: center, center 35%;
+  background-repeat: no-repeat, no-repeat;
+}
+
+.dark .scwg-hero::before {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgb(var(--color-paper) / 0.45) 0%,
+      rgb(var(--color-paper) / 0.58) 55%,
+      rgb(var(--color-paper) / 0.97) 100%
+    ),
+    url("/photos/scwg-hero.webp");
+}
+
+/* The photo now reads through, so the cards over it need to be near-solid to
+   keep the copy readable. */
+.scwg-hero article {
+  background-color: rgb(var(--color-surface) / 0.95);
+  backdrop-filter: blur(2px);
+}
+
+/* Title, subtitle and logos sit on their own panel over the photo rather than
+   relying on text shadows, matching the card idiom used everywhere else. */
+.scwg-hero .page-intro-copy,
+.scwg-hero .page-intro-actions {
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: var(--radius-panel);
+  background: rgb(var(--color-surface) / 0.95);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.scwg-hero .page-intro-copy { padding: 1.5rem 1.75rem; }
+
+.scwg-hero .page-intro-actions {
+  align-self: end;
+  padding: 0.9rem 1.25rem;
+}
+
+/* Without actions the intro is a single block, so give it the panel directly. */
+.scwg-hero .page-intro:not(.page-intro--with-actions) {
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: var(--radius-panel);
+  background: rgb(var(--color-surface) / 0.95);
+}

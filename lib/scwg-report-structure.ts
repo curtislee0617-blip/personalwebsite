@@ -8,7 +8,7 @@ export const scwgReportMeta = {
   kind: "Technical report — working draft",
   deliverableStatus: "Full report outline, with Sections 1 and 2 drafted in full",
   date: "27 July 2026",
-  feedstockCase: "Okara + soybean straw co-slurry",
+  feedstockCase: "Douzha + soybean straw co-slurry",
   redMudRole: "Oxygen carrier, gasification catalyst, alkali reservoir / tar cracker",
   complianceFrame: "ISO 14067 · EU CBAM · ISCC PLUS · RED III · China ETS / CCER",
 } as const;
@@ -26,7 +26,7 @@ export const scwgReportSections: ReportSection[] = [
     number: 1,
     title: "Feedstock characterization and blend design",
     argument:
-      "Okara, soybean straw and red mud characterized on a common basis; blend ratio set by three independent constraints — slurry pumpability, C/N, and alkali loading. Contaminant inventory (S, N, Cl, K, Na, P) with a designated fate for each element.",
+      "Douzha, soybean straw and red mud characterized on a common basis; blend ratio set by three independent constraints — slurry pumpability, C/N, and alkali loading. Contaminant inventory (S, N, Cl, K, Na, P) with a designated fate for each element.",
     status: "drafted",
   },
   {
@@ -82,7 +82,7 @@ export const scwgReportSections: ReportSection[] = [
     number: 9,
     title: "Technoeconomics and market positioning",
     argument:
-      "CAPEX for high-pressure hydrothermal service; avoided-cost framing for red mud and okara disposal as the primary value drivers; olefin, brine-fertilizer, sorbent and scandium revenue lines; sensitivity to the reforming energy penalty.",
+      "CAPEX for high-pressure hydrothermal service; avoided-cost framing for red mud and douzha disposal as the primary value drivers; olefin, brine-fertilizer, sorbent and scandium revenue lines; sensitivity to the reforming energy penalty.",
     status: "outlined",
   },
   {

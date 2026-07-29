@@ -14,7 +14,7 @@ import { scwgUi } from "@/lib/scwg-meta";
 export function ScwgRationale() {
   return (
     <div className="space-y-8">
-      <p className="max-w-prose text-sm leading-7 text-ink/65">{scwgRationaleIntro}</p>
+      <p className="text-sm leading-7 text-ink/65">{scwgRationaleIntro}</p>
 
       {/* Each feed: the problem, and what it brings */}
       <div className="grid gap-5 lg:grid-cols-2">
@@ -22,12 +22,12 @@ export function ScwgRationale() {
           <article className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6" key={pair.id}>
             <h3 className="text-lg font-semibold tracking-tight sm:text-xl">{pair.feed}</h3>
             <p className="mt-1 text-sm font-medium text-clay">{pair.problem}</p>
-            <p className="mt-3 max-w-prose text-sm leading-7 text-ink/65">{pair.body}</p>
+            <p className="mt-3 text-sm leading-7 text-ink/65">{pair.body}</p>
             <div className="mt-4 rounded-[1.25rem] border-l-2 border-moss bg-moss/8 px-4 py-3">
               <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-moss">
                 {scwgUi.rationale.contributionLabel}
               </p>
-              <p className="mt-1 max-w-prose text-sm leading-6 text-ink/70">{pair.contribution}</p>
+              <p className="mt-1 text-sm leading-6 text-ink/70">{pair.contribution}</p>
             </div>
           </article>
         ))}
@@ -40,7 +40,7 @@ export function ScwgRationale() {
           {scwgSynergyPoints.map((point) => (
             <li className="rounded-[1.25rem] border border-ink/10 bg-paper/60 p-4" key={point.title}>
               <p className="font-semibold text-ink/80">{point.title}</p>
-              <p className="mt-1 max-w-prose text-sm leading-7 text-ink/65">{point.body}</p>
+              <p className="mt-1 text-sm leading-7 text-ink/65">{point.body}</p>
             </li>
           ))}
         </ul>
@@ -49,7 +49,7 @@ export function ScwgRationale() {
       {/* What comes out */}
       <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
         <p className="eyebrow">{scwgUi.rationale.productsLabel}</p>
-        <p className="mt-3 max-w-prose text-sm leading-7 text-ink/65">{scwgProductPreviewIntro}</p>
+        <p className="mt-3 text-sm leading-7 text-ink/65">{scwgProductPreviewIntro}</p>
 
         <div className="mt-5 overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm">
@@ -73,7 +73,7 @@ export function ScwgRationale() {
         </div>
       </div>
 
-      <p className="max-w-prose rounded-[1.25rem] border-l-2 border-clay bg-clay/8 px-4 py-3 text-sm leading-7 text-ink/75">
+      <p className="rounded-[1.25rem] border-l-2 border-clay bg-clay/8 px-4 py-3 text-sm leading-7 text-ink/75">
         {scwgRationaleCaveat}
       </p>
     </div>

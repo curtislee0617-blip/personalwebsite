@@ -24,11 +24,11 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     diagram: { col: 0, row: 0 },
     needsValidation: false,
     function: [
-      "Straw is milled and blended into okara to 18–22 wt% total solids; red mud is dosed; the slurry is pressurised by positive-displacement pump. Feed–effluent exchange recovers reactor outlet heat.",
-      "Okara is the rheological enabler: its fine hydrated fibre forms a pumpable paste rather than a settling suspension, letting it carry milled straw that would otherwise bridge and settle.",
+      "Straw is milled and blended into douzha to 18–22 wt% total solids; red mud is dosed; the slurry is pressurised by positive-displacement pump. Feed–effluent exchange recovers reactor outlet heat.",
+      "Douzha is the rheological enabler: its fine hydrated fibre forms a pumpable paste rather than a settling suspension, letting it carry milled straw that would otherwise bridge and settle.",
     ],
     inlet: [
-      { tag: "1", name: "Okara", phase: "slurry", components: "80–85 wt% water, protein-derived organics" },
+      { tag: "1", name: "Douzha", phase: "slurry", components: "80–85 wt% water, protein-derived organics" },
       { tag: "2", name: "Milled soybean straw", phase: "solid", components: "Lignocellulose" },
       { tag: "3", name: "Red mud (fresh make-up)", phase: "solid", components: "Fe₂O₃, Al₂O₃, SiO₂, Na alkalinity" },
       { tag: "21", name: "Regenerated red mud bed", phase: "solid", components: "Re-oxidised bed recycled from B8" },

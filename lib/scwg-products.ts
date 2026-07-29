@@ -133,7 +133,7 @@ export const scwgProductGroups: ProductGroup[] = [
     title: "Avoided disposal",
     items: [
       {
-        name: "Gate fees on okara and red mud",
+        name: "Gate fees on douzha and red mud",
         summary: "Not revenue in the accounting sense, but likely the largest single contributor in the Chinese context.",
         detail: [
           "Not revenue in the accounting sense, but likely the largest single contributor in the Chinese context.",
