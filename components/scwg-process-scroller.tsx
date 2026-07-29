@@ -28,20 +28,30 @@ export function ScwgProcessScroller({ blocks }: { blocks: ProcessBlock[] }) {
     return () => query.removeEventListener("change", apply);
   }, []);
 
-  // Active-block state machine — fires on centre crossings, not on every scroll tick.
+  // Active-block state machine. A block counts as active while it crosses a thin
+  // band at the vertical centre of the viewport. Blocks are much taller than that
+  // band, so intersectionRatio is meaningless here — instead we keep a set of the
+  // blocks currently touching the band and take the first in document order. The
+  // observer only fires on band crossings, never per scroll event.
   useEffect(() => {
     const sections = sectionRefs.current.filter((s): s is HTMLElement => s !== null);
     if (sections.length === 0 || typeof IntersectionObserver === "undefined") return;
 
+    const visible = new Set<string>();
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const id = visible[0]?.target.getAttribute("data-scwg-block");
-        if (id) setActiveId(id);
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute("data-scwg-block");
+          if (!id) return;
+          if (entry.isIntersecting) visible.add(id);
+          else visible.delete(id);
+        });
+
+        const ordered = blocks.find((block) => visible.has(block.id));
+        if (ordered) setActiveId(ordered.id);
       },
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
+      { rootMargin: "-50% 0px -50% 0px", threshold: 0 },
     );
 
     sections.forEach((section) => observer.observe(section));
@@ -63,8 +73,10 @@ export function ScwgProcessScroller({ blocks }: { blocks: ProcessBlock[] }) {
 
   return (
     <div className="mt-8 lg:grid lg:grid-cols-[minmax(0,55%)_minmax(0,45%)] lg:gap-8">
-      <div className="sticky top-16 z-10 mb-6 self-start lg:mb-0 lg:h-[calc(100vh-6rem)]">
-        <div className="h-[40vh] overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/40 p-3 lg:h-full lg:p-5">
+      {/* Sticky below the legend bar. Opaque background: the text column scrolls
+          underneath it on narrow screens, so it must not be see-through. */}
+      <div className="sticky top-[7.5rem] z-20 mb-6 self-start lg:top-[7rem] lg:mb-0 lg:h-[calc(100vh-9rem)]">
+        <div className="h-[38vh] overflow-hidden rounded-[2rem] border border-ink/10 bg-paper p-3 shadow-soft lg:h-full lg:bg-surface/40 lg:p-5 lg:shadow-none">
           <ScwgProcessDiagram activeId={activeId} blocks={blocks} ref={svgRef} reducedMotion={reducedMotion} />
         </div>
       </div>

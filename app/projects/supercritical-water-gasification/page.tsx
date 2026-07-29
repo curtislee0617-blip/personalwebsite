@@ -113,7 +113,8 @@ export default function SupercriticalWaterGasificationPage() {
         <h2 className="section-title mt-3">The plant</h2>
         <p className="mt-4 max-w-prose text-sm leading-7 text-ink/65">{scwgProcessIntro}</p>
 
-        <div className="sticky top-16 z-20 -mx-1 mt-6 rounded-[1.25rem] border border-ink/10 bg-paper/85 px-4 py-3 backdrop-blur">
+        {/* Placeholder-discipline legend: sticky above the diagram for all of Act 3. */}
+        <div className="sticky top-16 z-30 -mx-1 mt-6 rounded-[1.25rem] border border-ink/10 bg-paper px-4 py-3 shadow-soft">
           <ScwgValueLegend />
         </div>
 

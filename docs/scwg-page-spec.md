@@ -612,3 +612,33 @@ Do not pull the full `d3` package.
 9. Responsive collapse, `prefers-reduced-motion`, keyboard navigation.
 10. Register the page in the projects index. Run `npm run lint`, type-check, then report pass/fail on each of
     the six acceptance criteria.
+
+---
+
+## Editing this page
+
+The page is assembled so that content changes never require touching a component. Prose lives in
+`lib/scwg-*.ts`, map data in `data/`, and geometry in `lib/scwg-diagram-*.ts`.
+
+| I want to change… | Edit this |
+|---|---|
+| **Add / remove / reorder a process block** | `lib/scwg-process.ts` only. Append (or splice) a `ProcessBlock` in `scwgProcessBlocks`. Order in the array *is* the order down the flowsheet and the scroll sequence. The diagram, stream routing, scroll observers and stream tables all derive from it. Give it a `symbol` from the `BlockSymbol` union so it draws the right unit-operation glyph. |
+| **Change balance numbers, duties, or KPIs** | `lib/scwg-process.ts` — the `duty`, `metrics` and `contextValues` fields. Every number is a `ProcessValue`: use `status: "placeholder"` while the balance is open, or `status: "literature"` with a `source` marker that exists in `lib/scwg-references.ts`. A bare number, or a literature value with no source, is a compile error. |
+| **Change how a stream is routed in the diagram** | `lib/scwg-process.ts` — the `inlet` / `outlet` `tag` values. Routing is derived by matching an outlet tag to an inlet tag: same tag on a later block draws the spine, on an earlier block draws a recycle, on the same block draws a self-loop; an unmatched inlet is a feed stub and an unmatched outlet is a product stub. Never hand-place a line. |
+| **Change block spacing, box size, or zoom level** | `lib/scwg-diagram-layout.ts` (pitch, box size, channels, `scwgViewBoxFor` zoom). Change connector path shapes in `lib/scwg-diagram-connectors.ts`. |
+| **Draw a new kind of unit-operation symbol** | Add a case to the `BlockSymbol` union in `lib/scwg-types.ts`, then a glyph component + `GLYPHS` entry in `components/scwg-diagram-symbols.tsx`. |
+| **Add or move a map site** | `data/scwg-map-sites.json` → `sites[]`. Set `overlay` to an existing overlay id, and keep `status: "unverified"` until confirmed against a primary source. `capacity` drives pin radius; `null` renders a hollow pin. |
+| **Change province shading (fragmented okara)** | `data/scwg-map-sites.json` → `fragmentedShading`, province name → intensity `0–1`. |
+| **Add, rename, or toggle a map overlay** | `lib/scwg-siting.ts` → `scwgSitingOverlays` (label, `mark` shape, `defaultOn`, blurb). Give it a colour in `OVERLAY_COLOR` in `components/scwg-siting-map.tsx`. Keep shape *and* colour distinct — colour is never the sole cue. |
+| **Change the haul-distance candidate sites** | `lib/scwg-siting.ts` → `scwgSitingCandidates`. |
+| **Replace the base map** | `data/scwg-china-provinces.json`. Must be TopoJSON with an object named `provinces` and a `name` property per feature. Verify ring winding: if `geoBounds` on any feature returns the whole globe, reverse every ring before converting (the DataV source needs this). |
+| **Rewrite Act 0 (title / subtitle / abstract / legend)** | `lib/scwg-meta.ts` |
+| **Rewrite Act 1 (regulatory panels)** | `lib/scwg-regulatory.ts` |
+| **Rewrite Act 2 (siting narrative, overlay blurbs, payload)** | `lib/scwg-siting.ts` |
+| **Rewrite Act 3 (block prose, roles, flags)** | `lib/scwg-process.ts` |
+| **Rewrite Act 4 (product slate, tiers, tables, callouts)** | `lib/scwg-products.ts` |
+| **Rewrite Act 5 (decisions taken, open questions)** | `lib/scwg-open-questions.ts` |
+| **Add or verify a reference** | `lib/scwg-references.ts`. The `marker` is what a `ProcessValue.source` points at; set `status` to `"verified"` (✓) or `"unverified"` (°). |
+| **Restyle** | Use the existing tokens — `ink`, `surface`, `paper`, `moss` (active/accent), `clay` (warning/flagged), `mist`, `lime`. Card idiom is `rounded-[2rem] border border-ink/10 bg-surface/55`. Placeholder/literature styling lives in one place: `components/scwg-value.tsx`. Stream-dash animation and the two map hues are in `app/globals.css`. |
+| **Make the page full-bleed (or restore site chrome)** | `components/site-chrome.tsx` → `STANDALONE_ROUTES`. |
+| **Change the projects-index card** | `lib/projects.ts` → the `supercritical-water-gasification` entry. |

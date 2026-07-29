@@ -32,7 +32,6 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
     <section
       aria-labelledby={`scwg-block-${block.id}-title`}
       className="scroll-mt-28"
-      data-scwg-block={block.id}
       id={`scwg-block-${block.id}`}
     >
       <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
