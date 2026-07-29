@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 
 export function RecipeCardThumbnailMedia({
+  colorAsVideo = false,
   position,
   poster,
   src,
@@ -11,6 +12,7 @@ export function RecipeCardThumbnailMedia({
   scale = 1,
   zoom = 1,
 }: {
+  colorAsVideo?: boolean;
   position: string;
   poster?: string;
   src: string;
@@ -22,13 +24,13 @@ export function RecipeCardThumbnailMedia({
   const isVideo = /\.(?:mp4|m4v|mov)(?:\?.*)?$/i.test(src);
 
   if (!isVideo) {
-    return <Image alt="" className="object-cover" fill sizes="(max-width: 768px) 50vw, 22vw" src={src} style={{ objectPosition: position, transform: `scale(${zoom * scale})`, transformOrigin: position }} />;
+    return <Image alt="" className={colorAsVideo ? "recipe-thumbnail-video-poster object-cover" : "object-cover"} fill sizes="(max-width: 768px) 50vw, 22vw" src={src} style={{ objectPosition: position, transform: `scale(${zoom * scale})`, transformOrigin: position }} />;
   }
 
   return (
     <video
       aria-hidden="true"
-      className="h-full w-full object-cover"
+      className="recipe-thumbnail-video h-full w-full object-cover"
       muted
       onLoadedMetadata={() => {
         const video = videoRef.current;

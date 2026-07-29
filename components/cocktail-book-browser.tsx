@@ -228,6 +228,7 @@ function LostCocktailFormula({ recipe }: { recipe: CocktailBookRecipe }) {
 
 function CocktailRecipeCard({
   book,
+  canAdminister,
   pending,
   published,
   recipe,
@@ -235,6 +236,7 @@ function CocktailRecipeCard({
   onPublish,
 }: {
   book: CocktailBook;
+  canAdminister: boolean;
   pending: boolean;
   published: boolean;
   recipe: CocktailBookRecipe;
@@ -335,18 +337,28 @@ function CocktailRecipeCard({
 
         <CocktailReferencedPreparations recipes={referencedRecipes} />
 
-        <div className="cocktail-library-admin-action">
-          <button disabled={pending} onClick={() => onPublish(recipe, !published)} type="button">
-            {pending ? "Saving…" : published ? "✓ In my cocktail recipes" : "+ Move to my cocktail recipes"}
-          </button>
-          {published && <Link href={`/recipes#recipe-cocktail-${book.id}-${recipe.id}`}>View public card ↗</Link>}
-        </div>
+        {canAdminister && (
+          <div className="cocktail-library-admin-action">
+            <button disabled={pending} onClick={() => onPublish(recipe, !published)} type="button">
+              {pending ? "Saving…" : published ? "✓ In my cocktail recipes" : "+ Move to my cocktail recipes"}
+            </button>
+            {published && <Link href={`/recipes#recipe-cocktail-${book.id}-${recipe.id}`}>View public card ↗</Link>}
+          </div>
+        )}
       </div>}
     </details>
   );
 }
 
-export function CocktailBookBrowser({ book, initiallyPublished }: { book: CocktailBook; initiallyPublished: string[] }) {
+export function CocktailBookBrowser({
+  book,
+  canAdminister = false,
+  initiallyPublished,
+}: {
+  book: CocktailBook;
+  canAdminister?: boolean;
+  initiallyPublished: string[];
+}) {
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query.trim().toLocaleLowerCase());
   const [published, setPublished] = useState(() => new Set(initiallyPublished));
@@ -468,6 +480,7 @@ export function CocktailBookBrowser({ book, initiallyPublished }: { book: Cockta
                           {subgroup.recipes.map((recipe) => (
                             <CocktailRecipeCard
                               book={book}
+                              canAdminister={canAdminister}
                               key={recipe.id}
                               onPublish={togglePublication}
                               pending={pending.has(recipe.id)}
@@ -486,6 +499,7 @@ export function CocktailBookBrowser({ book, initiallyPublished }: { book: Cockta
                   {sectionRecipes.map((recipe) => (
                     <CocktailRecipeCard
                       book={book}
+                      canAdminister={canAdminister}
                       key={recipe.id}
                       onPublish={togglePublication}
                       pending={pending.has(recipe.id)}

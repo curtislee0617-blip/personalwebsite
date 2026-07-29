@@ -12,11 +12,23 @@ const outputPath = args.find((arg) => arg.startsWith("--output="))?.split("=").s
   ?? "imports/google-maps/staging/google-sync-audit.json";
 
 function readEnv() {
-  const lines = fs.readFileSync(".env.local", "utf8").split(/\r?\n/).filter(Boolean);
-  return Object.fromEntries(lines.map((line) => {
-    const separator = line.indexOf("=");
-    return [line.slice(0, separator), line.slice(separator + 1)];
-  }));
+  return Object.fromEntries(
+    fs.readFileSync(".env.local", "utf8").split(/\r?\n/).flatMap((rawLine) => {
+      const line = rawLine.trim();
+      if (!line || line.startsWith("#")) return [];
+      const separator = line.indexOf("=");
+      if (separator < 1) return [];
+      const key = line.slice(0, separator).trim().replace(/^export\s+/, "");
+      const rawValue = line.slice(separator + 1).trim();
+      const value = (
+        (rawValue.startsWith("\"") && rawValue.endsWith("\""))
+        || (rawValue.startsWith("'") && rawValue.endsWith("'"))
+      )
+        ? rawValue.slice(1, -1)
+        : rawValue;
+      return [[key, value]];
+    }),
+  );
 }
 
 function addressPart(components, types) {
@@ -54,8 +66,9 @@ function buildOpeningHours(payload) {
 }
 
 const env = readEnv();
-if (!env.GOOGLE_PLACES_API_KEY || !env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
-  console.error("GOOGLE_PLACES_API_KEY, NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY are required in .env.local");
+const googlePlacesApiKey = env.GOOGLE_PLACES_API_KEY ?? env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+if (!googlePlacesApiKey || !env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
+  console.error("GOOGLE_PLACES_API_KEY (or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY), NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY are required in .env.local");
   process.exit(1);
 }
 
@@ -83,7 +96,7 @@ async function fetchPlaceDetails(restaurant) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const response = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(restaurant.place_id)}`, {
       headers: {
-        "X-Goog-Api-Key": env.GOOGLE_PLACES_API_KEY,
+        "X-Goog-Api-Key": googlePlacesApiKey,
         "X-Goog-FieldMask": [
           "id",
           "displayName",

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { CoursePlannerThumbnail } from "@/components/course-planner-thumbnail";
+import { NmrPhaseThumbnailPath } from "@/components/nmr-phase-thumbnail-path";
 import { PageIntro } from "@/components/page-intro";
 import { SnapCarousel } from "@/components/snap-carousel";
 
@@ -67,49 +68,6 @@ const ethanolIrPath = spectrumPath({
     { position: 880, width: 21, intensity: 22 },
   ],
 });
-
-// Experimental ethanol ¹H NMR peak list (89.56 MHz, CDCl₃), SDBS/HMDB.
-const ethanolNmrPeaks: SpectrumPeak[] = [
-  { position: 3.811, width: 0.018, intensity: 7 },
-  { position: 3.730, width: 0.018, intensity: 27 },
-  { position: 3.652, width: 0.018, intensity: 30 },
-  { position: 3.576, width: 0.018, intensity: 8 },
-  { position: 2.607, width: 0.022, intensity: 11 },
-  { position: 2.599, width: 0.022, intensity: 9 },
-  { position: 1.303, width: 0.017, intensity: 23 },
-  { position: 1.286, width: 0.017, intensity: 2 },
-  { position: 1.226, width: 0.017, intensity: 53 },
-  { position: 1.207, width: 0.017, intensity: 2 },
-  { position: 1.199, width: 0.017, intensity: 2 },
-  { position: 1.146, width: 0.017, intensity: 20 },
-];
-
-// On hover the zero-order phase is dragged through a continuous hunt — the
-// trace morphs fluidly (CSS `d` interpolation between these frames) as if the
-// user were sweeping the phase knob, then settles on the corrected spectrum.
-// Domain runs 6→0 ppm so ethanol's peaks fill the card.
-const NMR_PHASE_FRAMES = [200, 250, 150, 60, 110, 30, 340, 0] as const;
-const ethanolNmrMorphFrames = NMR_PHASE_FRAMES.map((phaseDeg) => spectrumPath({
-  baseline: 74,
-  direction: "up",
-  domain: [6, 0],
-  peaks: ethanolNmrPeaks,
-  phaseDeg,
-  samples: 220,
-}));
-const ethanolNmrFinalPath = ethanolNmrMorphFrames[ethanolNmrMorphFrames.length - 1];
-
-// A keyframe timeline that walks the frames and holds the final one, wired via
-// the CSS `d` property so the path shape interpolates smoothly between frames.
-const nmrMorphKeyframes = `@keyframes tool-nmr-phase-morph {\n${
-  ethanolNmrMorphFrames.map((path, index) => {
-    const sweepEnd = 62;
-    const percent = index < ethanolNmrMorphFrames.length - 1
-      ? (index / (ethanolNmrMorphFrames.length - 1) * sweepEnd).toFixed(2)
-      : "100.00";
-    return `  ${percent}% { d: path("${path}"); }`;
-  }).join("\n")
-}\n}`;
 
 const toolSections: ToolSection[] = [
   {
@@ -192,10 +150,9 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
   return (
     <div className={`tool-thumbnail swipe-bubble-media tool-thumbnail-chart is-${kind}`} aria-hidden="true">
       <div className="tool-chart-toolbar"><span>{kind === "ir" ? "IR · Transmittance" : kind === "nmr" ? "¹H NMR · ppm" : "Binary P–x–y"}</span><i>{kind === "vle" ? "Acetone / chloroform · 50 °C" : kind === "ir" ? "Ethanol · liquid film" : "Ethanol · 89.56 MHz"}</i></div>
-      {kind === "nmr" && <style>{nmrMorphKeyframes}</style>}
       <svg viewBox="0 0 160 90" preserveAspectRatio="none">
         <path className="tool-chart-grid" d="M8 18H152M8 45H152M8 72H152M32 10V80M72 10V80M112 10V80" />
-        {kind === "nmr" && <path className="tool-chart-line tool-nmr-morph" d={ethanolNmrFinalPath} />}
+        {kind === "nmr" && <NmrPhaseThumbnailPath />}
         {kind === "ir" && <path className="tool-chart-line tool-chart-line-ir-load" d={ethanolIrPath} pathLength={1} />}
         {kind === "vle" && (
           <>

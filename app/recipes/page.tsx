@@ -8,7 +8,8 @@ import { RecipeCard } from "@/components/recipe-card";
 import { RecipeShelf } from "@/components/recipe-shelf";
 import { SectionRail } from "@/components/section-rail";
 import { SnapCarousel } from "@/components/snap-carousel";
-import { recipeEntries, recipeSections, wishlistEntries } from "@/lib/recipes";
+import { CookbookAccessGate } from "@/components/cookbook-access-gate";
+import { recipeEntries, recipeSections, wishlistEntries, type WishlistEntry } from "@/lib/recipes";
 import { getInstagramSavedRecipeCards, getPersonalRecipeCards, getYouTubeSavedRecipeCards } from "@/lib/personal-recipes";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
@@ -18,6 +19,7 @@ import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-
 import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
 import { cocktailBooks } from "@/lib/cocktail-books";
 import { isPrivateCookbookHref } from "@/lib/cookbook-access";
+import { isCookbookAuthenticated } from "@/lib/cookbook-auth";
 
 export const metadata: Metadata = { title: "Recipes" };
 
@@ -33,6 +35,7 @@ function buildRecipeSearchPreview(
   personalRecipes: RecipeCardEntry[],
   instagramRecipes: RecipeCardEntry[],
   youtubeRecipes: RecipeCardEntry[],
+  wishlistRecipes: WishlistEntry[],
 ): RecipeSearchItem[] {
   const siteEntries: RecipeSearchItem[] = recipeEntries
     .filter((entry) => entry.kind === "guide")
@@ -72,6 +75,13 @@ function buildRecipeSearchPreview(
       ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),
       ...(entry.methodGroups?.flatMap((group) => [group.title, ...group.steps]) ?? []),
     ].join(" "),
+  }));
+  const publicWishlistEntries: RecipeSearchItem[] = wishlistRecipes.map((entry) => ({
+    title: entry.title,
+    context: entry.bookTitle ? `Public wishlist recipe · ${entry.bookTitle}` : "Recipe wishlist",
+    kind: "Wishlist",
+    href: entry.href ?? "/recipes#recipe-wishlist",
+    searchText: [entry.note, entry.bookTitle].filter(Boolean).join(" "),
   }));
   return [
     {
@@ -150,6 +160,7 @@ function buildRecipeSearchPreview(
     ...personalEntries,
     ...instagramEntries,
     ...youtubeEntries,
+    ...publicWishlistEntries,
   ];
 }
 
@@ -163,6 +174,16 @@ const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string;
     alt: "Three sourdough loaves and crumb views",
     mark: "SD",
     tone: "grain",
+  },
+  "coffee-guide": {
+    srcs: [
+      "/recipes/coffee-guide/coffee-cherry-harvest.webp",
+      "/recipes/coffee-guide/coffee-flavour-wheel.webp",
+      "/recipes/coffee-guide/moka-pot-diagram.webp",
+    ],
+    alt: "Coffee cherries, a coffee flavour wheel, and a moka pot",
+    mark: "COFFEE",
+    tone: "coffee",
   },
   "core-basics": { alt: "Core cooking fundamentals graphic", mark: "CORE", tone: "core" },
   "viennoiserie-guide": {
@@ -321,6 +342,7 @@ const importedRecipeBookGroups: Record<string, RecipeBookGroupId> = {
   "the-french-laundry-cookbook": "fine-dining",
   "spain-the-cookbook": "cuisines",
   "sauces-reconsidered": "cuisines",
+  "bao-the-cookbook": "cuisines",
 };
 
 function RecipeBookCard({ book }: { book: RecipeBookCardData }) {
@@ -388,12 +410,13 @@ export default async function RecipesPage() {
   const publishedUploadTitles = new Set(recipes.filter((entry) => entry.source === "uploaded").map((entry) => entry.title.toLowerCase()));
   const wishlist = [...savedCookbookRecipes, ...wishlistEntries]
     .filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
-  const authenticated = await isRecipeAdminAuthenticated();
-  const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes, youtubeRecipes)
-    .filter((item) => authenticated || !isPrivateCookbookHref(item.href));
-  const visibleRecipePageSections = authenticated
-    ? recipePageSections
-    : recipePageSections.filter((section) => section.id !== "recipe-books");
+  const [authenticated, cookbookAuthenticated] = await Promise.all([
+    isRecipeAdminAuthenticated(),
+    isCookbookAuthenticated(),
+  ]);
+  const privateLibraryAccess = authenticated || cookbookAuthenticated;
+  const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes, youtubeRecipes, wishlist)
+    .filter((item) => privateLibraryAccess || !isPrivateCookbookHref(item.href));
   const chronologicalRecipes = [...recipes].sort((a, b) => {
     if (a.date && b.date) return b.date.localeCompare(a.date) || a.title.localeCompare(b.title);
     if (a.date) return -1;
@@ -420,13 +443,16 @@ export default async function RecipesPage() {
         <PageIntro
           eyebrow="Recipes"
           title="Guides and recipes"
-          description="Here I’ll upload recipes for dishes I’ve made that I think are worth sharing. Keep in mind that the quantities are mostly estimates of what I added, so they can vary. The guides are a little more precise, and I might yap a bit about the specifics."
+          description="Here I’ll upload recipes for dishes I’ve made that I think are worth sharing. Keep in mind that the quantities are mostly estimates of what I added, so they can vary. The guides are a little more precise, and I’ll also use them almost like a blog to dig deeper into food science, technique and culinary history."
         />
         <div className="recipe-search-shell">
-          <RecipeLibrarySearch initialItems={searchPreview} />
+          <RecipeLibrarySearch
+            initialItems={searchPreview}
+            key={privateLibraryAccess ? "private-library-search" : "public-recipe-search"}
+          />
         </div>
       </div>
-      <SectionRail ariaLabel="Recipe page sections" sections={visibleRecipePageSections} />
+      <SectionRail ariaLabel="Recipe page sections" sections={recipePageSections} />
 
       <section className="recipe-content-section page-section">
         <div className="space-y-12">
@@ -495,7 +521,7 @@ export default async function RecipesPage() {
             <div className="recipe-category-list mt-4 space-y-8">
               {recipeSections.map((section) => {
                 const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
-                const showsPrivateCocktailLibrary = authenticated && section.id === "drinks";
+                const showsPrivateCocktailLibrary = privateLibraryAccess && section.id === "drinks";
 
                 return (
                   <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
@@ -525,7 +551,7 @@ export default async function RecipesPage() {
                               </div>
                             </div>
                             <div className="recipe-card-copy">
-                              <p className="eyebrow">Admin-only · {cocktailBooks.length} books</p>
+                              <p className="eyebrow">Private library · {cocktailBooks.length} books</p>
                               <h3>Private cocktail library</h3>
                               <p className="recipe-card-description">590 recipes and the saved bar-and-pantry matcher.</p>
                             </div>
@@ -620,32 +646,48 @@ export default async function RecipesPage() {
             </div>
           </section>
 
-          {authenticated && <section id="recipe-books">
-            <div>
-              <p className="eyebrow">Books</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipe books</h2>
-              <p className="section-description mt-2 text-sm text-ink/50">Reference books and their recipe contents.</p>
+          <section id="recipe-books">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="eyebrow">Books</p>
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipe books</h2>
+                <p className="section-description mt-2 max-w-3xl text-sm leading-6 text-ink/50">
+                  These books are kept for private use because of copyright restrictions. If you would like to use them,{" "}
+                  <Link className="font-semibold text-moss underline decoration-moss/25 underline-offset-2" href="/contact">
+                    contact me
+                  </Link>
+                  .
+                </p>
+              </div>
+              <CookbookAccessGate adminAuthenticated={authenticated} authenticated={cookbookAuthenticated} />
             </div>
-            <div className="mt-7 space-y-10">
-              {recipeBookGroups.map((group) => {
-                const books = recipeBookCards.filter((book) => book.group === group.id);
 
-                return (
-                  <section aria-labelledby={`recipe-book-group-${group.id}`} key={group.id}>
-                    <div className="flex items-baseline justify-between gap-4 border-b border-ink/10 pb-3">
-                      <h3 className="text-xl font-semibold tracking-tight sm:text-2xl" id={`recipe-book-group-${group.id}`}>
-                        {group.label}
-                      </h3>
-                      <span className="text-xs font-medium text-ink/38">{books.length} books</span>
-                    </div>
-                    <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                      {books.map((book) => <RecipeBookCard book={book} key={book.id} />)}
-                    </div>
-                  </section>
-                );
-              })}
-            </div>
-          </section>}
+            {privateLibraryAccess ? (
+              <div className="mt-7 space-y-10">
+                {recipeBookGroups.map((group) => {
+                  const books = recipeBookCards.filter((book) => book.group === group.id);
+
+                  return (
+                    <section aria-labelledby={`recipe-book-group-${group.id}`} key={group.id}>
+                      <div className="flex items-baseline justify-between gap-4 border-b border-ink/10 pb-3">
+                        <h3 className="text-xl font-semibold tracking-tight sm:text-2xl" id={`recipe-book-group-${group.id}`}>
+                          {group.label}
+                        </h3>
+                        <span className="text-xs font-medium text-ink/38">{books.length} books</span>
+                      </div>
+                      <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                        {books.map((book) => <RecipeBookCard book={book} key={book.id} />)}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-6 rounded-[1.5rem] border border-dashed border-ink/15 bg-surface/30 p-6 text-sm leading-6 text-ink/48">
+                Enter the cookbook password above to show the private library.
+              </div>
+            )}
+          </section>
 
         </div>
       </section>

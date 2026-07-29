@@ -26,7 +26,7 @@ export type ProjectEntry = {
 export const projects: ProjectEntry[] = [
   {
     slug: "biodiesel-from-used-cooking-oil",
-    eyebrow: "Chemical engineering coursework",
+    eyebrow: "Chemical Engineering",
     title: "Biodiesel from used cooking oil",
     shortTitle: "Biodiesel project",
     year: "June 2026",
@@ -65,7 +65,7 @@ export const projects: ProjectEntry[] = [
   },
   {
     slug: "bem-114-report",
-    eyebrow: "BEM 114 final project",
+    eyebrow: "Finance & NLP",
     title: "Earnings Call NLP-Based Long-Short Strategy",
     shortTitle: "Hedge Fund Strategy",
     year: "June 2026",
@@ -93,15 +93,16 @@ export const projects: ProjectEntry[] = [
   },
   {
     slug: "tonbridge-food-science",
-    eyebrow: "Conference project · Tonbridge Science Conference",
+    eyebrow: "Tonbridge Science Conference",
     title: "The science of flavour",
     shortTitle: "Flavour poster",
     year: "February 2023",
     description:
       "Researched flavour compounds, retronasal olfaction, and the chemistry behind why meat tastes good, including how plant-derived molecules might reproduce those sensory qualities.",
     detail: [
-      "This project is ideal for a conference-poster presentation page with a strong visual preview and a clean full-size poster viewer.",
-      "Place the final poster PDF in the document path below and add 2 to 3 preview images so the main projects page can show a visual snapshot before people click through.",
+      "This poster was prepared for the Tonbridge Science Conference in February 2023.",
+      "It examines the compounds responsible for flavour and the role of retronasal olfaction—the movement of aroma from the mouth into the nasal cavity while eating.",
+      "The project also considers the chemistry behind the savoury flavour of meat and whether plant-derived molecules could reproduce parts of that sensory experience.",
     ],
     tags: ["Flavour chemistry", "Retronasal olfaction", "Plant-based food"],
     previews: [
@@ -121,7 +122,7 @@ export const projects: ProjectEntry[] = [
   },
   {
     slug: "cook-enterprise",
-    eyebrow: "Young Enterprise · 2022 - 2023",
+    eyebrow: "Young Enterprise",
     title: "cook.enterprise",
     shortTitle: "Cookbook",
     year: "2022 - 2023",

@@ -26,9 +26,10 @@ export const instagramHighlightRecipeMetadata: Record<string, InstagramHighlight
   "personal-buncha": { date: "2026-05-20" },
   "personal-burger": { date: "2026-01-22" },
   "personal-caesarsaladwrap": { date: "2026-04-16" },
+  "personal-caneles": { date: "2025-03-18" },
   "personal-chacalan": { date: "2026-05-14" },
   "personal-chickenmushroomagnolotti": {
-    date: "2024-05-10",
+    date: "2025-10-21",
     storyText: "Tortellini stuffed with mushroom and pork, served in browned butter with sage, crispy fennel and fresh fennel. Cashews and pecorino were added inside.",
   },
   "personal-chickentrufflecapaletti": {
@@ -41,6 +42,7 @@ export const instagramHighlightRecipeMetadata: Record<string, InstagramHighlight
   },
   "personal-chutorodonburi": { date: "2025-10-02" },
   "personal-claypot-rice": { date: "2026-03-03" },
+  "personal-coffeeicecream": { date: "2024-06-28" },
   "personal-confitducklegs": {
     date: "2025-05-02",
     storyText: "Confit duck legs with duck jus and pomme purée.",
@@ -76,6 +78,7 @@ export const instagramHighlightRecipeMetadata: Record<string, InstagramHighlight
     date: "2026-04-23",
     storyText: "Fried eel with kaffir lime leaf, lemongrass and prik nam pla.",
   },
+  "personal-figcake": { date: "2025-10-06" },
   "personal-gamtaefishnchips": {
     date: "2026-05-31",
     storyText: "Gamtae-wrapped red snapper with yuzu-kosho tartare sauce.",
@@ -112,12 +115,16 @@ export const instagramHighlightRecipeMetadata: Record<string, InstagramHighlight
   },
   "personal-lotusleafrice": { date: "2026-02-18" },
   "personal-mapotofu": { date: "2025-10-12" },
+  "personal-meyerlemontart": { date: "2025-03-16" },
   "personal-murghmakhani": { date: "2025-06-13" },
+  "personal-muhallebi": { date: "2025-05-26" },
   "personal-mushroomtortellini": {
     date: "2024-05-10",
     storyText: "Tortellini stuffed with mushroom and pork, served in browned butter with sage, crispy fennel and fresh fennel. Cashews and pecorino were added inside.",
   },
   "personal-padseeew": { date: "2026-01-15" },
+  "personal-pandanicecream": { date: "2024-03-05" },
+  "personal-pannacotta": { date: "2025-05-04" },
   "personal-pho": { date: "2026-03-05" },
   "personal-phoschool": { date: "2024-11-25" },
   "personal-pithivier": {
@@ -156,6 +163,7 @@ export const instagramHighlightRecipeMetadata: Record<string, InstagramHighlight
     date: "2024-05-08",
     storyText: "Spaghetti alle vongole with shirodashi and salted lemon peel.",
   },
+  "personal-strawberrycake-tart": { date: "2025-02-15" },
   "personal-taiwanesebeefnoodlesoup": {
     date: "2026-02-02",
     storyText: "Beef noodle soup with pickled mustard stems and beef ribs.",
@@ -165,5 +173,6 @@ export const instagramHighlightRecipeMetadata: Record<string, InstagramHighlight
     storyText: "Taiwanese fried chicken with burnt chilli sauce, from BAO London. An important step is to let the dry batter hydrate fully. Hydrating the tapioca-starch batter lets the coating adhere; during frying, the starches bond into a network, then desiccate into an airy, brittle layer. Evaporating water also creates small pores that make it crisper.",
   },
   "personal-tempura": { date: "2026-02-08" },
+  "personal-tarte-l-ambrosie": { date: "2026-05-05" },
   "personal-torosear": { date: "2025-10-02" },
 };

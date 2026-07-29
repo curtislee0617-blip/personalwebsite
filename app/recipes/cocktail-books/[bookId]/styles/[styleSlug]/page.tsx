@@ -7,6 +7,7 @@ import { PageIntro } from "@/components/page-intro";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { cocktailCodexStyleHref, cocktailCodexStyles, getCocktailCodexStyle } from "@/lib/cocktail-codex";
 import { getCocktailBook } from "@/lib/cocktail-books";
+import { isCookbookAuthenticated } from "@/lib/cookbook-auth";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +28,11 @@ export async function generateMetadata({ params }: { params: StylePageParams }):
 }
 
 export default async function CocktailCodexStylePage({ params }: { params: StylePageParams }) {
-  const authenticated = await isRecipeAdminAuthenticated();
+  const [adminAuthenticated, cookbookAuthenticated] = await Promise.all([
+    isRecipeAdminAuthenticated(),
+    isCookbookAuthenticated(),
+  ]);
+  const authenticated = adminAuthenticated || cookbookAuthenticated;
   const { bookId, styleSlug } = await params;
   const book = getCocktailBook(bookId);
   const style = getCocktailCodexStyle(styleSlug);
@@ -37,8 +42,8 @@ export default async function CocktailCodexStylePage({ params }: { params: Style
   if (!authenticated) {
     return (
       <div className="page-shell py-16 sm:py-20">
-        <h1 className="section-title">Admin login required</h1>
-        <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">The full source-book reading guides are kept private.</p>
+        <h1 className="section-title">Private library login required</h1>
+        <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">The full source-book reading guides are available after cookbook or admin login.</p>
         <HistoryBackButton className="mt-6" fallbackHref="/recipes#recipe-books">← Back to recipe books</HistoryBackButton>
       </div>
     );

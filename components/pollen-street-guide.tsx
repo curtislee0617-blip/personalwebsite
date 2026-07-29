@@ -449,7 +449,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: PollenStreetDish; ind
           <header>
             <p className="eyebrow">{dish.yield ?? "Pollen Street recipe"}</p>
             <h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{dish.title}</h3>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-ink/55">{dish.subtitle}</p>
+            <p className="mt-2 line-clamp-4 max-w-3xl text-sm leading-6 text-ink/55">{dish.subtitle}</p>
           </header>
 
           <ScaleControl onChange={setFactorText} value={factorText} />

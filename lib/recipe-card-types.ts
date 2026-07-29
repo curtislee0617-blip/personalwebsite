@@ -8,6 +8,8 @@ export type RecipeMediaItem = {
   caption?: string;
   position?: string;
   zoom?: number;
+  trimStart?: number;
+  trimEnd?: number;
 };
 
 export type RecipeCardEntry = {

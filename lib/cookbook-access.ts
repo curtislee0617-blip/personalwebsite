@@ -25,6 +25,7 @@ export const privateCookbookSlugs = [
   "the-french-laundry-cookbook",
   "spain-the-cookbook",
   "sauces-reconsidered",
+  "bao-the-cookbook",
 ] as const;
 
 export const privateCookbookMediaPrefixes = [

@@ -5,8 +5,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  createContext,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -39,7 +37,7 @@ type DashboardGroup = {
   href: string;
   label: string;
   items: readonly DashboardGroupItem[];
-  adminOnly?: boolean;
+  cookbookAccessOnly?: boolean;
   dynamicItems?: "recipe-categories";
 };
 
@@ -94,6 +92,7 @@ export const dashboardSections: readonly DashboardSection[] = [
         label: "Guides",
         items: [
           { href: "/recipes/pasta-guide", label: "Pasta guide" },
+          { href: "/recipes/coffee-guide", label: "Coffee guide" },
           { href: "/recipes/sushi-guide", label: "Sushi guide" },
           { href: "/recipes/viennoiserie-guide", label: "Viennoiserie guide" },
           { href: "/recipes/sourdough-guide", label: "Sourdough guide" },
@@ -118,7 +117,7 @@ export const dashboardSections: readonly DashboardSection[] = [
       {
         href: "/recipes#recipe-books",
         label: "Recipe books",
-        adminOnly: true,
+        cookbookAccessOnly: true,
         items: [
           {
             href: "/recipes#recipe-books",
@@ -148,6 +147,7 @@ export const dashboardSections: readonly DashboardSection[] = [
               { href: "/recipes/spain-the-cookbook", label: "Spain: The Cookbook" },
               { href: "/recipes/science-of-spice", label: "The Science of Spice" },
               { href: "/recipes/sauces-reconsidered", label: "Sauces Reconsidered" },
+              { href: "/recipes/bao-the-cookbook", label: "BAO: The Cookbook" },
             ],
           },
           {
@@ -189,18 +189,6 @@ export const dashboardSections: readonly DashboardSection[] = [
   },
 ];
 
-type DashboardModeContextValue = {
-  isDashboard: boolean;
-  enableDashboard: () => void;
-  disableDashboard: () => void;
-};
-
-const DashboardModeContext = createContext<DashboardModeContextValue>({
-  isDashboard: false,
-  enableDashboard: () => undefined,
-  disableDashboard: () => undefined,
-});
-
 const DEFAULT_SIDEBAR_WIDTH = 322;
 const MIN_SIDEBAR_WIDTH = 220;
 const MAX_SIDEBAR_WIDTH = 480;
@@ -214,11 +202,6 @@ function clampSidebarWidth(width: number) {
 
 function applySidebarWidth(width: number) {
   document.documentElement.style.setProperty("--dashboard-sidebar-width", `${width}px`);
-}
-
-function applyDashboardMode(enabled: boolean) {
-  document.documentElement.classList.toggle("dashboard-mode", enabled);
-  window.localStorage.setItem("site-layout", enabled ? "dashboard" : "bubbles");
 }
 
 function hrefPath(href: string) {
@@ -247,17 +230,13 @@ function dashboardTreeNodeMatchesPath(node: DashboardTreeNode, pathname: string,
 function loadingDetailsForPath(path: string): Pick<DashboardRouteLoading, "title" | "variant"> {
   if (path === "/") return { title: "Warming up the homepage", variant: "home" };
   if (path.startsWith("/about")) return { title: "Waking up…", variant: "about" };
-  if (path.startsWith("/projects")) return { title: "Working on smth", variant: "projects" };
+  if (path.startsWith("/projects")) return { title: "Workin on smth", variant: "projects" };
   if (path.startsWith("/recipes")) return { title: "Preheating", variant: "recipes" };
   if (path.startsWith("/restaurants")) return { title: "Setting the table", variant: "restaurants" };
   if (path.startsWith("/tools")) return { title: "Adding final touches", variant: "tools" };
   if (path.startsWith("/contact")) return { title: "Opening contact", variant: "contact" };
   if (path.startsWith("/cv")) return { title: "Opening the CV", variant: "cv" };
   return { title: "Loading", variant: "home" };
-}
-
-export function useDashboardMode() {
-  return useContext(DashboardModeContext);
 }
 
 export function DashboardShell({ children }: { children: ReactNode }) {
@@ -267,7 +246,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
   const [dashboardRecipes, setDashboardRecipes] = useState<DashboardRecipeItem[]>([]);
-  const [isRecipeAdmin, setIsRecipeAdmin] = useState(false);
+  const [hasCookbookAccess, setHasCookbookAccess] = useState(false);
   const [routeLoading, setRouteLoading] = useState<DashboardRouteLoading | null>(null);
   const routeLoadingStartedRef = useRef(0);
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
@@ -275,7 +254,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const resizingPointerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 1024px)");
+    const desktop = window.matchMedia("(min-width: 1200px) and (hover: hover) and (pointer: fine)");
     const storedWidth = Number.parseInt(window.localStorage.getItem(SIDEBAR_WIDTH_KEY) ?? "", 10);
     const hasStoredWidth = Number.isFinite(storedWidth);
     const needsWidthScale = window.localStorage.getItem(SIDEBAR_WIDTH_SCALE_KEY) !== SIDEBAR_WIDTH_SCALE_VERSION;
@@ -349,18 +328,18 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    const syncRecipeAdminSession = () => {
-      void fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+    const syncCookbookSession = () => {
+      void fetch("/api/cookbook-access/session", { cache: "no-store", signal: controller.signal })
         .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
-        .then((result) => setIsRecipeAdmin(result.authenticated === true))
+        .then((result) => setHasCookbookAccess(result.authenticated === true))
         .catch(() => undefined);
     };
 
-    syncRecipeAdminSession();
-    window.addEventListener("recipe-admin-session-changed", syncRecipeAdminSession);
+    syncCookbookSession();
+    window.addEventListener("cookbook-access-session-changed", syncCookbookSession);
     return () => {
       controller.abort();
-      window.removeEventListener("recipe-admin-session-changed", syncRecipeAdminSession);
+      window.removeEventListener("cookbook-access-session-changed", syncCookbookSession);
     };
   }, []);
 
@@ -377,26 +356,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const activeHref = useMemo(() => {
     return dashboardSections.find((section) => pathname === section.href || pathname.startsWith(`${section.href}/`))?.href;
   }, [pathname]);
-
-  function enableDashboard() {
-    applyDashboardMode(true);
-    setIsDashboard(true);
-  }
-
-  function disableDashboard() {
-    const change = () => {
-      applyDashboardMode(false);
-      setIsDashboard(false);
-    };
-    const doc = document as Document & { startViewTransition?: (callback: () => void) => { finished: Promise<void> } };
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || typeof doc.startViewTransition !== "function") {
-      change();
-      return;
-    }
-
-    doc.startViewTransition(change);
-  }
 
   function updateSidebarWidth(width: number, persist = false) {
     const nextWidth = clampSidebarWidth(width);
@@ -534,7 +493,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <DashboardModeContext.Provider value={{ disableDashboard, enableDashboard, isDashboard }}>
+    <>
       <aside
         aria-hidden={!isDashboard}
         className="dashboard-sidebar"
@@ -557,7 +516,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             const isActive = activeHref === section.href;
             const isExpanded = expanded[section.href] ?? isActive;
             const canExpand = !["/about", "/restaurants", "/contact"].includes(section.href);
-            const visibleGroups = section.groups.filter((group) => isRecipeAdmin || !group.adminOnly);
+            const visibleGroups = section.groups.filter((group) => hasCookbookAccess || !group.cookbookAccessOnly);
 
             return (
               <div className={`dashboard-sidebar-item ${isActive ? "is-active" : ""}`} data-dashboard-href={section.href} key={section.href}>
@@ -664,6 +623,6 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       )}
 
       <div className="site-app-shell">{children}</div>
-    </DashboardModeContext.Provider>
+    </>
   );
 }

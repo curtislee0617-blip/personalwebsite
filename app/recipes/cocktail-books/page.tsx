@@ -5,6 +5,7 @@ import { CocktailCabinetMatcher } from "@/components/cocktail-cabinet-matcher";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { cocktailBooks, getCocktailMatcherRecipes } from "@/lib/cocktail-books";
+import { isCookbookAuthenticated } from "@/lib/cookbook-auth";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const metadata: Metadata = {
@@ -14,14 +15,18 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CocktailBooksPage() {
-  const authenticated = await isRecipeAdminAuthenticated();
+  const [adminAuthenticated, cookbookAuthenticated] = await Promise.all([
+    isRecipeAdminAuthenticated(),
+    isCookbookAuthenticated(),
+  ]);
+  const authenticated = adminAuthenticated || cookbookAuthenticated;
 
   if (!authenticated) {
     return (
       <div className="page-shell py-16 sm:py-20">
         <h1 className="section-title">Private cocktail library</h1>
         <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">
-          This source library is visible only after admin login. Log in from the footer, then return here.
+          This source library is visible after cookbook or admin login. Open the private books from the recipes page, then return here.
         </p>
         <HistoryBackButton className="mt-6" fallbackHref="/recipes#recipe-category-drinks">← Back to Cocktails &amp; Drinks</HistoryBackButton>
       </div>
@@ -40,7 +45,7 @@ export default async function CocktailBooksPage() {
       <section className="cocktail-library-index page-section pt-8 sm:pt-10">
         <div className="flex flex-wrap gap-3">
           <HistoryBackButton fallbackHref="/recipes#recipe-category-drinks">← Back to Cocktails &amp; Drinks</HistoryBackButton>
-          <Link className="back-link-bubble" href="/recipes/admin">Recipe admin</Link>
+          {adminAuthenticated && <Link className="back-link-bubble" href="/recipes/admin">Recipe admin</Link>}
         </div>
 
         <div className="cocktail-library-book-grid">

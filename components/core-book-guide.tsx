@@ -132,7 +132,7 @@ function DishCard({ dish, index, open, onToggle }: { dish: CoreDish; index: numb
               No separate plated-dish image appears in the supplied book pages.
             </div>
           )}
-          <header><p className="eyebrow">{dish.yield ?? "Core recipe"}</p><h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{dish.title}</h3><p className="mt-2 text-sm leading-6 text-ink/55">{dish.subtitle}</p></header>
+          <header><p className="eyebrow">{dish.yield ?? "Core recipe"}</p><h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{dish.title}</h3><p className="mt-2 line-clamp-4 max-w-3xl text-sm leading-6 text-ink/55">{dish.subtitle}</p></header>
           <ScaleControl onChange={setFactorText} value={factorText} />
           <div className="grid gap-4">{dish.pages.map((_, pageIndex) => <TranscribedPage dish={dish} factor={factor} key={pageIndex} pageIndex={pageIndex} />)}</div>
           <details className="group overflow-hidden rounded-xl border border-ink/10 bg-paper/70">

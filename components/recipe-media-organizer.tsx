@@ -16,7 +16,9 @@ function parsePosition(value?: string) {
 export function RecipeMediaOrganizer({ initialItems, title }: { initialItems: RecipeMediaItem[]; title: string }) {
   const [items, setItems] = useState(initialItems);
   const [dragging, setDragging] = useState<number | null>(null);
+  const [durations, setDurations] = useState<Record<string, number>>({});
   const cropDrag = useRef<{ index: number; pointerId: number; clientX: number; clientY: number; x: number; y: number } | null>(null);
+  const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
   const updateItem = (index: number, updates: Partial<RecipeMediaItem>) => {
     setItems((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, ...updates } : item));
@@ -45,6 +47,19 @@ export function RecipeMediaOrganizer({ initialItems, title }: { initialItems: Re
     event.preventDefault();
     if (dragging !== null) move(dragging, to);
     setDragging(null);
+  };
+
+  const previewClip = async (item: RecipeMediaItem) => {
+    const video = videoRefs.current[item.src];
+    if (!video) return;
+    const start = Math.max(0, item.trimStart ?? 0);
+    const end = item.trimEnd ?? video.duration;
+    if (!video.paused) {
+      video.pause();
+      return;
+    }
+    if (video.currentTime < start || video.currentTime >= end - 0.05) video.currentTime = start;
+    await video.play();
   };
 
   return (
@@ -88,7 +103,27 @@ export function RecipeMediaOrganizer({ initialItems, title }: { initialItems: Re
               tabIndex={0}
             >
               {item.type === "video" ? (
-                <video aria-label={`${title} media item ${index + 1}`} muted playsInline poster={item.poster} preload="metadata" src={item.src} style={{ objectPosition: item.position ?? "50% 50%", transform: `scale(${item.zoom ?? 1})`, transformOrigin: item.position ?? "50% 50%" }} />
+                <video
+                  aria-label={`${title} media item ${index + 1}`}
+                  muted
+                  onLoadedMetadata={(event) => {
+                    const duration = event.currentTarget.duration;
+                    if (Number.isFinite(duration)) setDurations((current) => ({ ...current, [item.src]: duration }));
+                    event.currentTarget.currentTime = Math.min(item.trimStart ?? 0, Math.max(0, duration - 0.05));
+                  }}
+                  onTimeUpdate={(event) => {
+                    if (item.trimEnd !== undefined && event.currentTarget.currentTime >= item.trimEnd - 0.03) {
+                      event.currentTarget.pause();
+                      event.currentTarget.currentTime = item.trimStart ?? 0;
+                    }
+                  }}
+                  playsInline
+                  poster={item.poster}
+                  preload="metadata"
+                  ref={(element) => { videoRefs.current[item.src] = element; }}
+                  src={item.src}
+                  style={{ objectPosition: item.position ?? "50% 50%", transform: `scale(${item.zoom ?? 1})`, transformOrigin: item.position ?? "50% 50%" }}
+                />
               ) : (
                 <img alt={`${title} media item ${index + 1}`} draggable={false} src={item.src} style={{ objectPosition: item.position ?? "50% 50%", transform: `scale(${item.zoom ?? 1})`, transformOrigin: item.position ?? "50% 50%" }} />
               )}
@@ -108,6 +143,66 @@ export function RecipeMediaOrganizer({ initialItems, title }: { initialItems: Re
                 value={item.caption ?? ""}
               />
             </label>
+            {item.type === "video" && (() => {
+              const duration = durations[item.src] ?? 0;
+              const start = Math.min(item.trimStart ?? 0, Math.max(0, duration - 0.1));
+              const end = Math.min(item.trimEnd ?? duration, duration);
+              return (
+                <div className="recipe-media-trim-editor">
+                  <div>
+                    <strong>Video clip</strong>
+                    <span>{duration > 0 ? `${start.toFixed(1)}–${end.toFixed(1)}s of ${duration.toFixed(1)}s` : "Loading duration…"}</span>
+                  </div>
+                  <label>
+                    <span>Start</span>
+                    <input
+                      disabled={duration <= 0}
+                      max={Math.max(0, end - 0.1)}
+                      min="0"
+                      onChange={(event) => {
+                        const next = Math.min(Number(event.target.value), Math.max(0, end - 0.1));
+                        updateItem(index, { trimStart: next });
+                        const video = videoRefs.current[item.src];
+                        if (video) video.currentTime = next;
+                      }}
+                      step="0.1"
+                      type="range"
+                      value={start}
+                    />
+                  </label>
+                  <label>
+                    <span>End</span>
+                    <input
+                      disabled={duration <= 0}
+                      max={duration}
+                      min={Math.min(duration, start + 0.1)}
+                      onChange={(event) => updateItem(index, { trimEnd: Number(event.target.value) })}
+                      step="0.1"
+                      type="range"
+                      value={end}
+                    />
+                  </label>
+                  <div className="recipe-media-trim-actions">
+                    <button disabled={duration <= 0} onClick={() => previewClip(item)} type="button">Preview clip</button>
+                    <button
+                      disabled={duration <= 0}
+                      onClick={() => {
+                        updateItem(index, { trimStart: undefined, trimEnd: undefined });
+                        const video = videoRefs.current[item.src];
+                        if (video) {
+                          video.pause();
+                          video.currentTime = 0;
+                        }
+                      }}
+                      type="button"
+                    >
+                      Use full video
+                    </button>
+                  </div>
+                  <p>Saved as playback points; the original upload is unchanged.</p>
+                </div>
+              );
+            })()}
             <div className="recipe-media-organizer-actions">
               <button aria-label={`Move item ${index + 1} earlier`} disabled={index === 0} onClick={() => move(index, index - 1)} type="button">←</button>
               <button

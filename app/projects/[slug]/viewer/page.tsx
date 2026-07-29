@@ -53,11 +53,13 @@ export default async function ProjectViewerPage({ params, searchParams }: Projec
 
   return (
     <>
-      <div className={`fixed left-3 top-4 z-50 sm:left-4 sm:top-4 ${mode === "poster" ? "text-white" : "text-ink"}`}>
-        <HistoryBackButton fallbackHref={backHref} />
-      </div>
+      {mode === "book" && (
+        <div className="fixed left-3 top-4 z-50 text-ink sm:left-4 sm:top-4">
+          <HistoryBackButton fallbackHref={backHref} />
+        </div>
+      )}
       <div className="pt-12 sm:pt-0">
-        <ProjectViewer mode={mode} pages={pages} pdfHref={primaryDocument.href} title={project.title} />
+        <ProjectViewer backHref={backHref} mode={mode} pages={pages} pdfHref={primaryDocument.href} title={project.title} />
       </div>
     </>
   );

@@ -16,7 +16,7 @@ const sections = [
 export default function SushiGuidePage() {
   return (
     <div className="guide-page">
-      <PageIntro eyebrow="Guide" title="Sushi guide" />
+      <PageIntro eyebrow="Guide" title="Sushi guide" description="I’m still working on this guide." />
       <SectionRail ariaLabel="Sushi guide sections" sections={sections} />
 
       <section className="page-section">

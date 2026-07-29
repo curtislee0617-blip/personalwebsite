@@ -5,7 +5,7 @@ export default function Loading() {
     <SectionLoading
       variant="home"
       title="Warming up the homepage"
-      description="The orbit is settling into place."
+      description="The dashboard is warming up."
     />
   );
 }

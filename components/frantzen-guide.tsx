@@ -141,7 +141,7 @@ function RecipeCard({ recipe, index, open, onToggle, compact = false }: { recipe
           <header>
             <p className="eyebrow">{compact ? "Frantzén Petit Four" : "Frantzén recipe"}</p>
             <h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{recipe.title}</h3>
-            <p className="mt-2 max-w-3xl text-sm italic leading-6 text-ink/55">{recipe.description}</p>
+            <p className="mt-2 line-clamp-4 max-w-3xl text-sm italic leading-6 text-ink/55">{recipe.description}</p>
           </header>
           {recipe.sourceNote && <p className="rounded-2xl border border-amber-700/15 bg-amber-100/35 px-4 py-3 text-sm leading-6 text-ink/60">{recipe.sourceNote}</p>}
           {!pending && (

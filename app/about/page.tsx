@@ -137,25 +137,25 @@ const education: EducationItem[] = [
 const featuredWork = [
   {
     href: "/projects/biodiesel-from-used-cooking-oil",
-    type: "Chemical engineering coursework",
+    type: "Chemical Engineering",
     title: "Biodiesel from used cooking oil",
     summary: "A two-part June 2026 ChemE project spanning plant design and biodiesel synthesis routes.",
   },
   {
     href: "/projects/bem-114-report",
-    type: "Final project",
+    type: "Finance & NLP",
     title: "Earnings Call NLP-Based Long-Short Strategy",
     summary: "A June 2026 BEM 114 report on using earnings-call language to build a long-short equity signal.",
   },
   {
     href: "/projects/tonbridge-food-science",
-    type: "Conference project",
+    type: "Tonbridge Science Conference",
     title: "The science of flavour",
     summary: "A February 2023 Tonbridge Science Conference project on flavour compounds and retronasal olfaction.",
   },
   {
     href: "/projects/cook-enterprise",
-    type: "Young Enterprise project",
+    type: "Young Enterprise",
     title: "cook.enterprise",
     summary: "A student-focused cookbook and the Kent Finals Best Company winner.",
   },
