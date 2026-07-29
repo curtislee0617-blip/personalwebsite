@@ -19,7 +19,7 @@ export function ScwgRegulatoryTimeline() {
           <li className="relative" data-reveal key={panel.id}>
             <span
               aria-hidden="true"
-              className="absolute -left-[1.65rem] top-1.5 h-3 w-3 rounded-full border-2 border-moss bg-paper sm:-left-[2.15rem]"
+              className="absolute -left-[1.875rem] top-1.5 h-3 w-3 rounded-full border-2 border-moss bg-paper sm:-left-[2.375rem]"
             />
             <article className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-7">
               <div className="flex flex-wrap items-baseline justify-between gap-2">

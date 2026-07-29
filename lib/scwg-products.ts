@@ -87,7 +87,7 @@ export const scwgProductGroups: ProductGroup[] = [
         ],
         callout: {
           title: "The ceiling is alkalinity, not demand",
-          body: "~170 Mt/y produced globally, utilization below 3%. The uses exist; the alkalinity is what blocks them — which is exactly what this process removes.",
+          body: "Over 120 Mt/y produced globally, utilization below 3%. The uses exist; the alkalinity is what blocks them — which is exactly what this process removes.",
         },
       },
       {
