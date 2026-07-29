@@ -71,8 +71,18 @@ export function ScwgSitingMap() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/40 p-3">
-        <svg aria-label={scwgUi.siting.mapAriaLabel} className="h-auto w-full" role="img" viewBox={viewBox}>
+      {/* Card hugs the projected landmass so the height cap does not leave wide
+          empty margins either side. */}
+      <div className="mx-auto w-full max-w-[36rem] overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/40 p-3">
+        {/* Height-capped so the whole country fits in one screen without
+            scrolling; `meet` letterboxes rather than cropping. */}
+        <svg
+          aria-label={scwgUi.siting.mapAriaLabel}
+          className="mx-auto block h-[62vh] max-h-[640px] w-full"
+          preserveAspectRatio="xMidYMid meet"
+          role="img"
+          viewBox={viewBox}
+        >
           {/* neighbouring countries — faint dotted context, drawn beneath China */}
           <g>
             {neighbours.features.map((f, i) => (

@@ -230,7 +230,7 @@ function dashboardTreeNodeMatchesPath(node: DashboardTreeNode, pathname: string,
 function loadingDetailsForPath(path: string): Pick<DashboardRouteLoading, "title" | "variant"> {
   if (path === "/") return { title: "Warming up the homepage", variant: "home" };
   if (path.startsWith("/about")) return { title: "Waking up…", variant: "about" };
-  if (path.startsWith("/projects")) return { title: "Workin on smth", variant: "projects" };
+  if (path.startsWith("/projects")) return { title: "Writing...", variant: "projects" };
   if (path.startsWith("/recipes")) return { title: "Preheating", variant: "recipes" };
   if (path.startsWith("/restaurants")) return { title: "Setting the table", variant: "restaurants" };
   if (path.startsWith("/tools")) return { title: "Adding final touches", variant: "tools" };
