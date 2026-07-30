@@ -12,6 +12,7 @@ import {
 } from "@/lib/scwg-feedstock";
 import { scwgReferenceByMarker } from "@/lib/scwg-references";
 import { scwgUi } from "@/lib/scwg-meta";
+import { ScwgFeedstockConstraints } from "@/components/scwg-feedstock-constraints";
 
 // Report Section 1 — feedstock characterization and blend design. Server
 // component; all prose and every table row comes from lib/scwg-feedstock.ts.
@@ -45,7 +46,7 @@ function IndicativeTag() {
 export function ScwgFeedstock() {
   return (
     <div className="space-y-10">
-      <p className="max-w-prose text-sm leading-7 text-ink/65">{scwgFeedstockIntro}</p>
+      <p className="text-sm leading-7 text-ink/65">{scwgFeedstockIntro}</p>
 
       {/* The three feeds */}
       <div className="space-y-6">
@@ -56,7 +57,7 @@ export function ScwgFeedstock() {
               <p className="text-sm text-ink/50">{feed.subtitle}</p>
             </div>
 
-            <div className="mt-4 max-w-prose space-y-3 text-sm leading-7 text-ink/65">
+            <div className="mt-4 space-y-3 text-sm leading-7 text-ink/65">
               {feed.paragraphs.map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
@@ -82,7 +83,7 @@ export function ScwgFeedstock() {
                 {feed.consequences.map((consequence) => (
                   <li className="rounded-[1.25rem] border border-ink/10 bg-paper/60 p-4" key={consequence.title}>
                     <p className="font-semibold text-ink/80">{consequence.title}</p>
-                    <p className="mt-1 max-w-prose text-sm leading-7 text-ink/65">{consequence.body}</p>
+                    <p className="mt-1 text-sm leading-7 text-ink/65">{consequence.body}</p>
                   </li>
                 ))}
               </ul>
@@ -97,11 +98,11 @@ export function ScwgFeedstock() {
         <h3 className="mt-2 text-lg font-semibold tracking-tight sm:text-xl">
           {scwgDealkalizationSynergy.title}
         </h3>
-        <p className="mt-3 max-w-prose text-sm leading-7 text-ink/70">
+        <p className="mt-3 text-sm leading-7 text-ink/70">
           {scwgDealkalizationSynergy.body}
           <Cite source={scwgDealkalizationSynergy.source} />
         </p>
-        <p className="mt-3 max-w-prose text-sm font-medium leading-7 text-ink/80">
+        <p className="mt-3 text-sm font-medium leading-7 text-ink/80">
           {scwgDealkalizationSynergy.consequence}
         </p>
       </div>
@@ -139,7 +140,7 @@ export function ScwgFeedstock() {
       {/* Blend design */}
       <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
         <p className="eyebrow">{scwgUi.feedstock.blendLabel}</p>
-        <p className="mt-3 max-w-prose text-sm leading-7 text-ink/65">{scwgBlendIntro}</p>
+        <p className="mt-3 text-sm leading-7 text-ink/65">{scwgBlendIntro}</p>
 
         <div className="mt-5 overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm">
@@ -167,7 +168,7 @@ export function ScwgFeedstock() {
           </table>
         </div>
 
-        <div className="mt-5 max-w-prose space-y-3 text-sm leading-7 text-ink/65">
+        <div className="mt-5 space-y-3 text-sm leading-7 text-ink/65">
           {scwgBlendNotes.map((note, index) => (
             <p key={index}>{note}</p>
           ))}
@@ -177,7 +178,7 @@ export function ScwgFeedstock() {
       {/* Heteroatom fate */}
       <div className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-8">
         <p className="eyebrow">{scwgUi.feedstock.heteroatomLabel}</p>
-        <p className="mt-3 max-w-prose text-sm leading-7 text-ink/65">{scwgHeteroatomIntro}</p>
+        <p className="mt-3 text-sm leading-7 text-ink/65">{scwgHeteroatomIntro}</p>
 
         <div className="mt-5 overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm">
@@ -211,12 +212,14 @@ export function ScwgFeedstock() {
 
         <div className="mt-5 rounded-[1.25rem] border-l-2 border-clay bg-clay/8 px-4 py-3">
           <p className="text-sm font-semibold text-ink/80">{scwgChlorideNote.title}</p>
-          <p className="mt-1 max-w-prose text-sm leading-6 text-ink/70">
+          <p className="mt-1 text-sm leading-6 text-ink/70">
             {scwgChlorideNote.body}
             <Cite source={scwgChlorideNote.source} />
           </p>
         </div>
       </div>
+
+      <ScwgFeedstockConstraints />
     </div>
   );
 }

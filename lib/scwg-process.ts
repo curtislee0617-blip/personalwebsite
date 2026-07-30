@@ -21,17 +21,16 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 0.1, max: 25, unit: "MPa", status: "literature", source: "SWG-feed" },
       summary: "Ambient → 25 MPa",
     },
-    diagram: { col: 0, row: 0 },
     needsValidation: false,
     function: [
-      "Straw is milled and blended into okara to 18–22 wt% total solids; red mud is dosed; the slurry is pressurised by positive-displacement pump. Feed–effluent exchange recovers reactor outlet heat.",
-      "Okara is the rheological enabler: its fine hydrated fibre forms a pumpable paste rather than a settling suspension, letting it carry milled straw that would otherwise bridge and settle.",
+      "Straw is milled and blended into douzha to 18–22 wt% total solids; red mud is dosed; the slurry is pressurised by positive-displacement pump. Feed–effluent exchange recovers reactor outlet heat.",
+      "Douzha is the rheological enabler: its fine hydrated fibre forms a pumpable paste rather than a settling suspension, letting it carry milled straw that would otherwise bridge and settle.",
     ],
     inlet: [
-      { tag: "1", name: "Okara", phase: "slurry", components: "80–85 wt% water, protein-derived organics" },
+      { tag: "1", name: "Douzha", phase: "slurry", components: "80–85 wt% water, protein-derived organics" },
       { tag: "2", name: "Milled soybean straw", phase: "solid", components: "Lignocellulose" },
       { tag: "3", name: "Red mud (fresh make-up)", phase: "solid", components: "Fe₂O₃, Al₂O₃, SiO₂, Na alkalinity" },
-      { tag: "21", name: "Regenerated red mud bed", phase: "solid", components: "Re-oxidised bed recycled from B8" },
+      { tag: "R1", name: "Regenerated red mud recycle", phase: "solid", components: "Re-oxidised bed from B8, re-slurried and re-pressurised at make-up" },
     ],
     outlet: [
       { tag: "4", name: "Pressurised feed slurry", phase: "slurry", components: "18–22 wt% total solids + red mud" },
@@ -61,7 +60,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 25, max: 25, unit: "MPa", status: "placeholder", note: "Set by the Section 3 severity study." },
       summary: "600–650 °C, 25 MPa (placeholder)",
     },
-    diagram: { col: 1, row: 0 },
     needsValidation: true,
     function: [
       "Biomass gasifies to CH₄, CO₂ and H₂. Red mud plays three roles simultaneously, and the page is honest that they are not equally well supported.",
@@ -94,7 +92,12 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       {
         label: "Carbon gasification efficiency",
         definition: "Fraction of feed carbon converted to gas-phase carbon.",
-        value: { value: 0, unit: "%", status: "placeholder", note: "Awaiting balance closure." },
+        value: { value: 0, unit: "%", status: "placeholder", note: "Awaiting balance closure. Planning basis is the 40–60% band, not the dry chemical-looping figures." },
+      },
+      {
+        label: "Planning-basis band",
+        definition: "The carbon gasification efficiency band to carry until a concentration curve exists for this blend.",
+        value: { value: 50, unit: "% (40–60 band)", status: "indicative", note: "Midpoint of the 40–60% planning band; the one slurry-feed figure in the literature is above 40% at 540 °C and 25 MPa." },
       },
       {
         label: "H₂ anchor (Ni–Cu on red mud)",
@@ -115,9 +118,14 @@ export const scwgProcessBlocks: ProcessBlock[] = [
         body: "The three red-mud roles are not equally supported, and the redox role rests on dry, atmospheric literature applied to a wet, high-pressure medium.",
       },
       {
-        kind: "note",
-        title: "Reference values are not this process",
-        body: "The chemical-looping figures (1.02 Nm³/kg, 12.06 MJ/Nm³, 91.49% CGE, 82.65% carbon conversion) are dry-process context only, clearly labelled as not-this-process.",
+        kind: "warning",
+        title: "Calibration warning — do not carry these efficiencies into this design",
+        body: "The 91.49% cold gas efficiency and 82.65% carbon conversion below are from dry, atmospheric-pressure chemical looping. They establish only that red mud is a credible oxygen carrier in that context; they are not achievable targets here. Two effects push the realistic figure much lower: supercritical gasification efficiency falls as feed concentration rises, and the headline results in that literature are reported at low loading — pig manure reaching 87.59% did so at 6 wt% feed with K₂CO₃ promotion, against roughly 20 wt% here. The one figure obtained under conditions resembling a real slurry feed is above 40% carbon gasification efficiency at 540 °C and 25 MPa.",
+      },
+      {
+        kind: "decision",
+        title: "A three-way conflict, and the planning basis chosen",
+        body: "Pumpability wants high solids, the energy balance wants high solids, and gasification efficiency wants low solids. The 18–22 wt% window was selected on the first two. A carbon gasification efficiency versus feed concentration curve for this specific blend is required, because the economically optimal point is set by that curve and not by the pumpability ceiling alone. Until it exists, carry 40–60% carbon gasification efficiency as the planning basis, flagged as an estimate.",
       },
     ],
   },
@@ -128,7 +136,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     conditions: {
       summary: "Supercritical; cooled-wall or cyclonic",
     },
-    diagram: { col: 2, row: 0 },
     needsValidation: true,
     function: [
       "Inorganic salt solubility collapses above the critical point, and salt deposition is the dominant plugging and corrosion failure mode of continuous supercritical water systems.",
@@ -176,7 +183,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 3, max: 25, unit: "MPa", status: "placeholder", note: "Let-down from reactor pressure to ~3 MPa." },
       summary: "25 MPa → ~3 MPa",
     },
-    diagram: { col: 3, row: 0 },
     needsValidation: false,
     function: [
       "Gas/liquid/solid split across a let-down valve and flash drum. The ammonia-bearing aqueous phase goes to nitrogen recovery; spent red mud goes to B8.",
@@ -207,7 +213,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 3, max: 3, unit: "MPa", status: "placeholder" },
       summary: "−30 to −60 °C, ~3 MPa",
     },
-    diagram: { col: 4, row: 0 },
     needsValidation: false,
     function: [
       "Two findings drive this block. First, the negative finding, because it is counterintuitive: in-bed calcium capture does not work in supercritical water. The hydrolysis CaS + 2H₂O ⇌ Ca(OH)₂ + H₂S is well established and is used deliberately as a CaS stabilization route; a supercritical water gasifier is close to an ideal reactor for running it. Lime dosed into B2 would capture sulfur and release it again. Moving calcium downstream into dry warm gas would function, but imports a consumable, creates a spent-sorbent disposal stream, and competes with HCl for capacity across the whole sorbent life cycle.",
@@ -246,7 +251,7 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     ],
     outlet: [
       { tag: "12", name: "Clean syngas", phase: "gas", components: "CH₄ + H₂ + metered CO₂, ≤0.1 ppm S → B6", quantity: { value: 0.1, unit: "ppm S", status: "literature", source: "Rectisol" } },
-      { tag: "13", name: "CO₂ (separated)", phase: "gas", components: "Separated CO₂ → B6 feed (recycle / vent split)" },
+      { tag: "13", name: "Separated CO₂", phase: "gas", components: "Rectisol CO₂ → B6 feed (recycle / vent split)" },
       { tag: "14", name: "Elemental sulfur", phase: "solid", components: "From S3 liquid-redox recovery" },
     ],
     metrics: [
@@ -288,7 +293,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 1, max: 3, unit: "MPa", status: "placeholder" },
       summary: "800–900 °C, 1–3 MPa (placeholder)",
     },
-    diagram: { col: 5, row: 0 },
     needsValidation: true,
     function: [
       "Supercritical water gasification produces essentially no CO — water-gas shift equilibrium in a medium that is overwhelmingly water sits hard on the product side. OXZEO consumes CO. The two blocks are chemically incompatible as directly coupled units, and this block exists to resolve that.",
@@ -296,8 +300,8 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     ],
     inlet: [
       { tag: "12", name: "Clean syngas", phase: "gas", components: "CH₄ + H₂" },
-      { tag: "13", name: "CO₂ (from B5)", phase: "gas", components: "Dry-reforming oxidant" },
-      { tag: "16", name: "CO₂-rich recycle (from B7)", phase: "gas", components: "OXZEO co-product CO₂" },
+      { tag: "13", name: "Separated CO₂", phase: "gas", components: "Dry-reforming oxidant, metered from B5" },
+      { tag: "16", name: "CO₂-rich recycle", phase: "gas", components: "OXZEO co-product CO₂, returned from B7" },
       { tag: "17", name: "Steam", phase: "gas", components: "Free from hydrothermal island; coking mitigation" },
     ],
     outlet: [
@@ -347,7 +351,6 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       pressure: { min: 2.5, max: 4, unit: "MPa", status: "literature", source: "OXZEO-2" },
       summary: "~400 °C, 2.5–4 MPa",
     },
-    diagram: { col: 6, row: 0 },
     needsValidation: false,
     function: [
       "Oxide–zeolite bifunctional conversion of syngas to C₂–C₄ olefins, exceeding the Anderson–Schulz–Flory selectivity limit. Unconverted syngas is recycled.",
@@ -355,12 +358,12 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     ],
     inlet: [
       { tag: "15", name: "Reformed syngas", phase: "gas", components: "CO + H₂ at target ratio" },
-      { tag: "18", name: "Recycled syngas", phase: "gas", components: "Unconverted CO + H₂" },
+      { tag: "18", name: "Unconverted syngas recycle", phase: "gas", components: "Unconverted CO + H₂" },
     ],
     outlet: [
       { tag: "19", name: "C₂–C₄ olefins", phase: "gas", components: "Light olefins → product slate" },
       { tag: "16", name: "CO₂-rich recycle", phase: "gas", components: "OXZEO co-product CO₂ → B6" },
-      { tag: "18", name: "Unconverted syngas", phase: "gas", components: "CO + H₂ → recycle" },
+      { tag: "18", name: "Unconverted syngas recycle", phase: "gas", components: "CO + H₂ → recycle" },
     ],
     metrics: [
       {
@@ -399,10 +402,9 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     conditions: {
       summary: "Air oxidation, then hydrometallurgy",
     },
-    diagram: { col: 7, row: 0 },
     needsValidation: false,
     function: [
-      "Reduced iron phases are re-oxidised with heat recovery; a bleed stream leaves as product.",
+      "Reduced iron phases are re-oxidised with heat recovery; a bleed stream leaves as product. The regenerated solid returns to B1 as stream R1 rather than to the reactor: it leaves B8 hot, oxidised and near atmospheric pressure, and has to be re-slurried and re-pressurised, so the recycle merges into slurry make-up and competes for the solids budget on exactly the same terms as fresh residue. The budget constraint is therefore on total red mud in circulation, not on make-up rate.",
       "Note the synergy: B2 has already partially reduced Fe₂O₃ → Fe₃O₄/FeO using biomass-derived reductant, so the residue arrives at any ironmaking step pre-reduced at no marginal cost.",
     ],
     inlet: [
@@ -410,7 +412,7 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       { tag: "20", name: "Air", phase: "gas", components: "Oxidant for re-oxidation" },
     ],
     outlet: [
-      { tag: "21", name: "Regenerated bed", phase: "solid", components: "Re-oxidised red mud → recycle to B1" },
+      { tag: "R1", name: "Regenerated red mud recycle", phase: "solid", components: "Re-oxidised red mud → re-slurried at B1" },
       { tag: "22", name: "Residue bleed", phase: "solid", components: "Dealkalized residue → product slate (Tiers 1–3)" },
     ],
     duty: {
@@ -441,6 +443,16 @@ export const scwgProcessBlocks: ProcessBlock[] = [
         title: "Pre-reduction synergy",
         body: "B2 has already partially reduced Fe₂O₃ using biomass-derived reductant, so residue destined for ironmaking arrives pre-reduced at no marginal cost.",
       },
+      {
+        kind: "decision",
+        title: "The bleed fraction is a headline result, not a nuisance parameter",
+        body: "The recycle competes with the product. B3 strips sodium to make the residue saleable — but that same alkali supplied the tar-cracking and shift promotion that made red mud useful in B2. Recycled solid is therefore progressively less active on each pass, which inverts the usual chemical-looping logic: here the deactivation is the product being manufactured. A fast bleed keeps the circulating inventory alkaline and active but may release residue before it meets a saleable dealkalization specification; a slow bleed delivers fully dealkalized, saleable residue while leaving the design leaning entirely on iron. The bleed fraction sets the exchange rate between catalytic performance and residue product quality.",
+      },
+      {
+        kind: "warning",
+        title: "Does the air regeneration accomplish anything?",
+        body: "In supercritical water at 600–650 °C with water in vast excess, steam re-oxidises reduced iron directly by 3Fe + 4H₂O → Fe₃O₄ + 4H₂, so the reactor may hold the iron at a magnetite-like steady state without external help. If so, B8's air-oxidation step is not restoring oxygen capacity at all — it is performing heat recovery and conditioning the solid for metals recovery, which are real duties but different ones, and it should be sized against those. Open: this must be settled before B8 has a design basis.",
+      }
     ],
   },
 ];

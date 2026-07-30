@@ -7,19 +7,19 @@ import { scwgUi } from "@/lib/scwg-meta";
 
 export function ScwgRegulatoryTimeline() {
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-      <div className="lg:sticky lg:top-28 lg:self-start">
-        <p className="eyebrow">{scwgUi.acts.regulatory.eyebrow}</p>
-        <h2 className="section-title mt-3">{scwgUi.acts.regulatory.title}</h2>
-        <p className="mt-4 max-w-prose text-sm leading-7 text-ink/60">{scwgRegulatoryIntro}</p>
-      </div>
+    <div>
+      <p className="eyebrow">{scwgUi.acts.regulatory.eyebrow}</p>
+      <h2 className="section-title mt-3">{scwgUi.acts.regulatory.title}</h2>
+      <p className="mt-3 text-sm leading-7 text-ink/60">{scwgRegulatoryIntro}</p>
 
-      <ol className="relative space-y-6 border-l border-ink/15 pl-6 sm:pl-8">
+      {/* Panels run two-up on wide screens so the copy uses the width instead of
+          stacking into a narrow column. */}
+      <ol className="relative mt-8 grid gap-6 border-l border-ink/15 pl-6 sm:pl-8 xl:grid-cols-2">
         {scwgRegulatoryPanels.map((panel) => (
           <li className="relative" data-reveal key={panel.id}>
             <span
               aria-hidden="true"
-              className="absolute -left-[1.65rem] top-1.5 h-3 w-3 rounded-full border-2 border-moss bg-paper sm:-left-[2.15rem]"
+              className="absolute -left-[1.875rem] top-1.5 h-3 w-3 rounded-full border-2 border-moss bg-paper sm:-left-[2.375rem]"
             />
             <article className="rounded-[2rem] border border-ink/10 bg-surface/55 p-6 sm:p-7">
               <div className="flex flex-wrap items-baseline justify-between gap-2">

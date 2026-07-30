@@ -24,6 +24,9 @@ type TimelineItem = {
   detail: string;
   logo?: LogoMeta;
   organisationWordmarkSrc?: string;
+  /** Optional project page produced during this role. */
+  projectHref?: string;
+  projectLabel?: string;
 };
 
 type EducationItem = {
@@ -74,6 +77,8 @@ const experience: TimelineItem[] = [
     organisation: "The Hong Kong and China Gas Company Limited (Towngas)",
     detail: "Interning with Towngas's Green Fuels & Chemicals division across Foshan, Guangdong and Jungar Banner, Inner Mongolia. Working on process design and safety and environmental analysis for a new green-fuels plant in Foshan, while supporting daily operations at an operating green-methanol plant in Inner Mongolia. Also investigating the feasibility of producing synthetic natural gas from biomass-derived syngas.",
     logo: { src: "/logos/towngas.png", alt: "Towngas logo", fallback: "TG", fitClassName: "h-11 w-[3.25rem]", alignClassName: "object-center", frameClassName: "bg-white" },
+    projectHref: "/projects/supercritical-water-gasification",
+    projectLabel: "Read the process design concept",
   },
   {
     dates: "September 2024 - Present",
@@ -227,6 +232,14 @@ export default function AboutPage() {
                         )}
                       </p>
                       <p className="about-entry-description mt-4 max-w-2xl text-sm leading-7 text-ink/60">{item.detail}</p>
+                      {item.projectHref ? (
+                        <Link
+                          className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-moss transition hover:text-ink"
+                          href={`${item.projectHref}?from=about`}
+                        >
+                          {item.projectLabel ?? "View the project"} <span aria-hidden="true">→</span>
+                        </Link>
+                      ) : null}
                     </div>
                   </div>
                 </article>

@@ -31,13 +31,24 @@ export const projects: ProjectEntry[] = [
     shortTitle: "SCWG concept",
     year: "July 2026",
     description:
-      "An interactive process-design concept: supercritical water gasification co-processing red mud and okara, with a scroll-driven flowsheet, siting analysis, and strict placeholder discipline on unclosed balances.",
+      "An interactive process-design concept: supercritical water gasification co-processing red mud and douzha, with a scroll-driven flowsheet, siting analysis, and strict placeholder discipline on unclosed balances.",
     detail: [
-      "Two individually awkward waste streams become tractable when co-processed: okara is 80–85 wt% water, which suits supercritical water gasification, while bauxite residue supplies iron redox capacity and alkalinity.",
+      "Two individually awkward waste streams become tractable when co-processed: douzha is 80–85 wt% water, which suits supercritical water gasification, while bauxite residue supplies iron redox capacity and alkalinity.",
       "The page descends through the plant as you scroll, block by block, and is explicit about what is unvalidated: the mass and energy balances are not yet written, so every unclosed figure is rendered as a flagged placeholder rather than an invented number.",
     ],
     tags: ["Chemical engineering", "Process design", "Supercritical water", "Red mud", "Waste valorization"],
-    previews: [],
+    previews: [
+      {
+        src: "/photos/scwg-hero-card.webp",
+        alt: "Aerial view of the green-methanol plant at Jungar Banner, Inner Mongolia",
+      },
+      // The carousel shows `previews[1]` in its large panel, so it needs a source
+      // wide enough not to be upscaled — the card variant alone is only 760px.
+      {
+        src: "/photos/scwg-hero-wide.webp",
+        alt: "Aerial view of the green-methanol plant at Jungar Banner, Inner Mongolia",
+      },
+    ],
   },
   {
     slug: "biodiesel-from-used-cooking-oil",

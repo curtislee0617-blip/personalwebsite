@@ -87,7 +87,7 @@ export const scwgProductGroups: ProductGroup[] = [
         ],
         callout: {
           title: "The ceiling is alkalinity, not demand",
-          body: "~170 Mt/y produced globally, utilization below 3%. The uses exist; the alkalinity is what blocks them — which is exactly what this process removes.",
+          body: "Over 120 Mt/y produced globally, utilization below 3%. The uses exist; the alkalinity is what blocks them — which is exactly what this process removes.",
         },
       },
       {
@@ -133,7 +133,7 @@ export const scwgProductGroups: ProductGroup[] = [
     title: "Avoided disposal",
     items: [
       {
-        name: "Gate fees on okara and red mud",
+        name: "Gate fees on douzha and red mud",
         summary: "Not revenue in the accounting sense, but likely the largest single contributor in the Chinese context.",
         detail: [
           "Not revenue in the accounting sense, but likely the largest single contributor in the Chinese context.",

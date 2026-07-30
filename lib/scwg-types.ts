@@ -40,7 +40,7 @@ export type RegulatoryPanel = {
 
 // ── Act 2 — siting ──────────────────────────────────────────────────────────
 
-export type SitingOverlayId = "redmud" | "okara-industrial" | "okara-fragmented" | "ports" | "context";
+export type SitingOverlayId = "redmud" | "douzha-industrial" | "douzha-fragmented" | "ports" | "context";
 
 export type SitingOverlay = {
   id: SitingOverlayId;
@@ -114,6 +114,72 @@ export type HeteroatomFate = {
   fate: string;
   /** Flagged where the data gap materially affects design. */
   dataGap?: boolean;
+};
+
+/** Table 1.4 — the solids budget, the binding constraint on the whole design. */
+export type SolidsBudgetRow = {
+  component: string;
+  contributesSolids: string;
+  contributesCarbon: string;
+  effect: string;
+};
+
+/** Table 1.5 — co-feed evaluation, ranked by residue-purity risk. */
+export type CoFeedRow = {
+  feed: string;
+  caseFor: string;
+  risk: string;
+  verdict: "design basis" | "evaluate first" | "caution" | "rejected";
+};
+
+/** Table 1.6 — the five red-mud-producing provinces, ranked by suitability. */
+export type ProvinceRow = {
+  province: string;
+  centres: string;
+  assessment: string;
+  rank: "strongest" | "dark horse" | "trap" | "weak";
+};
+
+// ── Thermodynamic and kinetic basis (report Section 3) ───────────────────────
+
+/** Table 3.1 — water properties across the operating range. */
+export type WaterPropertyRow = {
+  property: string;
+  ambient: string;
+  nearCritical: string;
+  operating: string;
+  consequence: string;
+  indicative?: boolean;
+};
+
+/** Tables 3.2 / 3.3 — a reaction with its enthalpy and role. */
+export type ReactionRow = {
+  name: string;
+  stoichiometry: string;
+  enthalpy: string;
+  role: string;
+};
+
+export type ChemistryTopic = {
+  id: string;
+  title: string;
+  paragraphs: string[];
+  /** A named highlight — the unifying insight, a warning, a stoichiometry argument. */
+  callout?: { kind: "insight" | "warning" | "consequence"; title: string; body: string };
+};
+
+/** §3.7 — findings that contradict the flowsheet as drawn. */
+export type ChemistryContradiction = {
+  title: string;
+  body: string;
+};
+
+// ── Review disposition (report Table 2.5) ────────────────────────────────────
+
+export type ReviewObjection = {
+  objection: string;
+  applies: "no" | "inverted" | "transformed" | "overstated" | "yes" | "unmitigable";
+  disposition: string;
 };
 
 // ── Report structure (report Table A.1) ──────────────────────────────────────
@@ -193,8 +259,6 @@ export type ProcessBlock = {
     /** Free-text condition line when a range does not fit, e.g. "Ambient → 25 MPa". */
     summary: string;
   };
-  /** Position of this block on the diagram grid, 0-indexed left→right / top→bottom. */
-  diagram: { col: number; row: number };
   needsValidation: boolean;
   /** Function prose — the block description. */
   function: string[];

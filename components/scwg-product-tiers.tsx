@@ -57,7 +57,9 @@ function SortableTable({ table }: { table: NonNullable<ProductItem["table"]> }) 
 }
 
 function ProductCard({ item }: { item: ProductItem }) {
-  const [open, setOpen] = useState(false);
+  // Expanded by default: the detail is the point of the card, and collapsing it
+  // hides the substance behind a click.
+  const [open, setOpen] = useState(true);
 
   return (
     <article className="flex flex-col rounded-[2rem] border border-ink/10 bg-surface/55 p-6">
@@ -103,7 +105,7 @@ export function ScwgProductTiers() {
       {scwgProductGroups.map((group) => (
         <div key={group.id}>
           <h3 className="section-title text-2xl sm:text-3xl">{group.title}</h3>
-          {group.intro ? <p className="mt-2 max-w-prose text-sm leading-7 text-ink/60">{group.intro}</p> : null}
+          {group.intro ? <p className="mt-2 text-sm leading-7 text-ink/60">{group.intro}</p> : null}
           <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {group.items.map((item) => (
               <ProductCard item={item} key={item.name} />

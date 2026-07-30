@@ -72,7 +72,7 @@ export const dashboardSections: readonly DashboardSection[] = [
   {
     href: "/projects", label: "Projects", subtitle: "Engineering, research, writing, and creative work.",
     groups: [
-      { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
+      { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/supercritical-water-gasification", label: "SCWG concept" }, { href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
       { href: "/projects#creative-projects-title", label: "Creative & enterprise", items: [{ href: "/projects/cook-enterprise", label: "cook.enterprise" }, { href: "/projects#creative-projects-title", label: "Website" }, { href: "/projects#pixel-art-cities", label: "Pixel-art cities" }] },
     ],
   },
@@ -230,7 +230,7 @@ function dashboardTreeNodeMatchesPath(node: DashboardTreeNode, pathname: string,
 function loadingDetailsForPath(path: string): Pick<DashboardRouteLoading, "title" | "variant"> {
   if (path === "/") return { title: "Warming up the homepage", variant: "home" };
   if (path.startsWith("/about")) return { title: "Waking up…", variant: "about" };
-  if (path.startsWith("/projects")) return { title: "Workin on smth", variant: "projects" };
+  if (path.startsWith("/projects")) return { title: "Writing...", variant: "projects" };
   if (path.startsWith("/recipes")) return { title: "Preheating", variant: "recipes" };
   if (path.startsWith("/restaurants")) return { title: "Setting the table", variant: "restaurants" };
   if (path.startsWith("/tools")) return { title: "Adding final touches", variant: "tools" };
