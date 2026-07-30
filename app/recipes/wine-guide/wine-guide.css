@@ -600,32 +600,59 @@
   border-radius: 1rem;
 }
 
+.wine-world-map {
+  border-radius: 1rem;
+  background: rgb(15 28 52);
+}
+
 .wine-world-country {
-  fill: rgb(var(--color-ink) / 0.07);
-  stroke: rgb(var(--color-surface) / 0.92);
-  stroke-width: 0.8;
+  fill: rgb(245 245 238);
+  stroke: rgb(146 157 153 / 0.78);
+  stroke-width: 0.62;
   vector-effect: non-scaling-stroke;
   transition: fill 150ms ease, opacity 150ms ease, stroke 150ms ease;
 }
 
 .wine-world-country[data-featured="true"] {
-  fill: rgb(var(--wine-red) / 0.56);
-  stroke: rgb(var(--color-paper) / 0.9);
+  fill: rgb(222 229 211);
+  stroke: rgb(101 119 107 / 0.74);
   cursor: pointer;
   outline: none;
 }
 
 .wine-world-country[data-featured="true"]:hover,
 .wine-world-country[data-featured="true"]:focus-visible {
-  fill: rgb(var(--wine-red) / 0.84);
+  fill: rgb(var(--wine-red) / 0.56);
   stroke: rgb(var(--wine-gold));
-  stroke-width: 1.8;
+  stroke-width: 1.2;
+}
+
+.wine-world-labels {
+  pointer-events: none;
+}
+
+.wine-world-labels text {
+  fill: rgb(47 57 54 / 0.84);
+  font-family: var(--font-ui);
+  font-size: 6.8px;
+  font-weight: 730;
+  letter-spacing: 0.045em;
+  paint-order: stroke;
+  pointer-events: none;
+  stroke: rgb(248 248 242 / 0.98);
+  stroke-linejoin: round;
+  stroke-width: 2.5px;
+  text-transform: uppercase;
+}
+
+.wine-latitude-lines {
+  pointer-events: none;
 }
 
 .wine-latitude-lines line {
-  stroke: rgb(var(--wine-gold) / 0.32);
-  stroke-dasharray: 4 5;
-  stroke-width: 1;
+  stroke: rgb(var(--color-ink) / 0.16);
+  stroke-dasharray: 3 5;
+  stroke-width: 0.65;
 }
 
 .wine-latitude-lines text {
@@ -1174,6 +1201,11 @@
   outline-offset: 2px;
 }
 
+.wine-map-layer-switch {
+  width: fit-content;
+  margin-bottom: 0.45rem;
+}
+
 .wine-burgundy-detail,
 .wine-bordeaux-detail-map {
   display: grid;
@@ -1300,9 +1332,10 @@
 
 .wine-vector-map-wrap {
   overflow: hidden;
-  border: 1px solid rgb(var(--color-ink) / 0.085);
+  border: 1px solid rgb(38 54 72 / 0.24);
   border-radius: 1rem;
   background: rgb(var(--color-paper) / 0.32);
+  box-shadow: 0 0.45rem 1.4rem rgb(15 28 52 / 0.08);
 }
 
 .wine-map-viewport {
@@ -1310,6 +1343,7 @@
   min-width: 0;
   overflow: hidden;
   border-radius: 1rem;
+  background: rgb(15 28 52);
 }
 
 .wine-map-viewport > svg {
@@ -1328,14 +1362,13 @@
   top: 0.68rem;
   right: 0.68rem;
   display: flex;
-  padding: 0.2rem;
+  padding: 0;
   align-items: center;
   gap: 0.18rem;
-  border: 1px solid rgb(var(--color-ink) / 0.1);
-  border-radius: 0.62rem;
-  background: rgb(var(--color-paper) / 0.9);
-  box-shadow: 0 5px 18px rgb(var(--color-ink) / 0.12);
-  backdrop-filter: blur(8px);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
 }
 
 .wine-map-viewport-controls button {
@@ -1344,9 +1377,10 @@
   height: 1.65rem;
   padding: 0;
   place-items: center;
-  border: 1px solid rgb(var(--color-ink) / 0.08);
-  border-radius: 0.42rem;
-  background: rgb(var(--color-surface) / 0.7);
+  border: 1px solid rgb(53 65 70 / 0.14);
+  border-radius: 999px;
+  background: rgb(255 255 252 / 0.96);
+  box-shadow: 0 4px 14px rgb(15 28 52 / 0.16);
   color: rgb(var(--color-ink) / 0.76);
   font-family: var(--font-ui);
   font-size: 0.76rem;
@@ -1373,11 +1407,16 @@
 .wine-map-viewport-controls .wine-map-reset {
   width: auto;
   padding: 0 0.48rem;
+  border-radius: 999px;
   font-size: 0.43rem;
 }
 
 .wine-map-viewport-controls output {
   min-width: 2rem;
+  border-radius: 999px;
+  background: rgb(255 255 252 / 0.9);
+  padding: 0.32rem 0.4rem;
+  box-shadow: 0 4px 14px rgb(15 28 52 / 0.12);
   color: rgb(var(--color-ink) / 0.44);
   font-family: var(--font-ui);
   font-size: 0.39rem;
@@ -1400,6 +1439,28 @@
   pointer-events: none;
 }
 
+.wine-satellite-attribution {
+  position: absolute;
+  z-index: 4;
+  bottom: 0.62rem;
+  left: 0.72rem;
+  max-width: min(58%, 22rem);
+  margin: 0;
+  border-radius: 0.38rem;
+  background: rgb(var(--color-paper) / 0.84);
+  padding: 0.2rem 0.34rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-family: var(--font-ui);
+  font-size: 0.36rem;
+  line-height: 1.35;
+}
+
+.wine-satellite-attribution a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
 .wine-country-boundary-map,
 .wine-burgundy-overview-map,
 .wine-burgundy-boundary-map,
@@ -1418,7 +1479,50 @@
 }
 
 .wine-vector-map-paper {
-  fill: rgb(var(--color-surface) / 0.72);
+  fill: rgb(var(--color-surface) / 0.94);
+}
+
+.wine-country-boundary-map[data-map-layer="atlas"] .wine-vector-map-paper,
+.wine-bordeaux-boundary-map[data-map-layer="atlas"] .wine-vector-map-paper {
+  fill: rgb(211 230 239);
+}
+
+.wine-burgundy-overview-map .wine-vector-map-paper,
+.wine-burgundy-boundary-map[data-map-layer="atlas"] .wine-vector-map-paper {
+  fill: rgb(241 242 234);
+}
+
+.wine-satellite-tiles {
+  pointer-events: none;
+}
+
+.wine-satellite-tiles image {
+  filter: saturate(0.68) contrast(0.92) brightness(1.04);
+}
+
+.wine-satellite-wash {
+  fill: rgb(var(--color-paper) / 0.14);
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-land {
+  fill: transparent;
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-neighbours path {
+  fill: rgb(var(--color-paper) / 0.08);
+  stroke: rgb(var(--color-paper) / 0.68);
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-border,
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-shape,
+.wine-burgundy-boundary-map[data-map-layer="satellite"] .wine-burgundy-boundary-area,
+.wine-bordeaux-boundary-map[data-map-layer="satellite"] .wine-bordeaux-boundary-area {
+  stroke-width: 1.2;
+  filter: drop-shadow(0 0 1.5px rgb(var(--color-paper) / 0.88));
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-labels rect {
+  fill: rgb(var(--color-paper) / 0.94);
 }
 
 .wine-vector-map-error {
@@ -1461,8 +1565,13 @@
   width: 0.9rem;
   height: 0;
   border: 0;
-  border-top: 2px solid rgb(96 151 178 / 0.8);
+  border-top: 1px solid rgb(87 124 139 / 0.72);
   border-radius: 0;
+}
+
+.wine-vector-map-key i[data-layer="water"] {
+  border-color: rgb(120 151 164 / 0.64);
+  background: rgb(211 230 239);
 }
 
 .wine-vector-map-key i[data-layer="administrative"] {
@@ -1531,36 +1640,60 @@
 
 /* Country view */
 
+.wine-country-neighbours path {
+  fill: rgb(235 238 231);
+  stroke: rgb(116 130 127 / 0.76);
+  stroke-width: 0.82;
+  vector-effect: non-scaling-stroke;
+}
+
 .wine-country-land {
-  fill: rgb(var(--wine-leaf) / 0.08);
+  fill: rgb(248 245 234);
 }
 
 .wine-country-border {
   fill: none;
-  stroke: rgb(var(--wine-red-dark) / 0.58);
-  stroke-width: 1.8;
+  stroke: rgb(83 98 94 / 0.88);
+  stroke-width: 1.35;
   vector-effect: non-scaling-stroke;
 }
 
+.wine-country-neighbour-labels {
+  pointer-events: none;
+}
+
+.wine-country-neighbour-labels text {
+  fill: rgb(74 88 84 / 0.54);
+  font-family: var(--font-ui);
+  font-size: 8.5px;
+  font-weight: 690;
+  letter-spacing: 0.08em;
+  paint-order: stroke;
+  stroke: rgb(235 238 231 / 0.96);
+  stroke-linejoin: round;
+  stroke-width: 3px;
+  text-transform: uppercase;
+}
+
 .wine-country-region-shape {
-  stroke: rgb(var(--color-paper) / 0.9);
-  stroke-width: 1.6;
+  stroke: rgb(var(--color-ink) / 0.3);
+  stroke-width: 0.72;
   cursor: pointer;
   outline: none;
   vector-effect: non-scaling-stroke;
   transition: filter 150ms ease, fill 150ms ease, stroke 150ms ease;
 }
 
-.wine-country-region-shape[data-colour-index="0"] { fill: rgb(117 61 75 / 0.58); }
-.wine-country-region-shape[data-colour-index="1"] { fill: rgb(86 114 82 / 0.55); }
-.wine-country-region-shape[data-colour-index="2"] { fill: rgb(182 135 68 / 0.5); }
-.wine-country-region-shape[data-colour-index="3"] { fill: rgb(86 104 124 / 0.52); }
-.wine-country-region-shape[data-colour-index="4"] { fill: rgb(133 91 112 / 0.5); }
-.wine-country-region-shape[data-colour-index="5"] { fill: rgb(93 124 119 / 0.54); }
+.wine-country-region-shape[data-colour-index="0"] { fill: rgb(117 61 75 / 0.24); }
+.wine-country-region-shape[data-colour-index="1"] { fill: rgb(86 114 82 / 0.22); }
+.wine-country-region-shape[data-colour-index="2"] { fill: rgb(182 135 68 / 0.21); }
+.wine-country-region-shape[data-colour-index="3"] { fill: rgb(86 104 124 / 0.2); }
+.wine-country-region-shape[data-colour-index="4"] { fill: rgb(133 91 112 / 0.21); }
+.wine-country-region-shape[data-colour-index="5"] { fill: rgb(93 124 119 / 0.22); }
 
 .wine-country-region-shape[data-precision="administrative-redraw"] {
-  stroke-dasharray: 4 2;
-  opacity: 0.82;
+  stroke-dasharray: 2 2;
+  opacity: 0.9;
 }
 
 .wine-country-region-shape:hover,
@@ -1568,25 +1701,43 @@
 .wine-country-region-shape[data-selected="true"] {
   fill: rgb(var(--wine-red) / 0.78);
   stroke: rgb(var(--wine-gold));
-  stroke-width: 3;
+  stroke-width: 1.7;
   filter: drop-shadow(0 4px 6px rgb(35 28 24 / 0.2));
 }
 
 .wine-country-contours path {
   fill: none;
-  stroke: rgb(var(--color-ink) / 0.22);
-  stroke-dasharray: 5 5;
-  stroke-width: 1.2;
+  stroke: rgb(var(--color-ink) / 0.18);
+  stroke-dasharray: 3 4;
+  stroke-width: 0.65;
   vector-effect: non-scaling-stroke;
 }
 
-.wine-country-rivers path {
+.wine-country-rivers path,
+.wine-bordeaux-rivers path,
+.wine-burgundy-overview-water path {
   fill: none;
-  stroke: rgb(92 153 181 / 0.74);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 3.2;
   vector-effect: non-scaling-stroke;
+}
+
+.wine-country-rivers .wine-waterway-bank {
+  stroke: rgb(var(--color-paper) / 0.72);
+  stroke-width: 2.4;
+}
+
+.wine-country-rivers .wine-waterway-channel {
+  stroke: rgb(79 119 135 / 0.68);
+  stroke-width: 1.05;
+}
+
+.wine-country-rivers [data-waterway-size="minor"] .wine-waterway-bank {
+  stroke-width: 1.8;
+}
+
+.wine-country-rivers [data-waterway-size="minor"] .wine-waterway-channel {
+  stroke-width: 0.72;
 }
 
 .wine-country-contour-labels text,
@@ -1605,7 +1756,7 @@
 }
 
 .wine-country-river-labels text {
-  fill: rgb(65 122 151 / 0.88);
+  fill: rgb(65 104 119 / 0.78);
 }
 
 .wine-country-region-labels g {
@@ -1614,17 +1765,21 @@
 }
 
 .wine-country-region-labels rect {
-  fill: rgb(var(--color-paper) / 0.84);
-  stroke: rgb(var(--color-ink) / 0.09);
+  fill: transparent;
+  stroke: transparent;
   transition: fill 150ms ease, stroke 150ms ease;
 }
 
 .wine-country-region-labels text {
-  fill: rgb(var(--color-ink) / 0.78);
+  fill: rgb(48 58 55 / 0.88);
   font-family: var(--font-ui);
-  font-size: 10px;
-  font-weight: 760;
+  font-size: 9.5px;
+  font-weight: 720;
+  paint-order: stroke;
   pointer-events: none;
+  stroke: rgb(250 249 243 / 0.98);
+  stroke-linejoin: round;
+  stroke-width: 3.5px;
 }
 
 .wine-country-boundary-map[data-dense="true"] .wine-country-region-labels text {
@@ -1634,8 +1789,14 @@
 .wine-country-region-labels g:hover rect,
 .wine-country-region-labels g:focus-visible rect,
 .wine-country-region-labels g[data-selected="true"] rect {
-  fill: rgb(var(--wine-gold) / 0.22);
-  stroke: rgb(var(--wine-red) / 0.66);
+  fill: rgb(255 255 252 / 0.84);
+  stroke: rgb(var(--wine-red) / 0.28);
+}
+
+.wine-country-region-labels g:hover text,
+.wine-country-region-labels g:focus-visible text,
+.wine-country-region-labels g[data-selected="true"] text {
+  fill: rgb(var(--wine-red-dark));
 }
 
 .wine-country-inset > rect {
@@ -1676,15 +1837,27 @@
   font-style: italic;
 }
 
-.wine-burgundy-overview-water path {
-  fill: none;
-  stroke: rgb(87 152 183 / 0.74);
-  stroke-linecap: round;
-  stroke-width: 4;
+.wine-burgundy-overview-water .wine-waterway-bank {
+  stroke: rgb(var(--color-paper) / 0.72);
+  stroke-width: 3;
+}
+
+.wine-burgundy-overview-water .wine-waterway-channel {
+  stroke: rgb(80 119 135 / 0.68);
+  stroke-width: 1.25;
+}
+
+.wine-burgundy-overview-water [data-waterway-size="canal"] .wine-waterway-bank {
+  stroke-width: 2;
+}
+
+.wine-burgundy-overview-water [data-waterway-size="canal"] .wine-waterway-channel {
+  stroke-dasharray: 3.5 1.8;
+  stroke-width: 0.8;
 }
 
 .wine-burgundy-overview-water text {
-  fill: rgb(65 122 151 / 0.82);
+  fill: rgb(65 104 119 / 0.76);
   font-family: var(--font-ui);
   font-size: 10px;
   font-style: italic;
@@ -1893,9 +2066,17 @@
 
 /* Exact Bordeaux */
 
+.wine-bordeaux-context-land {
+  fill: rgb(241 242 234);
+  stroke: rgb(94 109 105 / 0.74);
+  stroke-width: 1.1;
+  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
 .wine-bordeaux-boundary-area {
   stroke-linejoin: round;
-  stroke-width: 1.15;
+  stroke-width: 0.72;
   cursor: pointer;
   outline: none;
   vector-effect: non-scaling-stroke;
@@ -1903,18 +2084,18 @@
 }
 
 .wine-bordeaux-boundary-area[data-bank="Left Bank"] {
-  fill: rgb(126 60 84 / 0.34);
-  stroke: rgb(111 46 68 / 0.72);
+  fill: rgb(126 60 84 / 0.2);
+  stroke: rgb(111 46 68 / 0.56);
 }
 
 .wine-bordeaux-boundary-area[data-bank="Right Bank"] {
-  fill: rgb(77 112 78 / 0.34);
-  stroke: rgb(57 91 61 / 0.74);
+  fill: rgb(77 112 78 / 0.2);
+  stroke: rgb(57 91 61 / 0.58);
 }
 
 .wine-bordeaux-boundary-area[data-bank="Between the rivers"] {
-  fill: rgb(190 137 58 / 0.34);
-  stroke: rgb(152 99 34 / 0.76);
+  fill: rgb(190 137 58 / 0.19);
+  stroke: rgb(152 99 34 / 0.58);
 }
 
 .wine-bordeaux-boundary-area:hover,
@@ -1922,25 +2103,42 @@
 .wine-bordeaux-boundary-area[data-selected="true"] {
   fill: rgb(var(--wine-gold) / 0.72);
   stroke: rgb(var(--wine-red-dark));
-  stroke-width: 3;
+  stroke-width: 1.8;
   filter: url("#wine-bordeaux-boundary-shadow");
 }
 
-.wine-bordeaux-rivers path {
-  fill: none;
-  stroke: rgb(91 153 183 / 0.82);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 7;
-  vector-effect: non-scaling-stroke;
+.wine-bordeaux-rivers .wine-waterway-bank {
+  stroke: rgb(var(--color-paper) / 0.76);
+  stroke-width: 3.4;
+}
+
+.wine-bordeaux-rivers .wine-waterway-channel {
+  stroke: rgb(76 116 132 / 0.72);
+  stroke-width: 1.3;
+}
+
+.wine-bordeaux-rivers [data-waterway-size="estuary"] .wine-waterway-bank {
+  stroke-width: 4.8;
+}
+
+.wine-bordeaux-rivers [data-waterway-size="estuary"] .wine-waterway-channel {
+  stroke-width: 1.8;
+}
+
+.wine-bordeaux-rivers [data-waterway-size="minor"] .wine-waterway-bank {
+  stroke-width: 2.2;
+}
+
+.wine-bordeaux-rivers [data-waterway-size="minor"] .wine-waterway-channel {
+  stroke-width: 0.82;
 }
 
 .wine-bordeaux-river-labels text {
-  fill: rgb(53 115 146 / 0.9);
+  fill: rgb(59 98 113 / 0.82);
   font-family: var(--font-ui);
   font-size: 11px;
   font-style: italic;
-  font-weight: 690;
+  font-weight: 590;
   paint-order: stroke;
   stroke: rgb(var(--color-surface) / 0.96);
   stroke-width: 3px;
@@ -2055,8 +2253,11 @@
 
 .wine-burgundy-river {
   fill: none;
-  stroke: rgb(var(--color-mist) / 0.9);
-  stroke-width: 5;
+  stroke: rgb(79 119 135 / 0.68);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
 }
 
 .wine-burgundy-band-labels rect {
@@ -3514,6 +3715,25 @@
 
   .wine-map-frame {
     overflow-x: auto;
+  }
+
+  .wine-map-layer-switch {
+    position: sticky;
+    z-index: 2;
+    left: 0;
+  }
+
+  .wine-satellite-attribution {
+    bottom: 0.42rem;
+    left: 0.42rem;
+    max-width: 58%;
+    font-size: 0.31rem;
+  }
+
+  .wine-map-drag-hint {
+    right: 0.42rem;
+    bottom: 0.42rem;
+    font-size: 0.33rem;
   }
 
   .wine-map-breadcrumbs,

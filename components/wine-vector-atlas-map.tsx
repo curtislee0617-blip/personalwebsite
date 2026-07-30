@@ -2,7 +2,7 @@
 
 import { useId, useMemo, useState, type KeyboardEvent } from "react";
 import worldAtlas from "@d3-maps/atlas/world/countries/countries-110m";
-import { geoMercator, geoPath } from "d3-geo";
+import { geoBounds, geoMercator, geoPath, type GeoProjection } from "d3-geo";
 import { feature } from "topojson-client";
 import type {
   Feature,
@@ -14,6 +14,7 @@ import type {
 } from "geojson";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import {
+  layoutMapLabels,
   useWineMapViewport,
   WineMapViewportControls,
 } from "@/components/wine-map-viewport";
@@ -82,12 +83,17 @@ export type BurgundyBoundaryArea = OfficialMapArea & {
   grapes: string;
 };
 
+export type WineMapLayer = "atlas" | "satellite";
+
 const officialGeometry = officialGeometryJson as unknown as OfficialGeometry;
 const regionBoundaryDataset = regionBoundariesJson as unknown as RegionBoundaryDataset;
 const atlas = worldAtlas as unknown as AtlasTopology;
 const countryFeatures = (
   feature(atlas, atlas.objects.features) as FeatureCollection<Geometry, AtlasProperties>
 ).features;
+const franceAtlasFeature = countryFeatures.find(
+  (countryFeature) => countryFeature.properties.id === "FRA",
+);
 
 const vectorMapWidth = 900;
 const vectorMapHeight = 555;
@@ -266,6 +272,107 @@ function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
+type SatelliteTile = {
+  height: number;
+  href: string;
+  key: string;
+  width: number;
+  x: number;
+  y: number;
+};
+
+function satelliteTilesForProjection(
+  projection: GeoProjection,
+  width: number,
+  height: number,
+): SatelliteTile[] {
+  const tilePixelSize = 256;
+  const projectedWorldWidth = 2 * Math.PI * projection.scale();
+  const zoom = clamp(
+    Math.round(Math.log2(projectedWorldWidth / 220)),
+    2,
+    17,
+  );
+  const tileCount = 2 ** zoom;
+  const worldPixelSize = tilePixelSize * tileCount;
+  const svgUnitsPerPixel = projectedWorldWidth / worldPixelSize;
+  const [translateX, translateY] = projection.translate();
+  const projectedToTile = (value: number, translation: number) =>
+    ((value - translation) / svgUnitsPerPixel + worldPixelSize / 2) / tilePixelSize;
+  const minimumRawX = Math.floor(projectedToTile(0, translateX));
+  const maximumRawX = Math.ceil(projectedToTile(width, translateX)) - 1;
+  const minimumY = Math.max(0, Math.floor(projectedToTile(0, translateY)));
+  const maximumY = Math.min(
+    tileCount - 1,
+    Math.ceil(projectedToTile(height, translateY)) - 1,
+  );
+  const tileSvgSize = tilePixelSize * svgUnitsPerPixel;
+  const tiles: SatelliteTile[] = [];
+
+  for (let rawX = minimumRawX; rawX <= maximumRawX; rawX += 1) {
+    const wrappedX = ((rawX % tileCount) + tileCount) % tileCount;
+    for (let y = minimumY; y <= maximumY; y += 1) {
+      tiles.push({
+        height: tileSvgSize + 0.35,
+        href: `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${y}/${wrappedX}`,
+        key: `${zoom}-${rawX}-${y}`,
+        width: tileSvgSize + 0.35,
+        x: (rawX * tilePixelSize - worldPixelSize / 2) * svgUnitsPerPixel + translateX,
+        y: (y * tilePixelSize - worldPixelSize / 2) * svgUnitsPerPixel + translateY,
+      });
+    }
+  }
+
+  return tiles;
+}
+
+function WineSatelliteTiles({
+  height,
+  projection,
+  width,
+}: {
+  height: number;
+  projection: GeoProjection;
+  width: number;
+}) {
+  const tiles = useMemo(
+    () => satelliteTilesForProjection(projection, width, height),
+    [height, projection, width],
+  );
+
+  return (
+    <g aria-hidden="true" className="wine-satellite-tiles">
+      {tiles.map((tile) => (
+        <image
+          height={tile.height}
+          href={tile.href}
+          key={tile.key}
+          preserveAspectRatio="none"
+          width={tile.width}
+          x={tile.x}
+          y={tile.y}
+        />
+      ))}
+      <rect className="wine-satellite-wash" height={height} width={width} />
+    </g>
+  );
+}
+
+function WineSatelliteAttribution() {
+  return (
+    <p className="wine-satellite-attribution">
+      Imagery ©{" "}
+      <a
+        href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
+        rel="noreferrer"
+        target="_blank"
+      >
+        Esri, Maxar, Earthstar Geographics and the GIS User Community
+      </a>
+    </p>
+  );
+}
+
 function asRegionBoundaryFeature(
   region: WineRegion,
   boundary: RegionBoundary,
@@ -296,12 +403,44 @@ function riverLabelPosition(
   return projection(line.labelAt ?? line.coordinates[Math.floor(line.coordinates.length / 2)]);
 }
 
+function smoothWaterwayPath(line: WineMapLine, projection: GeoProjection) {
+  const points = line.coordinates
+    .map((coordinate) => projection(coordinate))
+    .filter((point): point is [number, number] => Boolean(point));
+
+  if (points.length < 2) return undefined;
+
+  const format = (value: number) => Number(value.toFixed(2));
+  let d = `M${format(points[0][0])} ${format(points[0][1])}`;
+
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const before = points[index - 1] ?? points[index];
+    const current = points[index];
+    const next = points[index + 1];
+    const after = points[index + 2] ?? next;
+    const firstControl: [number, number] = [
+      current[0] + (next[0] - before[0]) / 6,
+      current[1] + (next[1] - before[1]) / 6,
+    ];
+    const secondControl: [number, number] = [
+      next[0] - (after[0] - current[0]) / 6,
+      next[1] - (after[1] - current[1]) / 6,
+    ];
+
+    d += `C${format(firstControl[0])} ${format(firstControl[1])} ${format(secondControl[0])} ${format(secondControl[1])} ${format(next[0])} ${format(next[1])}`;
+  }
+
+  return d;
+}
+
 export function WineCountryBoundaryMap({
   country,
+  mapLayer,
   onSelectRegion,
   selectedRegionId,
 }: {
   country: WineCountry;
+  mapLayer: WineMapLayer;
   onSelectRegion: (region: WineRegion) => void;
   selectedRegionId: string | null;
 }) {
@@ -336,6 +475,45 @@ export function WineCountryBoundaryMap({
     [country.iso, country.regions],
   );
   const path = useMemo(() => geoPath(projection), [projection]);
+  const nearbyCountryFeatures = useMemo(
+    () => {
+      const boundaries = country.regions
+        .map((region) => regionBoundaryDataset.regions[region.id])
+        .filter((boundary): boundary is RegionBoundary => Boolean(boundary));
+      const west = Math.min(...boundaries.map((boundary) => boundary.bbox[0]));
+      const south = Math.min(...boundaries.map((boundary) => boundary.bbox[1]));
+      const east = Math.max(...boundaries.map((boundary) => boundary.bbox[2]));
+      const north = Math.max(...boundaries.map((boundary) => boundary.bbox[3]));
+      const longitudePadding = Math.max(4, (east - west) * 0.25);
+      const latitudePadding = Math.max(3, (north - south) * 0.25);
+      const contextWest = west - longitudePadding;
+      const contextEast = east + longitudePadding;
+      const contextSouth = south - latitudePadding;
+      const contextNorth = north + latitudePadding;
+
+      const longitudeOverlaps = (featureWest: number, featureEast: number) => {
+        const featureRanges = featureWest <= featureEast
+          ? [[featureWest, featureEast]]
+          : [[featureWest, 180], [-180, featureEast]];
+        return featureRanges.some(
+          ([rangeWest, rangeEast]) => rangeEast >= contextWest && rangeWest <= contextEast,
+        );
+      };
+
+      return countryFeatures
+        .filter((item) => item.properties.id !== country.iso && item.properties.id !== "ATA")
+        .map((item) => countryFeatureForMap(item, item.properties.id))
+        .filter((item) => {
+          const [[featureWest, featureSouth], [featureEast, featureNorth]] = geoBounds(item);
+          return (
+            featureNorth >= contextSouth
+            && featureSouth <= contextNorth
+            && longitudeOverlaps(featureWest, featureEast)
+          );
+        });
+    },
+    [country.iso, country.regions],
+  );
   const madeiraProjection = madeiraInsetFeature
     ? geoMercator().fitExtent(
       [[48, vectorMapHeight - 105], [226, vectorMapHeight - 37]],
@@ -351,6 +529,61 @@ export function WineCountryBoundaryMap({
   const mapCountryFeature = countryFeatureForMap(countryFeature, country.iso);
   const outlinePath = path(mapCountryFeature) ?? "";
   const denseLabels = country.regions.length > 10;
+  const nearbyCountryLabels = nearbyCountryFeatures.flatMap((nearbyCountry) => {
+    const [x, y] = path.centroid(nearbyCountry);
+    return Number.isFinite(x)
+      && Number.isFinite(y)
+      && x >= 18
+      && x <= vectorMapWidth - 18
+      && y >= 18
+      && y <= vectorMapHeight - 18
+      ? [{
+          id: nearbyCountry.properties.id,
+          name: nearbyCountry.properties.name,
+          x,
+          y,
+        }]
+      : [];
+  });
+  const regionLabelData = mainMappedRegions.flatMap(({ region, boundary }) => {
+    const point = projection(boundary.label);
+    if (!point) return [];
+    return [{
+      labelWidth: Math.max(
+        denseLabels ? 54 : 62,
+        region.name.length * (denseLabels ? 5.7 : 6.4) + 16,
+      ),
+      point: point as [number, number],
+      region,
+    }];
+  });
+  const labelPlacements = layoutMapLabels(
+    [
+      ...regionLabelData.map(({ labelWidth, point, region }) => ({
+        height: 21,
+        id: `region:${region.id}`,
+        point,
+        priority: region.id === selectedRegionId ? 100 : 20,
+        width: labelWidth,
+      })),
+      ...nearbyCountryLabels.map((label) => ({
+        height: 14,
+        id: `country:${label.id}`,
+        point: [label.x, label.y] as [number, number],
+        priority: 1,
+        width: Math.max(44, label.name.length * 6.1 + 10),
+      })),
+    ],
+    { scale: viewport.scale, x: viewport.x, y: viewport.y },
+    vectorMapWidth,
+    vectorMapHeight,
+    {
+      obstacles: [
+        { bottom: 52, left: vectorMapWidth - 225, right: vectorMapWidth - 8, top: 8 },
+        { bottom: vectorMapHeight - 7, left: 10, right: 286, top: vectorMapHeight - 37 },
+      ],
+    },
+  );
 
   return (
     <div className="wine-vector-map-wrap">
@@ -361,6 +594,7 @@ export function WineCountryBoundaryMap({
           aria-roledescription="interactive draggable map"
           className="wine-country-boundary-map"
           data-dense={denseLabels || undefined}
+          data-map-layer={mapLayer}
           role="group"
           viewBox={`0 0 ${vectorMapWidth} ${vectorMapHeight}`}
         >
@@ -373,6 +607,18 @@ export function WineCountryBoundaryMap({
           <rect className="wine-vector-map-paper" height={vectorMapHeight} rx="22" width={vectorMapWidth} />
 
           <g className="wine-map-transform-layer" transform={viewport.transform}>
+            {mapLayer === "satellite" ? (
+              <WineSatelliteTiles
+                height={vectorMapHeight}
+                projection={projection}
+                width={vectorMapWidth}
+              />
+            ) : null}
+            <g aria-hidden="true" className="wine-country-neighbours">
+              {nearbyCountryFeatures.map((feature) => (
+                <path d={path(feature) ?? undefined} key={feature.properties.id} />
+              ))}
+            </g>
             <g clipPath={`url(#${clipId})`}>
               <path className="wine-country-land" d={outlinePath} />
               <g aria-hidden="true" className="wine-country-contours">
@@ -408,13 +654,32 @@ export function WineCountryBoundaryMap({
                 })}
               </g>
               <g aria-hidden="true" className="wine-country-rivers">
-                {context?.rivers?.map((river) => (
-                  <path d={path(lineFeature(river)) ?? undefined} key={river.name} />
-                ))}
+                {context?.rivers?.map((river, index) => {
+                  const riverPath = smoothWaterwayPath(river, projection);
+                  return (
+                    <g data-waterway-size={index === 0 ? "major" : "minor"} key={river.name}>
+                      <path className="wine-waterway-bank" d={riverPath} />
+                      <path className="wine-waterway-channel" d={riverPath} />
+                    </g>
+                  );
+                })}
               </g>
             </g>
 
             <path aria-hidden="true" className="wine-country-border" d={outlinePath} />
+            <g aria-hidden="true" className="wine-country-neighbour-labels">
+              {nearbyCountryLabels.map((label) => {
+                const placement = labelPlacements.get(`country:${label.id}`);
+                return placement && !placement.hidden ? (
+                  <g
+                    key={label.id}
+                    transform={`translate(${label.x} ${label.y}) scale(${1 / viewport.scale}) translate(${placement.offsetX} ${placement.offsetY})`}
+                  >
+                    <text textAnchor="middle">{label.name}</text>
+                  </g>
+                ) : null;
+              })}
+            </g>
 
             {madeiraInset && madeiraPath ? (
               <g
@@ -422,9 +687,11 @@ export function WineCountryBoundaryMap({
                 data-selected={madeiraInset.region.id === selectedRegionId || undefined}
               >
                 <rect height="116" rx="12" width="208" x="33" y={vectorMapHeight - 136} />
-                <text className="wine-country-inset-title" x="48" y={vectorMapHeight - 113}>
-                  Madeira · inset
-                </text>
+                <g
+                  transform={`translate(48 ${vectorMapHeight - 113}) scale(${1 / viewport.scale})`}
+                >
+                  <text className="wine-country-inset-title">Madeira · inset</text>
+                </g>
                 <path
                   aria-label={`Open ${madeiraInset.region.name}, ${madeiraInset.region.grapes.slice(0, 3).join(", ")}`}
                   className="wine-country-region-shape"
@@ -452,9 +719,12 @@ export function WineCountryBoundaryMap({
               {context?.contours?.map((contour) => {
                 const point = riverLabelPosition(contour, projection);
                 return point ? (
-                  <text key={`${contour.name}-label`} x={point[0]} y={point[1]}>
-                    {contour.elevation}
-                  </text>
+                  <g
+                    key={`${contour.name}-label`}
+                    transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale})`}
+                  >
+                    <text>{contour.elevation}</text>
+                  </g>
                 ) : null;
               })}
             </g>
@@ -462,20 +732,22 @@ export function WineCountryBoundaryMap({
             <g aria-hidden="true" className="wine-country-river-labels">
               {context?.rivers?.map((river) => {
                 const point = riverLabelPosition(river, projection);
-                return point ? <text key={`${river.name}-label`} x={point[0]} y={point[1]}>{river.name}</text> : null;
+                return point ? (
+                  <g
+                    key={`${river.name}-label`}
+                    transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale})`}
+                  >
+                    <text>{river.name}</text>
+                  </g>
+                ) : null;
               })}
             </g>
 
             <g className="wine-country-region-labels">
-              {mainMappedRegions.map(({ region, boundary }) => {
-                const point = projection(boundary.label);
-                if (!point) return null;
+              {regionLabelData.map(({ labelWidth, point, region }) => {
                 const openRegion = () => onSelectRegion(region);
-                const labelWidth = Math.max(
-                  denseLabels ? 54 : 62,
-                  region.name.length * (denseLabels ? 5.7 : 6.4) + 16,
-                );
-                return (
+                const placement = labelPlacements.get(`region:${region.id}`);
+                return placement && !placement.hidden ? (
                   <g
                     aria-label={`Open ${region.name}`}
                     data-selected={region.id === selectedRegionId || undefined}
@@ -484,12 +756,12 @@ export function WineCountryBoundaryMap({
                     onKeyDown={(event) => svgButtonKeyDown(event, openRegion)}
                     role="button"
                     tabIndex={0}
-                    transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale})`}
+                    transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale}) translate(${placement.offsetX} ${placement.offsetY})`}
                   >
                     <rect height="21" rx="6" width={labelWidth} x={-labelWidth / 2} y="-12" />
                     <text textAnchor="middle" y="3">{region.name}</text>
                   </g>
-                );
+                ) : null;
               })}
             </g>
           </g>
@@ -501,9 +773,11 @@ export function WineCountryBoundaryMap({
           scale={viewport.scale}
         />
         <p className="wine-map-drag-hint">Drag to reorient · scroll or use + / − to zoom</p>
+        {mapLayer === "satellite" ? <WineSatelliteAttribution /> : null}
       </div>
 
       <div className="wine-vector-map-key">
+        <span><i data-layer="water" /> water</span>
         <span><i data-layer="region" /> appellation or GI footprint</span>
         <span><i data-layer="administrative" /> administrative atlas redraw</span>
         <span><i data-layer="river" /> river</span>
@@ -582,14 +856,20 @@ function BurgundyOverviewMap({
         <g aria-hidden="true" className="wine-burgundy-elevation-bands">
           <path data-height="1000" d="M151 135C221 177 239 254 229 343c-11 95 13 181 52 259 40 81 30 165-15 250H79c29-96 32-187 9-273-22-84-16-173 21-267 26-67 40-126 42-177Z" />
           <path data-height="500" d="M232 130c83 46 97 116 77 209-19 92-4 179 45 262 43 73 41 153-7 241H238c48-87 52-168 11-243-44-81-58-167-41-259 18-94 8-164-31-210Z" />
-          <text x="103" y="169">500–1,000 m</text>
-          <text x="238" y="181">200–500 m</text>
+          <text transform={`translate(103 169) scale(${1 / viewport.scale})`}>500–1,000 m</text>
+          <text transform={`translate(238 181) scale(${1 / viewport.scale})`}>200–500 m</text>
         </g>
         <g aria-hidden="true" className="wine-burgundy-overview-water">
-          <path d="M594 136C566 229 563 324 579 420c19 112 18 215-4 307-13 54-7 108 18 161" />
-          <text x="602" y="524">Saône</text>
-          <path d="M472 384C516 401 549 417 571 438" />
-          <text x="480" y="373">Canal de Bourgogne</text>
+          <g data-waterway-size="major">
+            <path className="wine-waterway-bank" d="M594 136C566 229 563 324 579 420c19 112 18 215-4 307-13 54-7 108 18 161" />
+            <path className="wine-waterway-channel" d="M594 136C566 229 563 324 579 420c19 112 18 215-4 307-13 54-7 108 18 161" />
+          </g>
+          <text transform={`translate(602 524) scale(${1 / viewport.scale})`}>Saône</text>
+          <g data-waterway-size="canal">
+            <path className="wine-waterway-bank" d="M472 384C516 401 549 417 571 438" />
+            <path className="wine-waterway-channel" d="M472 384C516 401 549 417 571 438" />
+          </g>
+          <text transform={`translate(480 373) scale(${1 / viewport.scale})`}>Canal de Bourgogne</text>
         </g>
         <g className="wine-burgundy-overview-areas">
           {burgundyOverviewAreas.map((item) => {
@@ -612,24 +892,27 @@ function BurgundyOverviewMap({
         </g>
         <g className="wine-burgundy-overview-labels">
           {burgundyOverviewAreas.map((item) => (
-            <g key={`${item.area}-label`} transform={`translate(${item.label[0]} ${item.label[1]})`}>
+            <g
+              key={`${item.area}-label`}
+              transform={`translate(${item.label[0]} ${item.label[1]}) scale(${1 / viewport.scale})`}
+            >
               <text className="wine-burgundy-overview-name" textAnchor="middle">{item.area}</text>
               <text className="wine-burgundy-overview-grapes" textAnchor="middle" y="17">{item.grapes}</text>
             </g>
           ))}
-          <text x="467" y="160">Dijon</text>
-          <text x="458" y="426">Beaune</text>
-          <text x="373" y="576">Chagny</text>
-          <text x="363" y="742">Tournus</text>
-          <text x="355" y="855">Mâcon</text>
+          <text transform={`translate(467 160) scale(${1 / viewport.scale})`}>Dijon</text>
+          <text transform={`translate(458 426) scale(${1 / viewport.scale})`}>Beaune</text>
+          <text transform={`translate(373 576) scale(${1 / viewport.scale})`}>Chagny</text>
+          <text transform={`translate(363 742) scale(${1 / viewport.scale})`}>Tournus</text>
+          <text transform={`translate(355 855) scale(${1 / viewport.scale})`}>Mâcon</text>
         </g>
             <g aria-hidden="true" className="wine-burgundy-overview-villages">
-              <text x="463" y="226">Gevrey-Chambertin</text>
-              <text x="468" y="311">Vosne-Romanée</text>
-              <text x="464" y="364">Nuits-Saint-Georges</text>
-              <text x="439" y="489">Pommard</text>
-              <text x="423" y="526">Meursault</text>
-              <text x="397" y="551">Puligny-Montrachet</text>
+              <text transform={`translate(463 226) scale(${1 / viewport.scale})`}>Gevrey-Chambertin</text>
+              <text transform={`translate(468 311) scale(${1 / viewport.scale})`}>Vosne-Romanée</text>
+              <text transform={`translate(464 364) scale(${1 / viewport.scale})`}>Nuits-Saint-Georges</text>
+              <text transform={`translate(439 489) scale(${1 / viewport.scale})`}>Pommard</text>
+              <text transform={`translate(423 526) scale(${1 / viewport.scale})`}>Meursault</text>
+              <text transform={`translate(397 551) scale(${1 / viewport.scale})`}>Puligny-Montrachet</text>
             </g>
           </g>
         </svg>
@@ -674,9 +957,11 @@ const burgundyVillages: Array<{ name: string; coordinates: [number, number] }> =
 ];
 
 function BurgundySouthBoundaryMap({
+  mapLayer,
   onSelectArea,
   selectedAreaId,
 }: {
+  mapLayer: WineMapLayer;
   onSelectArea: (area: BurgundyBoundaryArea) => void;
   selectedAreaId: string;
 }) {
@@ -714,6 +999,7 @@ function BurgundySouthBoundaryMap({
           aria-label="Official vineyard boundaries from Meursault through Puligny-Montrachet to Chassagne-Montrachet. Drag to reposition and use the controls to zoom."
           aria-roledescription="interactive draggable map"
           className="wine-burgundy-boundary-map"
+          data-map-layer={mapLayer}
           role="group"
           viewBox={`0 0 ${vectorMapWidth} 760`}
         >
@@ -729,6 +1015,13 @@ function BurgundySouthBoundaryMap({
           </defs>
           <rect className="wine-vector-map-paper" height="760" rx="22" width={vectorMapWidth} />
           <g className="wine-map-transform-layer" transform={viewport.transform}>
+        {mapLayer === "satellite" ? (
+          <WineSatelliteTiles
+            height={760}
+            projection={projection}
+            width={vectorMapWidth}
+          />
+        ) : null}
 
         <g aria-hidden="true" className="wine-burgundy-exact-contours">
           {burgundyContours.map((contour) => (
@@ -736,7 +1029,14 @@ function BurgundySouthBoundaryMap({
           ))}
           {burgundyContours.map((contour) => {
             const point = riverLabelPosition(contour, projection);
-            return point ? <text key={`${contour.elevation}-label`} x={point[0]} y={point[1]}>{contour.elevation}</text> : null;
+            return point ? (
+              <g
+                key={`${contour.elevation}-label`}
+                transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale})`}
+              >
+                <text>{contour.elevation}</text>
+              </g>
+            ) : null;
           })}
         </g>
 
@@ -769,7 +1069,11 @@ function BurgundySouthBoundaryMap({
           <path d={path(lineFeature(burgundyRoad)) ?? undefined} />
           {(() => {
             const point = riverLabelPosition(burgundyRoad, projection);
-            return point ? <text x={point[0]} y={point[1]}>Route des Grands Crus</text> : null;
+            return point ? (
+              <text transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale})`}>
+                Route des Grands Crus
+              </text>
+            ) : null;
           })()}
         </g>
 
@@ -777,7 +1081,10 @@ function BurgundySouthBoundaryMap({
           {burgundyVillages.map((village) => {
             const point = projection(village.coordinates);
             return point ? (
-              <g key={village.name} transform={`translate(${point[0]} ${point[1]})`}>
+              <g
+                key={village.name}
+                transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale})`}
+              >
                 <path d="M-5 0H5M0-5V5" />
                 <text x="9" y="-5">{village.name}</text>
               </g>
@@ -792,7 +1099,9 @@ function BurgundySouthBoundaryMap({
             return (
               <g key={`${area.id}-label`}>
                 <path d={`M${point[0]} ${point[1]}L${labelX - 9} ${labelY - 3}`} />
-                <text x={labelX} y={labelY}>{area.name}</text>
+                <text transform={`translate(${labelX} ${labelY}) scale(${1 / viewport.scale})`}>
+                  {area.name}
+                </text>
               </g>
             );
           })}
@@ -822,6 +1131,7 @@ function BurgundySouthBoundaryMap({
           scale={viewport.scale}
         />
         <p className="wine-map-drag-hint">Drag to reorient · scroll or use + / − to zoom</p>
+        {mapLayer === "satellite" ? <WineSatelliteAttribution /> : null}
       </div>
 
       <div className="wine-vector-map-key">
@@ -840,6 +1150,7 @@ function BurgundySouthBoundaryMap({
 }
 
 export function WineBurgundyBoundaryMap({
+  mapLayer,
   onSelectArea,
   onSelectOverviewArea,
   selectedAreaId,
@@ -847,6 +1158,7 @@ export function WineBurgundyBoundaryMap({
   view,
   onViewChange,
 }: {
+  mapLayer: WineMapLayer;
   onSelectArea: (area: BurgundyBoundaryArea) => void;
   onSelectOverviewArea: (area: BurgundyPlot["area"]) => void;
   selectedAreaId: string;
@@ -879,6 +1191,7 @@ export function WineBurgundyBoundaryMap({
         />
       ) : (
         <BurgundySouthBoundaryMap
+          mapLayer={mapLayer}
           onSelectArea={onSelectArea}
           selectedAreaId={selectedAreaId}
         />
@@ -887,12 +1200,12 @@ export function WineBurgundyBoundaryMap({
   );
 }
 
-const bordeauxRivers: WineMapLine[] = [
-  { name: "Gironde", coordinates: [[-0.98, 45.44], [-0.84, 45.3], [-0.69, 45.13], [-0.58, 45.0]], labelAt: [-0.75, 45.2] },
-  { name: "Garonne", coordinates: [[-0.58, 44.99], [-0.56, 44.86], [-0.42, 44.75], [-0.31, 44.61], [-0.2, 44.51]], labelAt: [-0.42, 44.72] },
-  { name: "Dordogne", coordinates: [[-0.58, 44.99], [-0.39, 44.97], [-0.2, 44.91], [0.02, 44.84], [0.16, 44.83]], labelAt: [-0.13, 44.93] },
-  { name: "Isle", coordinates: [[-0.49, 45.05], [-0.3, 45.04], [-0.18, 45.0]], labelAt: [-0.31, 45.08] },
-  { name: "Ciron", coordinates: [[-0.51, 44.47], [-0.4, 44.53], [-0.34, 44.59]], labelAt: [-0.41, 44.5] },
+const bordeauxRivers: Array<WineMapLine & { size: "estuary" | "major" | "minor" }> = [
+  { name: "Gironde", size: "estuary", coordinates: [[-0.98, 45.44], [-0.93, 45.4], [-0.84, 45.3], [-0.78, 45.22], [-0.69, 45.13], [-0.63, 45.06], [-0.58, 45.0]], labelAt: [-0.75, 45.2] },
+  { name: "Garonne", size: "major", coordinates: [[-0.58, 44.99], [-0.57, 44.93], [-0.56, 44.86], [-0.5, 44.81], [-0.42, 44.75], [-0.36, 44.68], [-0.31, 44.61], [-0.25, 44.56], [-0.2, 44.51]], labelAt: [-0.42, 44.72] },
+  { name: "Dordogne", size: "major", coordinates: [[-0.58, 44.99], [-0.49, 44.98], [-0.39, 44.97], [-0.29, 44.95], [-0.2, 44.91], [-0.1, 44.87], [0.02, 44.84], [0.09, 44.82], [0.16, 44.83]], labelAt: [-0.13, 44.93] },
+  { name: "Isle", size: "minor", coordinates: [[-0.49, 45.05], [-0.41, 45.04], [-0.3, 45.04], [-0.24, 45.02], [-0.18, 45.0]], labelAt: [-0.31, 45.08] },
+  { name: "Ciron", size: "minor", coordinates: [[-0.51, 44.47], [-0.47, 44.49], [-0.4, 44.53], [-0.37, 44.56], [-0.34, 44.59]], labelAt: [-0.41, 44.5] },
 ];
 
 const bordeauxContours: Array<WineMapLine & { elevation: string }> = [
@@ -910,9 +1223,11 @@ function bordeauxBboxArea(area: OfficialMapArea) {
 }
 
 export function WineBordeauxBoundaryMap({
+  mapLayer,
   onSelect,
   selectedSite,
 }: {
+  mapLayer: WineMapLayer;
   onSelect: (site: BordeauxMapSite) => void;
   selectedSite: BordeauxMapSite;
 }) {
@@ -931,6 +1246,61 @@ export function WineBordeauxBoundaryMap({
     .sort((first, second) => bordeauxBboxArea(second) - bordeauxBboxArea(first));
   const visibleEstates = bordeauxMapSites.filter(
     (site) => site.kind === "estate" && (bank === "All" || site.bank === bank),
+  );
+  const visibleAreaLabels = visibleAreas.flatMap((area) => {
+    const site = bordeauxMapSites.find((item) => item.id === area.id);
+    const point = site ? projection(site.coordinates) : null;
+    return site && point
+      ? [{ area, point: point as [number, number], site }]
+      : [];
+  });
+  const riverLabelData = bordeauxRivers.flatMap((river) => {
+    const point = riverLabelPosition(river, projection);
+    return point ? [{ point: point as [number, number], river }] : [];
+  });
+  const estateLabelData = visibleEstates.flatMap((site) => {
+    const point = projection(site.coordinates);
+    const isSelected = selectedSite.id === site.id;
+    return point && (viewport.scale >= 1.55 || isSelected)
+      ? [{ isSelected, point: point as [number, number], site }]
+      : [];
+  });
+  const bordeauxLabelPlacements = layoutMapLabels(
+    [
+      ...visibleAreaLabels.map(({ area, point }) => {
+        const isSelected = selectedSite.id === area.id;
+        return {
+          height: isSelected ? 17 : 14,
+          id: `area:${area.id}`,
+          point,
+          priority: isSelected ? 100 : 20,
+          width: Math.max(42, area.name.length * (isSelected ? 7.2 : 6.2) + 10),
+        };
+      }),
+      ...riverLabelData.map(({ point, river }) => ({
+        height: 15,
+        id: `river:${river.name}`,
+        point,
+        priority: river.size === "estuary" ? 55 : 45,
+        width: Math.max(46, river.name.length * 6.4 + 12),
+      })),
+      ...estateLabelData.map(({ isSelected, point, site }) => ({
+        height: isSelected ? 17 : 14,
+        id: `estate:${site.id}`,
+        point,
+        priority: isSelected ? 120 : 10,
+        width: Math.max(72, site.name.length * (isSelected ? 6.8 : 5.8) + 10),
+      })),
+    ],
+    { scale: viewport.scale, x: viewport.x, y: viewport.y },
+    vectorMapWidth,
+    vectorMapHeight,
+    {
+      obstacles: [
+        { bottom: 52, left: vectorMapWidth - 225, right: vectorMapWidth - 8, top: 8 },
+        { bottom: vectorMapHeight - 7, left: 10, right: 286, top: vectorMapHeight - 37 },
+      ],
+    },
   );
 
   return (
@@ -955,6 +1325,7 @@ export function WineBordeauxBoundaryMap({
             aria-label="Official Bordeaux appellation parcel boundaries with rivers and estate locations. Drag to reposition and use the controls to zoom."
             aria-roledescription="interactive draggable map"
             className="wine-bordeaux-boundary-map"
+            data-map-layer={mapLayer}
             role="group"
             viewBox={`0 0 ${vectorMapWidth} ${vectorMapHeight}`}
           >
@@ -970,6 +1341,20 @@ export function WineBordeauxBoundaryMap({
             </defs>
             <rect className="wine-vector-map-paper" height={vectorMapHeight} rx="22" width={vectorMapWidth} />
             <g className="wine-map-transform-layer" transform={viewport.transform}>
+          {mapLayer === "satellite" ? (
+            <WineSatelliteTiles
+              height={vectorMapHeight}
+              projection={projection}
+              width={vectorMapWidth}
+            />
+          ) : null}
+          {mapLayer === "atlas" && franceAtlasFeature ? (
+            <path
+              aria-hidden="true"
+              className="wine-bordeaux-context-land"
+              d={path(franceAtlasFeature) ?? undefined}
+            />
+          ) : null}
 
           <g aria-hidden="true" className="wine-bordeaux-contours">
             {bordeauxContours.map((contour) => (
@@ -977,7 +1362,14 @@ export function WineBordeauxBoundaryMap({
             ))}
             {bordeauxContours.map((contour) => {
               const point = riverLabelPosition(contour, projection);
-              return point ? <text key={`${contour.elevation}-label`} x={point[0]} y={point[1]}>{contour.elevation}</text> : null;
+              return point ? (
+                <g
+                  key={`${contour.elevation}-label`}
+                  transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale})`}
+                >
+                  <text>{contour.elevation}</text>
+                </g>
+              ) : null;
             })}
           </g>
 
@@ -1007,44 +1399,54 @@ export function WineBordeauxBoundaryMap({
           </g>
 
           <g aria-hidden="true" className="wine-bordeaux-rivers">
-            {bordeauxRivers.map((river) => (
-              <path d={path(lineFeature(river)) ?? undefined} key={river.name} />
-            ))}
+            {bordeauxRivers.map((river) => {
+              const riverPath = smoothWaterwayPath(river, projection);
+              return (
+                <g data-waterway-size={river.size} key={river.name}>
+                  <path className="wine-waterway-bank" d={riverPath} />
+                  <path className="wine-waterway-channel" d={riverPath} />
+                </g>
+              );
+            })}
           </g>
           <g aria-hidden="true" className="wine-bordeaux-river-labels">
-            {bordeauxRivers.map((river) => {
-              const point = riverLabelPosition(river, projection);
-              return point ? <text key={`${river.name}-label`} x={point[0]} y={point[1]}>{river.name}</text> : null;
+            {riverLabelData.map(({ point, river }) => {
+              const placement = bordeauxLabelPlacements.get(`river:${river.name}`);
+              return placement && !placement.hidden ? (
+                <g
+                  key={`${river.name}-label`}
+                  transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale}) translate(${placement.offsetX} ${placement.offsetY})`}
+                >
+                  <text textAnchor="middle">{river.name}</text>
+                </g>
+              ) : null;
             })}
           </g>
 
           <g className="wine-bordeaux-area-labels">
-            {visibleAreas.map((area) => {
-              const site = bordeauxMapSites.find((item) => item.id === area.id);
-              if (!site) return null;
-              const point = projection(site.coordinates);
-              if (!point) return null;
-              return (
+            {visibleAreaLabels.map(({ area, point }) => {
+              const placement = bordeauxLabelPlacements.get(`area:${area.id}`);
+              return placement && !placement.hidden ? (
                 <text
                   data-selected={selectedSite.id === area.id || undefined}
                   key={`${area.id}-label`}
                   textAnchor="middle"
-                  x={point[0]}
-                  y={point[1]}
+                  transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale}) translate(${placement.offsetX} ${placement.offsetY})`}
+                  y="3"
                 >
                   {area.name}
                 </text>
-              );
+              ) : null;
             })}
           </g>
 
               <g className="wine-bordeaux-estates">
-                {visibleEstates.map((site, index) => {
+                {visibleEstates.map((site) => {
                   const point = projection(site.coordinates);
                   if (!point) return null;
                   const openSite = () => onSelect(site);
                   const isSelected = selectedSite.id === site.id;
-                  const labelRight = index % 3 !== 1;
+                  const labelPlacement = bordeauxLabelPlacements.get(`estate:${site.id}`);
                   return (
                     <g
                       aria-label={`Open ${site.name}, ${site.classification}`}
@@ -1054,10 +1456,18 @@ export function WineBordeauxBoundaryMap({
                       onKeyDown={(event) => svgButtonKeyDown(event, openSite)}
                       role="button"
                       tabIndex={0}
-                      transform={`translate(${point[0]} ${point[1]})`}
+                      transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale})`}
                     >
                       <path d="M0-7L7 0 0 7-7 0Z" />
-                      <text textAnchor={labelRight ? "start" : "end"} x={labelRight ? 10 : -10} y="-7">{site.name}</text>
+                      {labelPlacement && !labelPlacement.hidden ? (
+                        <text
+                          textAnchor="middle"
+                          transform={`translate(${labelPlacement.offsetX} ${labelPlacement.offsetY})`}
+                          y="3"
+                        >
+                          {site.name}
+                        </text>
+                      ) : null}
                     </g>
                   );
                 })}
@@ -1071,9 +1481,11 @@ export function WineBordeauxBoundaryMap({
             scale={viewport.scale}
           />
           <p className="wine-map-drag-hint">Drag to reorient · scroll or use + / − to zoom</p>
+          {mapLayer === "satellite" ? <WineSatelliteAttribution /> : null}
         </div>
 
         <div className="wine-vector-map-key">
+          <span><i data-layer="water" /> water</span>
           <span><i data-layer="left-bank" /> Left Bank AOC parcels</span>
           <span><i data-layer="right-bank" /> Right Bank AOC parcels</span>
           <span><i data-layer="between" /> between the rivers</span>

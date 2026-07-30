@@ -7,7 +7,7 @@ import { geoNaturalEarth1, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import type { GeometryCollection, Topology } from "topojson-specification";
-import type { CoffeeMapLocation } from "@/components/coffee-country-terrain-map";
+import type { CoffeeMapLocation } from "@/components/coffee-altitude-map";
 import {
   coffeeGrowingRegionCount,
   coffeeOriginCount,
@@ -29,13 +29,13 @@ type AtlasTopology = Topology<{
 
 type AtlasFeature = Feature<Geometry, AtlasProperties>;
 
-const CoffeeCountryTerrainMap = dynamic(
-  () => import("@/components/coffee-country-terrain-map")
-    .then((module) => module.CoffeeCountryTerrainMap),
+const CoffeeAltitudeMap = dynamic(
+  () => import("@/components/coffee-altitude-map")
+    .then((module) => module.CoffeeAltitudeMap),
   {
     loading: () => (
-      <div className="coffee-country-terrain-map coffee-terrain-map-loading">
-        <p>Preparing the terrain map…</p>
+      <div className="coffee-altitude-map coffee-altitude-map-loading">
+        <p>Drawing the altitude atlas…</p>
       </div>
     ),
     ssr: false,
@@ -102,7 +102,7 @@ export function CoffeeRegionExplorer() {
     setSelectedGrowingRegionId(regionId);
   }, []);
 
-  const terrainLocations = useMemo<CoffeeMapLocation[]>(() => {
+  const mapLocations = useMemo<CoffeeMapLocation[]>(() => {
     if (selectedOrigin) {
       return selectedOrigin.growingRegions.map((region) => ({
         coordinates: region.coordinates,
@@ -159,15 +159,16 @@ export function CoffeeRegionExplorer() {
       <div className="coffee-map-stage">
         <div className="coffee-map-frame">
           {selectedRegion ? (
-            <CoffeeCountryTerrainMap
+            <CoffeeAltitudeMap
               ariaLabel={
                 selectedOrigin
-                  ? `${selectedOrigin.name} terrain and satellite coffee-growing map`
-                  : `${selectedRegion.name} terrain and satellite coffee-growing map`
+                  ? `${selectedOrigin.name} coffee-growing regions and altitude guides`
+                  : `${selectedRegion.name} coffee origins and altitude guides`
               }
               context={selectedOrigin ? "country" : "macro"}
+              focusIso={selectedOrigin?.iso}
               key={selectedOrigin?.iso ?? selectedRegion.id}
-              locations={terrainLocations}
+              locations={mapLocations}
               onSelectLocation={selectMapLocation}
               selectedLocationId={
                 selectedOrigin ? selectedGrowingRegion?.id ?? null : null
@@ -183,8 +184,8 @@ export function CoffeeRegionExplorer() {
             >
               <defs>
                 <linearGradient id="coffee-map-ocean" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="rgb(var(--color-mist) / 0.34)" />
-                  <stop offset="100%" stopColor="rgb(var(--color-mist) / 0.1)" />
+                  <stop offset="0%" stopColor="rgb(194 215 225)" />
+                  <stop offset="100%" stopColor="rgb(215 229 235)" />
                 </linearGradient>
               </defs>
               <rect fill="url(#coffee-map-ocean)" height={mapHeight} rx="24" width={mapWidth} />
@@ -229,6 +230,14 @@ export function CoffeeRegionExplorer() {
                     >
                       <circle className="coffee-map-marker-halo" r={12} />
                       <circle className="coffee-map-marker-dot" r={5} />
+                      <text
+                        className="coffee-map-marker-label"
+                        textAnchor={x > mapWidth * 0.72 ? "end" : "start"}
+                        x={x > mapWidth * 0.72 ? -9 : 9}
+                        y="-7"
+                      >
+                        {origin.name}
+                      </text>
                     </g>
                   );
                 })}
@@ -270,9 +279,9 @@ export function CoffeeRegionExplorer() {
             <span>{selectedOrigin ? "Country atlas" : selectedRegion ? "Regional view" : "The coffee belt"}</span>
             <p>
               {selectedOrigin
-                ? `${selectedOrigin.growingRegions.length} named growing regions—switch layers, pan or zoom, then choose an outlined area.`
+                ? `${selectedOrigin.growingRegions.length} named growing regions—follow the altitude guides, pan or zoom, then choose an outlined area.`
                 : selectedRegion
-                  ? `${regionOrigins.length} countries—switch between terrain and satellite, then choose a country marker.`
+                  ? `${regionOrigins.length} countries—compare their growing elevations, then choose a mapped origin.`
                   : `${coffeeOriginCount} countries and ${coffeeGrowingRegionCount} growing zones—choose a region or click a dot.`}
             </p>
           </div>
@@ -450,29 +459,10 @@ export function CoffeeRegionExplorer() {
       <p className="coffee-map-source">
         World overview geometry:{" "}
         <a href="https://www.naturalearthdata.com/" rel="noreferrer" target="_blank">Natural Earth</a>
-        {" "}through D3 Maps Atlas. Regional and country terrain views use{" "}
-        <a
-          href="https://opentopomap.org/about"
-          rel="noreferrer"
-          target="_blank"
-        >
-          OpenTopoMap
-        </a>
-        {" "}with{" "}
-        <a href="https://www.openstreetmap.org/copyright" rel="noreferrer" target="_blank">
-          OpenStreetMap data
-        </a>
-        , while satellite mode uses{" "}
-        <a
-          href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
-          rel="noreferrer"
-          target="_blank"
-        >
-          Esri World Imagery
-        </a>
-        . Full attribution is shown inside each map. The coloured outlines are approximate
-        orientation footprints built around source-backed growing locations; they are not administrative,
-        appellation or farm boundaries. The atlas combines national coffee bodies, origin-specific public references,{" "}
+        {" "}through D3 Maps Atlas. Regional and country close-ups use the same clean vector geography with
+        schematic altitude lines built from each source-backed growing range. The coloured outlines are approximate
+        orientation footprints, not surveyed contours, administrative limits or farm boundaries. The atlas combines
+        national coffee bodies, origin-specific public references,{" "}
         <a href="https://varieties.worldcoffeeresearch.org/" rel="noreferrer" target="_blank">
           World Coffee Research
         </a>

@@ -13,8 +13,10 @@ import {
   burgundyBoundaryAreas,
   curatedPlotIdForBurgundyArea,
   type BurgundyBoundaryArea,
+  type WineMapLayer,
 } from "@/components/wine-vector-atlas-map";
 import {
+  layoutMapLabels,
   useWineMapViewport,
   WineMapViewportControls,
 } from "@/components/wine-map-viewport";
@@ -52,6 +54,23 @@ const worldProjection = geoNaturalEarth1().fitExtent(
   { type: "FeatureCollection", features: worldFeatures },
 );
 const worldPath = geoPath(worldProjection);
+const worldWineLabels = worldFeatures.flatMap((countryFeature) => {
+  const wineCountry = wineCountryByIso.get(countryFeature.properties.id);
+  if (!wineCountry) return [];
+  const [x, y] = worldPath.centroid(countryFeature);
+  return Number.isFinite(x) && Number.isFinite(y)
+    ? [{
+        country: wineCountry,
+        label: wineCountry.iso === "USA"
+          ? "USA"
+          : wineCountry.iso === "GBR"
+            ? "UK"
+            : wineCountry.name,
+        x,
+        y,
+      }]
+    : [];
+});
 const burgundyBands = [
   { area: "Chablis", grapes: "Chardonnay" },
   { area: "Côte de Nuits", grapes: "Pinot Noir" },
@@ -77,7 +96,26 @@ export function WineRegionExplorer() {
   const [selectedBordeauxSiteId, setSelectedBordeauxSiteId] = useState("bordeaux-pauillac");
   const [burgundyMapView, setBurgundyMapView] = useState<"overview" | "south">("south");
   const [selectedBurgundyAreaId, setSelectedBurgundyAreaId] = useState("burgundy-meursault-perrieres");
+  const [mapLayer, setMapLayer] = useState<WineMapLayer>("atlas");
   const worldViewport = useWineMapViewport(mapWidth, mapHeight);
+  const worldLabelPlacements = layoutMapLabels(
+    worldWineLabels.map(({ country, label, x, y }) => ({
+      height: 12,
+      id: country.iso,
+      point: [x, y],
+      priority: country.regions.length,
+      width: Math.max(28, label.length * 5.4 + 8),
+    })),
+    { scale: worldViewport.scale, x: worldViewport.x, y: worldViewport.y },
+    mapWidth,
+    mapHeight,
+    {
+      obstacles: [
+        { bottom: 52, left: mapWidth - 225, right: mapWidth - 8, top: 8 },
+        { bottom: mapHeight - 7, left: 10, right: 286, top: mapHeight - 37 },
+      ],
+    },
+  );
 
   const selectedCountry = selectedCountryIso ? wineCountryByIso.get(selectedCountryIso) ?? null : null;
   const selectedRegion =
@@ -94,6 +132,9 @@ export function WineRegionExplorer() {
     bordeauxMapSites.find((site) => site.id === selectedBordeauxSiteId) ?? bordeauxMapSites[0];
   const isBurgundyOpen = selectedRegion?.id === "fr-burgundy";
   const isBordeauxOpen = selectedRegion?.id === "fr-bordeaux";
+  const supportsSatelliteLayer = Boolean(selectedCountry)
+    && !(isBurgundyOpen && burgundyMapView === "overview");
+  const activeMapLayer: WineMapLayer = supportsSatelliteLayer ? mapLayer : "atlas";
   const selectedCuratedBoundaryPlot = burgundyPlots.find(
     (plot) => plot.id === curatedPlotIdForBurgundyArea(selectedBurgundyArea.id),
   ) ?? null;
@@ -185,8 +226,31 @@ export function WineRegionExplorer() {
             ) : null}
           </div>
 
+          {supportsSatelliteLayer ? (
+            <div
+              aria-label="Wine map layer"
+              className="wine-detail-map-switch wine-map-layer-switch"
+            >
+              <button
+                aria-pressed={mapLayer === "atlas"}
+                onClick={() => setMapLayer("atlas")}
+                type="button"
+              >
+                Atlas
+              </button>
+              <button
+                aria-pressed={mapLayer === "satellite"}
+                onClick={() => setMapLayer("satellite")}
+                type="button"
+              >
+                Satellite
+              </button>
+            </div>
+          ) : null}
+
           {isBurgundyOpen ? (
             <WineBurgundyBoundaryMap
+              mapLayer={activeMapLayer}
               onSelectArea={selectBurgundyBoundaryArea}
               onSelectOverviewArea={(area) => {
                 const firstPlot = burgundyPlots.find((plot) => plot.area === area);
@@ -199,12 +263,14 @@ export function WineRegionExplorer() {
             />
           ) : isBordeauxOpen ? (
             <WineBordeauxBoundaryMap
+              mapLayer={activeMapLayer}
               onSelect={(site) => setSelectedBordeauxSiteId(site.id)}
               selectedSite={selectedBordeauxSite}
             />
           ) : selectedCountry ? (
             <WineCountryBoundaryMap
               country={selectedCountry}
+              mapLayer={activeMapLayer}
               onSelectRegion={selectRegion}
               selectedRegionId={selectedRegion?.id ?? null}
             />
@@ -220,11 +286,17 @@ export function WineRegionExplorer() {
               >
                 <defs>
                   <linearGradient id="wine-world-ocean" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="rgb(var(--color-mist) / 0.42)" />
-                    <stop offset="100%" stopColor="rgb(var(--color-mist) / 0.12)" />
+                    <stop offset="0%" stopColor="rgb(194 215 225)" />
+                    <stop offset="100%" stopColor="rgb(215 229 235)" />
                   </linearGradient>
                 </defs>
-                <rect fill="url(#wine-world-ocean)" height={mapHeight} rx="24" width={mapWidth} />
+                <rect
+                  className="wine-world-ocean"
+                  fill="url(#wine-world-ocean)"
+                  height={mapHeight}
+                  rx="24"
+                  width={mapWidth}
+                />
                 <g className="wine-map-transform-layer" transform={worldViewport.transform}>
                   <g className="wine-world-countries">
                     {worldFeatures.map((country: AtlasFeature) => {
@@ -249,11 +321,28 @@ export function WineRegionExplorer() {
                       );
                     })}
                   </g>
+                  <g aria-hidden="true" className="wine-world-labels">
+                    {worldWineLabels.map(({ country, label, x, y }) => {
+                      const placement = worldLabelPlacements.get(country.iso);
+                      return placement && !placement.hidden ? (
+                        <g
+                          key={`${country.iso}-label`}
+                          transform={`translate(${x} ${y}) scale(${1 / worldViewport.scale}) translate(${placement.offsetX} ${placement.offsetY})`}
+                        >
+                          <text textAnchor="middle">{label}</text>
+                        </g>
+                      ) : null;
+                    })}
+                  </g>
                   <g className="wine-latitude-lines" aria-hidden="true">
                     <line x1="20" x2={mapWidth - 20} y1="190" y2="190" />
                     <line x1="20" x2={mapWidth - 20} y1="367" y2="367" />
-                    <text x="28" y="181">Northern wine belt</text>
-                    <text x="28" y="358">Southern wine belt</text>
+                    <g transform={`translate(28 181) scale(${1 / worldViewport.scale})`}>
+                      <text>Northern wine belt</text>
+                    </g>
+                    <g transform={`translate(28 358) scale(${1 / worldViewport.scale})`}>
+                      <text>Southern wine belt</text>
+                    </g>
                   </g>
                 </g>
               </svg>
@@ -270,9 +359,18 @@ export function WineRegionExplorer() {
           <div className="wine-map-caption">
             <span>
               {isBurgundyOpen
-                ? burgundyMapView === "south" ? "Official south Côte de Beaune parcels" : "Burgundy overview"
-                : isBordeauxOpen ? "Official appellation parcels"
-                  : selectedCountry ? "Boundary atlas" : "World atlas"}
+                ? burgundyMapView === "south"
+                  ? activeMapLayer === "satellite"
+                    ? "Satellite + official south Côte de Beaune parcels"
+                    : "Official south Côte de Beaune parcels"
+                  : "Burgundy overview"
+                : isBordeauxOpen
+                  ? activeMapLayer === "satellite"
+                    ? "Satellite + official appellation parcels"
+                    : "Official appellation parcels"
+                  : selectedCountry
+                    ? activeMapLayer === "satellite" ? "Satellite + boundary atlas" : "Boundary atlas"
+                    : "World atlas"}
             </span>
             <p>
               {isBurgundyOpen
@@ -595,7 +693,15 @@ export function WineRegionExplorer() {
           INAO&apos;s 2022 Saint-Émilion classification
         </a>
         . Château diamonds show a location only because there is no equivalent national open layer of each
-        estate&apos;s changing, fragmented holdings.
+        estate&apos;s changing, fragmented holdings. The optional close-up imagery comes from{" "}
+        <a
+          href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
+          rel="noreferrer"
+          target="_blank"
+        >
+          Esri World Imagery
+        </a>
+        ; the wine boundaries, rivers and altitude guides remain separate vector layers above it.
       </p>
     </div>
   );
