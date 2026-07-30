@@ -16,11 +16,8 @@ const sections = [
 ] as const;
 
 export default function CoffeeGuidePage() {
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
-  const googleMapsMapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? "DEMO_MAP_ID";
-
   return (
-    <div className="guide-page">
+    <div className="guide-page coffee-guide-page">
       <PageIntro
         eyebrow="Guide · Coffee"
         title="The science of coffee"
@@ -30,10 +27,7 @@ export default function CoffeeGuidePage() {
 
       <section className="page-section pt-10 sm:pt-12">
         <HistoryBackButton className="mb-6" fallbackHref="/recipes">← Back to recipes</HistoryBackButton>
-        <CoffeeGuide
-          googleMapsApiKey={googleMapsApiKey}
-          googleMapsMapId={googleMapsMapId}
-        />
+        <CoffeeGuide />
       </section>
     </div>
   );

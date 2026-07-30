@@ -93,6 +93,7 @@ export const dashboardSections: readonly DashboardSection[] = [
         items: [
           { href: "/recipes/pasta-guide", label: "Pasta guide" },
           { href: "/recipes/coffee-guide", label: "Coffee guide" },
+          { href: "/recipes/wine-guide", label: "Wine guide" },
           { href: "/recipes/sushi-guide", label: "Sushi guide" },
           { href: "/recipes/viennoiserie-guide", label: "Viennoiserie guide" },
           { href: "/recipes/sourdough-guide", label: "Sourdough guide" },
@@ -195,6 +196,7 @@ const MAX_SIDEBAR_WIDTH = 480;
 const SIDEBAR_WIDTH_KEY = "dashboard-sidebar-width";
 const SIDEBAR_WIDTH_SCALE_KEY = "dashboard-sidebar-width-scale";
 const SIDEBAR_WIDTH_SCALE_VERSION = "1.15";
+const DASHBOARD_MEDIA_QUERY = "(min-width: 1200px) and (hover: hover) and (pointer: fine)";
 
 function clampSidebarWidth(width: number) {
   return Math.min(MAX_SIDEBAR_WIDTH, Math.max(MIN_SIDEBAR_WIDTH, Math.round(width)));
@@ -202,6 +204,21 @@ function clampSidebarWidth(width: number) {
 
 function applySidebarWidth(width: number) {
   document.documentElement.style.setProperty("--dashboard-sidebar-width", `${width}px`);
+}
+
+export function useDashboardMode() {
+  const [isDashboard, setIsDashboard] = useState(false);
+
+  useEffect(() => {
+    const desktop = window.matchMedia(DASHBOARD_MEDIA_QUERY);
+    const sync = () => setIsDashboard(desktop.matches);
+
+    sync();
+    desktop.addEventListener("change", sync);
+    return () => desktop.removeEventListener("change", sync);
+  }, []);
+
+  return isDashboard;
 }
 
 function hrefPath(href: string) {
@@ -254,7 +271,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const resizingPointerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const desktop = window.matchMedia("(min-width: 1200px) and (hover: hover) and (pointer: fine)");
+    const desktop = window.matchMedia(DASHBOARD_MEDIA_QUERY);
     const storedWidth = Number.parseInt(window.localStorage.getItem(SIDEBAR_WIDTH_KEY) ?? "", 10);
     const hasStoredWidth = Number.isFinite(storedWidth);
     const needsWidthScale = window.localStorage.getItem(SIDEBAR_WIDTH_SCALE_KEY) !== SIDEBAR_WIDTH_SCALE_VERSION;

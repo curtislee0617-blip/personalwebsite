@@ -56,6 +56,15 @@ export const recipeEntries: RecipeEntry[] = [
     href: "/recipes/coffee-guide",
   },
   {
+    slug: "wine-guide",
+    kind: "guide",
+    title: "The world of wine",
+    description:
+      "A comprehensive wine guide covering grape chemistry, vineyards, world regions, varieties, winemaking, still styles, sparkling wine and fortified wine.",
+    status: "published",
+    href: "/recipes/wine-guide",
+  },
+  {
     slug: "sushi-guide",
     kind: "guide",
     title: "Sushi guide",

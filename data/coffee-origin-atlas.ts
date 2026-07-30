@@ -27,7 +27,7 @@ export type CoffeeGrowingRegion = {
 
 export type CoffeeOriginSource = {
   label: string;
-  href: string;
+  href?: string;
 };
 
 export type CoffeeAtlasOrigin = Omit<CoffeeOrigin, "regionId"> & {
@@ -115,6 +115,36 @@ const additionalCoffeeOrigins: CoffeeOriginSeed[] = [
     cupProfile: "Citrus, berry and black tea in highland Arabica; cocoa and weight in western Robusta.",
     subregions: ["Kilimanjaro", "Arusha", "Southern Highlands", "Kagera"],
     pressure: "Ageing trees, coffee berry disease, rainfall shifts and long journeys from farm to mill.",
+  },
+  {
+    iso: "MWI",
+    name: "Malawi",
+    regionId: "east-africa",
+    coordinates: [34.3, -13.2],
+    altitude: "1,000–2,500 m",
+    climate: "Cool northern escarpments and warmer southern estate country shaped by one long wet season.",
+    harvest: "April–September",
+    species: "Arabica",
+    varieties: ["Agaro", "Gesha", "Catimor", "Mundo Novo", "Caturra"],
+    processing: "Mostly washed, with some natural and experimental small lots",
+    cupProfile: "Clean citrus, soft florals, caramel and stone fruit, often with a restrained, rounded structure.",
+    subregions: ["Misuku Hills", "Rumphi", "North Viphya", "Nkhata Bay", "Southern estates"],
+    pressure: "Small national volume, ageing plantings, transport distance and maintaining mill quality across scattered farms.",
+  },
+  {
+    iso: "ZMB",
+    name: "Zambia",
+    regionId: "east-africa",
+    coordinates: [28.3, -13.1],
+    altitude: "900–2,000 m",
+    climate: "High plateaus with a distinct wet summer and a cool, dry harvesting season.",
+    harvest: "April–September",
+    species: "Arabica",
+    varieties: ["Bourbon", "Catimor"],
+    processing: "Predominantly washed on larger estates",
+    cupProfile: "Clean sweetness, citrus, florals and soft fruit in the strongest highland lots.",
+    subregions: ["Muchinga Mountains", "Northern Province", "Central and Lusaka", "Copperbelt"],
+    pressure: "Tiny production, long export routes and the economics of maintaining specialised estate infrastructure.",
   },
   {
     iso: "CMR",
@@ -237,6 +267,21 @@ const additionalCoffeeOrigins: CoffeeOriginSeed[] = [
     pressure: "Deforestation, soil erosion, hurricanes, political insecurity and severely limited processing infrastructure.",
   },
   {
+    iso: "CUB",
+    name: "Cuba",
+    regionId: "caribbean",
+    coordinates: [-79.5, 21.7],
+    altitude: "300–1,200 m",
+    climate: "Humid maritime mountains with a drier winter harvest and substantial hurricane exposure.",
+    harvest: "September–February",
+    species: "Arabica",
+    varieties: ["Typica", "Bourbon", "Caturra", "Catuaí", "Catimor"],
+    processing: "Mostly washed",
+    cupProfile: "Cocoa, tobacco-like spice, nuts and gentle fruit with generally restrained acidity.",
+    subregions: ["Sierra Maestra", "Sierra del Escambray", "Sierra del Rosario"],
+    pressure: "Hurricanes, old plantings, limited inputs and region-level rather than farm-level traceability.",
+  },
+  {
     iso: "ECU",
     name: "Ecuador",
     regionId: "south-america",
@@ -265,6 +310,21 @@ const additionalCoffeeOrigins: CoffeeOriginSeed[] = [
     cupProfile: "Floral citrus, peach, cocoa and a soft, tea-like structure.",
     subregions: ["Caranavi and the Yungas", "Apolo", "Samaipata", "Chapare"],
     pressure: "Difficult roads, shrinking production, leaf rust and competition from more immediately profitable crops.",
+  },
+  {
+    iso: "VEN",
+    name: "Venezuela",
+    regionId: "south-america",
+    coordinates: [-69.8, 8.2],
+    altitude: "600–1,800 m",
+    climate: "Caribbean-facing mountains and western Andean valleys with wet tropical slopes and cooler high sites.",
+    harvest: "October–March",
+    species: "Arabica",
+    varieties: ["Typica", "Bourbon", "Mundo Novo", "Caturra"],
+    processing: "Washed and natural",
+    cupProfile: "Cocoa, nuts, soft fruit and gentle acidity, with brighter florals possible in the western Andes.",
+    subregions: ["Táchira and Mérida", "Portuguesa and Lara", "North-central mountains", "Eastern ranges"],
+    pressure: "A much-contracted industry, weak infrastructure, limited traceability and unstable farm economics.",
   },
   {
     iso: "SAU",
@@ -312,6 +372,51 @@ const additionalCoffeeOrigins: CoffeeOriginSeed[] = [
     pressure: "Heavy rain during farm work, ageing trees, unexploded ordnance in some rural land and limited specialty infrastructure.",
   },
   {
+    iso: "PHL",
+    name: "Philippines",
+    regionId: "asia-pacific",
+    coordinates: [121.8, 12.8],
+    altitude: "Lowland farms to about 1,800 m",
+    climate: "Humid tropical islands with monsoon rain, typhoons and cool northern mountain pockets.",
+    harvest: "October–March, varying by island and species",
+    species: "Arabica, Canephora, Liberica and Excelsa",
+    varieties: ["Bourbon", "Typica", "Mundo Novo", "Caturra", "Catimor", "Robusta", "Liberica", "Excelsa"],
+    processing: "Washed, natural and semi-washed",
+    cupProfile: "Mountain Arabica can be sweet and floral; lowland species range from cocoa-heavy Robusta to woody, fruity Liberica and Excelsa.",
+    subregions: ["Cordillera", "CALABARZON", "MIMAROPA", "Visayas", "Mindanao"],
+    pressure: "Typhoons, fragmented processing, old trees and strong domestic demand that leaves little coffee for export.",
+  },
+  {
+    iso: "THA",
+    name: "Thailand",
+    regionId: "asia-pacific",
+    coordinates: [100.9, 15.5],
+    altitude: "1,000–1,600 m Arabica; lowland Canephora",
+    climate: "Cool northern monsoon mountains and hot, wet southern peninsula farms.",
+    harvest: "November–February in the north; broader timing in the south",
+    species: "Arabica and Canephora",
+    varieties: ["Caturra", "Catimor", "Catuaí", "Robusta selections"],
+    processing: "Washed, natural and honey Arabica; mostly natural Robusta",
+    cupProfile: "Northern Arabica often brings chocolate, spice, clean sweetness and soft fruit; southern Robusta adds cocoa and weight.",
+    subregions: ["Chiang Mai", "Chiang Rai", "North-western highlands", "Southern Robusta belt"],
+    pressure: "Rapidly changing farm economics, hotter seasons, inconsistent lot separation and competition from other crops.",
+  },
+  {
+    iso: "USA",
+    name: "Hawaii, United States",
+    regionId: "asia-pacific",
+    coordinates: [-155.5, 19.6],
+    altitude: "30–1,050 m",
+    climate: "Maritime volcanic islands with trade-wind rain, dry leeward slopes and strong local elevation effects.",
+    harvest: "August–February, varying by island",
+    species: "Arabica",
+    varieties: ["Typica", "Catuaí", "Caturra", "Mokka", "Blue Mountain", "Mundo Novo"],
+    processing: "Washed, natural, honey and experimental lots",
+    cupProfile: "Kona is often mild and sweet; Kaʻū and higher island lots can add florals, fruit and more pronounced acidity.",
+    subregions: ["Kona", "Kaʻū", "Puna and Hāmākua", "Maui and Molokaʻi", "Kauaʻi and Oʻahu"],
+    pressure: "Very high land and labour costs, coffee berry borer, label misuse and a market where scarcity can outweigh cup quality.",
+  },
+  {
     iso: "CHN",
     name: "China",
     regionId: "asia-pacific",
@@ -331,7 +436,7 @@ const additionalCoffeeOrigins: CoffeeOriginSeed[] = [
 const originDetails: Record<string, CoffeeOriginDetails> = {
   ETH: {
     story:
-      "Ethiopia is not one origin so much as an entire coffee world. Local names may describe a district, a market town, a washing-station catchment or a genetically mixed farmer population, so the smallest traceable name is usually the useful one.",
+      "Ethiopia is not one origin so much as an entire coffee world. Coffee may grow in relatively wild forest populations, managed forest and semi-forest systems, home gardens or more intensive plantations. Local names may describe a district, a market town, a washing-station catchment or a genetically mixed farmer population, so the smallest traceable name is usually the useful one. “Heirloom” is a broad trade label here, not one variety.",
     growingRegions: [
       {
         id: "yirgacheffe",
@@ -372,6 +477,26 @@ const originDetails: Record<string, CoffeeOriginDetails> = {
         varieties: "Highly mixed local landraces and JARC material",
         processing: "Washed around Limu; both natural and washed around Jimma",
         cupProfile: "Citrus, tea, cocoa and spice, sometimes with a winey forest-fruit quality.",
+      },
+      {
+        id: "harrar",
+        name: "Harrar",
+        location: "Drier eastern highlands around Harar",
+        altitude: "1,500–2,100 m",
+        climate: "Dry, sunny eastern mountains where irrigation may supplement irregular rain.",
+        varieties: "Highly mixed local landraces",
+        processing: "Predominantly natural",
+        cupProfile: "Dried blueberry, cocoa, spice and wine-like fruit, with cleanliness varying sharply by lot.",
+      },
+      {
+        id: "ghimbi-lekempti",
+        name: "Ghimbi & Lekempti",
+        location: "Broad western Oromia coffee country",
+        altitude: "1,500–2,100 m",
+        climate: "Lush western highlands with heavy seasonal rain and forest influence.",
+        varieties: "Local landraces and JARC selections",
+        processing: "Natural and washed",
+        cupProfile: "Cocoa, dried fruit, herbs and citrus, ranging from rustic to very clean.",
       },
     ],
     sources: [
@@ -628,6 +753,108 @@ const originDetails: Record<string, CoffeeOriginDetails> = {
       {
         label: "Tanzanian coffee-growing regions — Tanzania Coffee Board",
         href: "https://www.coffee.go.tz/pages/growing-regions",
+      },
+    ],
+  },
+  MWI: {
+    story:
+      "Malawi rarely appears on a café menu, which is exactly why it belongs on this map. Northern smallholders climb into very high escarpments while larger southern estates work in warmer country, giving a small industry several genuinely different climates.",
+    growingRegions: [
+      {
+        id: "misuku-hills",
+        name: "Misuku Hills & Chitipa",
+        location: "Far northern highlands near the Tanzanian and Zambian borders",
+        altitude: "1,500–2,500 m",
+        climate: "Cool, steep and wet highlands with a pronounced dry harvesting season.",
+        varieties: "Agaro, Gesha, Catimor and local Arabica selections",
+        processing: "Washed through smallholder groups",
+        cupProfile: "Citrus, light florals, peach and clean sweetness.",
+      },
+      {
+        id: "rumphi-viphya",
+        name: "Rumphi & North Viphya",
+        location: "Northern plateau and escarpment country",
+        altitude: "1,200–2,000 m",
+        climate: "Cool plateau slopes with mist, seasonal rain and forest influence.",
+        varieties: "Catimor, Mundo Novo, Caturra and Agaro",
+        processing: "Mostly washed",
+        cupProfile: "Caramel, stone fruit, tea and a rounded acidity.",
+      },
+      {
+        id: "nkhata-bay",
+        name: "Nkhata Bay Highlands",
+        location: "High escarpments west of Lake Malawi",
+        altitude: "1,000–1,800 m",
+        climate: "Humid lake-facing slopes with strong elevation and rain gradients.",
+        varieties: "Catimor, Caturra and mixed Arabica selections",
+        processing: "Washed",
+        cupProfile: "Citrus, cocoa, nuts and soft tropical fruit.",
+      },
+      {
+        id: "southern-estates",
+        name: "Southern estates",
+        location: "Thyolo, Mulanje and nearby southern highlands",
+        altitude: "900–1,500 m",
+        climate: "Warmer estate country beneath isolated mountain massifs.",
+        varieties: "Catimor, Mundo Novo, Caturra and Gesha",
+        processing: "Washed with estate-level lot separation",
+        cupProfile: "Chocolate, gentle citrus, caramel and restrained fruit.",
+      },
+    ],
+    sources: [
+      {
+        label: "The World Atlas of Coffee, revised edition, Malawi profile, PDF pages 218–220",
+      },
+    ],
+  },
+  ZMB: {
+    story:
+      "Zambia has a very small, estate-led coffee industry rather than the dense smallholder washing-station network found farther north. Its rarity is not a quality score, but the northern plateaus can produce remarkably clean, floral Arabica.",
+    growingRegions: [
+      {
+        id: "muchinga",
+        name: "Muchinga Mountains",
+        location: "Isoka and Nakonde in the far north-east",
+        altitude: "1,300–2,000 m",
+        climate: "High, cool plateau with a wet summer and dry winter harvest.",
+        varieties: "Bourbon and Catimor",
+        processing: "Washed",
+        cupProfile: "Floral citrus, peach and clean sugar-browning sweetness.",
+      },
+      {
+        id: "northern-province",
+        name: "Northern Province",
+        location: "Estate country around Kasama and the northern plateau",
+        altitude: "1,200–1,600 m",
+        climate: "Moderate plateau temperatures with strong seasonal rainfall.",
+        varieties: "Bourbon and Catimor",
+        processing: "Washed",
+        cupProfile: "Orange, caramel, cocoa and soft stone fruit.",
+      },
+      {
+        id: "central-lusaka",
+        name: "Central & Lusaka",
+        location: "High plateau farms around the country’s central corridor",
+        altitude: "1,000–1,400 m",
+        climate: "Warmer and drier plateau conditions with irrigation on some estates.",
+        varieties: "Catimor and Bourbon",
+        processing: "Washed",
+        cupProfile: "Nuts, chocolate, mild citrus and medium body.",
+      },
+      {
+        id: "copperbelt",
+        name: "Copperbelt",
+        location: "Small pockets near the northern mining belt",
+        altitude: "1,100–1,400 m",
+        climate: "Seasonal plateau climate with cooler dry-season nights.",
+        varieties: "Catimor and Bourbon",
+        processing: "Washed",
+        cupProfile: "Cocoa, caramel and light red fruit.",
+      },
+    ],
+    sources: [
+      {
+        label: "The World Atlas of Coffee, revised edition, Zambia profile, PDF pages 238–240",
       },
     ],
   },
@@ -1419,6 +1646,47 @@ const originDetails: Record<string, CoffeeOriginDetails> = {
       },
     ],
   },
+  CUB: {
+    story:
+      "Coffee has deep roots in Cuba’s mountain forests, but region-level traceability is usually more realistic than a single-farm name. It is also worth separating beans grown in Cuba from the sweet, dark café cubano preparation that shares the name abroad.",
+    growingRegions: [
+      {
+        id: "sierra-maestra",
+        name: "Sierra Maestra",
+        location: "Eastern mountains across Santiago de Cuba and Granma",
+        altitude: "400–1,200 m",
+        climate: "Humid, forested maritime mountains with a pronounced winter harvest.",
+        varieties: "Typica, Bourbon, Caturra, Catuaí and Catimor",
+        processing: "Mostly washed",
+        cupProfile: "Cocoa, nuts, tobacco-like spice and mild stone fruit.",
+      },
+      {
+        id: "escambray",
+        name: "Sierra del Escambray",
+        location: "Central mountains around Villa Clara, Cienfuegos and Sancti Spíritus",
+        altitude: "350–1,000 m",
+        climate: "Cloudy central highlands exposed to Caribbean humidity.",
+        varieties: "Typica, Bourbon, Caturra and Catimor",
+        processing: "Washed",
+        cupProfile: "Caramel, cocoa, herbs and gentle citrus.",
+      },
+      {
+        id: "sierra-rosario",
+        name: "Sierra del Rosario",
+        location: "Protected western mountains in Artemisa and Pinar del Río",
+        altitude: "300–700 m",
+        climate: "Warm, humid limestone and forest hills.",
+        varieties: "Typica, Caturra and Catimor",
+        processing: "Washed",
+        cupProfile: "Nuts, brown sugar, cocoa and soft dried fruit.",
+      },
+    ],
+    sources: [
+      {
+        label: "The World Atlas of Coffee, revised edition, Cuba profile, PDF pages 334–337",
+      },
+    ],
+  },
   BRA: {
     story:
       "Brazil is less an origin than a coffee continent. Its vast, relatively dry plateaus support mechanical harvest and natural processing at a scale that humid mountain countries cannot, while steep Matas de Minas farms and cool Mantiqueira ridges behave completely differently.",
@@ -1699,6 +1967,57 @@ const originDetails: Record<string, CoffeeOriginDetails> = {
       },
     ],
   },
+  VEN: {
+    story:
+      "Venezuela was once a major coffee exporter before petroleum, price controls and changing farm economics contracted the industry. Old trade names such as Maracaibo and Caracas can describe ports or broad styles, so the mountain state is the more useful clue.",
+    growingRegions: [
+      {
+        id: "western-andes",
+        name: "Western Andes",
+        location: "Táchira, Mérida and mountain pockets of Zulia",
+        altitude: "1,000–1,800 m",
+        climate: "Cool Andean valleys with Caribbean and lake-influenced rain.",
+        varieties: "Typica, Bourbon, Mundo Novo and Caturra",
+        processing: "Washed and natural",
+        cupProfile: "Citrus, cocoa, florals and soft red fruit.",
+      },
+      {
+        id: "west-central",
+        name: "West-central mountains",
+        location: "Portuguesa, Lara, Falcón and Yaracuy",
+        altitude: "700–1,400 m",
+        climate: "Seasonal mountain slopes ranging from humid forest to drier interior valleys.",
+        varieties: "Typica, Bourbon, Mundo Novo and Caturra",
+        processing: "Washed and natural",
+        cupProfile: "Chocolate, nuts, caramel and mild fruit.",
+      },
+      {
+        id: "north-central",
+        name: "North-central mountains",
+        location: "Aragua, Carabobo, Miranda and coastal-range pockets",
+        altitude: "600–1,300 m",
+        climate: "Warm Caribbean-facing mountains cooled by elevation.",
+        varieties: "Typica, Bourbon and Caturra",
+        processing: "Washed",
+        cupProfile: "Cocoa, brown sugar, herbs and gentle citrus.",
+      },
+      {
+        id: "eastern-ranges",
+        name: "Eastern ranges",
+        location: "Sucre, Monagas, Anzoátegui and Bolívar",
+        altitude: "500–1,200 m",
+        climate: "Humid eastern hills and warmer interior mountain edges.",
+        varieties: "Typica, Bourbon and Mundo Novo",
+        processing: "Washed and natural",
+        cupProfile: "Nuts, dark chocolate, spice and dried fruit.",
+      },
+    ],
+    sources: [
+      {
+        label: "The World Atlas of Coffee, revised edition, Venezuela profile, PDF pages 401–404",
+      },
+    ],
+  },
   YEM: {
     story:
       "Yemeni coffee is grown on ancient stone terraces wherever rainfall and stored water make it possible. Local variety names describe old farmer populations rather than neat modern cultivars, and the traditional natural process can amplify both wonderful fruit and very real drying defects.",
@@ -1795,7 +2114,7 @@ const originDetails: Record<string, CoffeeOriginDetails> = {
   },
   IND: {
     story:
-      "Indian coffee usually grows as one layer of a forest-like farm beneath shade trees, pepper vines and spices. Western Ghats monsoons favour Robusta in many warm areas, while the highest Karnataka and Tamil Nadu ranges hold long-established Arabica selections.",
+      "Indian coffee usually grows as one layer of a forest-like farm beneath shade trees, pepper vines and spices. Western Ghats monsoons favour Robusta in many warm areas, while the highest Karnataka and Tamil Nadu ranges hold long-established Arabica selections. Monsooned coffee is a deliberate treatment after drying: humid seasonal air swells and pales the seed, softening acidity while adding a heavy, pungent character.",
     growingRegions: [
       {
         id: "karnataka",
@@ -1903,7 +2222,7 @@ const originDetails: Record<string, CoffeeOriginDetails> = {
   },
   IDN: {
     story:
-      "Indonesia is an archipelago of coffee systems rather than one earthy ‘Sumatra’ profile. Species, volcanic island, rainfall and whether parchment is wet-hulled or fully dried can all change the cup before we even discuss variety.",
+      "Indonesia is an archipelago of coffee systems rather than one earthy ‘Sumatra’ profile. Species, volcanic island, rainfall and whether parchment is wet-hulled or fully dried can all change the cup before we even discuss variety. Kopi luwak is not a quality pinnacle: authentication is poor and caged-civet production creates serious animal-welfare problems, so I would leave the novelty alone.",
     growingRegions: [
       {
         id: "aceh-gayo",
@@ -2119,6 +2438,183 @@ const originDetails: Record<string, CoffeeOriginDetails> = {
       },
     ],
   },
+  PHL: {
+    story:
+      "The Philippines is unusual because Arabica, Canephora, Liberica and Excelsa all appear in commercial coffee culture. A bag labelled barako normally points toward Liberica tradition, not one national flavour, while strong domestic demand keeps much of the crop inside the country.",
+    growingRegions: [
+      {
+        id: "cordillera",
+        name: "Cordillera",
+        location: "Benguet, Mountain Province and the high north of Luzon",
+        altitude: "1,000–1,800 m",
+        climate: "Cool tropical mountains with a marked dry season and typhoon exposure.",
+        varieties: "Bourbon, Typica, Mundo Novo, Caturra and Catimor",
+        processing: "Washed, natural and honey Arabica",
+        cupProfile: "Florals, citrus, cocoa, herbs and soft stone fruit.",
+      },
+      {
+        id: "calabarzon",
+        name: "CALABARZON",
+        location: "Batangas, Cavite, Laguna, Rizal and Quezon south of Manila",
+        altitude: "Lowland to about 900 m",
+        climate: "Warm, humid volcanic and coastal hills with monsoon rain.",
+        species: "Canephora, Liberica & Excelsa",
+        varieties: "Robusta, Liberica and Excelsa",
+        processing: "Mostly natural and semi-washed",
+        cupProfile: "Cocoa-heavy Robusta beside smoky, woody, jackfruit-like and spicy Liberica or Excelsa.",
+      },
+      {
+        id: "mimaropa",
+        name: "MIMAROPA",
+        location: "Mindoro, Marinduque, Romblon and Palawan",
+        altitude: "Lowland to about 1,000 m",
+        climate: "Hot maritime islands with strong wet and dry seasons.",
+        species: "Canephora, Liberica & Excelsa",
+        varieties: "Robusta, Excelsa and Liberica",
+        processing: "Mostly natural",
+        cupProfile: "Dark cocoa, nuts, spice and ripe tropical fruit.",
+      },
+      {
+        id: "visayas",
+        name: "Visayas",
+        location: "Central island groups including Negros and nearby highlands",
+        altitude: "300–1,300 m",
+        climate: "Humid islands with volcanic soils and local rain shadows.",
+        species: "Arabica & Canephora",
+        varieties: "Catimor, Robusta and mixed local material",
+        processing: "Washed and natural",
+        cupProfile: "Chocolate, caramel, herbs and gentle tropical fruit.",
+      },
+      {
+        id: "mindanao",
+        name: "Mindanao",
+        location: "Bukidnon, Davao, Sultan Kudarat and surrounding southern highlands",
+        altitude: "200–1,500 m",
+        climate: "Warm equatorial lowlands rising into cooler volcanic plateaus.",
+        species: "Arabica, Canephora, Liberica & Excelsa",
+        varieties: "Arabica, Robusta, Liberica and Excelsa",
+        processing: "Washed, natural and honey",
+        cupProfile: "A wide range from dense cocoa and spice to floral, fruit-led highland Arabica.",
+      },
+    ],
+    sources: [
+      {
+        label: "The World Atlas of Coffee, revised edition, Philippines profile, PDF pages 269–275",
+      },
+    ],
+  },
+  THA: {
+    story:
+      "Thailand contains two different coffee countries: high northern Arabica and a much larger hot southern Canephora belt. Blending them into one Thai profile erases both the mountain farm and the lowland crop.",
+    growingRegions: [
+      {
+        id: "chiang-mai",
+        name: "Chiang Mai",
+        location: "Northern mountain districts including Doi Inthanon and Mae Taeng",
+        altitude: "1,000–1,600 m",
+        climate: "Cool monsoon highlands with a dry winter harvest.",
+        varieties: "Caturra, Catimor and Catuaí",
+        processing: "Washed, natural and honey",
+        cupProfile: "Chocolate, spice, orange and clean stone fruit with a full texture.",
+      },
+      {
+        id: "chiang-rai",
+        name: "Chiang Rai",
+        location: "Far northern ranges around Doi Chang, Mae Suai and neighbouring hills",
+        altitude: "1,000–1,500 m",
+        climate: "Mountain monsoon climate with cool nights and distinct dry-season picking.",
+        varieties: "Catimor, Caturra and Catuaí",
+        processing: "Washed, natural and honey",
+        cupProfile: "Caramel, cocoa, nuts, citrus and gentle florals.",
+      },
+      {
+        id: "north-west",
+        name: "North-western highlands",
+        location: "Mae Hong Son, Lampang and Tak",
+        altitude: "900–1,500 m",
+        climate: "Drier forested mountains with strong day–night changes.",
+        varieties: "Catimor, Caturra and Catuaí",
+        processing: "Washed and natural",
+        cupProfile: "Cocoa, herbs, brown sugar and soft red fruit.",
+      },
+      {
+        id: "southern-robusta",
+        name: "Southern Robusta belt",
+        location: "Chumphon, Surat Thani, Nakhon Si Thammarat, Phang Nga, Krabi and Ranong",
+        altitude: "Lowland to about 700 m",
+        climate: "Hot, extremely humid peninsula with heavy monsoon rain.",
+        varieties: "Local and improved Canephora selections",
+        processing: "Mostly natural",
+        cupProfile: "Dark chocolate, cereal, spice and heavy body; careful lots can be cleaner and fruitier.",
+      },
+    ],
+    sources: [
+      {
+        label: "The World Atlas of Coffee, revised edition, Thailand profile, PDF pages 276–281",
+      },
+    ],
+  },
+  USA: {
+    story:
+      "Hawaiian coffee is expensive partly because land and labour are expensive, and many farms sell directly into tourism. Kona is a protected place rather than a quality guarantee; the other islands and the rest of Hawaiʻi Island deserve their own names too.",
+    growingRegions: [
+      {
+        id: "kona",
+        name: "Kona",
+        location: "Leeward western slopes of Hawaiʻi Island",
+        altitude: "150–900 m",
+        climate: "Sunny mornings, cloudy afternoons and volcanic slopes protected from trade winds.",
+        varieties: "Guatemala Typica, Catuaí, Caturra and newer selections",
+        processing: "Mostly washed, with natural and honey lots",
+        cupProfile: "Mild citrus, caramel, nuts and soft fruit with a smooth body.",
+      },
+      {
+        id: "kau",
+        name: "Kaʻū",
+        location: "Southern slopes of Hawaiʻi Island",
+        altitude: "300–900 m",
+        climate: "Volcanic, wind-exposed slopes with varied rainfall and cooler upper farms.",
+        varieties: "Typica, Catuaí, Caturra and Mundo Novo",
+        processing: "Washed, natural and honey",
+        cupProfile: "Floral citrus, red fruit, caramel and cocoa.",
+      },
+      {
+        id: "puna-hamakua",
+        name: "Puna & Hāmākua",
+        location: "Eastern and north-eastern Hawaiʻi Island",
+        altitude: "100–900 m",
+        climate: "Much wetter trade-wind slopes with lush volcanic terrain.",
+        varieties: "Typica, Catuaí, Caturra and local selections",
+        processing: "Washed, natural and experimental lots",
+        cupProfile: "Tropical fruit, cocoa, florals and brighter acidity.",
+      },
+      {
+        id: "maui-molokai",
+        name: "Maui & Molokaʻi",
+        location: "Kaʻanapali, Kula, Waikapū, Kīpahulu and Kaulapuʻu",
+        altitude: "100–1,050 m",
+        climate: "Dry leeward estates and wet windward mountain pockets.",
+        varieties: "Mokka, Catuaí, Caturra, Typica and Yellow Catuai",
+        processing: "Washed, natural and honey",
+        cupProfile: "Mokka can be floral and cocoa-rich; other lots range from mild nuts to tropical fruit.",
+      },
+      {
+        id: "kauai-oahu",
+        name: "Kauaʻi & Oʻahu",
+        location: "Lower, more mechanised island farms",
+        altitude: "30–600 m",
+        climate: "Warm maritime lowlands with irrigated dry zones and very wet windward weather.",
+        varieties: "Catuaí, Typica, Blue Mountain and Mundo Novo",
+        processing: "Washed and natural",
+        cupProfile: "Chocolate, nuts, mild fruit and medium body.",
+      },
+    ],
+    sources: [
+      {
+        label: "The World Atlas of Coffee, revised edition, Hawaii profile, PDF pages 365–371",
+      },
+    ],
+  },
   CHN: {
     story:
       "China’s coffee is overwhelmingly a Yunnan story, but Yunnan itself contains hot river valleys, misty tea country and high border mountains. Catimor built the industry; newer farms are now testing broader genetics and more deliberate processing.",
@@ -2181,6 +2677,8 @@ const growingRegionCoordinates: Record<string, Record<string, RegionCoordinate[]
     sidama: [[38.48, 6.78]],
     guji: [[38.58, 5.85]],
     "limu-jimma": [[36.82, 7.75]],
+    harrar: [[42.1, 9.3]],
+    "ghimbi-lekempti": [[35.8, 9.0], [36.0, 9.1]],
   },
   KEN: {
     nyeri: [[36.95, -0.42]],
@@ -2210,6 +2708,18 @@ const growingRegionCoordinates: Record<string, Record<string, RegionCoordinate[]
     arusha: [[36.72, -3.3]],
     "southern-highlands": [[34.75, -8.9], [35.65, -10.7]],
     kagera: [[31.1, -1.8]],
+  },
+  MWI: {
+    "misuku-hills": [[33.45, -9.7]],
+    "rumphi-viphya": [[33.7, -10.8], [33.62, -11.25]],
+    "nkhata-bay": [[34.22, -11.6]],
+    "southern-estates": [[35.15, -15.95], [35.55, -15.75]],
+  },
+  ZMB: {
+    muchinga: [[32.0, -10.2], [32.55, -9.35]],
+    "northern-province": [[31.15, -10.2]],
+    "central-lusaka": [[28.3, -14.45], [28.2, -15.4]],
+    copperbelt: [[28.05, -12.85]],
   },
   CMR: {
     "western-highlands": [[10.4, 5.5]],
@@ -2299,6 +2809,11 @@ const growingRegionCoordinates: Record<string, Record<string, RegionCoordinate[]
     beaumont: [[-73.97, 18.48]],
     "northern-massif": [[-72.2, 19.5]],
   },
+  CUB: {
+    "sierra-maestra": [[-76.2, 20.1], [-77.0, 20.0]],
+    escambray: [[-79.98, 21.95]],
+    "sierra-rosario": [[-83.15, 22.7]],
+  },
   BRA: {
     "cerrado-mineiro": [[-47.5, -18.7]],
     "sul-mantiqueira": [[-45.6, -22.2]],
@@ -2330,6 +2845,12 @@ const growingRegionCoordinates: Record<string, Record<string, RegionCoordinate[]
     apolo: [[-68.4, -14.7]],
     samaipata: [[-63.9, -18.2]],
     chapare: [[-65.7, -17.0]],
+  },
+  VEN: {
+    "western-andes": [[-72.1, 7.7], [-71.2, 8.6]],
+    "west-central": [[-69.2, 9.1], [-70.0, 10.0]],
+    "north-central": [[-67.2, 10.1]],
+    "eastern-ranges": [[-63.2, 10.3], [-62.0, 8.2]],
   },
   YEM: {
     haraz: [[43.5, 15.2]],
@@ -2378,6 +2899,26 @@ const growingRegionCoordinates: Record<string, Record<string, RegionCoordinate[]
     salavan: [[106.3, 15.7]],
     "sekong-attapeu": [[106.7, 15.3], [106.8, 14.8]],
     "northern-laos": [[103.0, 20.0], [103.7, 19.4]],
+  },
+  PHL: {
+    cordillera: [[120.85, 16.7], [121.1, 17.2]],
+    calabarzon: [[121.0, 14.0], [120.85, 13.8]],
+    mimaropa: [[120.75, 12.8], [118.75, 9.8]],
+    visayas: [[123.0, 10.4], [124.0, 11.1]],
+    mindanao: [[124.8, 7.9], [125.4, 6.8]],
+  },
+  THA: {
+    "chiang-mai": [[98.8, 18.8]],
+    "chiang-rai": [[99.65, 20.0]],
+    "north-west": [[97.95, 18.3], [99.5, 17.2]],
+    "southern-robusta": [[99.1, 10.4], [99.7, 8.3], [98.55, 8.2]],
+  },
+  USA: {
+    kona: [[-155.9, 19.55]],
+    kau: [[-155.5, 19.15]],
+    "puna-hamakua": [[-155.0, 19.65], [-155.3, 20.05]],
+    "maui-molokai": [[-156.3, 20.75], [-157.0, 21.1]],
+    "kauai-oahu": [[-159.5, 22.0], [-157.95, 21.45]],
   },
   CHN: {
     puer: [[100.97, 22.8]],

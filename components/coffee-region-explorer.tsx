@@ -3,10 +3,11 @@
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
 import worldAtlas from "@d3-maps/atlas/world/countries/countries-110m";
-import { geoMercator, geoNaturalEarth1, geoPath, type GeoProjection } from "d3-geo";
+import { geoNaturalEarth1, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import type { GeometryCollection, Topology } from "topojson-specification";
+import type { CoffeeMapLocation } from "@/components/coffee-country-terrain-map";
 import {
   coffeeGrowingRegionCount,
   coffeeOriginCount,
@@ -28,11 +29,6 @@ type AtlasTopology = Topology<{
 
 type AtlasFeature = Feature<Geometry, AtlasProperties>;
 
-type CoffeeRegionExplorerProps = {
-  googleMapsApiKey: string;
-  googleMapsMapId: string;
-};
-
 const CoffeeCountryTerrainMap = dynamic(
   () => import("@/components/coffee-country-terrain-map")
     .then((module) => module.CoffeeCountryTerrainMap),
@@ -47,56 +43,22 @@ const CoffeeCountryTerrainMap = dynamic(
 );
 
 const mapWidth = 960;
-const mapHeight = 500;
+const mapHeight = 580;
 const atlas = worldAtlas as unknown as AtlasTopology;
 const worldFeatures = (
   feature(atlas, atlas.objects.features) as FeatureCollection<Geometry, AtlasProperties>
 ).features;
 const originsByIso = new Map(coffeeOrigins.map((origin) => [origin.iso, origin]));
-const markerLabelPositions: Record<string, { dx: number; dy: number; anchor: "start" | "middle" | "end" }> = {
-  RWA: { dx: -12, dy: -12, anchor: "end" },
-  BDI: { dx: 12, dy: 12, anchor: "start" },
-  UGA: { dx: -12, dy: 14, anchor: "end" },
-  COD: { dx: -12, dy: -14, anchor: "end" },
-  GTM: { dx: -12, dy: -13, anchor: "end" },
-  HND: { dx: 12, dy: -17, anchor: "start" },
-  SLV: { dx: -12, dy: 9, anchor: "end" },
-  NIC: { dx: 12, dy: 5, anchor: "start" },
-  CRI: { dx: -10, dy: 19, anchor: "end" },
-  PAN: { dx: 10, dy: 19, anchor: "start" },
-  JAM: { dx: -12, dy: -12, anchor: "end" },
-  HTI: { dx: -12, dy: 14, anchor: "end" },
-  DOM: { dx: 12, dy: -14, anchor: "start" },
-  COL: { dx: 10, dy: -14, anchor: "start" },
-  ECU: { dx: -10, dy: 16, anchor: "end" },
-  YEM: { dx: -11, dy: 14, anchor: "end" },
-  SAU: { dx: 11, dy: -14, anchor: "start" },
-  LAO: { dx: -11, dy: -13, anchor: "end" },
-  VNM: { dx: 11, dy: 12, anchor: "start" },
-  TLS: { dx: -11, dy: -13, anchor: "end" },
-};
+const worldProjection = geoNaturalEarth1().fitExtent(
+  [[18, 18], [mapWidth - 18, mapHeight - 18]],
+  { type: "FeatureCollection", features: worldFeatures },
+);
+const worldPath = geoPath(worldProjection);
 
 function getRegionOrigins(regionId: CoffeeAtlasRegionId | null) {
   return regionId
     ? coffeeOrigins.filter((origin) => origin.regionId === regionId)
     : coffeeOrigins;
-}
-
-function createProjection(regionId: CoffeeAtlasRegionId | null): GeoProjection {
-  if (!regionId) {
-    return geoNaturalEarth1().fitExtent(
-      [[18, 18], [mapWidth - 18, mapHeight - 18]],
-      { type: "FeatureCollection", features: worldFeatures },
-    );
-  }
-
-  const regionIsos = new Set(getRegionOrigins(regionId).map((origin) => origin.iso));
-  const regionFeatures = worldFeatures.filter((country) => regionIsos.has(country.properties.id));
-
-  return geoMercator().fitExtent(
-    [[58, 42], [mapWidth - 58, mapHeight - 42]],
-    { type: "FeatureCollection", features: regionFeatures },
-  );
 }
 
 function svgButtonKeyDown(
@@ -108,30 +70,21 @@ function svgButtonKeyDown(
   activate();
 }
 
-export function CoffeeRegionExplorer({
-  googleMapsApiKey,
-  googleMapsMapId,
-}: CoffeeRegionExplorerProps) {
+export function CoffeeRegionExplorer() {
   const [selectedRegionId, setSelectedRegionId] = useState<CoffeeAtlasRegionId | null>(null);
   const [selectedOriginIso, setSelectedOriginIso] = useState<string | null>(null);
   const [selectedGrowingRegionId, setSelectedGrowingRegionId] = useState<string | null>(null);
 
   const selectedRegion = coffeeRegions.find((region) => region.id === selectedRegionId) ?? null;
-  const regionOrigins = getRegionOrigins(selectedRegionId);
+  const regionOrigins = useMemo(
+    () => getRegionOrigins(selectedRegionId),
+    [selectedRegionId],
+  );
   const selectedOrigin = coffeeOrigins.find((origin) => origin.iso === selectedOriginIso) ?? null;
   const selectedGrowingRegion =
     selectedOrigin?.growingRegions.find((region) => region.id === selectedGrowingRegionId)
     ?? selectedOrigin?.growingRegions[0]
     ?? null;
-  const selectedGrowingRegionIndex =
-    selectedOrigin && selectedGrowingRegion
-      ? selectedOrigin.growingRegions.findIndex((region) => region.id === selectedGrowingRegion.id)
-      : -1;
-
-  const { path, projection } = useMemo(() => {
-    const nextProjection = createProjection(selectedRegionId);
-    return { path: geoPath(nextProjection), projection: nextProjection };
-  }, [selectedRegionId]);
 
   const selectRegion = (regionId: CoffeeAtlasRegionId | null) => {
     setSelectedRegionId(regionId);
@@ -139,15 +92,43 @@ export function CoffeeRegionExplorer({
     setSelectedGrowingRegionId(null);
   };
 
-  const selectOrigin = (origin: CoffeeAtlasOrigin) => {
-    if (selectedRegionId !== origin.regionId) setSelectedRegionId(origin.regionId);
+  const selectOrigin = useCallback((origin: CoffeeAtlasOrigin) => {
+    setSelectedRegionId(origin.regionId);
     setSelectedOriginIso(origin.iso);
     setSelectedGrowingRegionId(origin.growingRegions[0]?.id ?? null);
-  };
+  }, []);
 
   const selectGrowingRegion = useCallback((regionId: string) => {
     setSelectedGrowingRegionId(regionId);
   }, []);
+
+  const terrainLocations = useMemo<CoffeeMapLocation[]>(() => {
+    if (selectedOrigin) {
+      return selectedOrigin.growingRegions.map((region) => ({
+        coordinates: region.coordinates,
+        detail: `${region.species} · ${region.altitude}`,
+        id: region.id,
+        label: region.name,
+      }));
+    }
+
+    return regionOrigins.map((origin) => ({
+      coordinates: [origin.coordinates],
+      detail: `${origin.growingRegions.length} growing zones · ${origin.altitude}`,
+      id: origin.iso,
+      label: origin.name,
+    }));
+  }, [regionOrigins, selectedOrigin]);
+
+  const selectMapLocation = useCallback((locationId: string) => {
+    if (selectedOrigin) {
+      selectGrowingRegion(locationId);
+      return;
+    }
+
+    const origin = originsByIso.get(locationId);
+    if (origin) selectOrigin(origin);
+  }, [selectGrowingRegion, selectOrigin, selectedOrigin]);
 
   return (
     <div className="coffee-origin-explorer">
@@ -177,22 +158,24 @@ export function CoffeeRegionExplorer({
 
       <div className="coffee-map-stage">
         <div className="coffee-map-frame">
-          {selectedOrigin ? (
+          {selectedRegion ? (
             <CoffeeCountryTerrainMap
-              apiKey={googleMapsApiKey}
-              key={selectedOrigin.iso}
-              mapId={googleMapsMapId}
-              onSelectRegion={selectGrowingRegion}
-              origin={selectedOrigin}
-              selectedRegionId={selectedGrowingRegion?.id ?? null}
+              ariaLabel={
+                selectedOrigin
+                  ? `${selectedOrigin.name} terrain and satellite coffee-growing map`
+                  : `${selectedRegion.name} terrain and satellite coffee-growing map`
+              }
+              context={selectedOrigin ? "country" : "macro"}
+              key={selectedOrigin?.iso ?? selectedRegion.id}
+              locations={terrainLocations}
+              onSelectLocation={selectMapLocation}
+              selectedLocationId={
+                selectedOrigin ? selectedGrowingRegion?.id ?? null : null
+              }
             />
           ) : (
             <svg
-              aria-label={
-                selectedRegion
-                  ? `Detailed map of ${selectedRegion.name}`
-                  : "World map of featured coffee-growing origins"
-              }
+              aria-label="World map of featured coffee-growing origins"
               aria-roledescription="interactive map"
               className="coffee-map-svg"
               role="group"
@@ -215,7 +198,7 @@ export function CoffeeRegionExplorer({
                   return (
                     <path
                       className="coffee-map-country"
-                      d={path(country) ?? undefined}
+                      d={worldPath(country) ?? undefined}
                       data-dimmed={isDimmed || undefined}
                       data-featured={isFeatured || undefined}
                       data-region={origin?.regionId}
@@ -227,14 +210,9 @@ export function CoffeeRegionExplorer({
 
               <g className="coffee-map-markers">
                 {regionOrigins.map((origin) => {
-                  const point = projection(origin.coordinates);
+                  const point = worldProjection(origin.coordinates);
                   if (!point) return null;
                   const [x, y] = point;
-                  const labelPosition = markerLabelPositions[origin.iso] ?? {
-                    dx: 0,
-                    dy: -15,
-                    anchor: "middle" as const,
-                  };
                   const openOrigin = () => selectOrigin(origin);
 
                   return (
@@ -251,45 +229,33 @@ export function CoffeeRegionExplorer({
                     >
                       <circle className="coffee-map-marker-halo" r={12} />
                       <circle className="coffee-map-marker-dot" r={5} />
-                      {selectedRegionId ? (
-                        <text
-                          className="coffee-map-marker-label"
-                          dx={labelPosition.dx}
-                          dy={labelPosition.dy}
-                          textAnchor={labelPosition.anchor}
-                        >
-                          {origin.name}
-                        </text>
-                      ) : null}
                     </g>
                   );
                 })}
               </g>
 
-              {!selectedRegion ? (
-                <g aria-hidden="true" className="coffee-bean-belt">
-                  <line x1="22" x2={mapWidth - 22} y1="196" y2="196" />
-                  <line x1="22" x2={mapWidth - 22} y1="326" y2="326" />
-                  <text x="28" y="188">Tropic of Cancer</text>
-                  <text x="28" y="318">Tropic of Capricorn</text>
-                </g>
-              ) : null}
+              <g aria-hidden="true" className="coffee-bean-belt">
+                <line x1="22" x2={mapWidth - 22} y1="226" y2="226" />
+                <line x1="22" x2={mapWidth - 22} y1="378" y2="378" />
+                <text x="28" y="218">Tropic of Cancer</text>
+                <text x="28" y="370">Tropic of Capricorn</text>
+              </g>
             </svg>
           )}
 
           {selectedOrigin ? (
-            <ol
+            <ul
               aria-label={`Mapped coffee-growing regions within ${selectedOrigin.name}`}
               className="coffee-country-region-key"
             >
-              {selectedOrigin.growingRegions.map((region, index) => (
+              {selectedOrigin.growingRegions.map((region) => (
                 <li key={region.id}>
                   <button
                     aria-pressed={selectedGrowingRegion?.id === region.id}
                     onClick={() => selectGrowingRegion(region.id)}
                     type="button"
                   >
-                    <span>{index + 1}</span>
+                    <span aria-hidden="true" className="coffee-country-region-swatch" />
                     <span>
                       <strong>{region.name}</strong>
                       <small>{region.species} · {region.altitude}</small>
@@ -297,7 +263,7 @@ export function CoffeeRegionExplorer({
                   </button>
                 </li>
               ))}
-            </ol>
+            </ul>
           ) : null}
 
           <div className="coffee-map-caption">
@@ -306,7 +272,7 @@ export function CoffeeRegionExplorer({
               {selectedOrigin
                 ? `${selectedOrigin.growingRegions.length} named growing regions—switch layers, pan or zoom, then choose an outlined area.`
                 : selectedRegion
-                  ? "Pick a country to open its own map, then compare the growing regions inside it."
+                  ? `${regionOrigins.length} countries—switch between terrain and satellite, then choose a country marker.`
                   : `${coffeeOriginCount} countries and ${coffeeGrowingRegionCount} growing zones—choose a region or click a dot.`}
             </p>
           </div>
@@ -319,8 +285,7 @@ export function CoffeeRegionExplorer({
           {selectedOrigin && selectedGrowingRegion ? (
             <>
               <p className="eyebrow">
-                {selectedOrigin.name} · region {selectedGrowingRegionIndex + 1} of{" "}
-                {selectedOrigin.growingRegions.length}
+                {selectedOrigin.name} · {selectedGrowingRegion.species}
               </p>
               <h3>{selectedGrowingRegion.name}</h3>
               <p className="coffee-region-count">
@@ -343,14 +308,9 @@ export function CoffeeRegionExplorer({
               </dl>
               <blockquote>{selectedGrowingRegion.cupProfile}</blockquote>
               {selectedOrigin.sources[0] ? (
-                <a
-                  className="coffee-country-summary-source"
-                  href={selectedOrigin.sources[0].href}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  Read the closest origin source
-                </a>
+                <p className="coffee-country-summary-source">
+                  Research note · {selectedOrigin.sources[0].label}
+                </p>
               ) : null}
             </>
           ) : selectedRegion ? (
@@ -474,34 +434,43 @@ export function CoffeeRegionExplorer({
           </div>
 
           <p className="coffee-origin-sources">
-            Profile references:{" "}
+            Profile references: The World Atlas of Coffee, revised edition, origin chapters, PDF pages 189–404 ·{" "}
             {selectedOrigin.sources.map((source, index) => (
-              <span key={source.href}>
+              <span key={source.label}>
                 {index > 0 ? " · " : null}
-                <a href={source.href} rel="noreferrer" target="_blank">{source.label}</a>
+                {source.label}
               </span>
             ))}
-            {" · "}
-            <a href="https://varieties.worldcoffeeresearch.org/" rel="noreferrer" target="_blank">
-              World Coffee Research variety catalogue
-            </a>
-            . Regional cup notes describe useful tendencies, not a promise about every farm or harvest.
+            {" · "}World Coffee Research variety catalogue. Regional cup notes describe useful tendencies, not a
+            promise about every farm or harvest.
           </p>
         </article>
       ) : null}
 
       <p className="coffee-map-source">
-        World and regional geometry:{" "}
+        World overview geometry:{" "}
         <a href="https://www.naturalearthdata.com/" rel="noreferrer" target="_blank">Natural Earth</a>
-        {" "}through D3 Maps Atlas. Country close-ups use Google Maps{" "}
+        {" "}through D3 Maps Atlas. Regional and country terrain views use{" "}
         <a
-          href="https://developers.google.com/maps/documentation/javascript/maptypes"
+          href="https://opentopomap.org/about"
           rel="noreferrer"
           target="_blank"
         >
-          terrain and hybrid satellite map types
+          OpenTopoMap
         </a>
-        , with imagery and map-data attribution shown inside the map. The coloured outlines are approximate
+        {" "}with{" "}
+        <a href="https://www.openstreetmap.org/copyright" rel="noreferrer" target="_blank">
+          OpenStreetMap data
+        </a>
+        , while satellite mode uses{" "}
+        <a
+          href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
+          rel="noreferrer"
+          target="_blank"
+        >
+          Esri World Imagery
+        </a>
+        . Full attribution is shown inside each map. The coloured outlines are approximate
         orientation footprints built around source-backed growing locations; they are not administrative,
         appellation or farm boundaries. The atlas combines national coffee bodies, origin-specific public references,{" "}
         <a href="https://varieties.worldcoffeeresearch.org/" rel="noreferrer" target="_blank">

@@ -1,5 +1,12 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import {
+  CoffeeBookResearchNote,
+  CoffeeBrewingScience,
+  CoffeeGreenCoffeeDeepDive,
+  CoffeePlantDeepDive,
+  CoffeeRoastProfileDeepDive,
+} from "@/components/coffee-book-expansion";
 import { CoffeePostHarvestGuide } from "@/components/coffee-post-harvest-guide";
 import { CoffeeRegionExplorer } from "@/components/coffee-region-explorer";
 import { CoffeeRoastingSystems } from "@/components/coffee-roasting-systems";
@@ -11,13 +18,9 @@ type CoffeeFigureProps = {
   alt: string;
   caption: string;
   height: number;
+  priority?: boolean;
   src: string;
   width: number;
-};
-
-type CoffeeGuideProps = {
-  googleMapsApiKey: string;
-  googleMapsMapId: string;
 };
 
 const paragraphClass = "text-sm leading-7 text-ink/66";
@@ -25,13 +28,14 @@ const paragraphClass = "text-sm leading-7 text-ink/66";
 const coffeeGuideContents = [
   {
     href: "#coffee-what",
-    number: "01",
-    sections: [{ href: "#coffee-botany", label: "Plant and cherry anatomy" }],
+    sections: [
+      { href: "#coffee-botany", label: "Plant and cherry anatomy" },
+      { href: "#coffee-plant-life-title", label: "Seed to ripe fruit" },
+    ],
     title: "What coffee is",
   },
   {
     href: "#coffee-growing",
-    number: "02",
     sections: [
       { href: "#coffee-terroir", label: "Climate and terroir" },
       { href: "#coffee-regions", label: "Origins map" },
@@ -41,13 +45,14 @@ const coffeeGuideContents = [
   },
   {
     href: "#coffee-processing",
-    number: "03",
-    sections: [{ href: "#coffee-post-harvest", label: "Picking and processing methods" }],
+    sections: [
+      { href: "#coffee-post-harvest", label: "Picking and processing methods" },
+      { href: "#coffee-green-journey-title", label: "Green coffee and storage" },
+    ],
     title: "Picking & processing",
   },
   {
     href: "#coffee-roasting",
-    number: "04",
     sections: [
       { href: "#coffee-roast-process", label: "The roasting process" },
       { href: "#coffee-roaster-types", label: "Roaster designs" },
@@ -58,17 +63,21 @@ const coffeeGuideContents = [
   },
   {
     href: "#coffee-brewing",
-    number: "05",
     sections: [
-      { href: "#coffee-extraction", label: "Percolation and immersion" },
-      { href: "#coffee-crema-water", label: "Crema and water" },
-      { href: "#coffee-brew-guide", label: "Practical brew guide" },
+      { href: "#coffee-strength-extraction", label: "Strength and extraction" },
+      { href: "#coffee-water", label: "Water chemistry" },
+      { href: "#coffee-grinding", label: "Grinding" },
+      { href: "#coffee-flow", label: "Flow and filters" },
+      { href: "#coffee-espresso", label: "Espresso and milk" },
+      { href: "#coffee-methods", label: "Brewing methods" },
+      { href: "#coffee-troubleshooting", label: "Troubleshooting" },
+      { href: "#coffee-measurement", label: "Measurement" },
     ],
     title: "How it is brewed",
   },
 ] as const;
 
-function CoffeeFigure({ alt, caption, height, src, width }: CoffeeFigureProps) {
+function CoffeeFigure({ alt, caption, height, priority = false, src, width }: CoffeeFigureProps) {
   return (
     <figure className="overflow-hidden rounded-[1.2rem] border border-ink/10 bg-paper/70">
       <RecipeImageViewer alt={alt} className="block w-full" src={src}>
@@ -77,6 +86,7 @@ function CoffeeFigure({ alt, caption, height, src, width }: CoffeeFigureProps) {
             alt={alt}
             className="h-auto max-h-[22rem] w-auto max-w-full object-contain"
             height={height}
+            priority={priority}
             sizes="(max-width: 760px) 88vw, 26rem"
             src={src}
             width={width}
@@ -100,7 +110,10 @@ function DraftSection({
   title: string;
 }) {
   return (
-    <section className="scroll-mt-28 overflow-hidden rounded-[1.7rem] border border-ink/10 bg-surface/48" id={id}>
+    <section
+      className="coffee-draft-section scroll-mt-28 overflow-hidden rounded-[1.7rem] border border-ink/10 bg-surface/48"
+      id={id}
+    >
       <header className="border-b border-ink/[0.08] px-5 py-5 sm:px-6">
         <p className="eyebrow">{eyebrow}</p>
         <h3 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">{title}</h3>
@@ -124,7 +137,6 @@ function CoffeeGuideTableOfContents() {
         {coffeeGuideContents.map((chapter) => (
           <li key={chapter.href}>
             <a className="coffee-guide-contents-chapter" href={chapter.href}>
-              <span>{chapter.number}</span>
               <strong>{chapter.title}</strong>
             </a>
             <div>
@@ -144,14 +156,12 @@ function GuideChapter({
   description,
   eyebrow,
   id,
-  number,
   title,
 }: {
   children: ReactNode;
   description: string;
   eyebrow: string;
   id: string;
-  number: string;
   title: string;
 }) {
   const headingId = `${id}-title`;
@@ -159,7 +169,6 @@ function GuideChapter({
   return (
     <section aria-labelledby={headingId} className="coffee-guide-chapter scroll-mt-28" id={id}>
       <header className="coffee-guide-chapter-header">
-        <span aria-hidden="true">{number}</span>
         <div>
           <p className="eyebrow">{eyebrow}</p>
           <h2 id={headingId}>{title}</h2>
@@ -180,10 +189,7 @@ function CopyBlock({ children, title }: { children: ReactNode; title?: string })
   );
 }
 
-export function CoffeeGuide({
-  googleMapsApiKey,
-  googleMapsMapId,
-}: CoffeeGuideProps) {
+export function CoffeeGuide() {
   return (
     <div className="coffee-guide">
       <CoffeeGuideTableOfContents />
@@ -192,7 +198,6 @@ export function CoffeeGuide({
         description="The plant, the fruit and the seeds we keep calling beans. This is the small piece of botany that makes the rest of the guide much easier to follow."
         eyebrow="Plant and fruit"
         id="coffee-what"
-        number="01"
         title="What coffee is"
       >
         <DraftSection eyebrow="Botany and anatomy" id="coffee-botany" title="Coffee begins as a fruit">
@@ -203,13 +208,22 @@ export function CoffeeGuide({
               </CopyBlock>
               <CopyBlock title="What is coffee?">
                 <p className={paragraphClass}>
-                  <i>Coffea</i> - yes, it really is <i>-ea</i> - is a genus of flowering plants in the family Rubiaceae. Some species of <i>Coffea</i> produce seeds that we call coffee beans. The two most famous are Arabica, at roughly 70% of production, and Robusta, at roughly 30%.
+                  <i>Coffea</i> - yes, it really is <i>-ea</i> - is a genus of flowering plants in the family
+                  Rubiaceae. Several species produce seeds that can become coffee, although most commercial coffee
+                  comes from <i>Coffea arabica</i> and <i>Coffea canephora</i>, the latter usually sold under the
+                  broad name Robusta.
                 </p>
                 <p className={paragraphClass}>
-                  Genetic sequencing shows that Robusta is one parent of Arabica. It crossed with <i>Coffea eugenioides</i> to create Arabica in Ethiopia, the birthplace of this drink.
+                  Arabica is itself a natural hybrid. An ancestor of Canephora crossed with{" "}
+                  <i>Coffea eugenioides</i>, then the chromosomes doubled to produce a fertile plant. Its deepest
+                  diversity survives around Ethiopia, while most cultivated Arabica descends from a much narrower
+                  collection that travelled out through Yemen.
                 </p>
                 <p className={paragraphClass}>
-                  First, the fruit is picked - often by hand for single-origin beans - then the flesh is removed. The beans are dried, rested to dry further and age, hulled to remove the parchment, roasted, ground and finally brewed. Being such a lengthy process, it makes me wonder who came up with such an ingenious use for the coffee bean, which would otherwise crack a tooth if anyone decided to nibble on it.
+                  First, the fruit is picked, sorted and processed. The seed is dried, usually rested inside
+                  parchment so its moisture can settle, hulled, graded, shipped, roasted, ground and finally brewed.
+                  Being such a lengthy process, it makes me wonder who came up with such an ingenious use for a seed
+                  that would otherwise crack a tooth if anyone decided to nibble on it.
                 </p>
               </CopyBlock>
             </div>
@@ -217,9 +231,13 @@ export function CoffeeGuide({
               alt="Diagram of coffee cherry anatomy"
               caption="The fruit layers that have to be removed before roasting."
               height={545}
+              priority
               src="/recipes/coffee-guide/coffee-cherry-anatomy.webp"
               width={685}
             />
+          </div>
+          <div className="border-t border-ink/[0.07] p-5 sm:p-6">
+            <CoffeePlantDeepDive />
           </div>
         </DraftSection>
       </GuideChapter>
@@ -228,7 +246,6 @@ export function CoffeeGuide({
         description="Climate, altitude, rain, soil and genetics decide how the fruit develops before anyone picks it. Explore the map first, then follow the family tree."
         eyebrow="Farm and origin"
         id="coffee-growing"
-        number="02"
         title="How coffee is grown"
       >
         <DraftSection eyebrow="Climate and place" id="coffee-terroir" title="Altitude, climate and terroir">
@@ -289,10 +306,7 @@ export function CoffeeGuide({
               rain and sunshine within what looks like a tiny distance on the map.
             </p>
           </div>
-          <CoffeeRegionExplorer
-            googleMapsApiKey={googleMapsApiKey}
-            googleMapsMapId={googleMapsMapId}
-          />
+          <CoffeeRegionExplorer />
         </div>
       </DraftSection>
 
@@ -319,7 +333,6 @@ export function CoffeeGuide({
         description="Ripe cherries become stable green coffee through sorting, fruit removal, fermentation, washing, drying, resting and milling. This is where careful agriculture becomes careful food processing."
         eyebrow="Harvest and green coffee"
         id="coffee-processing"
-        number="03"
         title="How coffee is picked and processed"
       >
       <DraftSection eyebrow="After harvest, before heat" id="coffee-post-harvest" title="Post-harvest processing">
@@ -380,6 +393,9 @@ export function CoffeeGuide({
             </div>
           </div>
           <CoffeePostHarvestGuide />
+          <div className="mt-6 border-t border-ink/[0.07] pt-6">
+            <CoffeeGreenCoffeeDeepDive />
+          </div>
         </div>
       </DraftSection>
       </GuideChapter>
@@ -388,7 +404,6 @@ export function CoffeeGuide({
         description="Roasting turns a dense green seed into something brittle, soluble and wonderfully aromatic. Heat creates colour and flavour while also erasing parts of the original green coffee."
         eyebrow="Heat and transformation"
         id="coffee-roasting"
-        number="04"
         title="How coffee is roasted"
       >
       <DraftSection eyebrow="Heat, pressure and aroma" id="coffee-roast-process" title="The roasting process">
@@ -473,6 +488,10 @@ export function CoffeeGuide({
               </li>
             ))}
           </ol>
+
+          <div className="mt-6">
+            <CoffeeRoastProfileDeepDive />
+          </div>
 
           <CoffeeRoastingSystems />
 
@@ -629,126 +648,14 @@ export function CoffeeGuide({
       </GuideChapter>
 
       <GuideChapter
-        description="Brewing is controlled dissolution. Percolation, immersion and pressure-based methods move water through coffee differently, but all of them balance ratio, grind, temperature, time and water chemistry."
+        description="Brewing is dissolution, transport and flow happening through an irregular pile of porous particles. Strength, extraction and evenness are separate, and every brewer rearranges their balance."
         eyebrow="Water and extraction"
         id="coffee-brewing"
-        number="05"
         title="How coffee is brewed"
       >
-      <DraftSection eyebrow="Solubility and devices" id="coffee-extraction" title="Brewing and under- or over-extraction">
-        <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
-          <div className="grid content-start">
-            <CopyBlock title="Percolation and immersion">
-              <p className={paragraphClass}>
-                The final step is brewing, which can be separated into percolation and immersion. The key difference is how the water interacts with the coffee. In percolation, water passes through a bed of grounds; examples include pour-overs such as the Chemex and V60, espresso and the moka pot. In immersion, the grounds are immersed before being separated, as in cold brew and the French press.
-              </p>
-              <p className={paragraphClass}>
-                Changing extraction time, temperature, pressure and grind size has always been a challenge for master baristas - and some scientists - to perfect. The rule of thumb is that increasing temperature, pressure or time, and decreasing grind size, increases extraction. Over-extraction is often bitter while under-extraction is acidic, but why?
-              </p>
-              <p className={paragraphClass}>
-                Different compounds dissolve at different rates, and changing one property does not increase every part of the flavour profile equally. With hundreds or thousands of compounds, it is difficult to isolate the behaviour of each, so we return to our most “reliable” tool: taste. More dilute brews can make floral notes such as esters easier to perceive, while concentrated brews make richness and bitterness more apparent. Longer times raise intensity, while higher temperatures can extract more bitter compounds. A pour-over might use a 1:16 coffee-to-water ratio, while a concentrated coffee may be closer to 1:4-5.
-              </p>
-            </CopyBlock>
-            <CopyBlock title="Pressure-based devices">
-              <p className={paragraphClass}>
-                These variables give us very different cups. Notable devices include the moka pot, AeroPress and espresso machine. Rather than relying only on gravity, they add pressure for a more concentrated extraction.
-              </p>
-              <p className={paragraphClass}>
-                In a moka pot, heat raises the pressure in the lower chamber and forces water up a submerged tube through a relatively coarse coffee bed. The combination of heat and pressure produces a strong brew, but it can taste burnt if the water and metal become too hot.
-              </p>
-              <p className={paragraphClass}>
-                Modern espresso machines separate temperature and pressure more deliberately. Water around 96-98°C is driven through a very fine coffee bed at roughly 9 bar. This gives more control, prevents unnecessary scorching and creates a concentration that can be diluted into many drink styles.
-              </p>
-              <p className={paragraphClass}>
-                The AeroPress asks a slightly different question: what if immersion and percolation were combined? The user can brew below boiling, increase extraction through contact time rather than extreme temperature, then add manual pressure during filtration.
-              </p>
-            </CopyBlock>
-          </div>
-          <div className="grid content-start gap-3">
-            <CoffeeFigure
-              alt="Mass-transfer equation used to describe coffee extraction"
-              caption="A simplified mass-transfer expression from the draft."
-              height={247}
-              src="/recipes/coffee-guide/coffee-extraction-equation.webp"
-              width={1201}
-            />
-            <CoffeeFigure
-              alt="Cutaway diagram of a moka pot brewing coffee"
-              caption="Heat builds pressure below the coffee bed and drives water upwards."
-              height={900}
-              src="/recipes/coffee-guide/moka-pot-diagram.webp"
-              width={808}
-            />
-            <CoffeeFigure
-              alt="Pressure-temperature phase diagram of water"
-              caption="Pressure changes the boiling point of water."
-              height={1041}
-              src="/recipes/coffee-guide/water-phase-diagram.webp"
-              width={1202}
-            />
-          </div>
-        </div>
-      </DraftSection>
-
-      <DraftSection eyebrow="Espresso and solvent chemistry" id="coffee-crema-water" title="Crema and water quality">
-        <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-2">
-          <CopyBlock title="Pressure and temperature: crema">
-            <p className={paragraphClass}>
-              With the relatively recent surge in popularity of espresso, one quality has become particularly sought after: crema, a delightful by-product of high-pressure brewing.
-            </p>
-            <p className={paragraphClass}>
-              Coffee beans contain a substantial amount of oil. Under espresso conditions, pressure and turbulence disperse these oils through water while carbon dioxide trapped in the roasted bean becomes supersaturated and escapes as many small bubbles. Surface-active compounds stabilise the bubbles, creating the crema that gives a shot body and smoothness.
-            </p>
-            <p className={paragraphClass}>
-              There is plenty of discussion over whether crema is always desirable. Dissolved carbon dioxide can increase sharpness, while the oily and colloidal fraction can carry both wanted and unwanted compounds. A thick crema therefore does not automatically prove that the espresso underneath tastes good.
-            </p>
-          </CopyBlock>
-          <CopyBlock title="Water quality">
-            <p className={paragraphClass}>
-              Water is the second most important part of this beverage, and it influences a cup in ways you might not expect. Water tastes different everywhere because hardness, alkalinity and mineral content vary. As the solvent for coffee, those dissolved ions affect both extraction and perception.
-            </p>
-            <p className={paragraphClass}>
-              Much of the discussion concerns hardness, often expressed as calcium-carbonate equivalents, because it changes extraction, texture and limescale formation. Minerals can give body and prevent a brew from tasting bland, weak and thin. Alkalinity also buffers coffee acids, so too little can produce a sharply acidic cup while too much can flatten it.
-            </p>
-            <p className={paragraphClass}>
-              A working target in this draft is around 68 mg/L calcium hardness, pH 7, 40 mg/L alkalinity and 10 mg/L sodium. Sodium is especially noticeable because it activates salt-sensitive pathways and changes flavour perception. This section still needs a more complete comparison of water recipes.
-            </p>
-          </CopyBlock>
-        </div>
-      </DraftSection>
-
-      <DraftSection eyebrow="A repeatable starting point" id="coffee-brew-guide" title="A practical brew guide">
-        <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-2">
-          <CopyBlock title="The four variables that matter most">
-            <p className={paragraphClass}>
-              Start with fresh coffee, a burr grinder, clean water and a scale. Dose by mass, not by scoop. The useful variables are ratio, grind size, water temperature and contact time; change one at a time so you can tell what actually helped.
-            </p>
-            <p className={paragraphClass}>
-              A good first target for filter coffee is 1 g of coffee to 16 g of water, brewed at 92-96°C. Use a medium grind, pour steadily and aim for a total brew time of roughly 2:30-4:00. These are starting points, not laws: roast level, freshness, filter shape and water can all move the target.
-            </p>
-          </CopyBlock>
-          <CopyBlock title="A simple pour-over recipe">
-            <ol className="grid gap-3 text-sm leading-7 text-ink/66">
-              <li><span className="font-semibold text-ink">1.</span> Grind 20 g of coffee medium-fine and heat 320 g of water.</li>
-              <li><span className="font-semibold text-ink">2.</span> Rinse the paper filter, discard the rinse water and add the grounds.</li>
-              <li><span className="font-semibold text-ink">3.</span> Pour 60 g, swirl gently and wait 30-45 seconds for the bloom.</li>
-              <li><span className="font-semibold text-ink">4.</span> Add the remaining water in slow pulses, finishing at 320 g.</li>
-              <li><span className="font-semibold text-ink">5.</span> Taste when warm. Adjust grind before changing everything else.</li>
-            </ol>
-          </CopyBlock>
-          <CopyBlock title="Troubleshooting by taste">
-            <div className="grid gap-3 text-sm leading-7 text-ink/66 sm:grid-cols-2">
-              <p><strong className="text-ink">Sharp, thin or salty:</strong> extraction may be low. Grind finer, use hotter water or extend contact time.</p>
-              <p><strong className="text-ink">Dry, harsh or hollow:</strong> extraction may be too high. Grind coarser, shorten the brew or lower the temperature.</p>
-              <p><strong className="text-ink">Weak but pleasant:</strong> keep extraction similar and use more coffee, or reduce the water.</p>
-              <p><strong className="text-ink">Bitter and smoky:</strong> the roast may dominate. Try a lighter coffee or reduce temperature and contact.</p>
-            </div>
-          </CopyBlock>
-          <CopyBlock title="Choosing a method">
-            <p className={paragraphClass}>
-              Use pour-over when you want clarity and control; French press when you want body and simplicity; AeroPress when you want a compact, forgiving hybrid; moka pot when you want a strong stove-top concentrate; and espresso when you want high concentration, speed and texture. Cold brew is an immersion method whose lower temperature slows extraction, so it usually needs a longer steep and a dilution plan.
-            </p>
-          </CopyBlock>
+      <DraftSection eyebrow="From particles to the cup" id="coffee-brew-science" title="The physics of brewing">
+        <div className="p-5 sm:p-6">
+          <CoffeeBrewingScience />
         </div>
       </DraftSection>
       </GuideChapter>
@@ -758,23 +665,43 @@ export function CoffeeGuide({
           <p className="max-w-3xl text-sm leading-7 text-ink/62">
             Coffee is both a sensory drink and a delivery system for hundreds of compounds. The final variables are biological as well as culinary: dose, timing, tolerance and the way the bean was processed.
           </p>
-          <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="coffee-next-grid mt-5">
             {[
-              "Caffeine is a stimulant, not a flavour",
-              "Decaffeination removes most, not all, caffeine",
-              "Milk and foam change aroma and texture",
-              "Reheating accelerates flavour loss",
-              "Instant coffee is brewed coffee made shelf-stable",
-              "Climate resilience and the future of Coffea",
+              {
+                title: "Caffeine is not all of coffee’s bitterness",
+                text: "Caffeine is a bitter stimulant, but chlorogenic-acid products, roast chemistry and concentration contribute plenty of bitterness too.",
+              },
+              {
+                title: "Decaf is a different brewing material",
+                text: "Decaffeination removes most, not every trace, of caffeine. It also changes the seed and often creates more fines, so the grinder may need to move coarser.",
+              },
+              {
+                title: "Milk changes more than colour",
+                text: "Fat, protein, sweetness, temperature and foam alter texture and how aroma is released. A good black coffee and a good milk coffee are not the same sensory target.",
+              },
+              {
+                title: "Holding hot is slow flavour destruction",
+                text: "Heat keeps driving aroma loss and oxidation. A thermal carafe is kinder than a hot plate, and reheating only the cup you need is kinder than reheating the whole pot.",
+              },
+              {
+                title: "Instant coffee has already been brewed",
+                text: "Soluble coffee is an extracted beverage made shelf-stable by spray- or freeze-drying. Brewing it again is really controlled rehydration.",
+              },
+              {
+                title: "Coffee’s future needs more genetics",
+                text: "Cultivated Arabica is narrow and climate-sensitive. Canephora, wild Coffea species, landraces and careful breeding all hold traits that future farms may need.",
+              },
             ].map((topic) => (
-              <div className="flex items-center justify-between gap-3 border-b border-ink/[0.08] py-3 text-sm text-ink/62" key={topic}>
-                <span>{topic}</span>
-                <small className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.14em] text-moss">Draft</small>
-              </div>
+              <article key={topic.title}>
+                <h4>{topic.title}</h4>
+                <p>{topic.text}</p>
+              </article>
             ))}
           </div>
         </div>
       </DraftSection>
+
+      <CoffeeBookResearchNote />
 
       <details className="group rounded-[1.35rem] border border-ink/10 bg-surface/42 p-4 sm:p-5">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
@@ -814,6 +741,7 @@ export function CoffeeGuide({
             <li><a className="text-moss hover:text-ink" href="https://www.neuhaus-neotec.com/en/coffee-processing/machines-controls/roaster/detail/roaster-series-rfb/" rel="noreferrer" target="_blank">Neuhaus Neotec - Industrial hot-air roasting ↗</a></li>
             <li className="mt-2 font-semibold text-ink/72">Books</li>
             <li>James Hoffmann - <i>The World Atlas of Coffee</i></li>
+            <li>Jonathan Gagné - <i>The Physics of Filter Coffee</i></li>
             <li>Harold McGee - <i>On Food and Cooking</i></li>
             <li>John W. Brady - <i>Food Chemistry</i></li>
             <li>Charles S. Sell - <i>Chemistry and the Sense of Smell</i></li>

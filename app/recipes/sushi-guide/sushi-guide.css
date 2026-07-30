@@ -1,0 +1,1993 @@
+.sushi-guide-shell {
+  display: grid;
+  gap: clamp(4.5rem, 8vw, 7.5rem);
+}
+
+.sushi-guide-page section[id] {
+  scroll-margin-top: 7rem;
+}
+
+.sushi-guide-page .sushi-start {
+  display: grid;
+  gap: 1.35rem;
+}
+
+.sushi-guide-page .sushi-showcase {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: 1.12fr 0.88fr;
+}
+
+.sushi-guide-page .sushi-showcase figure {
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.55rem;
+  background: rgb(var(--color-surface) / 0.56);
+}
+
+.sushi-guide-page .sushi-showcase .recipe-image-viewer-trigger {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: clamp(21rem, 39vw, 34rem);
+  overflow: hidden;
+}
+
+.sushi-guide-page .sushi-showcase img {
+  object-fit: cover;
+  transition: transform 500ms var(--ease-standard);
+}
+
+.sushi-guide-page .sushi-showcase figure:first-child img {
+  object-position: 55% 42%;
+}
+
+.sushi-guide-page .sushi-showcase figure:last-child img {
+  object-position: center 48%;
+}
+
+.sushi-guide-page .sushi-showcase figure:hover img {
+  transform: scale(1.025);
+}
+
+.sushi-guide-page .sushi-showcase figcaption {
+  padding: 0.7rem 0.9rem 0.8rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.07);
+  color: rgb(var(--color-ink) / 0.5);
+  font-size: 0.61rem;
+  line-height: 1.5;
+}
+
+.sushi-start-copy,
+.sushi-section-heading {
+  display: grid;
+  align-items: end;
+  gap: 1.1rem 2rem;
+  grid-template-columns: minmax(15rem, 0.72fr) minmax(22rem, 1fr);
+}
+
+.sushi-start-copy {
+  padding: 1.1rem 0.2rem 0;
+}
+
+.sushi-start-copy h2,
+.sushi-section-heading h2 {
+  margin-top: 0.35rem;
+  color: rgb(var(--color-ink) / 0.94);
+  font-size: clamp(1.85rem, 3.8vw, 3.15rem);
+  font-weight: 650;
+  letter-spacing: -0.052em;
+  line-height: 0.98;
+}
+
+.sushi-start-copy > p,
+.sushi-section-heading > p {
+  max-width: 46rem;
+  color: rgb(var(--color-ink) / 0.6);
+  font-size: 0.76rem;
+  line-height: 1.78;
+}
+
+.sushi-language-strip {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.25rem;
+  background: rgb(var(--color-surface) / 0.44);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sushi-language-strip > div {
+  min-width: 0;
+  padding: 1rem 1.05rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.sushi-language-strip > div:last-child {
+  border-right: 0;
+}
+
+.sushi-language-strip dt {
+  color: rgb(var(--color-ink) / 0.84);
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.sushi-language-strip dd {
+  margin-top: 0.3rem;
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.62rem;
+  line-height: 1.52;
+}
+
+.sushi-atlas,
+.sushi-uni-section,
+.sushi-science-section,
+.sushi-foundations,
+.sushi-sources {
+  display: grid;
+  gap: 1.35rem;
+}
+
+.sushi-atlas-controls {
+  display: grid;
+  padding: 0.85rem;
+  gap: 0.8rem;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.25rem;
+  background: rgb(var(--color-surface) / 0.52);
+}
+
+.sushi-atlas-search {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.sushi-atlas-search > span:first-child {
+  padding-left: 0.3rem;
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.55rem;
+  font-weight: 760;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sushi-atlas-search-box {
+  display: flex;
+  height: 2.85rem;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 999px;
+  background: rgb(var(--color-paper) / 0.72);
+  padding: 0 1rem;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.sushi-atlas-search-box:focus-within {
+  border-color: rgb(var(--color-moss) / 0.45);
+  box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.08);
+}
+
+.sushi-atlas-search-box > span {
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 1.25rem;
+}
+
+.sushi-atlas-search input {
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: rgb(var(--color-ink) / 0.85);
+  font-size: 0.75rem;
+}
+
+.sushi-atlas-search input::placeholder {
+  color: rgb(var(--color-ink) / 0.32);
+}
+
+.sushi-atlas-filters {
+  display: flex;
+  overflow-x: auto;
+  padding: 0.05rem 0.05rem 0.2rem;
+  gap: 0.42rem;
+  scrollbar-width: thin;
+}
+
+.sushi-atlas-filters button {
+  display: inline-flex;
+  min-height: 2.2rem;
+  flex: none;
+  align-items: center;
+  gap: 0.42rem;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 999px;
+  background: rgb(var(--color-paper) / 0.55);
+  padding: 0.45rem 0.72rem;
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.6rem;
+  font-weight: 700;
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.sushi-atlas-filters button span {
+  color: rgb(var(--color-clay) / 0.78);
+  font-size: 0.56rem;
+}
+
+.sushi-atlas-filters button:hover {
+  border-color: rgb(var(--color-ink) / 0.2);
+  color: rgb(var(--color-ink) / 0.8);
+  transform: translateY(-1px);
+}
+
+.sushi-atlas-filters button[aria-pressed="true"] {
+  border-color: rgb(var(--color-moss) / 0.35);
+  background: rgb(var(--color-moss) / 0.11);
+  color: rgb(var(--color-ink) / 0.88);
+}
+
+.sushi-atlas-filters button:focus-visible,
+.sushi-ingredient-card button:focus-visible,
+.sushi-atlas-empty button:focus-visible,
+.sushi-detail-footer a:focus-visible,
+.sushi-source-list a:focus-visible,
+.sushi-uni-sources a:focus-visible,
+.sushi-safety a:focus-visible {
+  outline: 2px solid rgb(var(--color-moss));
+  outline-offset: 3px;
+}
+
+.sushi-atlas-detail {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.65rem;
+  background:
+    radial-gradient(circle at 12% 8%, rgb(var(--color-clay) / 0.08), transparent 25rem),
+    rgb(var(--color-surface) / 0.54);
+  box-shadow: 0 1.2rem 3rem rgb(var(--color-ink) / 0.045);
+  grid-template-columns: 1fr;
+}
+
+.sushi-atlas-detail-visuals {
+  display: grid;
+  min-width: 0;
+  padding: 0.75rem;
+  align-content: start;
+  gap: 0.65rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sushi-atlas-detail-visuals figure {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.075);
+  border-radius: 1.1rem;
+  background: rgb(var(--color-paper) / 0.5);
+}
+
+.sushi-atlas-detail-visuals figcaption {
+  padding: 0.58rem 0.7rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.065);
+  color: rgb(var(--color-ink) / 0.43);
+  font-size: 0.52rem;
+  line-height: 1.45;
+}
+
+.sushi-whole-image {
+  position: relative;
+  min-height: 12rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 48% 44%, rgb(255 255 255 / 0.9), rgb(var(--color-mist) / 0.22) 72%),
+    rgb(var(--color-paper) / 0.6);
+}
+
+.sushi-atlas-detail-visuals .sushi-whole-image,
+.sushi-atlas-detail-visuals .sushi-prepared-image {
+  min-height: clamp(19rem, 32vw, 29rem);
+}
+
+.sushi-whole-image img {
+  padding: 0.8rem;
+  object-fit: contain;
+  filter: saturate(0.94) contrast(0.98);
+}
+
+.sushi-whole-image.is-food img {
+  padding: 0;
+  object-fit: cover;
+  filter: none;
+}
+
+.sushi-whole-image-placeholder {
+  display: grid;
+  padding: 2rem;
+  place-content: center;
+  text-align: center;
+}
+
+.sushi-whole-image-placeholder span {
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.54rem;
+  font-weight: 720;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sushi-whole-image-placeholder strong {
+  margin-top: 0.3rem;
+  color: rgb(var(--color-ink) / 0.76);
+  font-size: 0.9rem;
+}
+
+.sushi-counter-figure {
+  min-height: 100%;
+}
+
+.sushi-prepared-image {
+  position: relative;
+  min-height: 12rem;
+  overflow: hidden;
+  background: rgb(var(--color-mist) / 0.16);
+}
+
+.sushi-prepared-image img {
+  object-fit: cover;
+  transition: transform 280ms ease;
+}
+
+.sushi-prepared-image.is-placeholder {
+  display: grid;
+  place-items: center;
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.52rem;
+  font-weight: 700;
+}
+
+.sushi-atlas-detail-copy {
+  display: grid;
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 2.1rem);
+  align-content: start;
+  gap: 1.25rem;
+}
+
+.sushi-atlas-detail-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.sushi-atlas-detail-heading h3 {
+  margin-top: 0.35rem;
+  color: rgb(var(--color-ink) / 0.94);
+  font-size: clamp(2.4rem, 5vw, 4.35rem);
+  font-weight: 580;
+  letter-spacing: -0.065em;
+  line-height: 0.92;
+}
+
+.sushi-reading {
+  display: flex;
+  margin-top: 0.65rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.55rem;
+}
+
+.sushi-reading span {
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.78rem;
+}
+
+.sushi-reading strong {
+  color: rgb(var(--color-moss) / 0.82);
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.sushi-reading small {
+  color: rgb(var(--color-ink) / 0.36);
+  font-family: var(--font-code);
+  font-size: 0.54rem;
+}
+
+.sushi-atlas-english {
+  display: grid;
+  min-width: 9rem;
+  max-width: 14rem;
+  padding: 0.7rem 0.8rem;
+  gap: 0.18rem;
+  border: 1px solid rgb(var(--color-ink) / 0.08);
+  border-radius: 0.9rem;
+  background: rgb(var(--color-paper) / 0.52);
+  text-align: right;
+}
+
+.sushi-atlas-english span {
+  color: rgb(var(--color-ink) / 0.36);
+  font-size: 0.49rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sushi-atlas-english strong {
+  color: rgb(var(--color-ink) / 0.76);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.sushi-counter-note {
+  max-width: 43rem;
+  color: rgb(var(--color-ink) / 0.69);
+  font-size: 0.82rem;
+  line-height: 1.75;
+}
+
+.sushi-fact-grid {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.085);
+  border-radius: 1rem;
+  background: rgb(var(--color-paper) / 0.32);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sushi-fact-grid > div {
+  min-width: 0;
+  padding: 0.72rem 0.8rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.sushi-fact-grid > div:nth-child(even),
+.sushi-fact-grid > div:last-child {
+  border-right: 0;
+}
+
+.sushi-fact-grid > div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.sushi-fact-grid .sushi-fact-wide {
+  grid-column: 1 / -1;
+}
+
+.sushi-fact-grid dt {
+  color: rgb(var(--color-ink) / 0.37);
+  font-size: 0.49rem;
+  font-weight: 780;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+.sushi-fact-grid dd {
+  margin-top: 0.23rem;
+  color: rgb(var(--color-ink) / 0.68);
+  font-size: 0.63rem;
+  line-height: 1.52;
+}
+
+.sushi-nerd-notes {
+  padding: 0.95rem 1rem;
+  border-left: 3px solid rgb(var(--color-clay) / 0.55);
+  border-radius: 0 0.85rem 0.85rem 0;
+  background: rgb(var(--color-clay) / 0.055);
+}
+
+.sushi-nerd-notes ul {
+  display: grid;
+  margin-top: 0.55rem;
+  gap: 0.45rem;
+  list-style: none;
+}
+
+.sushi-nerd-notes li {
+  position: relative;
+  padding-left: 0.85rem;
+  color: rgb(var(--color-ink) / 0.6);
+  font-size: 0.64rem;
+  line-height: 1.58;
+}
+
+.sushi-nerd-notes li::before {
+  position: absolute;
+  top: 0.63em;
+  left: 0;
+  width: 0.27rem;
+  height: 0.27rem;
+  border-radius: 50%;
+  background: rgb(var(--color-clay) / 0.72);
+  content: "";
+}
+
+.sushi-detail-footer {
+  display: grid;
+  padding-top: 0.1rem;
+  gap: 0.65rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.075);
+}
+
+.sushi-detail-footer > p:first-child {
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.58rem;
+  line-height: 1.5;
+}
+
+.sushi-detail-footer > p:first-child span {
+  margin-right: 0.5rem;
+  color: rgb(var(--color-ink) / 0.32);
+  font-weight: 760;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sushi-detail-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+}
+
+.sushi-detail-footer nav a {
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 999px;
+  padding: 0.38rem 0.58rem;
+  color: rgb(var(--color-ink) / 0.55);
+  font-size: 0.52rem;
+  font-weight: 700;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.sushi-detail-footer nav a:hover {
+  border-color: rgb(var(--color-moss) / 0.34);
+  color: rgb(var(--color-moss));
+}
+
+.sushi-image-credit {
+  color: rgb(var(--color-ink) / 0.32);
+  font-size: 0.48rem;
+  line-height: 1.45;
+}
+
+.sushi-image-credit a {
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--color-ink) / 0.16);
+  text-underline-offset: 0.15em;
+}
+
+.sushi-image-credits {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.sushi-atlas-result-line {
+  display: flex;
+  padding: 0 0.2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.57rem;
+}
+
+.sushi-atlas-result-line strong {
+  color: rgb(var(--color-ink) / 0.76);
+  font-size: 0.74rem;
+}
+
+.sushi-ingredient-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sushi-ingredient-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.085);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-surface) / 0.48);
+  content-visibility: auto;
+  contain-intrinsic-size: 23rem;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.sushi-ingredient-card:hover,
+.sushi-ingredient-card.is-selected {
+  border-color: rgb(var(--color-moss) / 0.32);
+  box-shadow: 0 0.85rem 2rem rgb(var(--color-ink) / 0.07);
+  transform: translateY(-2px);
+}
+
+.sushi-ingredient-card.is-selected {
+  box-shadow:
+    0 0 0 2px rgb(var(--color-moss) / 0.1),
+    0 0.85rem 2rem rgb(var(--color-ink) / 0.07);
+}
+
+.sushi-ingredient-card button {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  text-align: left;
+}
+
+.sushi-ingredient-card .sushi-whole-image {
+  height: 10.4rem;
+  min-height: 0;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+}
+
+.sushi-ingredient-card .sushi-whole-image img {
+  padding: 0.55rem;
+  transition: transform 280ms ease;
+}
+
+.sushi-ingredient-card:hover .sushi-whole-image img {
+  transform: scale(1.035);
+}
+
+.sushi-card-counter-view {
+  position: absolute;
+  z-index: 2;
+  top: 7.25rem;
+  right: 0.55rem;
+  display: grid;
+  width: 5.1rem;
+  height: 3.6rem;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid rgb(var(--color-ink) / 0.11);
+  border-radius: 0.7rem;
+  background: rgb(var(--color-surface) / 0.92);
+  box-shadow: 0 0.4rem 1rem rgb(var(--color-ink) / 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.sushi-card-counter-view .sushi-prepared-image {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.sushi-card-counter-view .sushi-prepared-image img {
+  object-fit: cover;
+}
+
+.sushi-card-copy {
+  display: grid;
+  min-width: 0;
+  padding: 0.85rem 0.85rem 0.65rem;
+}
+
+.sushi-card-category {
+  color: rgb(var(--color-clay) / 0.68);
+  font-size: 0.5rem;
+  font-weight: 780;
+}
+
+.sushi-card-copy > strong {
+  margin-top: 0.2rem;
+  overflow: hidden;
+  color: rgb(var(--color-ink) / 0.9);
+  font-size: 1.28rem;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sushi-card-reading {
+  margin-top: 0.25rem;
+  overflow: hidden;
+  color: rgb(var(--color-moss) / 0.7);
+  font-size: 0.56rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sushi-card-english {
+  margin-top: 0.45rem;
+  overflow: hidden;
+  color: rgb(var(--color-ink) / 0.66);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sushi-card-copy small {
+  margin-top: 0.2rem;
+  overflow: hidden;
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.51rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sushi-card-open {
+  display: flex;
+  padding: 0.58rem 0.85rem 0.7rem;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgb(var(--color-ink) / 0.06);
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.52rem;
+  font-weight: 720;
+}
+
+.sushi-atlas-empty {
+  display: grid;
+  min-height: 14rem;
+  padding: 2rem;
+  place-content: center;
+  place-items: center;
+  border: 1px dashed rgb(var(--color-ink) / 0.16);
+  border-radius: 1.25rem;
+  color: rgb(var(--color-ink) / 0.52);
+  text-align: center;
+}
+
+.sushi-atlas-empty strong {
+  color: rgb(var(--color-ink) / 0.8);
+  font-size: 1rem;
+}
+
+.sushi-atlas-empty p {
+  margin-top: 0.35rem;
+  font-size: 0.65rem;
+}
+
+.sushi-atlas-empty button {
+  margin-top: 0.8rem;
+  border-radius: 999px;
+  background: rgb(var(--color-moss));
+  padding: 0.48rem 0.8rem;
+  color: rgb(var(--color-paper));
+  font-size: 0.58rem;
+  font-weight: 760;
+}
+
+.sushi-uni-pair {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sushi-uni-pair figure,
+.sushi-uni-type-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.3rem;
+  background: rgb(var(--color-surface) / 0.48);
+}
+
+.sushi-uni-photo {
+  position: relative;
+  min-height: 17rem;
+  overflow: hidden;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+  background:
+    radial-gradient(circle at 50% 45%, rgb(255 255 255 / 0.75), transparent 72%),
+    rgb(var(--color-paper) / 0.5);
+}
+
+.sushi-uni-photo img {
+  object-fit: cover;
+}
+
+.sushi-uni-pair figure:first-child .sushi-uni-photo img {
+  object-fit: contain;
+  padding: 0.75rem;
+}
+
+.sushi-uni-pair figcaption {
+  padding: 0.65rem 0.8rem 0.25rem;
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.56rem;
+  font-weight: 720;
+}
+
+.sushi-uni-pair .sushi-image-credit,
+.sushi-uni-card-credits {
+  padding: 0 0.8rem 0.7rem;
+}
+
+.sushi-uni-baseline {
+  display: grid;
+  padding: clamp(1.1rem, 3vw, 1.55rem);
+  gap: 0.42rem;
+  border: 1px solid rgb(var(--color-clay) / 0.2);
+  border-radius: 1.25rem;
+  background:
+    radial-gradient(circle at 5% 20%, rgb(var(--color-clay) / 0.12), transparent 22rem),
+    rgb(var(--color-surface) / 0.5);
+}
+
+.sushi-uni-baseline strong {
+  color: rgb(var(--color-ink) / 0.86);
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  letter-spacing: -0.025em;
+}
+
+.sushi-uni-baseline > p:last-child {
+  max-width: 62rem;
+  color: rgb(var(--color-ink) / 0.56);
+  font-size: 0.66rem;
+  line-height: 1.68;
+}
+
+.sushi-uni-type-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sushi-uni-type-card {
+  display: grid;
+  align-content: start;
+}
+
+.sushi-uni-card-photos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+}
+
+.sushi-uni-card-photos figure {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: auto 1fr;
+  background: rgb(var(--color-paper) / 0.22);
+}
+
+.sushi-uni-card-photos figure + figure {
+  border-left: 1px solid rgb(var(--color-ink) / 0.065);
+}
+
+.sushi-uni-card-photos .sushi-uni-photo {
+  min-height: 10.5rem;
+}
+
+.sushi-uni-card-photos figure:first-child .sushi-uni-photo img {
+  padding: 0.55rem;
+  object-fit: contain;
+}
+
+.sushi-uni-card-photos .sushi-uni-lobes .sushi-uni-photo img {
+  padding: 0;
+  object-fit: cover;
+}
+
+.sushi-uni-card-photos figcaption {
+  display: grid;
+  padding: 0.58rem 0.68rem 0.7rem;
+  align-content: start;
+  gap: 0.22rem;
+}
+
+.sushi-uni-card-photos figcaption strong {
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: 0.58rem;
+}
+
+.sushi-uni-card-photos figcaption span {
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.5rem;
+  line-height: 1.45;
+}
+
+.sushi-uni-card-credits {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.sushi-uni-type-copy {
+  display: grid;
+  padding: 0.9rem 0.9rem 0.65rem;
+  align-content: start;
+}
+
+.sushi-uni-type-copy h3 {
+  margin-top: 0.3rem;
+  color: rgb(var(--color-ink) / 0.9);
+  font-size: 1.45rem;
+  font-weight: 640;
+  letter-spacing: -0.045em;
+}
+
+.sushi-uni-reading {
+  margin-top: 0.12rem;
+  color: rgb(var(--color-moss) / 0.72);
+  font-size: 0.55rem;
+  font-weight: 720;
+}
+
+.sushi-uni-type-copy > strong {
+  margin-top: 0.48rem;
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: 0.7rem;
+}
+
+.sushi-uni-type-copy > i {
+  margin-top: 0.1rem;
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.54rem;
+}
+
+.sushi-uni-type-copy > p:not(.eyebrow, .sushi-uni-reading) {
+  margin-top: 0.62rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.6rem;
+  line-height: 1.62;
+}
+
+.sushi-uni-type-copy b {
+  color: rgb(var(--color-ink) / 0.72);
+}
+
+.sushi-uni-size-line {
+  display: flex;
+  margin-top: 0.65rem;
+  min-height: 2rem;
+  align-items: center;
+  gap: 0.55rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.065);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.54rem;
+}
+
+.sushi-uni-size-dot {
+  display: block;
+  flex: none;
+  border: 1px solid rgb(var(--color-clay) / 0.46);
+  border-radius: 50%;
+  background: rgb(var(--color-clay) / 0.13);
+}
+
+.sushi-uni-size-dot.is-small {
+  width: 0.72rem;
+  height: 0.72rem;
+}
+
+.sushi-uni-size-dot.is-medium {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.sushi-uni-size-dot.is-large {
+  width: 1.22rem;
+  height: 1.22rem;
+}
+
+.sushi-uni-packing {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.4rem;
+  background: rgb(var(--color-surface) / 0.46);
+}
+
+.sushi-uni-packing > header {
+  display: grid;
+  padding: clamp(1.15rem, 3vw, 1.7rem);
+  gap: 0.38rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.075);
+}
+
+.sushi-uni-packing h3,
+.sushi-uni-chemistry h3 {
+  color: rgb(var(--color-ink) / 0.88);
+  font-size: clamp(1.25rem, 2.6vw, 1.9rem);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.sushi-uni-packing > header > p:last-child {
+  max-width: 48rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.64rem;
+  line-height: 1.62;
+}
+
+.sushi-uni-packing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sushi-uni-packing-grid article {
+  padding: 1rem 1.05rem 1.2rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.075);
+}
+
+.sushi-uni-packing-grid article:last-child {
+  border-right: 0;
+}
+
+.sushi-uni-pack-mark {
+  display: grid;
+  width: 2.4rem;
+  height: 2.4rem;
+  margin-bottom: 0.8rem;
+  place-items: center;
+  border: 1px solid rgb(var(--color-clay) / 0.25);
+  border-radius: 0.7rem;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 0.3rem, rgb(var(--color-clay) / 0.08) 0.3rem 0.38rem),
+    rgb(var(--color-paper) / 0.55);
+  color: rgb(var(--color-clay) / 0.75);
+  font-size: 0.9rem;
+  font-weight: 760;
+}
+
+.sushi-uni-pack-mark.is-water {
+  border-radius: 50%;
+  background: rgb(74 139 160 / 0.12);
+  color: rgb(49 116 137 / 0.82);
+}
+
+.sushi-uni-pack-mark.is-loose {
+  transform: rotate(-4deg);
+  border-style: dashed;
+  background: rgb(var(--color-moss) / 0.08);
+  color: rgb(var(--color-moss) / 0.76);
+}
+
+.sushi-uni-packing-grid h4 {
+  margin-top: 0.38rem;
+  color: rgb(var(--color-ink) / 0.8);
+  font-size: 0.83rem;
+  font-weight: 660;
+  letter-spacing: -0.025em;
+}
+
+.sushi-uni-pack-photo {
+  overflow: hidden;
+  margin-top: 0.72rem;
+  border: 1px solid rgb(var(--color-ink) / 0.075);
+  border-radius: 0.9rem;
+  background: rgb(var(--color-paper) / 0.48);
+}
+
+.sushi-uni-pack-photo > div {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+}
+
+.sushi-uni-pack-photo img {
+  object-fit: cover;
+}
+
+.sushi-uni-pack-photo figcaption {
+  padding: 0.55rem 0.62rem 0.15rem;
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.53rem;
+  line-height: 1.45;
+}
+
+.sushi-uni-pack-photo .sushi-image-credit {
+  padding: 0 0.62rem 0.58rem;
+}
+
+.sushi-uni-packing-grid article > p:last-child {
+  margin-top: 0.62rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.61rem;
+  line-height: 1.66;
+}
+
+.sushi-uni-chemistry {
+  display: grid;
+  padding: clamp(1.15rem, 3vw, 1.65rem);
+  gap: 1.2rem 2rem;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.3rem;
+  background: rgb(var(--color-surface) / 0.48);
+  grid-template-columns: minmax(14rem, 0.7fr) minmax(24rem, 1.3fr);
+}
+
+.sushi-uni-chemistry ul {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.sushi-uni-chemistry li {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+  color: rgb(var(--color-ink) / 0.54);
+  font-size: 0.61rem;
+  line-height: 1.6;
+}
+
+.sushi-uni-chemistry li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.sushi-uni-chemistry b {
+  color: rgb(var(--color-ink) / 0.74);
+}
+
+.sushi-uni-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+}
+
+.sushi-uni-sources a {
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 999px;
+  padding: 0.4rem 0.62rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.52rem;
+  font-weight: 710;
+}
+
+.sushi-uni-sources a:hover {
+  border-color: rgb(var(--color-moss) / 0.34);
+  color: rgb(var(--color-moss));
+}
+
+.sushi-science-grid {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.35rem;
+  background: rgb(var(--color-surface) / 0.44);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sushi-science-grid article {
+  position: relative;
+  min-width: 0;
+  padding: 1.2rem 1.15rem 1.35rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.075);
+}
+
+.sushi-science-grid article:last-child {
+  border-right: 0;
+}
+
+.sushi-science-number {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.9rem;
+  color: rgb(var(--color-clay) / 0.34);
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: -0.06em;
+}
+
+.sushi-science-grid h3,
+.sushi-tuna-section h3,
+.sushi-foundation-grid h3,
+.sushi-note-card h3 {
+  margin-top: 0.42rem;
+  color: rgb(var(--color-ink) / 0.86);
+  font-size: 1.05rem;
+  font-weight: 660;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.sushi-science-grid article > p:last-child,
+.sushi-tuna-section > div > p:last-child {
+  margin-top: 0.72rem;
+  color: rgb(var(--color-ink) / 0.55);
+  font-size: 0.64rem;
+  line-height: 1.68;
+}
+
+.sushi-tuna-section {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.35rem;
+  background: rgb(var(--color-surface) / 0.46);
+  grid-template-columns: minmax(16rem, 0.62fr) minmax(30rem, 1.38fr);
+}
+
+.sushi-tuna-section > div {
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  align-self: center;
+}
+
+.sushi-tuna-map {
+  display: grid;
+  min-width: 0;
+  padding: 0.65rem;
+  border-left: 1px solid rgb(var(--color-ink) / 0.075);
+  background:
+    radial-gradient(circle at 50% 45%, rgb(255 255 255 / 0.72), transparent 68%),
+    rgb(var(--color-paper) / 0.4);
+}
+
+.sushi-tuna-map-scroll {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-color: rgb(var(--color-clay) / 0.28) transparent;
+  scrollbar-width: thin;
+}
+
+.sushi-tuna-map-scroll:focus-visible {
+  outline: 2px solid rgb(var(--color-moss));
+  outline-offset: -2px;
+}
+
+.sushi-tuna-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sushi-tuna-kicker,
+.sushi-tuna-section-labels,
+.sushi-tuna-body-labels,
+.sushi-tuna-callouts,
+.sushi-tuna-axis-label {
+  font-family: var(--font-sans);
+}
+
+.sushi-tuna-kicker {
+  fill: rgb(var(--color-moss) / 0.8);
+  font-size: 10px;
+  font-weight: 780;
+  letter-spacing: 2.1px;
+}
+
+.sushi-tuna-panel-title {
+  fill: rgb(var(--color-ink) / 0.82);
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 670;
+  letter-spacing: -0.5px;
+}
+
+.sushi-tuna-section-labels {
+  fill: rgb(var(--color-ink) / 0.7);
+  font-size: 12px;
+  font-weight: 760;
+  letter-spacing: 1.2px;
+  text-anchor: middle;
+}
+
+.sushi-tuna-body-labels,
+.sushi-tuna-callouts {
+  fill: rgb(var(--color-ink) / 0.72);
+  font-size: 14px;
+  font-weight: 660;
+}
+
+.sushi-tuna-body-labels path,
+.sushi-tuna-callouts path {
+  fill: none;
+  stroke: rgb(var(--color-ink) / 0.48);
+  stroke-width: 1.5;
+}
+
+.sushi-tuna-map .is-subtle {
+  fill: rgb(var(--color-ink) / 0.42);
+  font-size: 10px;
+  font-weight: 540;
+  letter-spacing: 0;
+}
+
+.sushi-tuna-axis-label {
+  fill: rgb(var(--color-ink) / 0.42);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.sushi-tuna-slice-arrow {
+  fill: none;
+  stroke: rgb(var(--color-clay) / 0.68);
+  stroke-dasharray: 6 5;
+  stroke-width: 2;
+}
+
+.sushi-tuna-slice-arrowhead {
+  fill: none;
+  stroke: rgb(var(--color-clay) / 0.68);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.sushi-tuna-map figcaption {
+  padding: 0.3rem 0.55rem 0.45rem;
+  color: rgb(var(--color-ink) / 0.36);
+  font-size: 0.5rem;
+  line-height: 1.5;
+}
+
+.sushi-tuna-map figcaption a {
+  color: rgb(var(--color-moss) / 0.78);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--color-moss) / 0.25);
+  text-underline-offset: 0.18em;
+}
+
+.sushi-fish-name-context {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.05rem;
+  background:
+    linear-gradient(135deg, rgb(var(--color-clay) / 0.055), transparent 52%),
+    rgb(var(--color-surface) / 0.5);
+}
+
+.sushi-fish-name-context header {
+  display: grid;
+  padding: 1rem 1.05rem;
+  align-items: end;
+  gap: 0.65rem 1.4rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(15rem, 1.2fr);
+}
+
+.sushi-fish-name-context h4 {
+  margin-top: 0.35rem;
+  color: rgb(var(--color-ink) / 0.84);
+  font-size: 0.9rem;
+  font-weight: 680;
+  letter-spacing: -0.03em;
+  line-height: 1.14;
+}
+
+.sushi-fish-name-context header > p {
+  color: rgb(var(--color-ink) / 0.5);
+  font-size: 0.59rem;
+  line-height: 1.62;
+}
+
+.sushi-growth-name-ladder {
+  display: grid;
+  list-style: none;
+}
+
+.sushi-growth-name-ladder li {
+  display: grid;
+  position: relative;
+  padding: 0.68rem 1.05rem;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.06);
+  grid-template-columns: 5rem 6rem 1fr;
+}
+
+.sushi-growth-name-ladder li[data-current="true"],
+.sushi-regional-name-table > div[data-current="true"] {
+  background: rgb(var(--color-moss) / 0.085);
+  box-shadow: inset 3px 0 rgb(var(--color-moss) / 0.58);
+}
+
+.sushi-growth-name-ladder li span,
+.sushi-regional-name-table span {
+  color: rgb(var(--color-clay) / 0.68);
+  font-family: var(--font-code);
+  font-size: 0.52rem;
+}
+
+.sushi-growth-name-ladder li strong,
+.sushi-regional-name-table strong {
+  color: rgb(var(--color-ink) / 0.78);
+  font-size: 0.68rem;
+}
+
+.sushi-growth-name-ladder li small {
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.55rem;
+}
+
+.sushi-growth-name-ladder li[data-current="true"] strong::after {
+  content: "this entry";
+  display: inline-flex;
+  margin-left: 0.45rem;
+  border: 1px solid rgb(var(--color-moss) / 0.25);
+  border-radius: 999px;
+  padding: 0.12rem 0.32rem;
+  color: rgb(var(--color-moss) / 0.82);
+  font-size: 0.42rem;
+  font-weight: 760;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 0.08rem;
+}
+
+.sushi-regional-name-table {
+  display: grid;
+}
+
+.sushi-regional-name-table > div {
+  display: grid;
+  padding: 0.68rem 1.05rem;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.06);
+  grid-template-columns: 6rem repeat(2, minmax(0, 1fr));
+}
+
+.sushi-regional-name-table > div.is-heading {
+  background: rgb(var(--color-ink) / 0.025);
+}
+
+.sushi-regional-name-table > div.is-heading span,
+.sushi-regional-name-table > div.is-heading strong {
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.48rem;
+  font-weight: 760;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sushi-context-source {
+  display: inline-flex;
+  margin: 0.68rem 1.05rem 0.78rem;
+  color: rgb(var(--color-moss) / 0.76);
+  font-size: 0.5rem;
+  font-weight: 720;
+}
+
+.sushi-context-source:hover {
+  color: rgb(var(--color-moss));
+}
+
+.sushi-foundation-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sushi-foundation-grid > article {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.085);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-surface) / 0.48);
+}
+
+.sushi-foundation-image {
+  position: relative;
+  height: 9.5rem;
+  overflow: hidden;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+  background:
+    radial-gradient(circle at 50% 48%, rgb(255 255 255 / 0.88), rgb(var(--color-mist) / 0.2)),
+    rgb(var(--color-paper) / 0.5);
+}
+
+.sushi-foundation-image img {
+  padding: 0.6rem;
+  object-fit: contain;
+}
+
+.sushi-foundation-image.is-graphic {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 32% 25%, rgb(var(--color-clay) / 0.15), transparent 48%),
+    rgb(var(--color-mist) / 0.18);
+}
+
+.sushi-foundation-image.is-graphic span {
+  color: rgb(var(--color-ink) / 0.68);
+  font-size: 4rem;
+  font-weight: 520;
+}
+
+.sushi-foundation-credit {
+  padding: 0.35rem 0.65rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.055);
+  color: rgb(var(--color-ink) / 0.28);
+  font-size: 0.42rem;
+  line-height: 1.4;
+}
+
+.sushi-foundation-credit a {
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--color-ink) / 0.14);
+  text-underline-offset: 0.13em;
+}
+
+.sushi-foundation-grid > article > div:last-child {
+  padding: 0.9rem 0.9rem 1rem;
+}
+
+.sushi-foundation-reading {
+  margin-top: 0.32rem;
+  color: rgb(var(--color-moss) / 0.66);
+  font-size: 0.53rem;
+  font-weight: 700;
+}
+
+.sushi-foundation-grid article div:last-child > p:last-child {
+  margin-top: 0.7rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.61rem;
+  line-height: 1.62;
+}
+
+.sushi-guide-page .sushi-notes-grid {
+  display: grid;
+  margin-top: 0;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sushi-guide-page .sushi-note-card {
+  padding: clamp(1.1rem, 2.5vw, 1.55rem);
+  border: 1px solid rgb(var(--color-ink) / 0.085);
+  border-radius: 1.25rem;
+  background: rgb(var(--color-surface) / 0.48);
+}
+
+.sushi-guide-page .sushi-note-card > p:not(.eyebrow) {
+  margin-top: 0.65rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.63rem;
+  line-height: 1.62;
+}
+
+.sushi-guide-page .sushi-note-card ul {
+  display: grid;
+  margin-top: 0.85rem;
+  gap: 0.32rem;
+  color: rgb(var(--color-ink) / 0.66);
+  font-size: 0.62rem;
+}
+
+.sushi-guide-page .sushi-note-card li {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: 4.5rem 1fr;
+}
+
+.sushi-guide-page .sushi-note-card li span {
+  color: rgb(var(--color-moss));
+  font-family: var(--font-code);
+  font-size: 0.54rem;
+  font-weight: 760;
+}
+
+.sushi-safety {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-clay) / 0.22);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 5% 30%, rgb(var(--color-clay) / 0.13), transparent 25rem),
+    rgb(var(--color-surface) / 0.52);
+  grid-template-columns: minmax(14rem, 0.62fr) minmax(24rem, 1.38fr);
+}
+
+.sushi-safety > div {
+  padding: clamp(1.3rem, 3.5vw, 2rem);
+}
+
+.sushi-safety > div:first-child {
+  border-right: 1px solid rgb(var(--color-ink) / 0.075);
+}
+
+.sushi-safety h2 {
+  margin-top: 0.45rem;
+  color: rgb(var(--color-ink) / 0.92);
+  font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+  font-weight: 650;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.sushi-safety-copy {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.sushi-safety-copy > p {
+  color: rgb(var(--color-ink) / 0.6);
+  font-size: 0.7rem;
+  line-height: 1.72;
+}
+
+.sushi-safety-copy > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.sushi-safety-copy a {
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 999px;
+  padding: 0.42rem 0.65rem;
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.54rem;
+  font-weight: 720;
+}
+
+.sushi-safety-copy a:hover {
+  border-color: rgb(var(--color-clay) / 0.35);
+  color: rgb(var(--color-clay));
+}
+
+.sushi-source-list {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 1.35rem;
+  background: rgb(var(--color-surface) / 0.46);
+}
+
+.sushi-source-list > a {
+  display: grid;
+  padding: 0.9rem 1rem;
+  align-items: start;
+  gap: 0.8rem 1rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  transition: background-color 150ms ease;
+}
+
+.sushi-source-list > a:last-child {
+  border-bottom: 0;
+}
+
+.sushi-source-list > a:hover {
+  background: rgb(var(--color-moss) / 0.055);
+}
+
+.sushi-source-list > a > span:first-child {
+  color: rgb(var(--color-clay) / 0.55);
+  font-family: var(--font-code);
+  font-size: 0.55rem;
+}
+
+.sushi-source-list > a > span:last-child {
+  color: rgb(var(--color-ink) / 0.32);
+  font-size: 0.75rem;
+}
+
+.sushi-source-list strong {
+  color: rgb(var(--color-ink) / 0.8);
+  font-size: 0.68rem;
+  font-weight: 740;
+}
+
+.sushi-source-list p {
+  margin-top: 0.25rem;
+  color: rgb(var(--color-ink) / 0.45);
+  font-size: 0.58rem;
+  line-height: 1.5;
+}
+
+.sushi-source-note {
+  padding: 0 0.2rem;
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.56rem;
+  line-height: 1.6;
+}
+
+html.dashboard-mode .sushi-guide-shell {
+  gap: clamp(3.25rem, 6vw, 5.5rem);
+}
+
+html.dashboard-mode .sushi-ingredient-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1120px) {
+  .sushi-ingredient-grid,
+  .sushi-foundation-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sushi-atlas-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-uni-type-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sushi-science-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sushi-science-grid article:nth-child(2) {
+    border-right: 0;
+  }
+
+  .sushi-science-grid article:nth-child(-n + 2) {
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.075);
+  }
+}
+
+@media (max-width: 880px) {
+  .sushi-start-copy,
+  .sushi-section-heading {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-guide-page .sushi-showcase {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-guide-page .sushi-showcase .recipe-image-viewer-trigger {
+    height: min(32rem, 72vw);
+  }
+
+  .sushi-language-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sushi-language-strip > div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .sushi-language-strip > div:nth-child(-n + 2) {
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  }
+
+  .sushi-atlas-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-atlas-detail-visuals {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+
+  .sushi-counter-figure {
+    min-height: 100%;
+  }
+
+  .sushi-ingredient-grid,
+  html.dashboard-mode .sushi-ingredient-grid,
+  .sushi-foundation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sushi-tuna-section,
+  .sushi-safety,
+  .sushi-uni-chemistry {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-fish-name-context header {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-uni-packing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-uni-packing-grid article {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.075);
+  }
+
+  .sushi-uni-packing-grid article:last-child {
+    border-bottom: 0;
+  }
+
+  .sushi-tuna-map {
+    border: 0;
+    border-top: 1px solid rgb(var(--color-ink) / 0.075);
+  }
+
+  .sushi-safety > div:first-child {
+    border: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.075);
+  }
+}
+
+@media (max-width: 640px) {
+  .sushi-guide-shell {
+    gap: 3.8rem;
+  }
+
+  .sushi-guide-page .sushi-showcase .recipe-image-viewer-trigger {
+    height: 23rem;
+  }
+
+  .sushi-language-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-language-strip > div {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  }
+
+  .sushi-language-strip > div:last-child {
+    border-bottom: 0;
+  }
+
+  .sushi-atlas-controls {
+    margin-right: calc(50% - 50vw);
+    margin-left: calc(50% - 50vw);
+    padding-right: 1rem;
+    padding-left: 1rem;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .sushi-atlas-filters {
+    margin-right: -1rem;
+    margin-left: -1rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    scrollbar-width: none;
+  }
+
+  .sushi-atlas-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  #sushi-atlas-detail[data-expanded="false"] {
+    display: none;
+  }
+
+  .sushi-atlas-detail-visuals {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-atlas-detail-visuals .sushi-whole-image {
+    min-height: 16rem;
+  }
+
+  .sushi-atlas-detail-heading {
+    display: grid;
+  }
+
+  .sushi-atlas-english {
+    max-width: none;
+    text-align: left;
+  }
+
+  .sushi-fact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-fact-grid > div,
+  .sushi-fact-grid > div:nth-child(even),
+  .sushi-fact-grid > div:nth-last-child(-n + 2) {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+
+  .sushi-fact-grid > div:last-child {
+    border-bottom: 0;
+  }
+
+  .sushi-atlas-result-line {
+    align-items: start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .sushi-ingredient-grid,
+  html.dashboard-mode .sushi-ingredient-grid {
+    gap: 0.65rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sushi-ingredient-card .sushi-whole-image {
+    height: 8.4rem;
+  }
+
+  .sushi-card-counter-view {
+    top: 5.65rem;
+    right: 0.38rem;
+    width: 4.5rem;
+    height: 3.25rem;
+  }
+
+  .sushi-card-counter-view .sushi-prepared-image {
+    width: 100%;
+  }
+
+  .sushi-card-copy {
+    padding: 0.72rem 0.7rem 0.58rem;
+  }
+
+  .sushi-card-copy > strong {
+    font-size: 1.05rem;
+  }
+
+  .sushi-card-open {
+    padding: 0.52rem 0.7rem 0.6rem;
+  }
+
+  .sushi-science-grid,
+  .sushi-uni-pair,
+  .sushi-uni-type-grid,
+  .sushi-foundation-grid,
+  .sushi-guide-page .sushi-notes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-science-grid article {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.075);
+  }
+
+  .sushi-science-grid article:last-child {
+    border-bottom: 0;
+  }
+
+  .sushi-tuna-map-scroll svg {
+    min-width: 43rem;
+  }
+
+  .sushi-growth-name-ladder li {
+    gap: 0.32rem 0.55rem;
+    grid-template-columns: 4.4rem 5.2rem minmax(0, 1fr);
+  }
+
+  .sushi-regional-name-table > div {
+    gap: 0.5rem;
+    grid-template-columns: 4.7rem repeat(2, minmax(0, 1fr));
+  }
+
+  .sushi-growth-name-ladder li[data-current="true"] strong::after {
+    display: none;
+  }
+
+  .sushi-source-list > a {
+    grid-template-columns: 1.6rem minmax(0, 1fr) auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .sushi-ingredient-grid,
+  html.dashboard-mode .sushi-ingredient-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sushi-ingredient-card .sushi-whole-image {
+    height: 11rem;
+  }
+
+  .sushi-card-counter-view {
+    top: 8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sushi-guide-page .sushi-showcase img,
+  .sushi-atlas-filters button,
+  .sushi-ingredient-card,
+  .sushi-ingredient-card .sushi-whole-image img,
+  .sushi-prepared-image img {
+    transition: none;
+  }
+}

@@ -2541,13 +2541,22 @@ html.dashboard-mode .section-rail {
   .section-rail__item { min-height: 1.8rem; }
 }
 
+@media (max-width: 1199px),
+       (max-width: 1366px) and (hover: none) and (pointer: coarse) {
+  .section-rail__wave-shadow,
+  .section-rail__wave-line {
+    opacity: 0;
+  }
+  .section-rail.is-scrolling .section-rail__wave-line {
+    opacity: 1;
+  }
+}
+
 @media (max-width: 639px) {
   .section-rail.is-scrolling .section-rail__item.is-active .section-rail__label {
     opacity: 0.9;
     transform: translate(0, -50%) scaleX(1);
   }
-  .section-rail__wave-line { opacity: 0.18; }
-  .section-rail.is-scroll-idle .section-rail__wave-line { opacity: 0.95; }
 }
 
 @keyframes project-focus-enter {
@@ -2566,6 +2575,8 @@ html.dashboard-mode .section-rail {
 .recipe-guide-media.is-pastry .recipe-guide-generated { background: linear-gradient(145deg, #f1dfbd, #dbb77d); }
 .recipe-guide-media.is-pasta .recipe-guide-generated { background: linear-gradient(145deg, #f5e7bd, #d9c078); }
 .recipe-guide-media.is-sushi .recipe-guide-generated { background: linear-gradient(145deg, #d8e4e7, #9cb8b8); }
+.recipe-guide-media.is-wine .recipe-guide-generated { background: linear-gradient(145deg, #d9b5ad, #743446); }
+.recipe-guide-media.is-wine .recipe-guide-generated span { color: rgb(255 249 241 / 0.9); }
 .recipe-guide-media.is-sushi .recipe-guide-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .recipe-guide-media.is-sushi .recipe-guide-photo-grid > div:first-child img { object-position: 55% 42%; }
 .recipe-guide-media.is-core .recipe-guide-generated { background: linear-gradient(145deg, #e2e0dc, #b8b5ad); }

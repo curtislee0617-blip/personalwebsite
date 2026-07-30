@@ -185,6 +185,11 @@ const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string;
     mark: "COFFEE",
     tone: "coffee",
   },
+  "wine-guide": {
+    alt: "Abstract wine map and grape graphic",
+    mark: "WINE",
+    tone: "wine",
+  },
   "core-basics": { alt: "Core cooking fundamentals graphic", mark: "CORE", tone: "core" },
   "viennoiserie-guide": {
     srcs: [

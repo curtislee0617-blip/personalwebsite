@@ -1,6 +1,27 @@
+.coffee-guide-page > .page-intro {
+  padding-top: clamp(1.5rem, 2.4vw, 2.25rem);
+}
+
+.coffee-guide-page > .page-intro .page-intro-title {
+  max-width: 50rem;
+  font-size: clamp(2.7rem, 5vw, 4.35rem);
+  line-height: 0.98;
+}
+
+.coffee-guide-page > .page-intro .page-intro-description {
+  max-width: 40rem;
+  margin-top: 0.7rem;
+  font-size: clamp(0.72rem, 1vw, 0.86rem);
+  line-height: 1.65;
+}
+
+.coffee-guide-page > .page-section {
+  padding-top: clamp(1rem, 2vw, 1.6rem);
+}
+
 .coffee-guide {
   display: grid;
-  gap: clamp(3.5rem, 7vw, 6rem);
+  gap: clamp(2.6rem, 5vw, 4.35rem);
 }
 
 .coffee-guide-contents {
@@ -53,20 +74,12 @@
 .coffee-guide-contents-chapter {
   display: grid;
   padding: 0.62rem 0.65rem 0.55rem;
-  gap: 0.15rem;
   border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
-}
-
-.coffee-guide-contents-chapter span {
-  color: rgb(var(--color-clay) / 0.62);
-  font-size: 0.52rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
 }
 
 .coffee-guide-contents-chapter strong {
   color: rgb(var(--color-ink) / 0.8);
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 760;
   line-height: 1.35;
 }
@@ -104,50 +117,43 @@
 
 .coffee-guide-chapter-header {
   display: grid;
-  padding: 0 0.25rem 1.35rem;
+  padding: 0 0.2rem 1rem;
   align-items: end;
-  gap: 0.8rem 1.25rem;
+  gap: 0.75rem 1.4rem;
   border-bottom: 1px solid rgb(var(--color-ink) / 0.12);
-  grid-template-columns: 4.25rem minmax(13rem, 0.7fr) minmax(18rem, 1fr);
-}
-
-.coffee-guide-chapter-header > span {
-  color: rgb(var(--color-clay) / 0.46);
-  font-size: clamp(2.7rem, 5vw, 4.2rem);
-  font-weight: 580;
-  letter-spacing: -0.065em;
-  line-height: 0.82;
+  grid-template-columns: minmax(13rem, 0.72fr) minmax(18rem, 1fr);
 }
 
 .coffee-guide-chapter-header h2 {
-  margin-top: 0.35rem;
+  margin-top: 0.28rem;
   color: rgb(var(--color-ink) / 0.94);
-  font-size: clamp(1.75rem, 3.6vw, 2.8rem);
+  font-size: clamp(1.55rem, 2.8vw, 2.2rem);
   font-weight: 650;
-  letter-spacing: -0.045em;
-  line-height: 1;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
 }
 
 .coffee-guide-chapter-header > p {
   max-width: 36rem;
   color: rgb(var(--color-ink) / 0.58);
-  font-size: 0.75rem;
-  line-height: 1.7;
+  font-size: 0.7rem;
+  line-height: 1.62;
 }
 
 .coffee-guide-chapter-sections {
   display: grid;
-  margin-top: 1.25rem;
-  gap: 1.25rem;
+  margin-top: 0.95rem;
+  gap: 0.95rem;
 }
 
-.coffee-guide-chapter:nth-of-type(2) .coffee-guide-chapter-header > span,
-.coffee-guide-chapter:nth-of-type(5) .coffee-guide-chapter-header > span {
-  color: rgb(var(--color-moss) / 0.48);
+.coffee-draft-section > header {
+  padding: 0.9rem 1.1rem;
 }
 
-.coffee-guide-chapter:nth-of-type(3) .coffee-guide-chapter-header > span {
-  color: rgb(var(--color-lime) / 0.72);
+.coffee-draft-section > header h3 {
+  margin-top: 0.3rem;
+  font-size: clamp(1.25rem, 2.1vw, 1.65rem);
+  line-height: 1.12;
 }
 
 .coffee-origin-explorer,
@@ -215,15 +221,16 @@
   display: grid;
   min-width: 0;
   overflow: hidden;
+  align-items: start;
   border: 1px solid rgb(var(--color-ink) / 0.1);
   border-radius: 1.4rem;
   background: rgb(var(--color-surface) / 0.58);
-  grid-template-columns: minmax(0, 1.65fr) minmax(17rem, 0.75fr);
+  grid-template-columns: minmax(0, 1.7fr) minmax(16.5rem, 0.68fr);
 }
 
 .coffee-map-frame {
   min-width: 0;
-  padding: 0.65rem;
+  padding: 0.55rem;
   border-right: 1px solid rgb(var(--color-ink) / 0.08);
 }
 
@@ -237,7 +244,7 @@
 
 .coffee-country-terrain-map {
   position: relative;
-  min-height: clamp(26rem, 52vw, 31rem);
+  min-height: clamp(27rem, 46vw, 32rem);
   overflow: hidden;
   border: 1px solid rgb(var(--color-ink) / 0.1);
   border-radius: 1rem;
@@ -249,6 +256,121 @@
 .coffee-terrain-map-canvas {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.coffee-terrain-map-canvas:active {
+  cursor: grabbing;
+}
+
+.coffee-slippy-tiles,
+.coffee-slippy-locations {
+  position: absolute;
+  inset: 0;
+}
+
+.coffee-slippy-tile {
+  position: absolute;
+  width: 256px;
+  height: 256px;
+  background-color: rgb(var(--color-mist) / 0.2);
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.coffee-slippy-locations {
+  z-index: 2;
+  pointer-events: none;
+}
+
+.coffee-slippy-marker {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--color-ink));
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.coffee-slippy-footprint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--coffee-location-radius) * 2);
+  height: calc(var(--coffee-location-radius) * 2);
+  border: 1.5px solid var(--coffee-location-colour);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--coffee-location-colour) 17%, transparent);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.3) inset;
+  transform: translate(-50%, -50%);
+  transition: background-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.coffee-slippy-pin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 2px solid rgb(255 252 246 / 0.96);
+  border-radius: 999px;
+  background: var(--coffee-location-colour);
+  box-shadow: 0 0.18rem 0.55rem rgb(24 28 24 / 0.38);
+  transform: translate(-50%, -50%);
+}
+
+.coffee-slippy-label {
+  position: absolute;
+  top: -0.45rem;
+  left: 0.62rem;
+  display: grid;
+  min-width: max-content;
+  max-width: 12rem;
+  padding: 0.34rem 0.46rem;
+  gap: 0.06rem;
+  border: 1px solid rgb(255 255 255 / 0.78);
+  border-radius: 0.55rem;
+  background: rgb(248 245 237 / 0.93);
+  box-shadow: 0 0.24rem 0.75rem rgb(24 28 24 / 0.22);
+  text-align: left;
+}
+
+.coffee-slippy-label strong {
+  color: rgb(38 42 37 / 0.88);
+  font-size: 0.55rem;
+  font-weight: 820;
+  line-height: 1.2;
+}
+
+.coffee-slippy-label small {
+  color: rgb(38 42 37 / 0.58);
+  font-size: 0.43rem;
+  font-weight: 680;
+  line-height: 1.25;
+}
+
+.coffee-slippy-marker:hover .coffee-slippy-footprint,
+.coffee-slippy-marker:focus-visible .coffee-slippy-footprint,
+.coffee-slippy-marker[data-selected="true"] .coffee-slippy-footprint {
+  background: color-mix(in srgb, var(--coffee-location-colour) 28%, transparent);
+  box-shadow:
+    0 0 0 2px rgb(255 255 255 / 0.88),
+    0 0 0 4px color-mix(in srgb, var(--coffee-location-colour) 66%, transparent);
+}
+
+.coffee-slippy-marker:focus-visible {
+  outline: none;
+}
+
+.coffee-slippy-marker[data-secondary="true"] .coffee-slippy-pin {
+  width: 0.52rem;
+  height: 0.52rem;
 }
 
 .coffee-terrain-map-controls {
@@ -295,15 +417,52 @@
   color: rgb(var(--color-ink) / 0.92);
 }
 
+.coffee-terrain-map-controls button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
 .coffee-terrain-map-controls button[aria-pressed="true"] {
   background: rgb(var(--color-moss) / 0.16);
   color: rgb(var(--color-ink) / 0.92);
 }
 
 .coffee-terrain-map-controls button:focus-visible,
-.coffee-terrain-region-marker:focus-visible {
+.coffee-slippy-marker:focus-visible {
   outline: 2px solid rgb(var(--color-moss));
   outline-offset: 2px;
+}
+
+.coffee-map-zoom-controls {
+  align-items: center;
+}
+
+.coffee-map-zoom-controls span {
+  min-width: 1.75rem;
+  color: rgb(var(--color-ink) / 0.5);
+  font-size: 0.48rem;
+  font-weight: 760;
+  text-align: center;
+}
+
+.coffee-map-attribution {
+  position: absolute;
+  z-index: 4;
+  right: 0.38rem;
+  bottom: 0.35rem;
+  max-width: calc(100% - 0.76rem);
+  border-radius: 0.38rem;
+  background: rgb(248 245 237 / 0.82);
+  padding: 0.18rem 0.3rem;
+  color: rgb(38 42 37 / 0.55);
+  font-size: 0.4rem;
+  line-height: 1.35;
+}
+
+.coffee-map-attribution a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
 }
 
 .coffee-terrain-map-message {
@@ -497,9 +656,9 @@
 
 .coffee-country-region-key {
   display: grid;
-  margin: 0.55rem 0.15rem 0;
+  margin: 0.45rem 0.1rem 0;
   padding: 0;
-  gap: 0.35rem;
+  gap: 0.3rem;
   grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
   list-style: none;
 }
@@ -507,11 +666,11 @@
 .coffee-country-region-key button {
   display: grid;
   width: 100%;
-  min-height: 2.65rem;
-  padding: 0.42rem 0.5rem;
+  min-height: 2.4rem;
+  padding: 0.36rem 0.44rem;
   align-items: center;
-  gap: 0.45rem;
-  grid-template-columns: 1.35rem minmax(0, 1fr);
+  gap: 0.42rem;
+  grid-template-columns: 0.72rem minmax(0, 1fr);
   border: 1px solid rgb(var(--color-ink) / 0.08);
   border-radius: 0.65rem;
   background: rgb(var(--color-surface) / 0.35);
@@ -529,20 +688,18 @@
   background: rgb(var(--color-moss) / 0.11);
 }
 
-.coffee-country-region-key button > span:first-child {
-  display: inline-grid;
-  width: 1.35rem;
-  height: 1.35rem;
-  place-items: center;
+.coffee-country-region-key .coffee-country-region-swatch {
+  display: block;
+  width: 0.62rem;
+  height: 0.62rem;
   border-radius: 999px;
   background: rgb(var(--color-clay) / 0.82);
-  color: rgb(var(--color-surface));
-  font-size: 0.56rem;
-  font-weight: 850;
+  box-shadow: 0 0 0 3px rgb(var(--color-clay) / 0.1);
 }
 
-.coffee-country-region-key button[aria-pressed="true"] > span:first-child {
+.coffee-country-region-key button[aria-pressed="true"] .coffee-country-region-swatch {
   background: rgb(var(--color-moss) / 0.9);
+  box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.13);
 }
 
 .coffee-country-region-key button > span:last-child {
@@ -570,7 +727,7 @@
 
 .coffee-map-caption {
   display: flex;
-  padding: 0.45rem 0.25rem 0.15rem;
+  padding: 0.4rem 0.2rem 0.08rem;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
@@ -593,21 +750,21 @@
 .coffee-region-summary {
   display: grid;
   min-width: 0;
-  padding: 1.25rem;
+  padding: 1rem;
   align-content: start;
-  gap: 0.9rem;
+  gap: 0.68rem;
 }
 
 .coffee-region-summary h3 {
-  margin-top: -0.4rem;
+  margin-top: -0.26rem;
   color: rgb(var(--color-ink) / 0.9);
-  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  font-size: clamp(1.18rem, 1.7vw, 1.55rem);
   font-weight: 650;
   letter-spacing: -0.025em;
 }
 
 .coffee-region-summary .coffee-region-count {
-  margin-top: -0.65rem;
+  margin-top: -0.5rem;
   color: rgb(var(--color-moss) / 0.78);
   font-size: 0.56rem;
   font-weight: 760;
@@ -619,8 +776,8 @@
 .coffee-region-summary dd,
 .coffee-region-summary blockquote {
   color: rgb(var(--color-ink) / 0.58);
-  font-size: 0.72rem;
-  line-height: 1.65;
+  font-size: 0.66rem;
+  line-height: 1.58;
 }
 
 .coffee-atlas-totals {
@@ -653,11 +810,11 @@
 
 .coffee-region-summary dl {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.58rem;
 }
 
 .coffee-region-summary dl > div {
-  padding-top: 0.75rem;
+  padding-top: 0.56rem;
   border-top: 1px solid rgb(var(--color-ink) / 0.08);
 }
 
@@ -674,7 +831,7 @@
 }
 
 .coffee-region-summary blockquote {
-  padding: 0.7rem 0 0.05rem 0.8rem;
+  padding: 0.5rem 0 0.02rem 0.65rem;
   border-left: 2px solid rgb(var(--color-clay) / 0.55);
   color: rgb(var(--color-ink) / 0.72);
   font-style: italic;
@@ -2324,6 +2481,424 @@
   border-top: 1px solid rgb(var(--color-ink) / 0.08);
 }
 
+.coffee-guide-chapter {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 90rem;
+}
+
+.coffee-book-layer,
+.coffee-brewing-science {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.coffee-book-journey,
+.coffee-book-deep-dive,
+.coffee-method-atlas,
+.coffee-troubleshooting {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.085);
+  border-radius: 1rem;
+  background: rgb(var(--color-paper) / 0.3);
+}
+
+.coffee-book-journey > header,
+.coffee-book-deep-dive > header,
+.coffee-method-atlas > header,
+.coffee-troubleshooting > header {
+  display: grid;
+  padding: 0.9rem 1rem;
+  align-items: end;
+  gap: 0.6rem 1.2rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  grid-template-columns: minmax(13rem, 0.75fr) minmax(18rem, 1fr);
+}
+
+.coffee-book-journey > header h4,
+.coffee-book-deep-dive > header h4,
+.coffee-method-atlas > header h4,
+.coffee-troubleshooting > header h4,
+.coffee-repeatability-note h4 {
+  margin-top: 0.22rem;
+  color: rgb(var(--color-ink) / 0.86);
+  font-size: clamp(0.98rem, 1.5vw, 1.2rem);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.14;
+}
+
+.coffee-book-journey > header > p,
+.coffee-book-deep-dive > header > p,
+.coffee-method-atlas > header > p,
+.coffee-troubleshooting > header > p,
+.coffee-repeatability-note > p {
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.66rem;
+  line-height: 1.62;
+}
+
+.coffee-book-journey > ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.coffee-book-journey li {
+  min-width: 0;
+  padding: 0.85rem 0.9rem 0.95rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-book-journey li:last-child {
+  border-right: 0;
+}
+
+.coffee-book-journey li strong {
+  display: block;
+  margin-bottom: 0.32rem;
+  color: rgb(var(--color-moss) / 0.84);
+  font-size: 0.66rem;
+  font-weight: 730;
+}
+
+.coffee-book-journey li p {
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.61rem;
+  line-height: 1.62;
+}
+
+.coffee-book-detail-grid {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.085);
+  border-radius: 1rem;
+  background: rgb(var(--color-surface) / 0.34);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.coffee-book-deep-dive .coffee-book-detail-grid {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.coffee-book-detail-grid details {
+  min-width: 0;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-book-detail-grid details:nth-child(2n) {
+  border-right: 0;
+}
+
+.coffee-book-detail-grid details:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.coffee-book-detail-grid summary {
+  display: flex;
+  min-height: 6.15rem;
+  padding: 0.85rem 0.9rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  cursor: pointer;
+  list-style: none;
+  transition: background 150ms ease;
+}
+
+.coffee-book-detail-grid summary::-webkit-details-marker {
+  display: none;
+}
+
+.coffee-book-detail-grid summary:hover {
+  background: rgb(var(--color-moss) / 0.04);
+}
+
+.coffee-book-detail-grid summary:focus-visible {
+  outline: 2px solid rgb(var(--color-moss));
+  outline-offset: -2px;
+}
+
+.coffee-book-detail-grid summary > span {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.coffee-book-detail-grid summary strong {
+  color: rgb(var(--color-ink) / 0.8);
+  font-size: 0.72rem;
+  font-weight: 690;
+  letter-spacing: -0.012em;
+  line-height: 1.35;
+}
+
+.coffee-book-detail-grid summary small {
+  color: rgb(var(--color-ink) / 0.49);
+  font-size: 0.59rem;
+  line-height: 1.55;
+}
+
+.coffee-book-detail-grid summary > i {
+  display: grid;
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 999px;
+  color: rgb(var(--color-moss) / 0.72);
+  font-size: 0.83rem;
+  font-style: normal;
+  line-height: 1;
+  transition: transform 150ms ease;
+}
+
+.coffee-book-detail-grid details[open] summary > i {
+  transform: rotate(45deg);
+}
+
+.coffee-book-detail-grid details > div {
+  padding: 0 0.9rem 0.9rem;
+}
+
+.coffee-book-detail-grid ul {
+  display: grid;
+  gap: 0.42rem;
+  padding-top: 0.78rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.065);
+}
+
+.coffee-book-detail-grid li {
+  position: relative;
+  padding-left: 0.72rem;
+  color: rgb(var(--color-ink) / 0.57);
+  font-size: 0.61rem;
+  line-height: 1.6;
+}
+
+.coffee-book-detail-grid li::before {
+  position: absolute;
+  top: 0.58em;
+  left: 0;
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 999px;
+  background: rgb(var(--color-clay) / 0.54);
+  content: "";
+}
+
+.coffee-book-formula {
+  margin-top: 0.72rem;
+  border-radius: 0.55rem;
+  background: rgb(var(--color-moss) / 0.075);
+  padding: 0.5rem 0.6rem;
+  color: rgb(var(--color-ink) / 0.68);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.58rem;
+  line-height: 1.5;
+}
+
+.coffee-book-page-note {
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.54rem;
+  line-height: 1.55;
+}
+
+.coffee-brewing-science {
+  gap: 1rem;
+}
+
+.coffee-book-deep-dive {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 35rem;
+}
+
+.coffee-method-atlas > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.coffee-method-atlas article {
+  min-width: 0;
+  padding: 0.85rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-method-atlas article:nth-child(4n) {
+  border-right: 0;
+}
+
+.coffee-method-atlas article:nth-last-child(-n + 4) {
+  border-bottom: 0;
+}
+
+.coffee-method-atlas article > header {
+  display: flex;
+  margin-bottom: 0.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.coffee-method-atlas h5 {
+  color: rgb(var(--color-ink) / 0.82);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.coffee-method-atlas article > header span {
+  color: rgb(var(--color-moss) / 0.72);
+  font-size: 0.47rem;
+  font-weight: 690;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.coffee-method-atlas article > p {
+  min-height: 3.2rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.59rem;
+  line-height: 1.55;
+}
+
+.coffee-method-atlas dl {
+  display: grid;
+  margin-top: 0.66rem;
+  gap: 0.5rem;
+}
+
+.coffee-method-atlas dt {
+  margin-bottom: 0.12rem;
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.47rem;
+  font-weight: 720;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coffee-method-atlas dd {
+  color: rgb(var(--color-ink) / 0.59);
+  font-size: 0.56rem;
+  line-height: 1.52;
+}
+
+.coffee-troubleshooting-table {
+  display: grid;
+}
+
+.coffee-troubleshooting-table > div {
+  display: grid;
+  min-width: 0;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+  grid-template-columns: minmax(9rem, 0.55fr) repeat(2, minmax(13rem, 1fr));
+}
+
+.coffee-troubleshooting-table > div:last-child {
+  border-bottom: 0;
+}
+
+.coffee-troubleshooting-table > div > * {
+  min-width: 0;
+  padding: 0.68rem 0.75rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.065);
+}
+
+.coffee-troubleshooting-table > div > *:last-child {
+  border-right: 0;
+}
+
+.coffee-troubleshooting-head {
+  background: rgb(var(--color-moss) / 0.055);
+}
+
+.coffee-troubleshooting-head span {
+  color: rgb(var(--color-ink) / 0.44);
+  font-size: 0.48rem;
+  font-weight: 730;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coffee-troubleshooting-table strong {
+  color: rgb(var(--color-ink) / 0.75);
+  font-size: 0.62rem;
+  line-height: 1.5;
+}
+
+.coffee-troubleshooting-table p {
+  color: rgb(var(--color-ink) / 0.54);
+  font-size: 0.58rem;
+  line-height: 1.55;
+}
+
+.coffee-repeatability-note,
+.coffee-book-research-note {
+  display: grid;
+  padding: 1rem;
+  align-items: end;
+  gap: 0.7rem 1.25rem;
+  border: 1px solid rgb(var(--color-moss) / 0.16);
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgb(var(--color-moss) / 0.085), transparent 50%),
+    rgb(var(--color-surface) / 0.36);
+  grid-template-columns: minmax(13rem, 0.68fr) minmax(18rem, 1fr);
+}
+
+.coffee-book-research-note h3 {
+  margin-top: 0.25rem;
+  color: rgb(var(--color-ink) / 0.84);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.coffee-book-research-note > p {
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.62rem;
+  line-height: 1.65;
+}
+
+.coffee-next-grid {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.075);
+  border-radius: 0.9rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.coffee-next-grid article {
+  padding: 0.8rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-next-grid article:nth-child(3n) {
+  border-right: 0;
+}
+
+.coffee-next-grid article:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.coffee-next-grid h4 {
+  margin-bottom: 0.28rem;
+  color: rgb(var(--color-ink) / 0.76);
+  font-size: 0.67rem;
+  font-weight: 680;
+  line-height: 1.35;
+}
+
+.coffee-next-grid p {
+  color: rgb(var(--color-ink) / 0.5);
+  font-size: 0.58rem;
+  line-height: 1.58;
+}
+
 @media (max-width: 1099px), (max-width: 1366px) and (pointer: coarse) and (hover: none) {
   .coffee-guide-contents {
     display: block;
@@ -2346,9 +2921,7 @@
   .coffee-guide-contents li { border-radius: 0.65rem; }
   .coffee-guide-contents-chapter {
     padding: 0.48rem 0.52rem 0.42rem;
-    gap: 0.1rem;
   }
-  .coffee-guide-contents-chapter span { font-size: 0.47rem; }
   .coffee-guide-contents-chapter strong { font-size: 0.59rem; }
   .coffee-guide-contents li > div {
     padding: 0.32rem 0.52rem 0.42rem;
@@ -2366,11 +2939,11 @@
   }
   .coffee-guide-chapter-header {
     align-items: start;
-    grid-template-columns: 3.5rem minmax(0, 1fr);
+    grid-template-columns: minmax(12rem, 0.72fr) minmax(0, 1fr);
   }
   .coffee-guide-chapter-header > p {
     max-width: 42rem;
-    grid-column: 2;
+    grid-column: auto;
   }
   .coffee-map-stage { grid-template-columns: 1fr; }
   .coffee-map-frame { border-right: 0; border-bottom: 1px solid rgb(var(--color-ink) / 0.08); }
@@ -2399,10 +2972,52 @@
   .coffee-roaster-scale > ol { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .coffee-roaster-scale li:nth-child(3n) { border-right: 0; }
   .coffee-roaster-scale li:nth-child(-n + 3) { border-bottom: 1px solid rgb(var(--color-ink) / 0.07); }
+  .coffee-book-journey > header,
+  .coffee-book-deep-dive > header,
+  .coffee-method-atlas > header,
+  .coffee-troubleshooting > header,
+  .coffee-repeatability-note,
+  .coffee-book-research-note {
+    align-items: start;
+    grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1fr);
+  }
+  .coffee-method-atlas > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .coffee-method-atlas article:nth-child(4n) {
+    border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-method-atlas article:nth-child(2n) {
+    border-right: 0;
+  }
+  .coffee-method-atlas article:nth-last-child(-n + 4) {
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-method-atlas article:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+  .coffee-next-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .coffee-next-grid article:nth-child(3n) {
+    border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-next-grid article:nth-child(2n) {
+    border-right: 0;
+  }
+  .coffee-next-grid article:nth-last-child(-n + 3) {
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-next-grid article:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
 }
 
 @media (max-width: 640px) {
-  .coffee-guide { gap: 3.25rem; }
+  .coffee-guide-page > .page-intro .page-intro-title {
+    font-size: clamp(2.25rem, 12vw, 3.2rem);
+  }
+  .coffee-guide { gap: 2.5rem; }
   .coffee-guide-contents > header {
     padding: 0.62rem 0.7rem;
     align-items: flex-start;
@@ -2422,17 +3037,13 @@
   }
   .coffee-guide-chapter-header {
     padding-right: 0;
-    padding-bottom: 1rem;
+    padding-bottom: 0.8rem;
     padding-left: 0;
-    gap: 0.65rem 0.75rem;
-    grid-template-columns: 2.65rem minmax(0, 1fr);
-  }
-  .coffee-guide-chapter-header > span {
-    padding-top: 0.15rem;
-    font-size: 2.35rem;
+    gap: 0.5rem;
+    grid-template-columns: 1fr;
   }
   .coffee-guide-chapter-header h2 {
-    font-size: 1.55rem;
+    font-size: 1.4rem;
     line-height: 1.05;
   }
   .coffee-guide-chapter-header > p {
@@ -2442,6 +3053,76 @@
   .coffee-guide-chapter-sections {
     margin-top: 0.9rem;
     gap: 0.9rem;
+  }
+  .coffee-book-journey > header,
+  .coffee-book-deep-dive > header,
+  .coffee-method-atlas > header,
+  .coffee-troubleshooting > header,
+  .coffee-repeatability-note,
+  .coffee-book-research-note {
+    grid-template-columns: 1fr;
+  }
+  .coffee-book-journey > ol {
+    grid-template-columns: 1fr;
+  }
+  .coffee-book-journey li {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-book-journey li:last-child {
+    border-bottom: 0;
+  }
+  .coffee-book-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .coffee-book-detail-grid details,
+  .coffee-book-detail-grid details:nth-child(2n),
+  .coffee-book-detail-grid details:nth-last-child(-n + 2) {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-book-detail-grid details:last-child {
+    border-bottom: 0;
+  }
+  .coffee-book-detail-grid summary {
+    min-height: auto;
+  }
+  .coffee-method-atlas > div {
+    grid-template-columns: 1fr;
+  }
+  .coffee-method-atlas article,
+  .coffee-method-atlas article:nth-child(2n),
+  .coffee-method-atlas article:nth-child(4n),
+  .coffee-method-atlas article:nth-last-child(-n + 4),
+  .coffee-method-atlas article:nth-last-child(-n + 2) {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-method-atlas article:last-child {
+    border-bottom: 0;
+  }
+  .coffee-method-atlas article > p {
+    min-height: auto;
+  }
+  .coffee-troubleshooting-table {
+    overflow-x: auto;
+  }
+  .coffee-troubleshooting-table > div {
+    min-width: 43rem;
+  }
+  .coffee-next-grid {
+    grid-template-columns: 1fr;
+  }
+  .coffee-next-grid article,
+  .coffee-next-grid article:nth-child(2n),
+  .coffee-next-grid article:nth-child(3n),
+  .coffee-next-grid article:nth-last-child(-n + 3),
+  .coffee-next-grid article:nth-last-child(-n + 2) {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-next-grid article:last-child {
+    border-bottom: 0;
   }
   .coffee-map-toolbar {
     margin-right: -1rem;
@@ -2455,7 +3136,7 @@
   .coffee-map-filter { flex: none; }
   .coffee-map-stage { border-radius: 1rem; }
   .coffee-map-frame { padding: 0.38rem; }
-  .coffee-country-terrain-map { min-height: 23rem; }
+  .coffee-country-terrain-map { min-height: 24rem; }
   .coffee-terrain-map-controls {
     top: 0.45rem;
     left: 0.45rem;
@@ -2472,6 +3153,10 @@
     max-width: calc(100% - 0.76rem);
     font-size: 0.45rem;
   }
+  .coffee-slippy-label {
+    padding: 0.28rem 0.38rem;
+  }
+  .coffee-slippy-label small { display: none; }
   .coffee-terrain-region-marker small { display: none; }
   .coffee-map-caption {
     padding: 0.45rem 0.4rem 0.2rem;
