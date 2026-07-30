@@ -57,7 +57,9 @@ function SortableTable({ table }: { table: NonNullable<ProductItem["table"]> }) 
 }
 
 function ProductCard({ item }: { item: ProductItem }) {
-  const [open, setOpen] = useState(false);
+  // Expanded by default: the detail is the point of the card, and collapsing it
+  // hides the substance behind a click.
+  const [open, setOpen] = useState(true);
 
   return (
     <article className="flex flex-col rounded-[2rem] border border-ink/10 bg-surface/55 p-6">

@@ -42,6 +42,12 @@ export const projects: ProjectEntry[] = [
         src: "/photos/scwg-hero-card.webp",
         alt: "Aerial view of the green-methanol plant at Jungar Banner, Inner Mongolia",
       },
+      // The carousel shows `previews[1]` in its large panel, so it needs a source
+      // wide enough not to be upscaled — the card variant alone is only 760px.
+      {
+        src: "/photos/scwg-hero-wide.webp",
+        alt: "Aerial view of the green-methanol plant at Jungar Banner, Inner Mongolia",
+      },
     ],
   },
   {

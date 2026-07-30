@@ -5,9 +5,9 @@
 // as great circles and reads a bare four-corner box as its own inverse, which
 // collapses the projection scale and shrinks the map to a fraction of the canvas.
 
-// Canvas proportioned to the framed region's aspect (~1.08 wide to tall).
-export const MAP_W = 560;
-export const MAP_H = 518;
+// Canvas proportioned to the framed region's aspect (~0.79 wide to tall).
+export const MAP_W = 470;
+export const MAP_H = 595;
 export const MAP_PAD = 2;
 
 function frameGrid(west: number, south: number, east: number, north: number) {
@@ -23,9 +23,9 @@ function frameGrid(west: number, south: number, east: number, north: number) {
 }
 
 /**
- * Deliberately NOT the whole country: the frame covers the eastern half, from
- * Guangxi and Hainan up to Heilongjiang, which is where every site in the
- * dataset sits. Xinjiang, Tibet and the far west carry no data and are cropped,
- * and the South China Sea islands fall outside it too.
+ * Cropped to the pins, not to the country. The box is the bounding box of every
+ * site in the dataset plus a small margin, so all 41 marks stay in frame while
+ * Xinjiang, Tibet, the far west and the South China Sea — none of which carry
+ * data — are cut away entirely.
  */
-export const MAINLAND_FOCUS = frameGrid(97, 19, 133, 48);
+export const MAINLAND_FOCUS = frameGrid(104, 19.5, 130, 48.5);

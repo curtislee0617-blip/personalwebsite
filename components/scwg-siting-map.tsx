@@ -76,11 +76,12 @@ export function ScwgSitingMap() {
   }, [candidate, active]);
 
   return (
-    <div className="grid items-start gap-6 lg:grid-cols-2">
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
       <div className="w-full overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/40 p-3">
+        {/* Height-bounded so the frame always fits inside one browser height. */}
         <svg
           aria-label={scwgUi.siting.mapAriaLabel}
-          className="block h-auto w-full"
+          className="mx-auto block h-auto max-h-[76vh] w-full"
           preserveAspectRatio="xMidYMid meet"
           role="img"
           viewBox={viewBox}

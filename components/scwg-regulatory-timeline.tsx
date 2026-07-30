@@ -7,14 +7,14 @@ import { scwgUi } from "@/lib/scwg-meta";
 
 export function ScwgRegulatoryTimeline() {
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-      <div className="lg:sticky lg:top-28 lg:self-start">
-        <p className="eyebrow">{scwgUi.acts.regulatory.eyebrow}</p>
-        <h2 className="section-title mt-3">{scwgUi.acts.regulatory.title}</h2>
-        <p className="mt-4 text-sm leading-7 text-ink/60">{scwgRegulatoryIntro}</p>
-      </div>
+    <div>
+      <p className="eyebrow">{scwgUi.acts.regulatory.eyebrow}</p>
+      <h2 className="section-title mt-3">{scwgUi.acts.regulatory.title}</h2>
+      <p className="mt-3 text-sm leading-7 text-ink/60">{scwgRegulatoryIntro}</p>
 
-      <ol className="relative space-y-6 border-l border-ink/15 pl-6 sm:pl-8">
+      {/* Panels run two-up on wide screens so the copy uses the width instead of
+          stacking into a narrow column. */}
+      <ol className="relative mt-8 grid gap-6 border-l border-ink/15 pl-6 sm:pl-8 xl:grid-cols-2">
         {scwgRegulatoryPanels.map((panel) => (
           <li className="relative" data-reveal key={panel.id}>
             <span

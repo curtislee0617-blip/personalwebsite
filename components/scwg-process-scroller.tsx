@@ -78,7 +78,7 @@ export function ScwgProcessScroller({ blocks }: { blocks: ProcessBlock[] }) {
       {/* Sticky below the legend bar. Opaque background: the text column scrolls
           underneath it on narrow screens, so it must not be see-through. */}
       <div className="sticky top-[3.25rem] z-20 mb-6 self-start lg:top-[3.25rem] lg:mb-0">
-        <div className="h-[40vh] overflow-hidden rounded-[2rem] border border-ink/10 bg-paper p-3 shadow-soft lg:h-[calc(100vh-5rem)] lg:bg-surface/40 lg:p-4 lg:shadow-none">
+        <div className="h-[44vh] overflow-hidden rounded-[2rem] border border-ink/10 bg-paper p-3 shadow-soft lg:h-[calc(100vh-4.5rem)] lg:bg-surface/40 lg:p-4 lg:shadow-none">
           <ScwgProcessDiagram activeId={activeId} blocks={blocks} ref={svgRef} reducedMotion={reducedMotion} />
         </div>
       </div>
