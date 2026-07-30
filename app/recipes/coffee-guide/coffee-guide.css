@@ -1,0 +1,2640 @@
+.coffee-guide {
+  display: grid;
+  gap: clamp(3.5rem, 7vw, 6rem);
+}
+
+.coffee-guide-contents {
+  display: none;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.25rem;
+  background: rgb(var(--color-surface) / 0.48);
+}
+
+.coffee-guide-contents > header {
+  display: flex;
+  padding: 1rem 1.1rem;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-guide-contents h2 {
+  margin-top: 0.18rem;
+  color: rgb(var(--color-ink) / 0.9);
+  font-size: 1.2rem;
+  font-weight: 660;
+  letter-spacing: -0.025em;
+}
+
+.coffee-guide-contents > header > p {
+  max-width: 27rem;
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.63rem;
+  line-height: 1.55;
+  text-align: right;
+}
+
+.coffee-guide-contents > ol {
+  display: grid;
+  padding: 0.55rem;
+  gap: 0.45rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.coffee-guide-contents li {
+  min-width: 0;
+  border: 1px solid rgb(var(--color-ink) / 0.075);
+  border-radius: 0.8rem;
+  background: rgb(var(--color-paper) / 0.38);
+}
+
+.coffee-guide-contents-chapter {
+  display: grid;
+  padding: 0.62rem 0.65rem 0.55rem;
+  gap: 0.15rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.065);
+}
+
+.coffee-guide-contents-chapter span {
+  color: rgb(var(--color-clay) / 0.62);
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.coffee-guide-contents-chapter strong {
+  color: rgb(var(--color-ink) / 0.8);
+  font-size: 0.66rem;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.coffee-guide-contents li > div {
+  display: grid;
+  padding: 0.4rem 0.65rem 0.55rem;
+  gap: 0.15rem;
+}
+
+.coffee-guide-contents li > div a {
+  padding: 0.14rem 0;
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.53rem;
+  line-height: 1.4;
+  transition: color 150ms ease, transform 150ms ease;
+}
+
+.coffee-guide-contents a:hover {
+  color: rgb(var(--color-moss));
+}
+
+.coffee-guide-contents li > div a:hover {
+  transform: translateX(2px);
+}
+
+.coffee-guide-contents a:focus-visible {
+  outline: 2px solid rgb(var(--color-moss));
+  outline-offset: 2px;
+}
+
+.coffee-guide-chapter {
+  min-width: 0;
+}
+
+.coffee-guide-chapter-header {
+  display: grid;
+  padding: 0 0.25rem 1.35rem;
+  align-items: end;
+  gap: 0.8rem 1.25rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.12);
+  grid-template-columns: 4.25rem minmax(13rem, 0.7fr) minmax(18rem, 1fr);
+}
+
+.coffee-guide-chapter-header > span {
+  color: rgb(var(--color-clay) / 0.46);
+  font-size: clamp(2.7rem, 5vw, 4.2rem);
+  font-weight: 580;
+  letter-spacing: -0.065em;
+  line-height: 0.82;
+}
+
+.coffee-guide-chapter-header h2 {
+  margin-top: 0.35rem;
+  color: rgb(var(--color-ink) / 0.94);
+  font-size: clamp(1.75rem, 3.6vw, 2.8rem);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.coffee-guide-chapter-header > p {
+  max-width: 36rem;
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.75rem;
+  line-height: 1.7;
+}
+
+.coffee-guide-chapter-sections {
+  display: grid;
+  margin-top: 1.25rem;
+  gap: 1.25rem;
+}
+
+.coffee-guide-chapter:nth-of-type(2) .coffee-guide-chapter-header > span,
+.coffee-guide-chapter:nth-of-type(5) .coffee-guide-chapter-header > span {
+  color: rgb(var(--color-moss) / 0.48);
+}
+
+.coffee-guide-chapter:nth-of-type(3) .coffee-guide-chapter-header > span {
+  color: rgb(var(--color-lime) / 0.72);
+}
+
+.coffee-origin-explorer,
+.coffee-variety-explorer {
+  display: grid;
+  gap: 1rem;
+}
+
+.coffee-map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.coffee-map-filter {
+  display: inline-flex;
+  min-height: 2.15rem;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgb(var(--color-ink) / 0.11);
+  border-radius: 999px;
+  background: rgb(var(--color-surface) / 0.62);
+  padding: 0.45rem 0.75rem;
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.66rem;
+  font-weight: 700;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.coffee-map-filter small {
+  display: inline-grid;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.25rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgb(var(--color-ink) / 0.065);
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.51rem;
+  font-weight: 800;
+}
+
+.coffee-map-filter:hover {
+  border-color: rgb(var(--color-ink) / 0.22);
+  color: rgb(var(--color-ink) / 0.82);
+  transform: translateY(-1px);
+}
+
+.coffee-map-filter[aria-pressed="true"] {
+  border-color: rgb(var(--color-moss) / 0.4);
+  background: rgb(var(--color-moss) / 0.12);
+  color: rgb(var(--color-ink) / 0.86);
+}
+
+.coffee-map-filter:focus-visible,
+.coffee-origin-control:focus-visible,
+.coffee-country-region-key button:focus-visible,
+.coffee-variety-node:focus-visible,
+.coffee-variety-mobile-index button:focus-visible {
+  outline: 2px solid rgb(var(--color-moss));
+  outline-offset: 2px;
+}
+
+.coffee-map-stage {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.4rem;
+  background: rgb(var(--color-surface) / 0.58);
+  grid-template-columns: minmax(0, 1.65fr) minmax(17rem, 0.75fr);
+}
+
+.coffee-map-frame {
+  min-width: 0;
+  padding: 0.65rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.coffee-country-terrain-map {
+  position: relative;
+  min-height: clamp(26rem, 52vw, 31rem);
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at 28% 20%, rgb(var(--color-moss) / 0.16), transparent 42%),
+    rgb(var(--color-mist) / 0.2);
+}
+
+.coffee-terrain-map-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.coffee-terrain-map-controls {
+  position: absolute;
+  z-index: 5;
+  top: 0.65rem;
+  left: 0.65rem;
+  display: flex;
+  max-width: calc(100% - 1.3rem);
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.coffee-terrain-map-controls > div {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.18);
+  border-radius: 999px;
+  background: rgb(var(--color-surface) / 0.9);
+  box-shadow: 0 0.28rem 0.8rem rgb(var(--color-ink) / 0.14);
+}
+
+.coffee-terrain-map-controls button {
+  min-height: 2rem;
+  border: 1px solid rgb(var(--color-ink) / 0.16);
+  border-radius: 999px;
+  background: rgb(var(--color-surface) / 0.92);
+  padding: 0.4rem 0.65rem;
+  color: rgb(var(--color-ink) / 0.68);
+  box-shadow: 0 0.28rem 0.8rem rgb(var(--color-ink) / 0.12);
+  font-size: 0.56rem;
+  font-weight: 760;
+  line-height: 1;
+}
+
+.coffee-terrain-map-controls > div button {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.coffee-terrain-map-controls button:hover {
+  color: rgb(var(--color-ink) / 0.92);
+}
+
+.coffee-terrain-map-controls button[aria-pressed="true"] {
+  background: rgb(var(--color-moss) / 0.16);
+  color: rgb(var(--color-ink) / 0.92);
+}
+
+.coffee-terrain-map-controls button:focus-visible,
+.coffee-terrain-region-marker:focus-visible {
+  outline: 2px solid rgb(var(--color-moss));
+  outline-offset: 2px;
+}
+
+.coffee-terrain-map-message {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  display: grid;
+  padding: 2rem;
+  place-items: center;
+  background: rgb(var(--color-surface) / 0.74);
+  pointer-events: none;
+}
+
+.coffee-terrain-map-message p,
+.coffee-terrain-map-loading p {
+  max-width: 24rem;
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.68rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.coffee-terrain-map-loading {
+  display: grid;
+  place-items: center;
+}
+
+.coffee-terrain-map-legend {
+  position: absolute;
+  z-index: 4;
+  left: 0.55rem;
+  bottom: 1.65rem;
+  max-width: min(24rem, calc(100% - 1.1rem));
+  border: 1px solid rgb(var(--color-ink) / 0.14);
+  border-radius: 0.55rem;
+  background: rgb(var(--color-surface) / 0.88);
+  padding: 0.32rem 0.48rem;
+  color: rgb(var(--color-ink) / 0.58);
+  box-shadow: 0 0.22rem 0.7rem rgb(var(--color-ink) / 0.1);
+  font-size: 0.48rem;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.coffee-terrain-region-marker {
+  display: flex;
+  min-height: 1.8rem;
+  padding: 0.24rem 0.45rem 0.24rem 0.25rem;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgb(255 255 255 / 0.84);
+  border-radius: 999px;
+  background: rgb(248 245 237 / 0.94);
+  box-shadow:
+    0 0.22rem 0.7rem rgb(24 28 24 / 0.28),
+    0 0 0 1px rgb(24 28 24 / 0.18);
+  color: rgb(38 42 37 / 0.86);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.coffee-terrain-region-marker > span:first-child {
+  display: inline-grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  place-items: center;
+  border-radius: 999px;
+  background: rgb(151 86 58 / 0.92);
+  color: rgb(255 252 246);
+  font-size: 0.53rem;
+  font-weight: 850;
+}
+
+.coffee-terrain-region-marker > span:last-child {
+  display: grid;
+  gap: 0.02rem;
+}
+
+.coffee-terrain-region-marker strong {
+  font-size: 0.55rem;
+  font-weight: 820;
+  line-height: 1.15;
+}
+
+.coffee-terrain-region-marker small {
+  color: rgb(38 42 37 / 0.58);
+  font-size: 0.44rem;
+  font-weight: 680;
+  line-height: 1.2;
+}
+
+.coffee-terrain-region-marker[data-secondary="true"] {
+  min-height: 1.5rem;
+  padding: 0.16rem;
+}
+
+.coffee-terrain-region-marker[data-selected="true"] {
+  border-color: rgb(255 255 255);
+  background: rgb(246 242 231);
+  box-shadow:
+    0 0.28rem 0.95rem rgb(24 28 24 / 0.34),
+    0 0 0 2px rgb(66 104 79 / 0.78);
+}
+
+.coffee-terrain-region-marker[data-selected="true"] > span:first-child {
+  background: rgb(66 104 79);
+}
+
+.coffee-map-country {
+  fill: rgb(var(--color-ink) / 0.075);
+  stroke: rgb(var(--color-surface) / 0.9);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+  transition: fill 180ms ease, opacity 180ms ease, stroke 180ms ease;
+}
+
+.coffee-map-country[data-featured="true"] {
+  fill: rgb(var(--color-moss) / 0.48);
+  stroke: rgb(var(--color-paper) / 0.84);
+}
+
+.coffee-map-country[data-region="east-africa"] { fill: rgb(var(--color-clay) / 0.68); }
+.coffee-map-country[data-region="west-central-africa"] { fill: rgb(var(--color-clay) / 0.5); }
+.coffee-map-country[data-region="central-america"] { fill: rgb(var(--color-moss) / 0.7); }
+.coffee-map-country[data-region="caribbean"] { fill: rgb(var(--color-lime) / 0.68); }
+.coffee-map-country[data-region="south-america"] { fill: rgb(var(--color-moss) / 0.48); }
+.coffee-map-country[data-region="arabian-peninsula"] { fill: rgb(var(--color-clay) / 0.45); }
+.coffee-map-country[data-region="asia-pacific"] { fill: rgb(var(--color-lime) / 0.4); }
+.coffee-map-country[data-dimmed="true"] { opacity: 0.14; }
+
+.coffee-map-country[data-selected="true"] {
+  stroke: rgb(var(--color-ink) / 0.72);
+  stroke-width: 2;
+}
+
+.coffee-map-marker {
+  cursor: pointer;
+  outline: none;
+}
+
+.coffee-map-marker-halo {
+  fill: rgb(var(--color-surface) / 0.58);
+  stroke: rgb(var(--color-ink) / 0.18);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition: r 160ms ease, fill 160ms ease, stroke 160ms ease;
+}
+
+.coffee-map-marker-dot {
+  fill: rgb(var(--color-ink) / 0.82);
+  stroke: rgb(var(--color-surface));
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.coffee-map-marker:hover .coffee-map-marker-halo,
+.coffee-map-marker:focus-visible .coffee-map-marker-halo,
+.coffee-map-marker[data-selected="true"] .coffee-map-marker-halo {
+  fill: rgb(var(--color-moss) / 0.2);
+  stroke: rgb(var(--color-moss) / 0.75);
+}
+
+.coffee-map-marker-label {
+  fill: rgb(var(--color-ink) / 0.76);
+  paint-order: stroke;
+  stroke: rgb(var(--color-surface) / 0.94);
+  stroke-linejoin: round;
+  stroke-width: 5px;
+  font-size: 13px;
+  font-weight: 750;
+  pointer-events: none;
+}
+
+.coffee-bean-belt line {
+  stroke: rgb(var(--color-clay) / 0.35);
+  stroke-dasharray: 6 7;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.coffee-bean-belt text {
+  fill: rgb(var(--color-clay) / 0.68);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coffee-country-region-key {
+  display: grid;
+  margin: 0.55rem 0.15rem 0;
+  padding: 0;
+  gap: 0.35rem;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  list-style: none;
+}
+
+.coffee-country-region-key button {
+  display: grid;
+  width: 100%;
+  min-height: 2.65rem;
+  padding: 0.42rem 0.5rem;
+  align-items: center;
+  gap: 0.45rem;
+  grid-template-columns: 1.35rem minmax(0, 1fr);
+  border: 1px solid rgb(var(--color-ink) / 0.08);
+  border-radius: 0.65rem;
+  background: rgb(var(--color-surface) / 0.35);
+  text-align: left;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.coffee-country-region-key button:hover {
+  border-color: rgb(var(--color-moss) / 0.28);
+  background: rgb(var(--color-moss) / 0.055);
+}
+
+.coffee-country-region-key button[aria-pressed="true"] {
+  border-color: rgb(var(--color-moss) / 0.42);
+  background: rgb(var(--color-moss) / 0.11);
+}
+
+.coffee-country-region-key button > span:first-child {
+  display: inline-grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgb(var(--color-clay) / 0.82);
+  color: rgb(var(--color-surface));
+  font-size: 0.56rem;
+  font-weight: 850;
+}
+
+.coffee-country-region-key button[aria-pressed="true"] > span:first-child {
+  background: rgb(var(--color-moss) / 0.9);
+}
+
+.coffee-country-region-key button > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 0.08rem;
+}
+
+.coffee-country-region-key strong {
+  overflow: hidden;
+  color: rgb(var(--color-ink) / 0.76);
+  font-size: 0.56rem;
+  font-weight: 760;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coffee-country-region-key small {
+  overflow: hidden;
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.48rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coffee-map-caption {
+  display: flex;
+  padding: 0.45rem 0.25rem 0.15rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.coffee-map-caption span {
+  flex: none;
+  color: rgb(var(--color-ink) / 0.74);
+  font-size: 0.65rem;
+  font-weight: 750;
+}
+
+.coffee-map-caption p {
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.58rem;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.coffee-region-summary {
+  display: grid;
+  min-width: 0;
+  padding: 1.25rem;
+  align-content: start;
+  gap: 0.9rem;
+}
+
+.coffee-region-summary h3 {
+  margin-top: -0.4rem;
+  color: rgb(var(--color-ink) / 0.9);
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.coffee-region-summary .coffee-region-count {
+  margin-top: -0.65rem;
+  color: rgb(var(--color-moss) / 0.78);
+  font-size: 0.56rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coffee-region-summary > p:not(.eyebrow):not(.coffee-region-count),
+.coffee-region-summary dd,
+.coffee-region-summary blockquote {
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.72rem;
+  line-height: 1.65;
+}
+
+.coffee-atlas-totals {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.08);
+  border-radius: 0.8rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.coffee-atlas-totals span {
+  display: grid;
+  padding: 0.6rem 0.35rem;
+  gap: 0.08rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.49rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.coffee-atlas-totals span:last-child { border-right: 0; }
+
+.coffee-atlas-totals strong {
+  color: rgb(var(--color-ink) / 0.78);
+  font-size: 0.85rem;
+  font-weight: 720;
+}
+
+.coffee-region-summary dl {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.coffee-region-summary dl > div {
+  padding-top: 0.75rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-region-summary dt,
+.coffee-origin-profile dt,
+.coffee-origin-notes h4,
+.coffee-variety-selection dt {
+  margin-bottom: 0.2rem;
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.coffee-region-summary blockquote {
+  padding: 0.7rem 0 0.05rem 0.8rem;
+  border-left: 2px solid rgb(var(--color-clay) / 0.55);
+  color: rgb(var(--color-ink) / 0.72);
+  font-style: italic;
+}
+
+.coffee-country-summary-source {
+  width: fit-content;
+  color: rgb(var(--color-moss) / 0.86);
+  font-size: 0.58rem;
+  font-weight: 760;
+  text-decoration: none;
+}
+
+.coffee-country-summary-source:hover { text-decoration: underline; }
+
+.coffee-origin-controls {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+}
+
+.coffee-origin-control {
+  display: flex;
+  min-width: 0;
+  min-height: 3.4rem;
+  padding: 0.65rem 0.75rem;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 0.85rem;
+  background: rgb(var(--color-surface) / 0.42);
+  text-align: left;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.coffee-origin-control:hover { transform: translateY(-1px); }
+
+.coffee-origin-control[aria-pressed="true"] {
+  border-color: rgb(var(--color-moss) / 0.36);
+  background: rgb(var(--color-moss) / 0.1);
+}
+
+.coffee-origin-control span {
+  color: rgb(var(--color-ink) / 0.82);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.coffee-origin-control small {
+  margin-top: 0.15rem;
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.55rem;
+}
+
+.coffee-origin-profile {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-surface) / 0.44);
+}
+
+.coffee-origin-profile > header {
+  display: flex;
+  padding: 1rem 1.1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-origin-profile h3 {
+  margin-top: 0.2rem;
+  color: rgb(var(--color-ink) / 0.9);
+  font-size: 1.45rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.coffee-origin-profile > header > span {
+  flex: none;
+  border: 1px solid rgb(var(--color-moss) / 0.25);
+  border-radius: 999px;
+  background: rgb(var(--color-moss) / 0.08);
+  padding: 0.35rem 0.6rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.58rem;
+  font-weight: 750;
+}
+
+.coffee-origin-facts {
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.68fr) minmax(0, 1.32fr);
+}
+
+.coffee-origin-facts > dl {
+  display: grid;
+  align-content: start;
+  border-right: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-origin-facts > dl > div,
+.coffee-origin-notes section {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-origin-facts > dl > div:last-child,
+.coffee-origin-notes section:last-child { border-bottom: 0; }
+
+.coffee-origin-facts dd,
+.coffee-origin-notes p {
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+.coffee-origin-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.coffee-origin-tags span {
+  border-radius: 999px;
+  background: rgb(var(--color-ink) / 0.055);
+  padding: 0.28rem 0.5rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.58rem;
+  font-weight: 650;
+}
+
+.coffee-origin-sources {
+  padding: 0.8rem 1rem 0.9rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.55rem;
+  line-height: 1.6;
+}
+
+.coffee-map-source,
+.coffee-variety-source,
+.coffee-origin-sources {
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.56rem;
+  line-height: 1.55;
+}
+
+.coffee-variety-intro {
+  display: grid;
+  align-items: start;
+  gap: 0.75rem 1.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.coffee-variety-intro > div:first-child > p:last-child {
+  max-width: 48rem;
+  margin-top: 0.4rem;
+  color: rgb(var(--color-ink) / 0.56);
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+.coffee-variety-legend {
+  display: flex;
+  max-width: 34rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem 0.7rem;
+}
+
+.coffee-variety-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: rgb(var(--color-ink) / 0.46);
+  font-size: 0.55rem;
+  font-weight: 700;
+}
+
+.coffee-variety-legend i,
+.coffee-variety-mobile-index h4 i {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: none;
+  border-radius: 999px;
+  background: rgb(var(--color-ink) / 0.28);
+}
+
+.coffee-variety-legend [data-group="species"] i,
+.coffee-variety-mobile-index [data-group="species"] { background: rgb(var(--color-ink) / 0.65); }
+.coffee-variety-legend [data-group="ethiopian"] i,
+.coffee-variety-mobile-index [data-group="ethiopian"] { background: rgb(var(--color-clay) / 0.76); }
+.coffee-variety-legend [data-group="traditional"] i,
+.coffee-variety-mobile-index [data-group="traditional"] { background: rgb(var(--color-moss) / 0.72); }
+.coffee-variety-legend [data-group="introgressed"] i,
+.coffee-variety-mobile-index [data-group="introgressed"] { background: rgb(var(--color-lime) / 0.66); }
+.coffee-variety-legend [data-group="hybrid"] i,
+.coffee-variety-mobile-index [data-group="hybrid"] { background: rgb(var(--color-clay) / 0.46); }
+.coffee-variety-legend [data-group="robusta"] i,
+.coffee-variety-mobile-index [data-group="robusta"] { background: rgb(var(--color-ink) / 0.38); }
+
+.coffee-variety-selection {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.1rem;
+  background: rgb(var(--color-surface) / 0.56);
+}
+
+.coffee-variety-selection > header {
+  display: grid;
+  padding: 0.85rem 1rem;
+  align-items: end;
+  gap: 0.75rem 1.2rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr);
+}
+
+.coffee-variety-selection h3 {
+  margin-top: 0.2rem;
+  color: rgb(var(--color-ink) / 0.9);
+  font-size: 1.25rem;
+  font-weight: 680;
+}
+
+.coffee-variety-selection > header > span,
+.coffee-variety-selection > div > p,
+.coffee-variety-selection dd {
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.65rem;
+  line-height: 1.55;
+}
+
+.coffee-variety-selection > div {
+  display: grid;
+  padding: 0.8rem 1rem;
+  gap: 0.7rem 1.3rem;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+}
+
+.coffee-variety-selection dl {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.coffee-variety-scroll {
+  overflow: auto hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.2rem;
+  background:
+    linear-gradient(90deg, rgb(var(--color-surface) / 0.92), transparent 2.5rem, transparent calc(100% - 2.5rem), rgb(var(--color-surface) / 0.92)),
+    repeating-linear-gradient(90deg, transparent 0 196px, rgb(var(--color-ink) / 0.032) 196px 197px),
+    rgb(var(--color-surface) / 0.32);
+  overscroll-behavior-x: contain;
+  scrollbar-color: rgb(var(--color-ink) / 0.2) transparent;
+  scrollbar-width: thin;
+}
+
+.coffee-variety-canvas { position: relative; }
+
+.coffee-variety-connections {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.coffee-variety-connections path {
+  fill: none;
+  stroke: rgb(var(--color-ink) / 0.13);
+  stroke-linecap: round;
+  stroke-width: 1.25;
+  transition: stroke 160ms ease, stroke-width 160ms ease;
+}
+
+.coffee-variety-connections path[data-active="true"] {
+  stroke: rgb(var(--color-moss) / 0.82);
+  stroke-width: 2.25;
+}
+
+.coffee-variety-node {
+  position: absolute;
+  display: grid;
+  width: 158px;
+  height: 54px;
+  overflow: hidden;
+  padding: 0.5rem 0.58rem 0.42rem 0.68rem;
+  align-content: center;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-left: 3px solid rgb(var(--color-ink) / 0.34);
+  border-radius: 0.72rem;
+  background: rgb(var(--color-surface) / 0.94);
+  box-shadow: 0 4px 15px rgb(var(--color-ink) / 0.035);
+  text-align: left;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.coffee-variety-node:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-variety-node[data-group="species"] { border-left-color: rgb(var(--color-ink) / 0.7); }
+.coffee-variety-node[data-group="ethiopian"] { border-left-color: rgb(var(--color-clay) / 0.82); }
+.coffee-variety-node[data-group="traditional"] { border-left-color: rgb(var(--color-moss) / 0.78); }
+.coffee-variety-node[data-group="introgressed"] { border-left-color: rgb(var(--color-lime) / 0.75); }
+.coffee-variety-node[data-group="hybrid"] { border-left-color: rgb(var(--color-clay) / 0.54); }
+.coffee-variety-node[data-group="robusta"] { border-left-color: rgb(var(--color-ink) / 0.42); }
+
+.coffee-variety-node[aria-pressed="true"] {
+  border-color: rgb(var(--color-moss) / 0.68);
+  border-left-color: rgb(var(--color-moss));
+  background: rgb(var(--color-moss) / 0.11);
+  box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.08), 0 8px 20px rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-variety-node strong {
+  overflow: hidden;
+  color: rgb(var(--color-ink) / 0.84);
+  font-size: 0.65rem;
+  font-weight: 780;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coffee-variety-node span {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 0.15rem;
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.46rem;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.coffee-variety-mobile-index { display: none; }
+
+.coffee-process-explorer {
+  display: grid;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  gap: 1rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-process-selector {
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.coffee-process-selector button {
+  display: grid;
+  min-width: 0;
+  min-height: 4.35rem;
+  padding: 0.7rem 0.75rem;
+  align-content: center;
+  gap: 0.15rem;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 0.9rem;
+  background: rgb(var(--color-surface) / 0.5);
+  text-align: left;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.coffee-process-selector button:hover {
+  border-color: rgb(var(--color-ink) / 0.2);
+  transform: translateY(-1px);
+}
+
+.coffee-process-selector button[aria-pressed="true"] {
+  border-color: rgb(var(--color-moss) / 0.42);
+  background: rgb(var(--color-moss) / 0.11);
+}
+
+.coffee-process-selector strong {
+  color: rgb(var(--color-ink) / 0.82);
+  font-size: 0.69rem;
+  font-weight: 780;
+}
+
+.coffee-process-selector span {
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.52rem;
+  line-height: 1.35;
+}
+
+.coffee-process-selector button:focus-visible,
+.coffee-process-source a:focus-visible,
+.coffee-section-source a:focus-visible,
+.coffee-map-source a:focus-visible,
+.coffee-origin-sources a:focus-visible,
+.coffee-variety-source a:focus-visible {
+  outline: 2px solid rgb(var(--color-moss));
+  outline-offset: 2px;
+}
+
+.coffee-process-profile {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.25rem;
+  background: rgb(var(--color-surface) / 0.48);
+}
+
+.coffee-process-profile > header {
+  display: grid;
+  padding: 1.1rem 1.2rem;
+  align-items: end;
+  gap: 0.75rem 2rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  grid-template-columns: minmax(11rem, 0.42fr) minmax(0, 1fr);
+}
+
+.coffee-process-profile h3,
+.coffee-process-chemistry h3,
+.coffee-drying-guide h3,
+.coffee-roast-note h3 {
+  margin-top: 0.2rem;
+  color: rgb(var(--color-ink) / 0.9);
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-weight: 660;
+  letter-spacing: -0.025em;
+}
+
+.coffee-process-profile > header > p,
+.coffee-process-chemistry header > p:last-child,
+.coffee-drying-guide header > p,
+.coffee-roast-note > p:last-child {
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.7rem;
+  line-height: 1.65;
+}
+
+.coffee-process-facts {
+  display: grid;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.coffee-process-facts > div {
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-process-facts > div:last-child { border-right: 0; }
+
+.coffee-process-facts dt,
+.coffee-process-steps small,
+.coffee-process-chemistry h4,
+.coffee-drying-guide h4,
+.coffee-roast-stages h3 {
+  color: rgb(var(--color-ink) / 0.43);
+  font-size: 0.54rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.coffee-process-facts dd {
+  margin-top: 0.3rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.64rem;
+  line-height: 1.55;
+}
+
+.coffee-process-steps {
+  display: grid;
+  padding: 0 1rem;
+}
+
+.coffee-process-steps li {
+  display: grid;
+  padding: 0.95rem 0;
+  align-items: start;
+  gap: 0.7rem 1.1rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  grid-template-columns: 2rem minmax(10rem, 0.72fr) minmax(0, 1.28fr);
+}
+
+.coffee-process-steps li:last-child { border-bottom: 0; }
+
+.coffee-process-steps li > span {
+  display: grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  place-items: center;
+  border: 1px solid rgb(var(--color-moss) / 0.28);
+  border-radius: 999px;
+  background: rgb(var(--color-moss) / 0.08);
+  color: rgb(var(--color-ink) / 0.5);
+  font-size: 0.52rem;
+  font-weight: 800;
+}
+
+.coffee-process-steps h4 {
+  margin-bottom: 0.25rem;
+  color: rgb(var(--color-ink) / 0.82);
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.coffee-process-steps p,
+.coffee-process-chemistry article p,
+.coffee-drying-guide li p,
+.coffee-roast-stages li p {
+  color: rgb(var(--color-ink) / 0.57);
+  font-size: 0.64rem;
+  line-height: 1.6;
+}
+
+.coffee-process-steps small {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.coffee-process-chemistry,
+.coffee-drying-guide {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-surface) / 0.38);
+}
+
+.coffee-process-chemistry > header,
+.coffee-drying-guide > header {
+  display: grid;
+  padding: 1.1rem 1.2rem;
+  align-items: end;
+  gap: 0.7rem 2rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  grid-template-columns: minmax(13rem, 0.54fr) minmax(0, 1fr);
+}
+
+.coffee-process-chemistry > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.coffee-process-chemistry article {
+  padding: 1rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-process-chemistry article:last-child { border-right: 0; }
+
+.coffee-process-chemistry article h4 { margin-bottom: 0.35rem; }
+
+.coffee-drying-guide > ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.coffee-drying-guide li {
+  position: relative;
+  padding: 1rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-drying-guide li:last-child { border-right: 0; }
+
+.coffee-drying-guide li > span {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: rgb(var(--color-clay) / 0.55);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.coffee-drying-guide h4 {
+  margin-bottom: 0.35rem;
+  color: rgb(var(--color-ink) / 0.68);
+}
+
+.coffee-process-source,
+.coffee-section-source {
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.57rem;
+  line-height: 1.65;
+}
+
+.coffee-process-source a,
+.coffee-section-source a,
+.coffee-map-source a,
+.coffee-origin-sources a,
+.coffee-variety-source a {
+  color: rgb(var(--color-moss) / 0.9);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--color-moss) / 0.25);
+  text-underline-offset: 0.16em;
+}
+
+.coffee-process-source a:hover,
+.coffee-section-source a:hover,
+.coffee-map-source a:hover,
+.coffee-origin-sources a:hover,
+.coffee-variety-source a:hover {
+  color: rgb(var(--color-ink) / 0.82);
+  text-decoration-color: rgb(var(--color-ink) / 0.28);
+}
+
+.coffee-roast-note {
+  display: grid;
+  padding: 1.15rem;
+  align-content: end;
+  border: 1px solid rgb(var(--color-clay) / 0.18);
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgb(var(--color-clay) / 0.13), transparent 58%),
+    rgb(var(--color-surface) / 0.48);
+}
+
+.coffee-roast-note h3 {
+  margin: 0.35rem 0 0.65rem;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+.coffee-roast-stages {
+  display: grid;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-surface) / 0.4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.coffee-roast-stages li {
+  min-width: 0;
+  padding: 1rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-roast-stages li:nth-child(3n) { border-right: 0; }
+.coffee-roast-stages li:nth-last-child(-n + 3) { border-bottom: 0; }
+
+.coffee-roast-stages li > span {
+  display: block;
+  margin-bottom: 0.7rem;
+  color: rgb(var(--color-clay) / 0.58);
+  font-size: 1.25rem;
+  font-weight: 620;
+  letter-spacing: -0.04em;
+}
+
+.coffee-roast-stages h3 {
+  margin-bottom: 0.35rem;
+  color: rgb(var(--color-ink) / 0.68);
+}
+
+.coffee-roaster-systems {
+  display: grid;
+  margin-top: 1.5rem;
+  gap: 1.25rem;
+}
+
+.coffee-roaster-intro {
+  display: grid;
+  padding: 1.2rem;
+  align-items: start;
+  gap: 1rem 2rem;
+  border: 1px solid rgb(var(--color-clay) / 0.18);
+  border-radius: 1.2rem;
+  background:
+    linear-gradient(120deg, rgb(var(--color-clay) / 0.095), transparent 42%),
+    rgb(var(--color-surface) / 0.44);
+  grid-template-columns: minmax(13rem, 0.55fr) minmax(0, 1fr);
+}
+
+.coffee-roaster-intro h4,
+.coffee-roaster-scale h4,
+.coffee-roaster-families h4,
+.coffee-roaster-energy h4,
+.coffee-air-roaster-guide h4,
+.coffee-roaster-reading-note h4 {
+  margin-top: 0.28rem;
+  color: rgb(var(--color-ink) / 0.9);
+  font-size: 1.25rem;
+  font-weight: 670;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.coffee-roaster-intro > div:last-child {
+  display: grid;
+  gap: 0.72rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.72rem;
+  line-height: 1.72;
+}
+
+.coffee-roaster-scale,
+.coffee-roaster-energy,
+.coffee-air-roaster-guide {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-surface) / 0.38);
+}
+
+.coffee-roaster-scale > header,
+.coffee-roaster-families > header,
+.coffee-roaster-energy > header,
+.coffee-air-roaster-guide > header {
+  display: grid;
+  padding: 1.05rem 1.15rem;
+  align-items: end;
+  gap: 0.8rem 2rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  grid-template-columns: minmax(14rem, 0.6fr) minmax(0, 1fr);
+}
+
+.coffee-roaster-scale > header > p,
+.coffee-roaster-families > header > p,
+.coffee-roaster-energy > header > p,
+.coffee-air-roaster-guide > header > p {
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.64rem;
+  line-height: 1.62;
+}
+
+.coffee-roaster-scale > ol {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.coffee-roaster-scale li {
+  display: grid;
+  min-width: 0;
+  padding: 0.9rem;
+  align-content: start;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-roaster-scale li:last-child {
+  border-right: 0;
+}
+
+.coffee-roaster-scale li > span {
+  margin-bottom: 0.8rem;
+  color: rgb(var(--color-clay) / 0.56);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.coffee-roaster-scale li > p {
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.58rem;
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.coffee-roaster-scale li > strong {
+  margin: 0.18rem 0 0.55rem;
+  color: rgb(var(--color-ink) / 0.86);
+  font-size: 0.92rem;
+  font-weight: 680;
+  letter-spacing: -0.025em;
+}
+
+.coffee-roaster-scale li > small {
+  color: rgb(var(--color-ink) / 0.47);
+  font-size: 0.57rem;
+  line-height: 1.55;
+}
+
+.coffee-roaster-scale-note {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.07);
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.55rem;
+  line-height: 1.6;
+}
+
+.coffee-roaster-scale-note a {
+  color: rgb(var(--color-moss) / 0.86);
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--color-moss) / 0.23);
+  text-underline-offset: 0.15em;
+}
+
+.coffee-roaster-scale-note a:hover {
+  color: rgb(var(--color-ink) / 0.78);
+  text-decoration-color: rgb(var(--color-ink) / 0.25);
+}
+
+.coffee-roaster-families {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.2rem;
+  background: rgb(var(--color-paper) / 0.28);
+}
+
+.coffee-roaster-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.coffee-roaster-type-grid > article {
+  display: grid;
+  min-width: 0;
+  padding: 1.05rem 1.1rem;
+  align-content: start;
+  gap: 0.78rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-roaster-type-grid > article:nth-child(2n) {
+  border-right: 0;
+}
+
+.coffee-roaster-type-grid > article:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.coffee-roaster-type-grid article > header {
+  display: grid;
+  align-items: start;
+  gap: 0.7rem;
+  grid-template-columns: 1.7rem minmax(0, 1fr);
+}
+
+.coffee-roaster-type-grid article > header > span {
+  padding-top: 0.12rem;
+  color: rgb(var(--color-clay) / 0.52);
+  font-size: 0.65rem;
+  font-weight: 760;
+}
+
+.coffee-roaster-type-grid article > header p {
+  color: rgb(var(--color-moss) / 0.78);
+  font-size: 0.52rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coffee-roaster-type-grid h5 {
+  margin-top: 0.15rem;
+  color: rgb(var(--color-ink) / 0.86);
+  font-size: 1rem;
+  font-weight: 680;
+  letter-spacing: -0.022em;
+}
+
+.coffee-roaster-type-grid article > p {
+  color: rgb(var(--color-ink) / 0.57);
+  font-size: 0.66rem;
+  line-height: 1.68;
+}
+
+.coffee-roaster-type-grid dl {
+  display: grid;
+  margin-top: 0.05rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.065);
+}
+
+.coffee-roaster-type-grid dl > div {
+  display: grid;
+  padding: 0.42rem 0;
+  gap: 0.7rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.055);
+  grid-template-columns: 5.35rem minmax(0, 1fr);
+}
+
+.coffee-roaster-type-grid dl > div:last-child {
+  border-bottom: 0;
+}
+
+.coffee-roaster-type-grid dt {
+  color: rgb(var(--color-ink) / 0.38);
+  font-size: 0.52rem;
+  font-weight: 720;
+}
+
+.coffee-roaster-type-grid dd {
+  color: rgb(var(--color-ink) / 0.64);
+  font-size: 0.56rem;
+  line-height: 1.45;
+}
+
+.coffee-roaster-energy > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.coffee-roaster-energy article {
+  padding: 0.95rem 1rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-roaster-energy article:last-child {
+  border-right: 0;
+}
+
+.coffee-roaster-energy h5 {
+  margin-bottom: 0.35rem;
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: 0.68rem;
+  font-weight: 720;
+}
+
+.coffee-roaster-energy article p {
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.58rem;
+  line-height: 1.58;
+}
+
+.coffee-air-roaster-animations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.coffee-air-cutaway {
+  min-width: 0;
+}
+
+.coffee-air-cutaway:first-child {
+  border-right: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-air-cutaway > header {
+  display: flex;
+  min-height: 4.1rem;
+  padding: 0.75rem 0.9rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+}
+
+.coffee-air-cutaway h5 {
+  margin-top: 0.14rem;
+  color: rgb(var(--color-ink) / 0.82);
+  font-size: 0.9rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+}
+
+.coffee-air-cutaway > header > span {
+  flex: none;
+  border: 1px solid rgb(var(--color-moss) / 0.18);
+  border-radius: 999px;
+  background: rgb(var(--color-moss) / 0.07);
+  padding: 0.28rem 0.48rem;
+  color: rgb(var(--color-moss) / 0.82);
+  font-size: 0.49rem;
+  font-weight: 760;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.coffee-air-cutaway figcaption {
+  min-height: 4.4rem;
+  padding: 0.7rem 0.9rem 0.85rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.07);
+  color: rgb(var(--color-ink) / 0.47);
+  font-size: 0.58rem;
+  line-height: 1.6;
+}
+
+.coffee-air-machine {
+  position: relative;
+  height: 16rem;
+  overflow: hidden;
+  background:
+    linear-gradient(rgb(var(--color-ink) / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--color-ink) / 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 50% 45%, rgb(var(--color-paper) / 0.76), transparent 70%);
+  background-size: 1.5rem 1.5rem, 1.5rem 1.5rem, auto;
+}
+
+.coffee-machine-label {
+  position: absolute;
+  z-index: 6;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 999px;
+  background: rgb(var(--color-paper) / 0.86);
+  padding: 0.22rem 0.4rem;
+  color: rgb(var(--color-ink) / 0.52);
+  font-size: 0.47rem;
+  font-style: normal;
+  font-weight: 730;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.coffee-fluid-chamber {
+  position: absolute;
+  top: 12%;
+  left: 16%;
+  width: 45%;
+  height: 58%;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.3);
+  border-radius: 2.7rem 2.7rem 0.7rem 0.7rem;
+  background:
+    linear-gradient(90deg, rgb(var(--color-paper) / 0.5), rgb(var(--color-clay) / 0.07), rgb(var(--color-paper) / 0.5));
+  box-shadow: inset 0 0 1.5rem rgb(var(--color-ink) / 0.045);
+}
+
+.coffee-fluid-bed-machine::before {
+  position: absolute;
+  z-index: 3;
+  top: 20%;
+  left: 59%;
+  width: 17%;
+  border-top: 0.34rem solid rgb(var(--color-ink) / 0.16);
+  content: "";
+}
+
+.coffee-fluid-chamber::after {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 0.42rem;
+  border-top: 1px dotted rgb(var(--color-ink) / 0.42);
+  background: rgb(var(--color-ink) / 0.13);
+  content: "";
+}
+
+.coffee-fluid-chamber > .coffee-machine-label {
+  top: 0.65rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.coffee-fluid-beans,
+.coffee-fluid-air {
+  position: absolute;
+  inset: 0;
+}
+
+.coffee-fluid-beans {
+  z-index: 3;
+}
+
+.coffee-fluid-beans i,
+.coffee-recirc-drum i {
+  position: absolute;
+  width: 0.65rem;
+  height: 0.36rem;
+  border: 1px solid rgb(76 45 30 / 0.34);
+  border-radius: 50%;
+  background:
+    linear-gradient(90deg, transparent 46%, rgb(74 40 25 / 0.38) 47% 53%, transparent 54%),
+    rgb(var(--color-clay) / 0.85);
+  box-shadow: 0 0.12rem 0.2rem rgb(var(--color-ink) / 0.14);
+}
+
+.coffee-fluid-beans i {
+  bottom: 11%;
+  animation: coffee-bean-fountain-a 3.4s ease-in-out infinite;
+}
+
+.coffee-fluid-beans i:nth-child(1) { left: 12%; animation-delay: -0.2s; }
+.coffee-fluid-beans i:nth-child(2) { left: 19%; animation-delay: -2.3s; }
+.coffee-fluid-beans i:nth-child(3) { left: 26%; animation-delay: -1.1s; }
+.coffee-fluid-beans i:nth-child(4) { left: 33%; animation-delay: -2.8s; }
+.coffee-fluid-beans i:nth-child(5) { left: 40%; animation-delay: -0.7s; }
+.coffee-fluid-beans i:nth-child(6) { left: 47%; animation-delay: -1.7s; }
+.coffee-fluid-beans i:nth-child(7) { left: 54%; animation-delay: -3s; }
+.coffee-fluid-beans i:nth-child(8) { left: 61%; animation-delay: -1.3s; }
+.coffee-fluid-beans i:nth-child(9) { left: 68%; animation-delay: -2.1s; }
+.coffee-fluid-beans i:nth-child(10) { left: 75%; animation-delay: -0.45s; }
+.coffee-fluid-beans i:nth-child(11) { left: 82%; animation-delay: -2.55s; }
+.coffee-fluid-beans i:nth-child(12) { left: 23%; animation-delay: -1.85s; }
+.coffee-fluid-beans i:nth-child(13) { left: 49%; animation-delay: -0.95s; }
+.coffee-fluid-beans i:nth-child(14) { left: 71%; animation-delay: -3.25s; }
+
+.coffee-fluid-beans i:nth-child(2n) {
+  animation-name: coffee-bean-fountain-b;
+  animation-duration: 3.8s;
+}
+
+.coffee-fluid-beans i:nth-child(3n) {
+  animation-name: coffee-bean-fountain-c;
+  animation-duration: 3.1s;
+}
+
+.coffee-fluid-air {
+  z-index: 2;
+}
+
+.coffee-fluid-air i {
+  position: absolute;
+  bottom: 2%;
+  width: 0.16rem;
+  height: 45%;
+  border-radius: 999px;
+  background: linear-gradient(to top, rgb(var(--color-lime) / 0), rgb(var(--color-lime) / 0.72), rgb(var(--color-lime) / 0));
+  transform-origin: bottom;
+  animation: coffee-air-column 1.55s ease-in-out infinite;
+}
+
+.coffee-fluid-air i:nth-child(1) { left: 34%; animation-delay: -0.15s; }
+.coffee-fluid-air i:nth-child(2) { left: 42%; animation-delay: -0.75s; }
+.coffee-fluid-air i:nth-child(3) { left: 50%; animation-delay: -1.2s; }
+.coffee-fluid-air i:nth-child(4) { left: 58%; animation-delay: -0.45s; }
+.coffee-fluid-air i:nth-child(5) { left: 66%; animation-delay: -1s; }
+
+.coffee-fluid-plenum {
+  position: absolute;
+  top: 70%;
+  left: 22%;
+  width: 33%;
+  height: 8%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(var(--color-ink) / 0.25);
+  border-radius: 0.3rem 0.3rem 0.75rem 0.75rem;
+  background: rgb(var(--color-lime) / 0.1);
+  color: rgb(var(--color-ink) / 0.44);
+  font-size: 0.48rem;
+  font-weight: 700;
+}
+
+.coffee-fluid-heater {
+  position: absolute;
+  bottom: 8%;
+  left: 24%;
+  width: 29%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.32rem;
+  border: 1px solid rgb(var(--color-ink) / 0.22);
+  border-radius: 0.5rem;
+  background: rgb(var(--color-clay) / 0.09);
+}
+
+.coffee-fluid-heater span,
+.coffee-recirc-heater span {
+  color: rgb(var(--color-ink) / 0.47);
+  font-size: 0.48rem;
+  font-weight: 700;
+}
+
+.coffee-fluid-heater i,
+.coffee-recirc-heater i {
+  width: 0.16rem;
+  height: 0.72rem;
+  border-radius: 999px;
+  background: rgb(var(--color-clay) / 0.68);
+  animation: coffee-heater-glow 1.2s ease-in-out infinite alternate;
+}
+
+.coffee-fluid-heater i:nth-child(3),
+.coffee-recirc-heater i:nth-child(3) {
+  animation-delay: -0.5s;
+}
+
+.coffee-roaster-fan {
+  position: absolute;
+  display: grid;
+  width: 2.55rem;
+  height: 2.55rem;
+  place-items: center;
+  border: 1px solid rgb(var(--color-ink) / 0.25);
+  border-radius: 50%;
+  background: rgb(var(--color-paper) / 0.86);
+  box-shadow: 0 0 0 0.3rem rgb(var(--color-ink) / 0.045);
+}
+
+.coffee-roaster-fan > span {
+  color: rgb(var(--color-moss) / 0.72);
+  font-size: 1.25rem;
+  font-weight: 460;
+  line-height: 1;
+  animation: coffee-fan-spin 1.7s linear infinite;
+}
+
+.coffee-roaster-fan small {
+  position: absolute;
+  top: calc(100% + 0.32rem);
+  color: rgb(var(--color-ink) / 0.43);
+  font-size: 0.46rem;
+  font-weight: 700;
+}
+
+.coffee-fluid-bed-machine > .coffee-roaster-fan {
+  right: 15%;
+  bottom: 8.5%;
+}
+
+.coffee-fluid-bed-machine > .coffee-roaster-fan::before {
+  position: absolute;
+  right: 100%;
+  width: 3.45rem;
+  border-top: 0.35rem solid rgb(var(--color-ink) / 0.14);
+  content: "";
+}
+
+.coffee-fluid-inlet,
+.coffee-fluid-flow-label,
+.coffee-fluid-exhaust-label,
+.coffee-recirc-exhaust,
+.coffee-recirc-return-label {
+  position: absolute;
+  z-index: 8;
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.47rem;
+  font-weight: 720;
+}
+
+.coffee-fluid-inlet {
+  right: 7%;
+  bottom: 10%;
+}
+
+.coffee-fluid-flow-label {
+  left: 3%;
+  bottom: 25%;
+  color: rgb(var(--color-moss) / 0.72);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.coffee-fluid-exhaust-label {
+  top: 6%;
+  right: 5%;
+}
+
+.coffee-fluid-cyclone {
+  position: absolute;
+  z-index: 5;
+  top: 21%;
+  right: 12%;
+  width: 17%;
+  height: 27%;
+  border: 1px solid rgb(var(--color-ink) / 0.28);
+  background: rgb(var(--color-surface) / 0.72);
+  clip-path: polygon(0 0, 100% 0, 82% 58%, 58% 100%, 42% 100%, 18% 58%);
+}
+
+.coffee-fluid-cyclone::before {
+  position: absolute;
+  top: 0.5rem;
+  right: -2rem;
+  width: 2.2rem;
+  border-top: 0.34rem solid rgb(var(--color-ink) / 0.16);
+  content: "";
+}
+
+.coffee-fluid-cyclone > span {
+  position: absolute;
+  top: 0.45rem;
+  left: 50%;
+  color: rgb(var(--color-ink) / 0.45);
+  font-size: 0.45rem;
+  font-weight: 720;
+  transform: translateX(-50%);
+}
+
+.coffee-fluid-cyclone > div {
+  position: absolute;
+  inset: 0;
+}
+
+.coffee-fluid-cyclone i {
+  position: absolute;
+  top: 30%;
+  left: 26%;
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: 50%;
+  background: rgb(var(--color-clay) / 0.68);
+  animation: coffee-chaff-swirl 2.1s ease-in-out infinite;
+}
+
+.coffee-fluid-cyclone i:nth-child(2) { top: 40%; left: 62%; animation-delay: -0.6s; }
+.coffee-fluid-cyclone i:nth-child(3) { top: 57%; left: 43%; animation-delay: -1.2s; }
+.coffee-fluid-cyclone i:nth-child(4) { top: 26%; left: 72%; animation-delay: -1.7s; }
+
+.coffee-loop-pipe {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid rgb(var(--color-ink) / 0.14);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgb(var(--color-moss) / 0.11) 0 0.55rem,
+      rgb(var(--color-surface) / 0.42) 0.55rem 1.1rem
+    );
+}
+
+.coffee-loop-pipe > span {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 1.05rem;
+  height: 1.05rem;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(var(--color-paper) / 0.92);
+  color: rgb(var(--color-moss) / 0.7);
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.coffee-loop-pipe > i {
+  position: absolute;
+  z-index: 3;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: rgb(var(--color-lime) / 0.9);
+  box-shadow: 0 0 0.55rem rgb(var(--color-lime) / 0.7);
+}
+
+.coffee-loop-pipe-top {
+  top: 18%;
+  right: 16%;
+  left: 24%;
+  height: 0.8rem;
+}
+
+.coffee-loop-pipe-top > span {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.coffee-loop-pipe-top > i {
+  top: 50%;
+  left: 0;
+  animation: coffee-loop-horizontal 2.7s linear infinite;
+}
+
+.coffee-loop-pipe-right {
+  top: 18%;
+  right: 15%;
+  bottom: 21%;
+  width: 0.8rem;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgb(var(--color-moss) / 0.11) 0 0.55rem,
+      rgb(var(--color-surface) / 0.42) 0.55rem 1.1rem
+    );
+}
+
+.coffee-loop-pipe-right > span {
+  top: 49%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.coffee-loop-pipe-right > i {
+  top: 0;
+  left: 50%;
+  animation: coffee-loop-vertical 2.25s linear infinite;
+}
+
+.coffee-loop-pipe-bottom {
+  right: 15%;
+  bottom: 20%;
+  left: 26%;
+  height: 0.8rem;
+}
+
+.coffee-loop-pipe-bottom > span {
+  top: 50%;
+  left: 57%;
+  transform: translate(-50%, -50%);
+}
+
+.coffee-loop-pipe-bottom > i {
+  top: 50%;
+  right: 0;
+  animation: coffee-loop-horizontal-reverse 2.45s linear infinite;
+}
+
+.coffee-loop-pipe-left {
+  top: 18%;
+  bottom: 20%;
+  left: 23%;
+  width: 0.8rem;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgb(var(--color-moss) / 0.11) 0 0.55rem,
+      rgb(var(--color-surface) / 0.42) 0.55rem 1.1rem
+    );
+}
+
+.coffee-loop-pipe-left > span {
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.coffee-loop-pipe-left > i {
+  bottom: 0;
+  left: 50%;
+  animation: coffee-loop-vertical-reverse 2.6s linear infinite;
+}
+
+.coffee-recirc-cyclone {
+  position: absolute;
+  z-index: 4;
+  top: 7%;
+  left: 12%;
+  width: 15%;
+  height: 23%;
+  border: 1px solid rgb(var(--color-ink) / 0.25);
+  background: rgb(var(--color-surface) / 0.88);
+  clip-path: polygon(0 0, 100% 0, 80% 58%, 56% 100%, 44% 100%, 20% 58%);
+}
+
+.coffee-recirc-cyclone > span {
+  position: absolute;
+  top: 0.38rem;
+  left: 50%;
+  color: rgb(var(--color-ink) / 0.47);
+  font-size: 0.43rem;
+  font-weight: 720;
+  transform: translateX(-50%);
+}
+
+.coffee-recirc-exhaust {
+  top: 3.5%;
+  left: 4%;
+}
+
+.coffee-recirc-exhaust::after {
+  position: absolute;
+  top: 0.8rem;
+  left: 2.7rem;
+  height: 1.65rem;
+  border-left: 1px solid rgb(var(--color-ink) / 0.18);
+  content: "";
+}
+
+.coffee-recirc-heater {
+  position: absolute;
+  z-index: 4;
+  top: 8.5%;
+  right: 7%;
+  width: 19%;
+  height: 17%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  border: 1px solid rgb(var(--color-ink) / 0.24);
+  border-radius: 0.55rem;
+  background: rgb(var(--color-clay) / 0.1);
+}
+
+.coffee-recirc-fan {
+  z-index: 4;
+  right: 9%;
+  bottom: 13%;
+}
+
+.coffee-recirc-chamber {
+  position: absolute;
+  z-index: 4;
+  bottom: 8%;
+  left: 9%;
+  width: 38%;
+  height: 34%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(var(--color-ink) / 0.26);
+  border-radius: 1.8rem 1.8rem 0.65rem 0.65rem;
+  background: rgb(var(--color-surface) / 0.8);
+  box-shadow: inset 0 0 1.2rem rgb(var(--color-ink) / 0.05);
+}
+
+.coffee-recirc-chamber > .coffee-machine-label {
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.coffee-recirc-drum {
+  position: relative;
+  width: 4.7rem;
+  height: 4.7rem;
+  margin-top: 0.7rem;
+  border: 0.38rem double rgb(var(--color-ink) / 0.28);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(var(--color-clay) / 0.08), rgb(var(--color-ink) / 0.06));
+  animation: coffee-drum-turn 7s linear infinite;
+}
+
+.coffee-recirc-drum::before,
+.coffee-recirc-drum::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 88%;
+  border-top: 1px solid rgb(var(--color-ink) / 0.17);
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+.coffee-recirc-drum::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.coffee-recirc-drum i {
+  z-index: 2;
+}
+
+.coffee-recirc-drum i:nth-child(1) { top: 14%; left: 43%; }
+.coffee-recirc-drum i:nth-child(2) { top: 27%; right: 13%; transform: rotate(38deg); }
+.coffee-recirc-drum i:nth-child(3) { right: 16%; bottom: 21%; transform: rotate(72deg); }
+.coffee-recirc-drum i:nth-child(4) { bottom: 10%; left: 41%; }
+.coffee-recirc-drum i:nth-child(5) { bottom: 23%; left: 11%; transform: rotate(-35deg); }
+.coffee-recirc-drum i:nth-child(6) { top: 29%; left: 10%; transform: rotate(24deg); }
+.coffee-recirc-drum i:nth-child(7) { top: 43%; left: 42%; transform: rotate(-55deg); }
+.coffee-recirc-drum i:nth-child(8) { right: 24%; bottom: 42%; transform: rotate(18deg); }
+
+.coffee-recirc-return-label {
+  right: 27%;
+  bottom: 12%;
+  color: rgb(var(--color-moss) / 0.72);
+}
+
+.coffee-roaster-reading-note {
+  display: grid;
+  padding: 1.1rem 1.2rem;
+  align-items: start;
+  gap: 1rem 2rem;
+  border: 1px solid rgb(var(--color-moss) / 0.18);
+  border-radius: 1.2rem;
+  background:
+    radial-gradient(circle at 0 100%, rgb(var(--color-moss) / 0.09), transparent 46%),
+    rgb(var(--color-surface) / 0.42);
+  grid-template-columns: minmax(12rem, 0.42fr) minmax(0, 1fr);
+}
+
+.coffee-roaster-reading-note ul {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.coffee-roaster-reading-note li {
+  display: grid;
+  padding-top: 0.65rem;
+  gap: 0.2rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.coffee-roaster-reading-note strong {
+  color: rgb(var(--color-ink) / 0.7);
+  font-size: 0.6rem;
+  font-weight: 750;
+}
+
+.coffee-roaster-reading-note span {
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.57rem;
+  line-height: 1.55;
+}
+
+.coffee-roaster-sources {
+  margin-top: 0;
+}
+
+@keyframes coffee-bean-fountain-a {
+  0%,
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  42% { transform: translate3d(0.75rem, -7.5rem, 0) rotate(150deg); }
+  72% { transform: translate3d(-0.4rem, -4.5rem, 0) rotate(250deg); }
+}
+
+@keyframes coffee-bean-fountain-b {
+  0%,
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  45% { transform: translate3d(-0.9rem, -6.8rem, 0) rotate(-165deg); }
+  76% { transform: translate3d(0.35rem, -3.6rem, 0) rotate(-245deg); }
+}
+
+@keyframes coffee-bean-fountain-c {
+  0%,
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  48% { transform: translate3d(0.2rem, -8.3rem, 0) rotate(180deg); }
+  74% { transform: translate3d(-0.7rem, -5.1rem, 0) rotate(270deg); }
+}
+
+@keyframes coffee-air-column {
+  0%,
+  100% { opacity: 0.25; transform: scaleY(0.55); }
+  52% { opacity: 0.9; transform: scaleY(1); }
+}
+
+@keyframes coffee-chaff-swirl {
+  0%,
+  100% { opacity: 0.32; transform: translate3d(0, 0, 0); }
+  50% { opacity: 0.9; transform: translate3d(0.55rem, 1.4rem, 0) rotate(160deg); }
+}
+
+@keyframes coffee-heater-glow {
+  from { opacity: 0.35; transform: scaleY(0.72); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes coffee-fan-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes coffee-loop-horizontal {
+  from { left: 0; transform: translate(-50%, -50%); }
+  to { left: 100%; transform: translate(-50%, -50%); }
+}
+
+@keyframes coffee-loop-horizontal-reverse {
+  from { right: 0; transform: translate(50%, -50%); }
+  to { right: 100%; transform: translate(50%, -50%); }
+}
+
+@keyframes coffee-loop-vertical {
+  from { top: 0; transform: translate(-50%, -50%); }
+  to { top: 100%; transform: translate(-50%, -50%); }
+}
+
+@keyframes coffee-loop-vertical-reverse {
+  from { bottom: 0; transform: translate(-50%, 50%); }
+  to { bottom: 100%; transform: translate(-50%, 50%); }
+}
+
+@keyframes coffee-drum-turn {
+  to { transform: rotate(360deg); }
+}
+
+.coffee-section-source {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+@media (max-width: 1099px), (max-width: 1366px) and (pointer: coarse) and (hover: none) {
+  .coffee-guide-contents {
+    display: block;
+    border-radius: 1rem;
+  }
+  .coffee-guide-contents > header {
+    padding: 0.7rem 0.8rem;
+    gap: 0.75rem;
+  }
+  .coffee-guide-contents h2 { font-size: 1rem; }
+  .coffee-guide-contents > header > p {
+    max-width: 22rem;
+    font-size: 0.56rem;
+    line-height: 1.45;
+  }
+  .coffee-guide-contents > ol {
+    padding: 0.4rem;
+    gap: 0.35rem;
+  }
+  .coffee-guide-contents li { border-radius: 0.65rem; }
+  .coffee-guide-contents-chapter {
+    padding: 0.48rem 0.52rem 0.42rem;
+    gap: 0.1rem;
+  }
+  .coffee-guide-contents-chapter span { font-size: 0.47rem; }
+  .coffee-guide-contents-chapter strong { font-size: 0.59rem; }
+  .coffee-guide-contents li > div {
+    padding: 0.32rem 0.52rem 0.42rem;
+    gap: 0.1rem;
+  }
+  .coffee-guide-contents li > div a {
+    padding: 0.1rem 0;
+    font-size: 0.49rem;
+  }
+}
+
+@media (max-width: 980px) {
+  .coffee-guide-contents > ol {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .coffee-guide-chapter-header {
+    align-items: start;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+  }
+  .coffee-guide-chapter-header > p {
+    max-width: 42rem;
+    grid-column: 2;
+  }
+  .coffee-map-stage { grid-template-columns: 1fr; }
+  .coffee-map-frame { border-right: 0; border-bottom: 1px solid rgb(var(--color-ink) / 0.08); }
+  .coffee-region-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .coffee-region-summary > .eyebrow,
+  .coffee-region-summary > h3,
+  .coffee-region-summary > p:not(.coffee-region-count),
+  .coffee-region-summary > blockquote { grid-column: 1 / -1; }
+  .coffee-region-summary > .coffee-region-count { grid-column: 1 / -1; }
+  .coffee-country-summary > dl,
+  .coffee-country-summary > .coffee-country-summary-source { grid-column: 1 / -1; }
+  .coffee-variety-intro { grid-template-columns: 1fr; }
+  .coffee-variety-legend { justify-content: flex-start; }
+  .coffee-process-selector { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .coffee-process-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .coffee-process-facts > div:nth-child(2) { border-right: 0; }
+  .coffee-process-facts > div:nth-child(-n + 2) { border-bottom: 1px solid rgb(var(--color-ink) / 0.07); }
+  .coffee-process-chemistry > div,
+  .coffee-drying-guide > ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .coffee-process-chemistry article:nth-child(2),
+  .coffee-drying-guide li:nth-child(2) { border-right: 0; }
+  .coffee-process-chemistry article:nth-child(-n + 2),
+  .coffee-drying-guide li:nth-child(-n + 2) { border-bottom: 1px solid rgb(var(--color-ink) / 0.07); }
+  .coffee-roaster-scale > ol { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .coffee-roaster-scale li:nth-child(3n) { border-right: 0; }
+  .coffee-roaster-scale li:nth-child(-n + 3) { border-bottom: 1px solid rgb(var(--color-ink) / 0.07); }
+}
+
+@media (max-width: 640px) {
+  .coffee-guide { gap: 3.25rem; }
+  .coffee-guide-contents > header {
+    padding: 0.62rem 0.7rem;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .coffee-guide-contents > header > p { text-align: left; }
+  .coffee-guide-contents > ol {
+    overflow-x: auto;
+    padding: 0.35rem;
+    grid-auto-columns: minmax(8.75rem, 48vw);
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    overscroll-behavior-x: contain;
+    scrollbar-color: rgb(var(--color-ink) / 0.18) transparent;
+    scrollbar-width: thin;
+  }
+  .coffee-guide-chapter-header {
+    padding-right: 0;
+    padding-bottom: 1rem;
+    padding-left: 0;
+    gap: 0.65rem 0.75rem;
+    grid-template-columns: 2.65rem minmax(0, 1fr);
+  }
+  .coffee-guide-chapter-header > span {
+    padding-top: 0.15rem;
+    font-size: 2.35rem;
+  }
+  .coffee-guide-chapter-header h2 {
+    font-size: 1.55rem;
+    line-height: 1.05;
+  }
+  .coffee-guide-chapter-header > p {
+    font-size: 0.66rem;
+    line-height: 1.62;
+  }
+  .coffee-guide-chapter-sections {
+    margin-top: 0.9rem;
+    gap: 0.9rem;
+  }
+  .coffee-map-toolbar {
+    margin-right: -1rem;
+    margin-left: -1rem;
+    padding: 0 1rem 0.3rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .coffee-map-toolbar::-webkit-scrollbar { display: none; }
+  .coffee-map-filter { flex: none; }
+  .coffee-map-stage { border-radius: 1rem; }
+  .coffee-map-frame { padding: 0.38rem; }
+  .coffee-country-terrain-map { min-height: 23rem; }
+  .coffee-terrain-map-controls {
+    top: 0.45rem;
+    left: 0.45rem;
+    max-width: calc(100% - 0.9rem);
+  }
+  .coffee-terrain-map-controls button {
+    min-height: 1.8rem;
+    padding: 0.35rem 0.52rem;
+    font-size: 0.51rem;
+  }
+  .coffee-terrain-map-legend {
+    left: 0.38rem;
+    bottom: 1.45rem;
+    max-width: calc(100% - 0.76rem);
+    font-size: 0.45rem;
+  }
+  .coffee-terrain-region-marker small { display: none; }
+  .coffee-map-caption {
+    padding: 0.45rem 0.4rem 0.2rem;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .coffee-map-caption p { text-align: left; }
+  .coffee-region-summary {
+    padding: 1rem;
+    grid-template-columns: 1fr;
+  }
+  .coffee-region-summary > * { grid-column: 1 !important; }
+  .coffee-origin-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .coffee-origin-facts { grid-template-columns: 1fr; }
+  .coffee-origin-facts > dl { border-right: 0; border-bottom: 1px solid rgb(var(--color-ink) / 0.08); }
+  .coffee-origin-profile > header { align-items: flex-start; }
+  .coffee-variety-selection > header,
+  .coffee-variety-selection > div { grid-template-columns: 1fr; }
+  .coffee-variety-selection dl { grid-template-columns: 1fr; }
+  .coffee-variety-scroll {
+    margin-right: -0.6rem;
+    margin-left: -0.6rem;
+    border-radius: 0.9rem;
+  }
+  .coffee-variety-mobile-index {
+    display: grid;
+    gap: 0.8rem;
+  }
+  .coffee-variety-mobile-index section {
+    padding-top: 0.7rem;
+    border-top: 1px solid rgb(var(--color-ink) / 0.08);
+  }
+  .coffee-variety-mobile-index h4 {
+    display: flex;
+    margin-bottom: 0.45rem;
+    align-items: center;
+    gap: 0.35rem;
+    color: rgb(var(--color-ink) / 0.55);
+    font-size: 0.58rem;
+    font-weight: 780;
+    text-transform: uppercase;
+  }
+  .coffee-variety-mobile-index section > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .coffee-variety-mobile-index button {
+    border: 1px solid rgb(var(--color-ink) / 0.1);
+    border-radius: 999px;
+    background: rgb(var(--color-surface) / 0.54);
+    padding: 0.35rem 0.55rem;
+    color: rgb(var(--color-ink) / 0.58);
+    font-size: 0.56rem;
+    font-weight: 680;
+  }
+  .coffee-variety-mobile-index button[aria-pressed="true"] {
+    border-color: rgb(var(--color-moss) / 0.42);
+    background: rgb(var(--color-moss) / 0.12);
+    color: rgb(var(--color-ink) / 0.84);
+  }
+  .coffee-process-selector {
+    margin-right: -1rem;
+    margin-left: -1rem;
+    padding: 0 1rem 0.3rem;
+    overflow-x: auto;
+    grid-auto-columns: minmax(9.25rem, 48vw);
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    scrollbar-width: none;
+  }
+  .coffee-process-selector::-webkit-scrollbar { display: none; }
+  .coffee-process-profile > header,
+  .coffee-process-chemistry > header,
+  .coffee-drying-guide > header { grid-template-columns: 1fr; }
+  .coffee-process-facts { grid-template-columns: 1fr; }
+  .coffee-process-facts > div {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-process-facts > div:last-child { border-bottom: 0; }
+  .coffee-process-steps li {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+  .coffee-process-steps li > div:last-child { grid-column: 2; }
+  .coffee-process-chemistry > div,
+  .coffee-drying-guide > ol { grid-template-columns: 1fr; }
+  .coffee-process-chemistry article,
+  .coffee-process-chemistry article:nth-child(2),
+  .coffee-drying-guide li,
+  .coffee-drying-guide li:nth-child(2) {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-process-chemistry article:last-child,
+  .coffee-drying-guide li:last-child { border-bottom: 0; }
+  .coffee-roast-stages { grid-template-columns: 1fr; }
+  .coffee-roast-stages li,
+  .coffee-roast-stages li:nth-child(3n),
+  .coffee-roast-stages li:nth-last-child(-n + 3) {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-roast-stages li:last-child { border-bottom: 0; }
+  .coffee-roaster-intro,
+  .coffee-roaster-scale > header,
+  .coffee-roaster-families > header,
+  .coffee-roaster-energy > header,
+  .coffee-air-roaster-guide > header,
+  .coffee-roaster-reading-note { grid-template-columns: 1fr; }
+  .coffee-roaster-scale > ol { grid-template-columns: 1fr; }
+  .coffee-roaster-scale li,
+  .coffee-roaster-scale li:nth-child(3n) {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-roaster-scale li:last-child { border-bottom: 0; }
+  .coffee-roaster-type-grid { grid-template-columns: 1fr; }
+  .coffee-roaster-type-grid > article,
+  .coffee-roaster-type-grid > article:nth-child(2n),
+  .coffee-roaster-type-grid > article:nth-last-child(-n + 2) {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-roaster-type-grid > article:last-child { border-bottom: 0; }
+  .coffee-roaster-energy > div { grid-template-columns: 1fr; }
+  .coffee-roaster-energy article {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.07);
+  }
+  .coffee-roaster-energy article:last-child { border-bottom: 0; }
+  .coffee-air-roaster-animations { grid-template-columns: 1fr; }
+  .coffee-air-cutaway:first-child {
+    border-right: 0;
+    border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  }
+  .coffee-air-machine { height: 15rem; }
+  .coffee-fluid-chamber {
+    left: 12%;
+    width: 51%;
+  }
+  .coffee-fluid-cyclone { right: 8%; width: 18%; }
+  .coffee-fluid-bed-machine > .coffee-roaster-fan { right: 10%; }
+  .coffee-fluid-inlet { right: 2%; }
+  .coffee-roaster-reading-note ul { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coffee-map-filter,
+  .coffee-origin-control,
+  .coffee-map-country,
+  .coffee-map-marker-halo,
+  .coffee-variety-node,
+  .coffee-variety-connections path,
+  .coffee-process-selector button,
+  .coffee-guide-contents li > div a { transition: none; }
+  .coffee-fluid-beans i,
+  .coffee-fluid-air i,
+  .coffee-fluid-cyclone i,
+  .coffee-fluid-heater i,
+  .coffee-recirc-heater i,
+  .coffee-roaster-fan > span,
+  .coffee-loop-pipe > i,
+  .coffee-recirc-drum { animation: none; }
+}

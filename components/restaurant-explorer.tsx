@@ -1,6 +1,5 @@
 "use client";
 
-import { importLibrary, setOptions } from "@googlemaps/js-api-loader";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import type { Restaurant } from "@/data/restaurants";
@@ -8,6 +7,10 @@ import {
   isRestaurantOpenAtDateTime,
   isRestaurantOpenNow,
 } from "@/lib/restaurant-hours";
+import {
+  configureGoogleMaps,
+  importGoogleMapsLibrary,
+} from "@/lib/google-maps-loader";
 
 type RestaurantExplorerProps = {
   apiKey: string;
@@ -25,7 +28,6 @@ type GeocodeSuggestion = {
   result: google.maps.GeocoderResult;
 };
 
-let mapsConfigured = false;
 const resultListLimit = 250;
 const mobileMarkerLimit = 350;
 const mobileMapMediaQuery = "(max-width: 1099px), (max-width: 1366px) and (pointer: coarse) and (hover: none)";
@@ -315,10 +317,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       setMapStatus("loading");
 
       try {
-        if (!mapsConfigured) {
-          setOptions({ key: apiKey, v: "weekly", mapIds: [mapId] });
-          mapsConfigured = true;
-        }
+        configureGoogleMaps(apiKey, mapId);
 
         const userPositionPromise = didRequestUserLocationRef.current
           ? Promise.resolve(userPositionRef.current)
@@ -327,8 +326,8 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
         const [[{ Map, RenderingType }, { AdvancedMarkerElement, PinElement }], initialUserPosition] = await Promise.all([
           Promise.all([
-            importLibrary("maps"),
-            importLibrary("marker"),
+            importGoogleMapsLibrary("maps"),
+            importGoogleMapsLibrary("marker"),
           ]),
           userPositionPromise,
         ]);
