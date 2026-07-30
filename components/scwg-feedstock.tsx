@@ -12,6 +12,7 @@ import {
 } from "@/lib/scwg-feedstock";
 import { scwgReferenceByMarker } from "@/lib/scwg-references";
 import { scwgUi } from "@/lib/scwg-meta";
+import { ScwgFeedstockConstraints } from "@/components/scwg-feedstock-constraints";
 
 // Report Section 1 — feedstock characterization and blend design. Server
 // component; all prose and every table row comes from lib/scwg-feedstock.ts.
@@ -217,6 +218,8 @@ export function ScwgFeedstock() {
           </p>
         </div>
       </div>
+
+      <ScwgFeedstockConstraints />
     </div>
   );
 }

@@ -7,7 +7,9 @@ import { ScwgRationale } from "@/components/scwg-rationale";
 import { ScwgSitingMap } from "@/components/scwg-siting-map";
 import { ScwgFeedstock } from "@/components/scwg-feedstock";
 import { ScwgProcessScroller } from "@/components/scwg-process-scroller";
+import { ScwgChemistry } from "@/components/scwg-chemistry";
 import { ScwgReportStructure } from "@/components/scwg-report-structure";
+import { ScwgReview } from "@/components/scwg-review";
 import { ScwgWasteTreatment } from "@/components/scwg-waste-treatment";
 import { ScwgProductTiers } from "@/components/scwg-product-tiers";
 import { ScwgValueLegend } from "@/components/scwg-value";
@@ -174,7 +176,16 @@ export default function SupercriticalWaterGasificationPage() {
         <ScwgProcessScroller blocks={scwgProcessBlocks} />
       </section>
 
-      {/* Act 6 — waste treatment and discharge compliance */}
+      {/* Act 6 — thermodynamic and kinetic basis (report Section 3) */}
+      <section className="page-section pt-4" id="scwg-act-chemistry">
+        <p className="eyebrow">{scwgUi.acts.chemistry.eyebrow}</p>
+        <h2 className="section-title mt-3">{scwgUi.acts.chemistry.title}</h2>
+        <div className="mt-8">
+          <ScwgChemistry />
+        </div>
+      </section>
+
+      {/* Act 7 — waste treatment and discharge compliance */}
       <section className="page-section pt-4" id="scwg-act-waste">
         <p className="eyebrow">{scwgUi.acts.waste.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.waste.title}</h2>
@@ -183,7 +194,7 @@ export default function SupercriticalWaterGasificationPage() {
         </div>
       </section>
 
-      {/* Act 7 — product slate */}
+      {/* Act 8 — product slate */}
       <section className="page-section pt-4" id="scwg-act-products">
         <p className="eyebrow">{scwgUi.acts.products.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.products.title}</h2>
@@ -193,7 +204,7 @@ export default function SupercriticalWaterGasificationPage() {
         </div>
       </section>
 
-      {/* Act 8 — state of the work */}
+      {/* Act 9 — state of the work */}
       <section className="page-section pt-4" id="scwg-act-open-questions">
         <p className="eyebrow">{scwgUi.acts.openQuestions.eyebrow}</p>
         <h2 className="section-title mt-3">{scwgUi.acts.openQuestions.title}</h2>
@@ -222,6 +233,10 @@ export default function SupercriticalWaterGasificationPage() {
             </li>
           ))}
         </ol>
+
+        <div className="mt-8">
+          <ScwgReview />
+        </div>
 
         <div className="mt-8">
           <ScwgReportStructure />

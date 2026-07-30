@@ -11,6 +11,7 @@ import mapData from "@/data/scwg-map-sites.json";
 import { scwgSitingCandidates, scwgSitingOverlays } from "@/lib/scwg-siting";
 import { nearestSource } from "@/lib/scwg-geo";
 import { scwgUi } from "@/lib/scwg-meta";
+import { MAINLAND_FOCUS, MAP_H, MAP_PAD, MAP_W } from "@/lib/scwg-map-frame";
 import { ScwgMapLegend } from "@/components/scwg-map-legend";
 import { OVERLAY_COLOR, ScwgMapMark } from "@/components/scwg-map-mark";
 import type { SitingOverlayId } from "@/lib/scwg-types";
@@ -21,34 +22,6 @@ import type { SitingOverlayId } from "@/lib/scwg-types";
 // mark SHAPES, not colour alone. The haul calculator reports great-circle
 // distance from a candidate site to the nearest source in each active overlay.
 
-// Canvas proportioned to the framed region's aspect (≈1.08 wide to tall).
-const W = 560;
-const H = 518;
-const PAD = 2;
-
-/**
- * The frame. Deliberately NOT the whole country — it covers the eastern half,
- * from Guangxi and Hainan up to Heilongjiang, which is where every site in the
- * dataset sits. Xinjiang, Tibet and the far west carry no data and are cropped,
- * and the South China Sea islands fall outside it too.
- *
- * The ring is densified along each edge because d3 treats polygon edges as great
- * circles: a bare four-corner box bulges well outside the intended frame once
- * projected, which shrinks the map to a fraction of the canvas.
- */
-function frameGrid(west: number, south: number, east: number, north: number) {
-  const step = 1;
-  const coordinates: [number, number][] = [];
-  for (let lon = west; lon <= east; lon += step) coordinates.push([lon, south], [lon, north]);
-  for (let lat = south; lat <= north; lat += step) coordinates.push([west, lat], [east, lat]);
-  return {
-    type: "Feature" as const,
-    properties: {},
-    geometry: { type: "MultiPoint" as const, coordinates },
-  };
-}
-
-const MAINLAND_FOCUS = frameGrid(97, 19, 133, 48);
 const shading = mapData.fragmentedShading as Record<string, number>;
 
 export function ScwgSitingMap() {
@@ -78,15 +51,15 @@ export function ScwgSitingMap() {
   const projection = useMemo(
     () => geoConicEqualArea().parallels([25, 47]).rotate([-105, 0]).fitExtent(
       [
-        [PAD, PAD],
-        [W - PAD, H - PAD],
+        [MAP_PAD, MAP_PAD],
+        [MAP_W - MAP_PAD, MAP_H - MAP_PAD],
       ],
       MAINLAND_FOCUS,
     ),
     [],
   );
   const path = useMemo(() => geoPath(projection), [projection]);
-  const viewBox = `0 0 ${W} ${H}`;
+  const viewBox = `0 0 ${MAP_W} ${MAP_H}`;
 
   const candidate = scwgSitingCandidates.find((c) => c.id === candidateId) ?? null;
 

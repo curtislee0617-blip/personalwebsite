@@ -210,6 +210,76 @@ export const scwgReferences: Reference[] = [
     status: "unverified",
   },
   {
+    id: "ref-ketene-2025",
+    marker: "Ketene-2025",
+    citation:
+      "Unraveling the mechanisms of ketene generation and transformation in syngas-to-olefin conversion over ZnCrOₓ|SAPO-34 catalysts (2025). Chemical Science — source for the 86.1% / 13.9% ketene route split and the CHO*–CO* coupling sequence.",
+    status: "verified",
+  },
+  {
+    id: "ref-vacancy",
+    marker: "Vacancy",
+    citation:
+      "Resolving the intricate mechanism and selectivity of syngas conversion on reduced ZnCr₂Oₓ: a quantitative study from DFT and microkinetic simulations. ACS Catalysis — source for two-coordinate oxygen vacancy sites as the CO activation centre.",
+    status: "unverified",
+  },
+  {
+    id: "ref-kw",
+    marker: "Kw",
+    citation:
+      "Bandura, A. V. & Lvov, S. N. (2006). The ionization constant of water over wide ranges of temperature and density. J. Phys. Chem. Ref. Data — IAPWS-endorsed correlation for K_w.",
+    status: "verified",
+  },
+  {
+    id: "ref-dielectric",
+    marker: "Dielectric",
+    citation:
+      "Dielectric constant of supercritical water in a large pressure–temperature range (2020). Journal of Chemical Physics, 153, 101103.",
+    status: "unverified",
+  },
+  {
+    id: "ref-energies-2015",
+    marker: "SCWG-2015",
+    citation:
+      "Supercritical water gasification of biomass: a literature and technology overview (2015). Energies, 8, 859 — source for the ionic versus free-radical regime criterion at K_w ≈ 10⁻¹⁴ and for Na-CMC slurry feeding.",
+    status: "unverified",
+  },
+  {
+    id: "ref-salt-type1",
+    marker: "Salt-Type1",
+    citation:
+      "Continuous salt precipitation and separation from supercritical water. Part 1: Type 1 salts. Journal of Supercritical Fluids.",
+    status: "unverified",
+  },
+  {
+    id: "ref-salt-solubility",
+    marker: "Salt-solubility",
+    citation:
+      "Solubility of Na₂SO₄, Na₂CO₃ and their mixture in supercritical water. Journal of Supercritical Fluids.",
+    status: "unverified",
+  },
+  {
+    id: "ref-superheated",
+    marker: "Hot-wall",
+    citation:
+      "Effects of superheated surface on the deposition behaviour of Na₂SO₄ in supercritical water (2023). Processes, 11, 1779 — source for preferential nucleation on hot surfaces and particle size ranges.",
+    status: "unverified",
+  },
+  {
+    id: "ref-md-nucleation",
+    marker: "MD-nucleation",
+    citation:
+      "Molecular dynamics study on the nucleation characteristics of mixed Na₂SO₄/K₂SO₄ solution in supercritical water — source for the ion-pair / cluster nucleation sequence and timescale.",
+    status: "unverified",
+  },
+  {
+    id: "ref-sfa-claus",
+    marker: "SFA-Claus",
+    citation:
+      "SFA Pacific, Inc. Process screening analysis of alternative gas treating and sulfur removal for gasification. NETL, December 2002 — basis for the Claus inlet-concentration constraint and the liquid-redox selection for small sulfur duties.",
+    status: "unverified",
+  },
+  {
     id: "ref-iso14067",
     marker: "ISO 14067",
     citation:

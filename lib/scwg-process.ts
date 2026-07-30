@@ -30,7 +30,7 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       { tag: "1", name: "Douzha", phase: "slurry", components: "80–85 wt% water, protein-derived organics" },
       { tag: "2", name: "Milled soybean straw", phase: "solid", components: "Lignocellulose" },
       { tag: "3", name: "Red mud (fresh make-up)", phase: "solid", components: "Fe₂O₃, Al₂O₃, SiO₂, Na alkalinity" },
-      { tag: "21", name: "Regenerated red mud bed", phase: "solid", components: "Re-oxidised bed recycled from B8" },
+      { tag: "R1", name: "Regenerated red mud recycle", phase: "solid", components: "Re-oxidised bed from B8, re-slurried and re-pressurised at make-up" },
     ],
     outlet: [
       { tag: "4", name: "Pressurised feed slurry", phase: "slurry", components: "18–22 wt% total solids + red mud" },
@@ -92,7 +92,12 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       {
         label: "Carbon gasification efficiency",
         definition: "Fraction of feed carbon converted to gas-phase carbon.",
-        value: { value: 0, unit: "%", status: "placeholder", note: "Awaiting balance closure." },
+        value: { value: 0, unit: "%", status: "placeholder", note: "Awaiting balance closure. Planning basis is the 40–60% band, not the dry chemical-looping figures." },
+      },
+      {
+        label: "Planning-basis band",
+        definition: "The carbon gasification efficiency band to carry until a concentration curve exists for this blend.",
+        value: { value: 50, unit: "% (40–60 band)", status: "indicative", note: "Midpoint of the 40–60% planning band; the one slurry-feed figure in the literature is above 40% at 540 °C and 25 MPa." },
       },
       {
         label: "H₂ anchor (Ni–Cu on red mud)",
@@ -113,9 +118,14 @@ export const scwgProcessBlocks: ProcessBlock[] = [
         body: "The three red-mud roles are not equally supported, and the redox role rests on dry, atmospheric literature applied to a wet, high-pressure medium.",
       },
       {
-        kind: "note",
-        title: "Reference values are not this process",
-        body: "The chemical-looping figures (1.02 Nm³/kg, 12.06 MJ/Nm³, 91.49% CGE, 82.65% carbon conversion) are dry-process context only, clearly labelled as not-this-process.",
+        kind: "warning",
+        title: "Calibration warning — do not carry these efficiencies into this design",
+        body: "The 91.49% cold gas efficiency and 82.65% carbon conversion below are from dry, atmospheric-pressure chemical looping. They establish only that red mud is a credible oxygen carrier in that context; they are not achievable targets here. Two effects push the realistic figure much lower: supercritical gasification efficiency falls as feed concentration rises, and the headline results in that literature are reported at low loading — pig manure reaching 87.59% did so at 6 wt% feed with K₂CO₃ promotion, against roughly 20 wt% here. The one figure obtained under conditions resembling a real slurry feed is above 40% carbon gasification efficiency at 540 °C and 25 MPa.",
+      },
+      {
+        kind: "decision",
+        title: "A three-way conflict, and the planning basis chosen",
+        body: "Pumpability wants high solids, the energy balance wants high solids, and gasification efficiency wants low solids. The 18–22 wt% window was selected on the first two. A carbon gasification efficiency versus feed concentration curve for this specific blend is required, because the economically optimal point is set by that curve and not by the pumpability ceiling alone. Until it exists, carry 40–60% carbon gasification efficiency as the planning basis, flagged as an estimate.",
       },
     ],
   },
@@ -394,7 +404,7 @@ export const scwgProcessBlocks: ProcessBlock[] = [
     },
     needsValidation: false,
     function: [
-      "Reduced iron phases are re-oxidised with heat recovery; a bleed stream leaves as product.",
+      "Reduced iron phases are re-oxidised with heat recovery; a bleed stream leaves as product. The regenerated solid returns to B1 as stream R1 rather than to the reactor: it leaves B8 hot, oxidised and near atmospheric pressure, and has to be re-slurried and re-pressurised, so the recycle merges into slurry make-up and competes for the solids budget on exactly the same terms as fresh residue. The budget constraint is therefore on total red mud in circulation, not on make-up rate.",
       "Note the synergy: B2 has already partially reduced Fe₂O₃ → Fe₃O₄/FeO using biomass-derived reductant, so the residue arrives at any ironmaking step pre-reduced at no marginal cost.",
     ],
     inlet: [
@@ -402,7 +412,7 @@ export const scwgProcessBlocks: ProcessBlock[] = [
       { tag: "20", name: "Air", phase: "gas", components: "Oxidant for re-oxidation" },
     ],
     outlet: [
-      { tag: "21", name: "Regenerated red mud bed", phase: "solid", components: "Re-oxidised red mud → recycle to B1" },
+      { tag: "R1", name: "Regenerated red mud recycle", phase: "solid", components: "Re-oxidised red mud → re-slurried at B1" },
       { tag: "22", name: "Residue bleed", phase: "solid", components: "Dealkalized residue → product slate (Tiers 1–3)" },
     ],
     duty: {
@@ -433,6 +443,16 @@ export const scwgProcessBlocks: ProcessBlock[] = [
         title: "Pre-reduction synergy",
         body: "B2 has already partially reduced Fe₂O₃ using biomass-derived reductant, so residue destined for ironmaking arrives pre-reduced at no marginal cost.",
       },
+      {
+        kind: "decision",
+        title: "The bleed fraction is a headline result, not a nuisance parameter",
+        body: "The recycle competes with the product. B3 strips sodium to make the residue saleable — but that same alkali supplied the tar-cracking and shift promotion that made red mud useful in B2. Recycled solid is therefore progressively less active on each pass, which inverts the usual chemical-looping logic: here the deactivation is the product being manufactured. A fast bleed keeps the circulating inventory alkaline and active but may release residue before it meets a saleable dealkalization specification; a slow bleed delivers fully dealkalized, saleable residue while leaving the design leaning entirely on iron. The bleed fraction sets the exchange rate between catalytic performance and residue product quality.",
+      },
+      {
+        kind: "warning",
+        title: "Does the air regeneration accomplish anything?",
+        body: "In supercritical water at 600–650 °C with water in vast excess, steam re-oxidises reduced iron directly by 3Fe + 4H₂O → Fe₃O₄ + 4H₂, so the reactor may hold the iron at a magnetite-like steady state without external help. If so, B8's air-oxidation step is not restoring oxygen capacity at all — it is performing heat recovery and conditioning the solid for metals recovery, which are real duties but different ones, and it should be sized against those. Open: this must be settled before B8 has a design basis.",
+      }
     ],
   },
 ];
