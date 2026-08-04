@@ -72,7 +72,7 @@ export const dashboardSections: readonly DashboardSection[] = [
   {
     href: "/projects", label: "Projects", subtitle: "Engineering, research, writing, and creative work.",
     groups: [
-      { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/supercritical-water-gasification", label: "Towngas process design" }, { href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
+      { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/supercritical-water-gasification", label: "SCWG-OXZEO gasification" }, { href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
       { href: "/projects#creative-projects-title", label: "Creative & enterprise", items: [{ href: "/projects/cook-enterprise", label: "cook.enterprise" }, { href: "/projects#creative-projects-title", label: "Website" }, { href: "/projects#pixel-art-cities", label: "Pixel-art cities" }] },
     ],
   },
@@ -565,7 +565,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                         ];
                         const groupHasItems = groupNodes.length > 0;
                         const groupIsActive = groupNodes.some((node) => dashboardTreeNodeMatchesPath(node, pathname, section.href));
-                        const groupIsExpanded = expandedGroups[groupKey] ?? groupIsActive;
+                        const groupOpensWithSection = section.href === "/projects" && group.label === "Research & coursework";
+                        const groupIsExpanded = expandedGroups[groupKey] ?? (groupIsActive || groupOpensWithSection);
 
                         return (
                           <div className="dashboard-sidebar-group" key={groupKey}>

@@ -72,13 +72,13 @@ function OrganisationWordmark({ src, alt, fallback }: { src?: string; alt: strin
 
 const experience: TimelineItem[] = [
   {
-    dates: "June 2026 - Present",
+    dates: "Summer 2026",
     role: "Process Engineering Intern",
-    organisation: "The Hong Kong and China Gas Company Limited (Towngas)",
-    detail: "Interning with Towngas's Green Fuels & Chemicals division across Foshan, Guangdong and Jungar Banner, Inner Mongolia. Working on process design and safety and environmental analysis for a new green-fuels plant in Foshan, while supporting daily operations at an operating green-methanol plant in Inner Mongolia. Also investigating the feasibility of producing synthetic natural gas from biomass-derived syngas.",
+    organisation: "The Hong Kong and China Gas Company (Towngas) - Green Fuels & Chemicals",
+    detail: "Authored a ten-section screening/pre-FEED design converting bauxite residue and soybean-processing waste into light olefins through supercritical water gasification, bi-reforming and OXZEO synthesis. I closed mass and carbon balances to 100% on a 300 t/d train and sized a five-train, 19.3 kt/y complex; built its 20-year techno-economic model (RMB 1.9 billion capital and RMB 160 million/year operating cost), which identified waste gate fees as the decisive commercial lever after commodity olefin value produced no positive IRR; and designed heat integration recovering 637 GJ/d per train, cutting net purchased energy to 207 GJ/d. I also specified a Rectisol wash for 0.1 ppm sulfur and supported engineering work on a new US$30 million green-fuels plant in Foshan, using the operating Jungar Banner green-methanol plant as a reference case.",
     logo: { src: "/logos/towngas.png", alt: "Towngas logo", fallback: "TG", fitClassName: "h-11 w-[3.25rem]", alignClassName: "object-center", frameClassName: "bg-white" },
     projectHref: "/projects/supercritical-water-gasification",
-    projectLabel: "Read the process design concept",
+    projectLabel: "Read the Towngas SCWG-OXZEO case study",
   },
   {
     dates: "September 2024 - Present",
@@ -91,14 +91,14 @@ const experience: TimelineItem[] = [
     dates: "July 2025 - August 2025",
     role: "Cultivated Meat Research Intern",
     organisation: "UC Davis Robert Mondavi Institute, iCAMP (Alternative Meat & Protein)",
-    detail: "Working in the Integrative Center for Alternative Meat and Protein - iCAMP at UC Davis to research methods of producing sustainable and healthy meat via cell culturing. Over a five-week period, I primarily worked under Nick Johnson. I built and tested 32 scaffold combinations, using Texture Profile Analysis to judge how closely each reproduced real meat texture.",
+    detail: "Screened fetal-bovine-serum-free growth media to reduce the cost and animal dependence of cultivated-meat culture. I also built and tested 32 scaffold combinations, using Texture Profile Analysis to judge how closely each reproduced real meat texture.",
     logo: { src: "/logos/ucdaviswhite.png", alt: "UC Davis logo", fallback: "UCD", fitClassName: "h-11 w-11", alignClassName: "object-[center_58%]", frameClassName: "bg-white" },
   },
   {
     dates: "March 2024 - April 2024",
-    role: "Intern",
+    role: "Research Intern",
     organisation: "NUS Institute for Functional Intelligent Materials (I-FIM)",
-    detail: "Invited by Professor Konstantin Novoselov (2010 Nobel Prize in Physics) to intern under Dr Maxim Rybin to learn current methods of synthesizing graphene, specifically using CVD chemical vapour deposition onto copper foil. I learned the theory and process of using nitric acid etching and electrochemical polishing to smooth copper, as well as annealing to form larger monocrystals for better-quality graphene formation on the copper substrate. I then studied the heating and pressure conditions required for ideal deposition using methane as the precursor, and learned the transfer process of graphene onto a PMMA coat and then onto a silicon dioxide chip for analysis using optical microscopes and Raman spectroscopy.",
+    detail: "Invited by Professor Konstantin Novoselov (2010 Nobel Laureate in Physics) to work under Dr Maxim Rybin. I grew graphene by Chemical Vapour Deposition, tuned the growth conditions and characterized the resulting films.",
     logo: { src: "/logos/nus.png", alt: "National University of Singapore logo", fallback: "NUS", fitClassName: "h-10 w-12", alignClassName: "object-center", frameClassName: "bg-white" },
   },
   {
@@ -128,7 +128,7 @@ const education: EducationItem[] = [
   {
     dates: "2024 - 2028",
     school: "California Institute of Technology",
-    detail: "Chemical Engineering (process track, with electives in materials) and Business Economics and Management. GPA: 3.8 / 4.0.",
+    detail: "B.S., dual major in Chemical Engineering (process track) and Business Economics & Management (BEM). GPA: 3.8 / 4.0. Relevant coursework includes Econometrics (EC 122) and Hedge Funds (BEM 114).",
     logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white/90", imageClassName: "mix-blend-normal" },
   },
   {
@@ -141,6 +141,12 @@ const education: EducationItem[] = [
 
 const featuredWork = [
   {
+    href: "/projects/supercritical-water-gasification",
+    type: "Process engineering",
+    title: "Towngas SCWG-OXZEO waste-to-olefins study",
+    summary: "A ten-section screening/pre-FEED design with closed mass, carbon and energy balances, five-train scale-up and China-specific techno-economics.",
+  },
+  {
     href: "/projects/biodiesel-from-used-cooking-oil",
     type: "Chemical Engineering",
     title: "Biodiesel from used cooking oil",
@@ -151,12 +157,6 @@ const featuredWork = [
     type: "Finance & NLP",
     title: "Earnings Call NLP-Based Long-Short Strategy",
     summary: "A June 2026 BEM 114 report on using earnings-call language to build a long-short equity signal.",
-  },
-  {
-    href: "/projects/tonbridge-food-science",
-    type: "Tonbridge Science Conference",
-    title: "The science of flavour",
-    summary: "A February 2023 Tonbridge Science Conference project on flavour compounds and retronasal olfaction.",
   },
   {
     href: "/projects/cook-enterprise",
@@ -174,7 +174,7 @@ export default function AboutPage() {
         title="Chemical engineering, food science, and kitchens."
         description={
           <>
-            I am double-majoring in Chemical Engineering (process track, with electives in materials) and BEM (Business Economics and Management) at{" "}
+            I am pursuing a dual B.S. major in Chemical Engineering (process track) and BEM (Business Economics & Management) at{" "}
             <OrganisationWordmark alt="Caltech" fallback="Caltech" src="/logos/caltechname-cropped.png" />.
             {" "}I am a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics.
           </>
@@ -271,7 +271,7 @@ export default function AboutPage() {
 
             <section className="about-section about-section--skills scroll-mt-24" data-reveal id="about-skills" style={{ "--reveal-delay": "240ms" } as CSSProperties}>
               <h2 className="about-section-heading eyebrow">Technical skills</h2>
-              <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">Python, process modelling, NMR, IR, mass spectrometry; basic DWSIM.</p>
+              <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">Python, process and techno-economic modelling, DWSIM, NMR, IR and mass spectrometry.</p>
             </section>
           </aside>
         </div>

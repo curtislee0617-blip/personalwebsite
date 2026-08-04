@@ -55,6 +55,7 @@ public/*.jpeg
 public/*.jpg
 public/*.mp4
 public/*.pdf
+!public/curtis-lee-resume.pdf
 public/*.png
 public/*.svg
 public/*.webm
