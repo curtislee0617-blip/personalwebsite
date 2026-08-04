@@ -183,7 +183,7 @@ export default function AboutPage() {
         }
         actions={
           <div className="about-resume-actions flex flex-wrap gap-3">
-            <a className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" download href="/curtis-lee-resume.pdf">
+            <a className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" download href="/downloads/curtis-lee-resume.pdf">
               Download résumé ↓
             </a>
             <a className="rounded-full border border-ink/20 px-5 py-3 text-sm font-semibold transition hover:border-ink hover:bg-surface" href="https://www.linkedin.com/in/curtislee0617" rel="noreferrer" target="_blank">
