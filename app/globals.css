@@ -2559,11 +2559,6 @@ html.dashboard-mode .section-rail {
   }
 }
 
-@keyframes project-focus-enter {
-  from { opacity: 0; transform: translateY(0.4rem) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
 .recipe-guide-media { position: relative; height: 10.5rem; overflow: hidden; border-bottom: 1px solid rgb(var(--color-ink) / 0.08); background: rgb(var(--color-mist)); }
 .recipe-guide-photo-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .recipe-guide-photo-grid > div + div { border-left: 2px solid rgb(var(--color-paper) / 0.8); }
@@ -5506,7 +5501,6 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
     border-radius: 1rem;
     background: rgb(var(--color-surface) / 0.58);
     grid-template-columns: minmax(0, 1fr) 6rem;
-    animation: project-focus-enter 300ms var(--ease-standard) both;
   }
   .project-focus-eyebrow {
     color: rgb(var(--color-moss));
@@ -7938,15 +7932,6 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   animation-delay: calc(var(--demo-index, 0) * 0.68s);
 }
 
-/* The projects focus panel is keyed on the active card, so each carousel
-   swap remounts it — this animation turns that swap into a soft rise. */
-@keyframes focus-panel-swap {
-  from { opacity: 0; transform: translateY(0.4rem); }
-  to { opacity: 1; transform: none; }
-}
-
-.project-focus-panel { animation: focus-panel-swap 420ms var(--ease-standard) backwards; }
-
 /* Contact cards tilt their icon toward the visitor on hover. */
 .contact-link-icon { transition: transform var(--motion-standard) var(--ease-standard); }
 
@@ -8134,4 +8119,1427 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   border: 1px solid rgb(var(--color-ink) / 0.1);
   border-radius: var(--radius-panel);
   background: rgb(var(--color-surface) / 0.95);
+}
+
+/* ---------------------------------------------------------------------------
+   Towngas SCWG–OXZEO case study — technical/editorial system.
+
+   The page retains the site's paper, ink and Roboto foundation, while the
+   process blocks use Towngas green and the engineering structure uses navy.
+   Evidence, warnings and negative economics always include text labels, so
+   colour is never the only carrier of meaning.
+--------------------------------------------------------------------------- */
+.towngas-page {
+  --tg-navy: #0a2373;
+  --tg-navy-deep: #071844;
+  --tg-green: #007336;
+  --tg-orange: #b95a2f;
+  --tg-red: #9d342d;
+  --tg-sand: #f0ede5;
+  --tg-line: rgb(32 35 31 / 0.13);
+  min-width: 0;
+  overflow: clip;
+  background: rgb(var(--color-paper));
+  color: rgb(var(--color-ink));
+}
+
+.towngas-page :is(section, figure, details, article)[id] { scroll-margin-top: 5rem; }
+
+.towngas-shell {
+  width: min(100%, 92rem);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 4.75rem);
+}
+
+.towngas-hero {
+  position: relative;
+  min-height: min(58rem, 100svh);
+  isolation: isolate;
+  overflow: hidden;
+  border-bottom: 1px solid rgb(255 255 255 / 0.18);
+  background: var(--tg-navy-deep);
+  color: white;
+}
+
+.towngas-hero-image {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: url("/photos/scwg-hero-wide.webp");
+  background-position: center 42%;
+  background-size: cover;
+  filter: saturate(0.78) contrast(1.05);
+  transform: scale(1.015);
+}
+
+.towngas-hero-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(5 17 50 / 0.97) 0%, rgb(5 17 50 / 0.88) 48%, rgb(5 17 50 / 0.43) 78%, rgb(5 17 50 / 0.58) 100%),
+    linear-gradient(0deg, rgb(5 17 50 / 0.82), transparent 46%);
+}
+
+.towngas-hero-inner {
+  display: flex;
+  min-height: min(58rem, 100svh);
+  padding-block: 1.5rem 2rem;
+  flex-direction: column;
+}
+
+.towngas-hero-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.towngas-hero-topline > p {
+  display: flex;
+  color: rgb(255 255 255 / 0.68);
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  gap: 0.65rem;
+}
+
+.towngas-hero .eyebrow { color: #8cdbad; }
+
+.towngas-hero-grid {
+  display: grid;
+  margin-block: auto;
+  padding-block: clamp(3rem, 8vh, 6.5rem);
+  align-items: end;
+  gap: clamp(2rem, 5vw, 6rem);
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 25rem);
+}
+
+.towngas-hero-copy { max-width: 62rem; }
+
+.towngas-hero-copy h1 {
+  max-width: 14ch;
+  margin-top: 0.8rem;
+  font-size: clamp(3.1rem, 7.3vw, 7.4rem);
+  font-weight: 600;
+  line-height: 0.91;
+  letter-spacing: -0.064em;
+  text-wrap: balance;
+}
+
+.towngas-hero-subtitle {
+  max-width: 47rem;
+  margin-top: 1.45rem;
+  color: white;
+  font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.towngas-hero-summary {
+  max-width: 48rem;
+  margin-top: 1rem;
+  color: rgb(255 255 255 / 0.74);
+  font-size: clamp(0.9rem, 1.1vw, 1.04rem);
+  line-height: 1.72;
+}
+
+.towngas-technology-list {
+  display: flex;
+  margin-top: 1.6rem;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.towngas-technology-list li {
+  padding: 0.45rem 0.72rem;
+  border: 1px solid rgb(255 255 255 / 0.24);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.07);
+  color: rgb(255 255 255 / 0.82);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(5px);
+}
+
+.towngas-actions {
+  display: flex;
+  margin-top: 1.75rem;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.towngas-button {
+  display: inline-flex;
+  min-height: 3.2rem;
+  padding: 0.85rem 1rem 0.85rem 1.2rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 750;
+  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.towngas-button span:last-child { font-size: 1rem; }
+.towngas-button:hover { transform: translateY(-2px); }
+.towngas-button--primary { background: white; color: var(--tg-navy-deep); }
+.towngas-button--primary:hover { background: #e7f3eb; }
+.towngas-button--secondary { border-color: rgb(255 255 255 / 0.3); background: rgb(5 17 50 / 0.38); color: white; }
+.towngas-button--secondary:hover { border-color: rgb(255 255 255 / 0.6); background: rgb(5 17 50 / 0.7); }
+
+.towngas-hero-basis {
+  overflow: hidden;
+  padding: 1.35rem;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 1.35rem;
+  background: rgb(4 17 52 / 0.78);
+  box-shadow: 0 24px 65px rgb(0 0 0 / 0.25);
+  backdrop-filter: blur(13px);
+}
+
+.towngas-hero-basis-number {
+  display: flex;
+  padding-block: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.14);
+}
+
+.towngas-hero-basis-number strong { font-family: var(--font-code); font-size: clamp(1.65rem, 2.6vw, 2.45rem); font-weight: 500; letter-spacing: -0.05em; }
+.towngas-hero-basis-number span { max-width: 8.5rem; color: rgb(255 255 255 / 0.58); font-size: 0.67rem; line-height: 1.45; text-align: right; }
+.towngas-hero-basis dl { display: grid; margin-top: 0.85rem; gap: 0.55rem; }
+.towngas-hero-basis dl div { display: grid; align-items: baseline; gap: 1rem; grid-template-columns: 5rem minmax(0, 1fr); }
+.towngas-hero-basis dt { color: rgb(255 255 255 / 0.48); font-size: 0.63rem; }
+.towngas-hero-basis dd { font-size: 0.75rem; font-weight: 650; line-height: 1.45; text-align: right; }
+.towngas-hero-warning { margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid rgb(255 255 255 / 0.14); color: #f0bf9f; font-size: 0.65rem; line-height: 1.5; }
+
+.towngas-affiliation {
+  display: grid;
+  padding-top: 1rem;
+  align-items: center;
+  gap: 1.1rem;
+  border-top: 1px solid rgb(255 255 255 / 0.17);
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.towngas-affiliation-logos { display: flex; padding: 0.5rem 0.8rem; align-items: center; gap: 1rem; border-radius: 0.65rem; background: rgb(255 255 255 / 0.92); }
+.towngas-affiliation-logos img { width: auto; max-width: 6.5rem; height: 1.45rem; object-fit: contain; }
+.towngas-affiliation p { max-width: 62rem; color: rgb(255 255 255 / 0.55); font-size: 0.62rem; line-height: 1.55; }
+
+.towngas-local-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--tg-line);
+  background: rgb(250 249 246 / 0.93);
+  backdrop-filter: blur(18px);
+}
+
+.towngas-local-nav .towngas-shell {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.towngas-local-nav .towngas-shell::-webkit-scrollbar { display: none; }
+.towngas-local-nav a { position: relative; display: flex; min-width: max-content; padding: 1rem clamp(0.7rem, 1.5vw, 1.25rem); align-items: center; gap: 0.5rem; border-right: 1px solid var(--tg-line); color: rgb(var(--color-ink) / 0.65); font-size: 0.68rem; font-weight: 700; transition: background 160ms ease, color 160ms ease; }
+.towngas-local-nav a:first-child { border-left: 1px solid var(--tg-line); }
+.towngas-local-nav a span { color: var(--tg-green); font-family: var(--font-code); font-size: 0.58rem; }
+.towngas-local-nav a:hover { background: rgb(0 115 54 / 0.06); color: rgb(var(--color-ink)); }
+.towngas-local-nav a[aria-current="location"] { background: rgb(0 115 54 / 0.045); color: var(--tg-navy); }
+.towngas-local-nav-indicator { position: absolute; right: 0.7rem; bottom: -1px; left: 0.7rem; z-index: 2; height: 2px; background: var(--tg-green); pointer-events: none; }
+.towngas-local-nav-progress { position: absolute; right: 0; bottom: -1px; left: 0; z-index: 1; height: 1px; background: rgb(0 115 54 / 0.34); pointer-events: none; transform-origin: 0 50%; }
+
+.towngas-section { padding-block: clamp(5rem, 9vw, 9rem); }
+.towngas-section--tint { background: var(--tg-sand); }
+.towngas-section-heading { display: grid; max-width: 58rem; gap: 0.95rem; }
+.towngas-section-heading h2 { color: var(--tg-navy); font-size: clamp(2.35rem, 4.5vw, 5rem); font-weight: 600; line-height: 0.99; letter-spacing: -0.052em; text-wrap: balance; }
+.towngas-section-lede { max-width: 47rem; color: rgb(var(--color-ink) / 0.63); font-size: clamp(0.94rem, 1.3vw, 1.08rem); line-height: 1.75; }
+
+.towngas-metric-grid {
+  display: grid;
+  margin-top: clamp(2.3rem, 5vw, 4.5rem);
+  border-top: 1px solid var(--tg-line);
+  border-left: 1px solid var(--tg-line);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.towngas-metric {
+  display: flex;
+  min-height: 14.5rem;
+  padding: clamp(1.15rem, 2.4vw, 2rem);
+  flex-direction: column;
+  border-right: 1px solid var(--tg-line);
+  border-bottom: 1px solid var(--tg-line);
+  background: rgb(var(--color-surface) / 0.62);
+}
+
+.towngas-metric dt { min-height: 2.5rem; color: rgb(var(--color-ink) / 0.54); font-size: 0.69rem; font-weight: 700; line-height: 1.45; text-transform: uppercase; letter-spacing: 0.075em; }
+.towngas-metric dd { display: flex; margin-top: 1.15rem; flex: 1; align-items: flex-start; flex-direction: column; gap: 0.65rem; }
+.towngas-metric-value { display: flex; margin-bottom: auto; align-items: baseline; gap: 0.5rem; }
+.towngas-metric-value strong { color: var(--tg-navy); font-family: var(--font-code); font-size: clamp(2rem, 3.2vw, 3.3rem); font-weight: 500; letter-spacing: -0.06em; }
+.towngas-metric-value > span { color: rgb(var(--color-ink) / 0.5); font-size: 0.72rem; }
+.towngas-metric dd > p { color: rgb(var(--color-ink) / 0.58); font-size: 0.68rem; line-height: 1.55; }
+
+.towngas-evidence { display: inline-flex; width: fit-content; padding: 0.25rem 0.45rem; align-items: center; gap: 0.25rem; border: 1px solid rgb(var(--color-ink) / 0.14); border-radius: 999px; color: rgb(var(--color-ink) / 0.57); font-size: 0.54rem; font-weight: 750; line-height: 1.2; letter-spacing: 0.04em; text-transform: uppercase; }
+.towngas-evidence::before { content: "○"; font-size: 0.58rem; }
+.towngas-evidence--calculated-result::before { content: "="; color: var(--tg-navy); }
+.towngas-evidence--official-source::before { content: "✓"; color: var(--tg-green); }
+.towngas-evidence--published-evidence::before { content: "↗"; color: var(--tg-green); }
+.towngas-evidence--requires-pilot-validation::before { content: "!"; color: var(--tg-orange); }
+.towngas-evidence--base-case-exclusion::before { content: "0"; color: var(--tg-red); }
+.towngas-evidence--owner-supplied-benchmark::before { content: "?"; color: var(--tg-orange); }
+
+.towngas-evidence-key { margin-top: 1rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.52); }
+.towngas-evidence-key summary,
+.towngas-feed-controls summary,
+.towngas-economic-inputs summary,
+.towngas-more-risks summary { padding: 1rem 1.15rem; cursor: pointer; color: var(--tg-navy); font-size: 0.75rem; font-weight: 750; }
+.towngas-evidence-key > div { display: grid; padding: 0 1.15rem 1.15rem; gap: 0.8rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-evidence-key p { display: grid; align-items: start; gap: 0.65rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.67rem; line-height: 1.55; grid-template-columns: auto minmax(0, 1fr); }
+
+.towngas-proposition { margin-top: clamp(4rem, 7vw, 7rem); }
+.towngas-proposition-intro { display: grid; max-width: 54rem; gap: 1rem; }
+.towngas-proposition-intro h3 { color: var(--tg-navy); font-size: clamp(2rem, 3.7vw, 3.7rem); font-weight: 600; line-height: 1.03; letter-spacing: -0.045em; }
+.towngas-proposition-intro > p:last-child { max-width: 43rem; color: rgb(var(--color-ink) / 0.62); font-size: 0.92rem; line-height: 1.72; }
+.towngas-proposition-grid { display: grid; margin-top: 2.4rem; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.towngas-proposition-grid > li { display: flex; min-height: 28rem; padding: 1.5rem; flex-direction: column; border: 1px solid var(--tg-line); border-top: 0.25rem solid var(--tg-green); background: rgb(var(--color-surface) / 0.62); }
+.towngas-proposition-grid > li > span:first-child { color: var(--tg-green); font-family: var(--font-code); font-size: 0.68rem; }
+.towngas-proposition-grid h4 { margin-top: 1.2rem; color: var(--tg-navy); font-size: 1.25rem; line-height: 1.22; }
+.towngas-proposition-grid li > p { margin-top: 0.8rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.76rem; line-height: 1.65; }
+.towngas-proposition-grid li > div { margin-top: 1.25rem; padding: 1rem; border-left: 2px solid var(--tg-green); background: rgb(0 115 54 / 0.055); }
+.towngas-proposition-grid li > div strong { color: var(--tg-green); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.towngas-proposition-grid li > div p { margin-top: 0.4rem; font-size: 0.75rem; line-height: 1.6; }
+.towngas-proposition-grid .towngas-consequence { margin-block: auto 1rem; padding-top: 1.2rem; }
+.towngas-technical-detail { margin-top: 1rem; padding: 1rem 1.25rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.46); }
+.towngas-technical-detail summary { cursor: pointer; color: var(--tg-navy); font-size: 0.74rem; font-weight: 750; }
+.towngas-technical-detail p { max-width: 54rem; margin-top: 0.8rem; color: rgb(var(--color-ink) / 0.61); font-size: 0.76rem; line-height: 1.65; }
+
+.towngas-feed-grid { display: grid; margin-top: 3.2rem; gap: 1rem; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.towngas-feed-grid > article { display: flex; padding: 1.35rem; flex-direction: column; border: 1px solid rgb(var(--color-ink) / 0.15); background: rgb(var(--color-surface) / 0.72); grid-column: span 2; }
+.towngas-feed-grid > article:nth-child(4), .towngas-feed-grid > article:nth-child(5) { grid-column: span 3; }
+.towngas-feed-grid header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.towngas-feed-grid header > div > p { color: var(--tg-green); font-size: 0.56rem; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase; }
+.towngas-feed-grid h3 { margin-top: 0.35rem; color: var(--tg-navy); font-size: 1.24rem; line-height: 1.15; }
+.towngas-feed-amount { flex: none; text-align: right; }
+.towngas-feed-amount strong { display: block; color: var(--tg-navy); font-family: var(--font-code); font-size: 1.45rem; font-weight: 500; }
+.towngas-feed-amount span { color: rgb(var(--color-ink) / 0.48); font-size: 0.6rem; }
+.towngas-feed-grid ul { display: grid; margin-block: 1.2rem; gap: 0.55rem; }
+.towngas-feed-grid li { position: relative; padding-left: 0.85rem; color: rgb(var(--color-ink) / 0.62); font-size: 0.71rem; line-height: 1.55; }
+.towngas-feed-grid li::before { content: ""; position: absolute; top: 0.56rem; left: 0; width: 0.3rem; height: 1px; background: var(--tg-green); }
+.towngas-feed-note { margin-top: auto; padding: 0.85rem; border-top: 1px solid var(--tg-line); color: rgb(var(--color-ink) / 0.57); font-size: 0.68rem; line-height: 1.55; }
+.towngas-feed-grid .towngas-evidence { margin-top: 0.8rem; }
+
+.towngas-map-figure { margin-top: clamp(4rem, 7vw, 7rem); padding: clamp(1.2rem, 2.6vw, 2.3rem); border: 1px solid rgb(var(--color-ink) / 0.16); background: rgb(var(--color-surface) / 0.7); }
+.towngas-figure-heading { display: flex; margin-bottom: 1.5rem; align-items: end; justify-content: space-between; gap: 2rem; }
+.towngas-figure-heading h3 { margin-top: 0.5rem; color: var(--tg-navy); font-size: clamp(1.55rem, 2.7vw, 2.65rem); font-weight: 600; line-height: 1.05; letter-spacing: -0.035em; }
+.towngas-figure-heading > p { max-width: 27rem; color: rgb(var(--color-ink) / 0.52); font-size: 0.7rem; line-height: 1.55; text-align: right; }
+.towngas-page figcaption { margin-top: 1.1rem; padding-top: 0.85rem; border-top: 1px solid currentColor; border-color: rgb(var(--color-ink) / 0.13); color: rgb(var(--color-ink) / 0.48); font-size: 0.61rem; line-height: 1.6; }
+
+.towngas-feed-controls { display: grid; margin-top: 1rem; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-feed-controls details,
+.towngas-economic-inputs,
+.towngas-more-risks { min-width: 0; border: 1px solid rgb(var(--color-ink) / 0.15); background: rgb(var(--color-surface) / 0.68); }
+.towngas-feed-controls details[open] summary,
+.towngas-economic-inputs[open] summary { border-bottom: 1px solid var(--tg-line); }
+.towngas-table-wrap { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+.towngas-table-wrap table { width: 100%; min-width: 46rem; border-collapse: collapse; font-size: 0.67rem; line-height: 1.5; }
+.towngas-table-wrap :is(th, td) { padding: 0.78rem 0.82rem; border-bottom: 1px solid var(--tg-line); vertical-align: top; text-align: left; }
+.towngas-table-wrap thead th { background: rgb(var(--color-ink) / 0.045); color: rgb(var(--color-ink) / 0.56); font-size: 0.56rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-table-wrap tbody th { color: var(--tg-navy); font-weight: 750; }
+.towngas-table-wrap tbody td { color: rgb(var(--color-ink) / 0.62); }
+.towngas-table-wrap caption { padding: 0 0 0.85rem; color: rgb(var(--color-ink) / 0.55); font-size: 0.65rem; font-weight: 700; text-align: left; }
+
+/* Web-native process flow. */
+.towngas-flow-figure { margin-top: 3rem; padding: clamp(1.25rem, 2.5vw, 2.2rem); border: 1px solid var(--tg-line); background: #f8f8f4; }
+.towngas-flow-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+.towngas-flow-heading h3 { margin-top: 0.45rem; color: var(--tg-navy); font-size: clamp(1.6rem, 2.8vw, 2.8rem); font-weight: 600; letter-spacing: -0.035em; }
+.towngas-flow-heading-side { display: grid; max-width: 27rem; justify-items: end; gap: 0.75rem; }
+.towngas-flow-heading-side > p { color: rgb(var(--color-ink) / 0.52); font-size: 0.68rem; line-height: 1.55; text-align: right; }
+.towngas-flow-controls { display: flex; min-height: 2rem; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+.towngas-flow-controls > span { color: rgb(var(--color-ink) / 0.5); font-family: var(--font-code); font-size: 0.55rem; line-height: 1.35; }
+.towngas-flow-controls button { display: inline-flex; min-width: 7.3rem; min-height: 2rem; padding: 0.45rem 0.62rem; align-items: center; justify-content: center; gap: 0.4rem; border: 1px solid rgb(0 115 54 / 0.34); border-radius: 0.14rem; background: rgb(var(--color-surface) / 0.8); color: var(--tg-green); font-family: var(--font-code); font-size: 0.57rem; font-weight: 700; letter-spacing: 0.015em; transition: border-color 160ms ease, background 160ms ease; }
+.towngas-flow-controls button i { width: 0.36rem; height: 0.36rem; flex: none; border-radius: 999px; background: currentColor; }
+.towngas-flow-controls button:hover:not(:disabled) { border-color: rgb(0 115 54 / 0.62); background: rgb(0 115 54 / 0.07); }
+.towngas-flow-controls button:focus-visible { outline: 2px solid var(--tg-green); outline-offset: 2px; }
+.towngas-flow-controls button:disabled { cursor: default; opacity: 0.55; }
+.towngas-flow-main { display: grid; margin-top: 2rem; gap: 0.9rem; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.towngas-flow-stage { position: relative; display: flex; min-height: 9.5rem; padding: 0.9rem; flex-direction: column; border: 1px solid rgb(10 35 115 / 0.22); background: white; }
+.towngas-flow-id { display: grid; width: 2.1rem; height: 2.1rem; place-items: center; flex: none; background: var(--tg-navy); color: white; font-family: var(--font-code); font-size: 0.67rem; }
+.towngas-flow-stage strong { margin-top: auto; color: var(--tg-navy); font-size: 0.76rem; line-height: 1.3; }
+.towngas-flow-stage small { margin-top: 0.35rem; color: rgb(var(--color-ink) / 0.46); font-size: 0.55rem; line-height: 1.4; }
+.towngas-flow-arrow { position: absolute; top: 50%; right: -0.92rem; z-index: 2; display: grid; width: 0.92rem; height: 1.4rem; place-items: center; background: #f8f8f4; color: var(--tg-green); font-size: 1.05rem; transform: translateY(-50%); }
+.towngas-flow-lower { display: grid; margin-top: 1.15rem; align-items: stretch; gap: 0.8rem; grid-template-columns: 1fr 1.5fr 1fr; }
+.towngas-flow-branch, .towngas-flow-recycle, .towngas-flow-product { display: flex; min-height: 5.5rem; padding: 0.85rem; align-items: center; gap: 0.8rem; border: 1px dashed rgb(var(--color-ink) / 0.25); background: white; }
+.towngas-flow-branch > div { display: grid; gap: 0.25rem; }
+.towngas-flow-route { display: flex; align-items: center; gap: 0.35rem; color: var(--tg-green); font-size: 0.58rem; }
+.towngas-flow-route strong { color: var(--tg-green); font-family: var(--font-code); font-size: 0.55rem; }
+.towngas-flow-branch strong, .towngas-flow-recycle strong, .towngas-flow-product strong { color: var(--tg-navy); font-size: 0.72rem; }
+.towngas-flow-branch small, .towngas-flow-recycle p, .towngas-flow-product p { color: rgb(var(--color-ink) / 0.54); font-size: 0.6rem; line-height: 1.5; }
+.towngas-flow-recycle { border-color: rgb(0 115 54 / 0.42); background: rgb(0 115 54 / 0.045); }
+.towngas-flow-recycle .towngas-flow-id { background: var(--tg-green); }
+.towngas-flow-product > span { color: var(--tg-green); font-size: 1.3rem; }
+.towngas-flow-streams { display: grid; margin-top: 0.8rem; gap: 0.45rem; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.towngas-flow-stream { display: flex; padding: 0.55rem 0.65rem; align-items: center; gap: 0.55rem; border-top: 2px solid var(--stream-color, var(--tg-navy)); background: white; }
+.towngas-flow-stream span { color: rgb(var(--color-ink) / 0.45); font-family: var(--font-code); font-size: 0.52rem; }
+.towngas-flow-stream strong { color: rgb(var(--color-ink) / 0.72); font-size: 0.59rem; line-height: 1.3; }
+.towngas-flow-stream--salt { --stream-color: #a87421; }
+.towngas-flow-stream--water { --stream-color: #2f6aa0; }
+.towngas-flow-stream--sulfur { --stream-color: #9c7a20; }
+.towngas-flow-stream--carbon { --stream-color: #686d75; }
+.towngas-flow-stream--product { --stream-color: var(--tg-green); }
+
+.towngas-equations { display: grid; margin-top: 1rem; padding: 1.25rem; align-items: center; gap: 1rem 2rem; border: 1px solid var(--tg-line); background: rgb(10 35 115 / 0.035); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-equations div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.towngas-equations span { color: var(--tg-green); font-size: 0.58rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-equations strong { color: var(--tg-navy); font-family: var(--font-code); font-size: 0.95rem; font-weight: 500; }
+.towngas-equations > p { color: rgb(var(--color-ink) / 0.56); font-size: 0.66rem; line-height: 1.55; grid-column: 1 / -1; }
+
+.towngas-stage-list { display: grid; margin-top: 3rem; gap: 0.65rem; }
+.towngas-stage { border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.58); }
+.towngas-stage > summary { display: grid; padding: 1rem; align-items: center; cursor: pointer; list-style: none; gap: 1rem; grid-template-columns: 3.2rem minmax(0, 1fr) auto; }
+.towngas-stage > summary::-webkit-details-marker { display: none; }
+.towngas-stage > summary > span:first-child { display: grid; width: 3.2rem; height: 3.2rem; place-items: center; background: var(--tg-navy); color: white; font-family: var(--font-code); font-size: 0.78rem; }
+.towngas-stage-summary-copy { display: grid; min-width: 0; gap: 0.28rem; }
+.towngas-stage-summary-copy small { color: var(--tg-green); font-size: 0.62rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+.towngas-stage-summary-copy strong { color: var(--tg-navy); font-size: clamp(1rem, 1.8vw, 1.32rem); line-height: 1.25; }
+.towngas-stage > summary i { color: var(--tg-green); font-size: 1.35rem; font-style: normal; transition: transform 180ms ease; }
+.towngas-stage[open] > summary { border-bottom: 1px solid var(--tg-line); background: rgb(10 35 115 / 0.035); }
+.towngas-stage[open] > summary i { transform: rotate(45deg); }
+.towngas-stage-body { display: grid; padding: clamp(1rem, 2.4vw, 2rem); gap: 1.2rem; grid-template-columns: minmax(0, 1.35fr) minmax(15rem, 0.65fr); }
+.towngas-stage-narrative { color: rgb(var(--color-ink) / 0.65); font-size: 0.78rem; line-height: 1.68; }
+.towngas-stage-narrative .eyebrow { margin-top: 1rem; font-size: 0.56rem; }
+.towngas-stage-narrative .eyebrow:first-child { margin-top: 0; }
+.towngas-source { margin-top: 1rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.57rem; }
+.towngas-stage-conditions { display: grid; align-content: start; gap: 0.55rem; }
+.towngas-stage-conditions > div { display: grid; padding: 0.75rem; align-items: center; gap: 0.25rem 0.7rem; border-left: 2px solid var(--tg-green); background: rgb(0 115 54 / 0.05); grid-template-columns: minmax(0, 1fr) auto; }
+.towngas-stage-conditions dt { color: rgb(var(--color-ink) / 0.54); font-size: 0.61rem; }
+.towngas-stage-conditions dd { display: flex; align-items: flex-end; flex-direction: column; gap: 0.35rem; text-align: right; }
+.towngas-stage-conditions dd > strong { color: var(--tg-navy); font-family: var(--font-code); font-size: 0.75rem; font-weight: 600; }
+.towngas-stage-lists { display: grid; gap: 1rem; grid-column: 1 / -1; grid-template-columns: 1.5fr 1fr 1fr; }
+.towngas-stage-lists > div { padding: 1rem; border: 1px solid var(--tg-line); }
+.towngas-stage-lists h4 { color: var(--tg-navy); font-size: 0.68rem; }
+.towngas-stage-lists ul { display: grid; margin-top: 0.65rem; gap: 0.4rem; }
+.towngas-stage-lists li { position: relative; padding-left: 0.75rem; color: rgb(var(--color-ink) / 0.57); font-size: 0.65rem; line-height: 1.5; }
+.towngas-stage-lists li::before { content: "–"; position: absolute; left: 0; color: var(--tg-green); }
+.towngas-stage-risk { display: grid; gap: 0.8rem; grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-stage-risk > div { padding: 1rem; border: 1px solid rgb(185 90 47 / 0.3); background: rgb(185 90 47 / 0.045); }
+.towngas-stage-risk strong { color: var(--tg-orange); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-stage-risk p { margin-top: 0.45rem; color: rgb(var(--color-ink) / 0.65); font-size: 0.7rem; line-height: 1.55; }
+
+.towngas-conflicts { margin-top: clamp(4rem, 7vw, 7rem); }
+.towngas-conflicts > ol { display: grid; gap: 0.7rem; }
+.towngas-conflicts > ol > li { display: grid; padding: 1.2rem; align-items: center; gap: 1rem; border: 1px solid var(--tg-line); border-left: 0.26rem solid var(--tg-orange); background: rgb(var(--color-surface) / 0.64); grid-template-columns: 2rem minmax(10rem, 0.9fr) auto minmax(10rem, 1fr) auto minmax(10rem, 1.2fr); }
+.towngas-conflicts li > span { color: var(--tg-orange); font-family: var(--font-code); font-size: 0.68rem; }
+.towngas-conflicts small { color: rgb(var(--color-ink) / 0.42); font-size: 0.52rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+.towngas-conflicts h4 { margin-top: 0.3rem; color: var(--tg-navy); font-size: 0.88rem; line-height: 1.4; }
+.towngas-conflicts li p { margin-top: 0.3rem; color: rgb(var(--color-ink) / 0.63); font-size: 0.68rem; line-height: 1.52; }
+.towngas-conflict-arrow { color: var(--tg-green); font-size: 1rem; }
+
+/* Dark balance chapter. */
+.towngas-section--dark { background: #101827; color: #f4f5f1; }
+.towngas-section--dark .eyebrow { color: #75d39d; }
+.towngas-section--dark .towngas-section-heading h2,
+.towngas-section--dark .towngas-figure-heading h3 { color: white; }
+.towngas-section--dark .towngas-section-lede,
+.towngas-section--dark .towngas-figure-heading > p { color: rgb(255 255 255 / 0.62); }
+.towngas-section--dark .towngas-evidence { border-color: rgb(255 255 255 / 0.18); color: rgb(255 255 255 / 0.62); }
+.towngas-section--dark figcaption { border-color: rgb(255 255 255 / 0.14); color: rgb(255 255 255 / 0.48); }
+
+.towngas-balance-figure { display: grid; margin-top: 3rem; padding: clamp(1.2rem, 3vw, 2.6rem); gap: 1.3rem; border: 1px solid rgb(255 255 255 / 0.17); background: rgb(255 255 255 / 0.035); grid-template-columns: minmax(12rem, 0.7fr) minmax(9rem, 0.4fr) minmax(17rem, 1fr); }
+.towngas-balance-inputs > strong, .towngas-balance-outputs > strong { display: block; margin-top: 0.7rem; font-family: var(--font-code); font-size: clamp(1.8rem, 3.2vw, 3.3rem); font-weight: 500; letter-spacing: -0.06em; }
+.towngas-balance-inputs > strong span, .towngas-balance-outputs > strong span { color: rgb(255 255 255 / 0.45); font-size: 0.7rem; letter-spacing: 0; }
+.towngas-balance-inputs ol { display: grid; margin-top: 1rem; gap: 0.55rem; }
+.towngas-balance-inputs li { display: flex; padding-bottom: 0.5rem; align-items: baseline; justify-content: space-between; gap: 1rem; border-bottom: 1px solid rgb(255 255 255 / 0.12); color: rgb(255 255 255 / 0.62); font-size: 0.64rem; }
+.towngas-balance-inputs li strong { color: white; font-family: var(--font-code); font-size: 0.65rem; font-weight: 500; }
+.towngas-balance-closure { display: flex; padding: 1rem; align-items: center; justify-content: center; flex-direction: column; border: 1px solid rgb(117 211 157 / 0.42); background: rgb(0 115 54 / 0.12); text-align: center; }
+.towngas-balance-closure span { color: #8cdbad; font-size: 0.59rem; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase; }
+.towngas-balance-closure strong { margin-top: 0.7rem; font-family: var(--font-code); font-size: clamp(2.3rem, 5vw, 4.4rem); font-weight: 500; letter-spacing: -0.07em; }
+.towngas-balance-closure small { margin-top: 0.4rem; color: rgb(255 255 255 / 0.48); font-size: 0.56rem; line-height: 1.4; }
+.towngas-balance-outputs ol { display: grid; margin-top: 1rem; gap: 0.45rem; }
+.towngas-balance-outputs li > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; color: rgb(255 255 255 / 0.64); font-size: 0.59rem; }
+.towngas-balance-outputs li strong { color: white; font-family: var(--font-code); font-size: 0.61rem; font-weight: 500; }
+.towngas-balance-bar { display: block; height: 0.22rem; margin-top: 0.25rem; background: rgb(255 255 255 / 0.09); }
+.towngas-balance-bar i { display: block; width: var(--bar); height: 100%; background: #75d39d; }
+.towngas-balance-figure figcaption { grid-column: 1 / -1; }
+
+.towngas-carbon-figure { margin-top: 1rem; padding: clamp(1.2rem, 3vw, 2.6rem); border: 1px solid rgb(255 255 255 / 0.17); background: rgb(255 255 255 / 0.035); }
+.towngas-carbon-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+.towngas-carbon-heading h3 { margin-top: 0.5rem; font-family: var(--font-code); font-size: clamp(1.5rem, 3vw, 2.7rem); font-weight: 500; letter-spacing: -0.05em; }
+.towngas-carbon-heading > p { color: rgb(255 255 255 / 0.58); font-size: 0.7rem; }
+.towngas-carbon-heading > p strong { display: block; color: #8cdbad; font-family: var(--font-code); font-size: 2rem; font-weight: 500; text-align: right; }
+.towngas-carbon-strip { display: flex; height: 1.1rem; margin-top: 1.6rem; overflow: hidden; }
+.towngas-carbon-strip span { width: var(--share); min-width: 0.2rem; background: var(--segment); }
+.towngas-carbon-strip span:nth-child(1), .towngas-carbon-key--1 { --segment: #75d39d; }
+.towngas-carbon-strip span:nth-child(2), .towngas-carbon-key--2 { --segment: #7a8ea8; }
+.towngas-carbon-strip span:nth-child(3), .towngas-carbon-key--3 { --segment: #d4a55b; }
+.towngas-carbon-strip span:nth-child(4), .towngas-carbon-key--4 { --segment: #9c9c94; }
+.towngas-carbon-strip span:nth-child(5), .towngas-carbon-key--5 { --segment: #b87955; }
+.towngas-carbon-strip span:nth-child(6), .towngas-carbon-key--6 { --segment: #af7da5; }
+.towngas-carbon-figure > ol { display: grid; margin-top: 1rem; gap: 0.5rem 1.2rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-carbon-figure li { display: grid; align-items: center; gap: 0.5rem; color: rgb(255 255 255 / 0.62); font-size: 0.62rem; grid-template-columns: auto minmax(0, 1fr) auto; }
+.towngas-carbon-figure li strong { color: white; font-family: var(--font-code); font-size: 0.6rem; font-weight: 500; }
+.towngas-carbon-key { width: 0.55rem; height: 0.55rem; background: var(--segment); }
+.towngas-carbon-figure > p { margin-top: 1.2rem; color: rgb(255 255 255 / 0.54); font-size: 0.65rem; line-height: 1.6; }
+
+.towngas-energy-figure { margin-top: 1rem; padding: clamp(1.2rem, 3vw, 2.6rem); border: 1px solid rgb(255 255 255 / 0.17); background: rgb(255 255 255 / 0.035); }
+.towngas-energy-summary { display: grid; margin-bottom: 1.6rem; border-top: 1px solid rgb(255 255 255 / 0.13); border-left: 1px solid rgb(255 255 255 / 0.13); grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.towngas-energy-summary > div { display: flex; min-height: 8rem; padding: 0.85rem; flex-direction: column; border-right: 1px solid rgb(255 255 255 / 0.13); border-bottom: 1px solid rgb(255 255 255 / 0.13); }
+.towngas-energy-summary span { min-height: 2.5rem; color: rgb(255 255 255 / 0.53); font-size: 0.56rem; line-height: 1.4; }
+.towngas-energy-summary strong { margin-top: auto; font-family: var(--font-code); font-size: 1.55rem; font-weight: 500; }
+.towngas-energy-summary small { color: rgb(255 255 255 / 0.43); font-size: 0.52rem; }
+.towngas-energy-cascade { display: grid; gap: 0.58rem; }
+.towngas-energy-step { display: grid; align-items: center; gap: 0.8rem; grid-template-columns: minmax(12rem, 0.9fr) minmax(10rem, 1.1fr) 5.4rem; }
+.towngas-energy-step > div { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.towngas-energy-step > div > span { color: rgb(255 255 255 / 0.66); font-size: 0.62rem; }
+.towngas-energy-step > strong { color: white; font-family: var(--font-code); font-size: 0.62rem; font-weight: 500; text-align: right; }
+.towngas-energy-bar { height: 0.34rem; background: rgb(255 255 255 / 0.09); }
+.towngas-energy-bar i { display: block; width: var(--bar); height: 100%; background: #b87955; }
+.towngas-energy-step--recovery .towngas-energy-bar i, .towngas-energy-step--credit .towngas-energy-bar i { background: #75d39d; }
+.towngas-energy-step--subtotal .towngas-energy-bar i { background: #7a8ea8; }
+.towngas-energy-step--net { margin-top: 0.35rem; padding-block: 0.7rem; border-block: 1px solid rgb(255 255 255 / 0.16); }
+.towngas-energy-step--net .towngas-energy-bar i { background: white; }
+.towngas-energy-figure blockquote { margin-top: 1.5rem; padding: 1rem 1.2rem; border-left: 3px solid #75d39d; background: rgb(117 211 157 / 0.07); color: rgb(255 255 255 / 0.72); font-size: 0.78rem; line-height: 1.65; }
+
+.towngas-economic-basis { display: grid; margin-top: 3rem; border-top: 1px solid var(--tg-line); border-left: 1px solid var(--tg-line); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.towngas-economic-basis > div { display: flex; min-height: 11rem; padding: 1.4rem; flex-direction: column; border-right: 1px solid var(--tg-line); border-bottom: 1px solid var(--tg-line); }
+.towngas-economic-basis span { color: rgb(var(--color-ink) / 0.5); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-economic-basis strong { margin-top: auto; color: var(--tg-navy); font-family: var(--font-code); font-size: clamp(1.5rem, 2.7vw, 2.5rem); font-weight: 500; letter-spacing: -0.05em; }
+.towngas-economic-basis small { margin-top: 0.35rem; color: rgb(var(--color-ink) / 0.46); font-size: 0.61rem; }
+
+.towngas-cost-grid { display: grid; margin-top: 1rem; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-cost-chart { min-width: 0; padding: clamp(1.15rem, 2.5vw, 2rem); border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.58); }
+.towngas-cost-chart .towngas-figure-heading { margin-bottom: 1.2rem; }
+.towngas-cost-chart .towngas-figure-heading h3 { font-size: clamp(1.35rem, 2.2vw, 2rem); }
+.towngas-cost-chart > ol { display: grid; gap: 0.65rem; }
+.towngas-cost-chart li > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; color: rgb(var(--color-ink) / 0.62); font-size: 0.62rem; }
+.towngas-cost-chart li > div span { max-width: 80%; }
+.towngas-cost-chart li > div strong { color: var(--tg-navy); font-family: var(--font-code); font-size: 0.63rem; font-weight: 500; }
+.towngas-cost-chart li > span { display: block; height: 0.28rem; margin-top: 0.3rem; background: rgb(10 35 115 / 0.08); }
+.towngas-cost-chart li > span i { display: block; width: var(--bar); height: 100%; background: var(--tg-navy); }
+.towngas-cost-chart--opex li > span i { background: var(--tg-green); }
+.towngas-economic-inputs { margin-top: 1rem; }
+.towngas-inline-link { color: var(--tg-green); font-size: 0.6rem; font-weight: 700; text-decoration: underline; text-underline-offset: 0.18rem; }
+
+.towngas-benchmark { display: grid; margin-top: clamp(4rem, 7vw, 7rem); gap: 2rem; grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr); }
+.towngas-benchmark-copy h3 { max-width: 16ch; margin-top: 0.65rem; color: var(--tg-navy); font-size: clamp(1.9rem, 3.5vw, 3.4rem); font-weight: 600; line-height: 1.02; letter-spacing: -0.045em; }
+.towngas-benchmark-number { margin-top: 1.5rem; padding-block: 1.2rem; border-block: 1px solid var(--tg-line); }
+.towngas-benchmark-number strong { display: block; color: var(--tg-navy); font-family: var(--font-code); font-size: 2rem; font-weight: 500; }
+.towngas-benchmark-number span { display: block; margin-top: 0.35rem; color: var(--tg-orange); font-size: 0.64rem; line-height: 1.5; }
+.towngas-benchmark-copy ul { display: grid; margin-top: 1.2rem; gap: 0.55rem; }
+.towngas-benchmark-copy li { position: relative; padding-left: 0.8rem; color: rgb(var(--color-ink) / 0.61); font-size: 0.69rem; line-height: 1.55; }
+.towngas-benchmark-copy li::before { content: "–"; position: absolute; left: 0; color: var(--tg-green); }
+.towngas-benchmark-copy > p:last-child { margin-top: 1.1rem; padding: 0.85rem; border-left: 2px solid var(--tg-orange); background: rgb(185 90 47 / 0.055); color: rgb(var(--color-ink) / 0.62); font-size: 0.68rem; line-height: 1.55; }
+
+.towngas-economics-result { margin-top: clamp(4rem, 7vw, 7rem); padding: clamp(1.4rem, 3.3vw, 3rem); border: 1px solid rgb(157 52 45 / 0.36); border-top: 0.45rem solid var(--tg-red); background: #f5ece8; }
+.towngas-economics-result-heading { display: grid; max-width: 55rem; gap: 0.7rem; }
+.towngas-economics-result-heading .eyebrow { color: var(--tg-red); }
+.towngas-economics-result-heading h3 { color: #732a26; font-size: clamp(2rem, 4vw, 4rem); font-weight: 650; line-height: 1; letter-spacing: -0.05em; text-wrap: balance; }
+.towngas-economics-result-heading > p { max-width: 48rem; color: rgb(75 31 27 / 0.72); font-size: 0.83rem; line-height: 1.67; }
+.towngas-economics-result dl { display: grid; margin-top: 2rem; border-top: 1px solid rgb(157 52 45 / 0.18); border-left: 1px solid rgb(157 52 45 / 0.18); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.towngas-economics-result dl > div { display: flex; min-height: 7.5rem; padding: 1rem; flex-direction: column; border-right: 1px solid rgb(157 52 45 / 0.18); border-bottom: 1px solid rgb(157 52 45 / 0.18); }
+.towngas-economics-result dt { color: rgb(75 31 27 / 0.56); font-size: 0.58rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-economics-result dd { margin-top: auto; color: #5c2420; font-family: var(--font-code); font-size: 0.8rem; font-weight: 600; line-height: 1.45; }
+.towngas-economics-result .towngas-npv { background: rgb(157 52 45 / 0.09); }
+.towngas-economics-result .towngas-npv dd { color: var(--tg-red); font-size: 1.35rem; }
+
+.towngas-revenue-grid { display: grid; margin-top: 1rem; padding: clamp(1.2rem, 2.5vw, 2rem); gap: 2rem; border: 1px solid var(--tg-line); grid-template-columns: minmax(13rem, 0.5fr) minmax(0, 1.5fr); }
+.towngas-revenue-grid h3 { color: var(--tg-navy); font-size: 1.35rem; }
+.towngas-revenue-grid > div > p { margin-top: 0.6rem; color: rgb(var(--color-ink) / 0.56); font-size: 0.68rem; line-height: 1.55; }
+.towngas-revenue-grid ol { display: grid; gap: 0.55rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-revenue-grid li { display: grid; padding: 0.75rem; align-content: start; gap: 0.45rem; background: rgb(var(--color-ink) / 0.035); }
+.towngas-revenue-grid li > span { display: flex; align-items: start; justify-content: space-between; gap: 0.5rem; color: rgb(var(--color-ink) / 0.62); font-size: 0.64rem; }
+.towngas-revenue-grid li > strong { color: var(--tg-navy); font-family: var(--font-code); font-size: 0.7rem; }
+.towngas-revenue-grid li > p { color: rgb(var(--color-ink) / 0.46); font-size: 0.57rem; line-height: 1.5; }
+.towngas-sensitivity { margin-top: 1rem; border: 1px solid var(--tg-line); }
+.towngas-sensitivity table { min-width: 65rem; }
+.towngas-sensitivity caption { padding: 1rem; }
+
+.towngas-policy-grid { display: grid; margin-top: 3rem; gap: 1rem; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.towngas-policy-grid > article { display: flex; min-height: 22rem; padding: 1.15rem; flex-direction: column; border: 1px solid rgb(var(--color-ink) / 0.15); background: rgb(var(--color-surface) / 0.7); }
+.towngas-policy-grid header { display: grid; align-items: start; gap: 0.7rem; grid-template-columns: auto minmax(0, 1fr); }
+.towngas-policy-grid header span { color: var(--tg-green); font-family: var(--font-code); font-size: 0.6rem; }
+.towngas-policy-grid h3 { color: var(--tg-navy); font-size: 1rem; line-height: 1.3; }
+.towngas-policy-grid article > p { margin-top: 1rem; color: rgb(var(--color-ink) / 0.61); font-size: 0.69rem; line-height: 1.58; }
+.towngas-policy-grid article > div { margin-top: auto; padding-top: 1rem; }
+.towngas-policy-grid article > div strong { color: var(--tg-green); font-size: 0.57rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-policy-grid article > div p { margin-top: 0.35rem; color: rgb(var(--color-ink) / 0.55); font-size: 0.64rem; line-height: 1.5; }
+.towngas-policy-grid footer { display: flex; margin-top: 0.8rem; padding-top: 0.8rem; align-items: center; justify-content: space-between; gap: 0.6rem; border-top: 1px solid var(--tg-line); }
+
+.towngas-risk-grid { display: grid; margin-top: 3rem; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.towngas-risk-grid > article { display: flex; min-height: 18rem; padding: 1.25rem; flex-direction: column; border: 1px solid var(--tg-line); border-top: 0.25rem solid var(--tg-orange); background: rgb(var(--color-surface) / 0.58); }
+.towngas-risk-grid article > span { color: var(--tg-orange); font-family: var(--font-code); font-size: 0.57rem; text-transform: uppercase; }
+.towngas-risk-grid h3 { margin-top: 0.8rem; color: var(--tg-navy); font-size: 1.25rem; }
+.towngas-risk-grid article > p { margin-top: 0.65rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.7rem; line-height: 1.55; }
+.towngas-risk-grid article > div { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--tg-line); }
+.towngas-risk-grid article > div strong { color: var(--tg-green); font-size: 0.57rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-risk-grid article > div p { margin-top: 0.35rem; color: rgb(var(--color-ink) / 0.62); font-size: 0.65rem; line-height: 1.55; }
+.towngas-more-risks { margin-top: 1rem; }
+.towngas-more-risks > div { display: grid; padding: 0 1rem 1rem; gap: 0.7rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-more-risks p { padding: 0.85rem; background: rgb(var(--color-ink) / 0.035); color: rgb(var(--color-ink) / 0.62); font-size: 0.68rem; line-height: 1.55; }
+.towngas-more-risks p strong { color: var(--tg-navy); }
+.towngas-more-risks p span { display: block; margin-top: 0.35rem; color: rgb(var(--color-ink) / 0.5); }
+
+.towngas-gates { margin-top: clamp(4rem, 7vw, 7rem); }
+.towngas-gates > ol { position: relative; display: grid; margin-top: 2rem; gap: 0; }
+.towngas-gates > ol::before { content: ""; position: absolute; top: 0; bottom: 0; left: 2.25rem; width: 1px; background: rgb(0 115 54 / 0.35); }
+.towngas-gates li { position: relative; display: grid; padding-bottom: 1.25rem; gap: 1.1rem; grid-template-columns: 4.5rem minmax(0, 1fr); }
+.towngas-gates li > span { position: relative; z-index: 1; display: grid; width: 4.5rem; height: 4.5rem; place-items: center; border: 1px solid rgb(0 115 54 / 0.36); background: rgb(var(--color-paper)); color: var(--tg-green); font-family: var(--font-code); font-size: 0.68rem; }
+.towngas-gates li > div { padding: 1rem 1.2rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.57); }
+.towngas-gates li > div > p:first-child { color: var(--tg-green); font-size: 0.56rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-gates h4 { margin-top: 0.25rem; color: var(--tg-navy); font-size: 1rem; }
+.towngas-gates h4 + p { margin-top: 0.55rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.69rem; line-height: 1.55; }
+.towngas-gates li strong { display: block; margin-top: 0.7rem; color: var(--tg-orange); font-size: 0.64rem; line-height: 1.5; }
+
+.towngas-section--report { background: var(--tg-navy-deep); color: white; }
+.towngas-report-card { display: grid; padding: clamp(1.5rem, 4vw, 4rem); gap: 3rem; border: 1px solid rgb(255 255 255 / 0.18); background: rgb(255 255 255 / 0.045); grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.36fr); }
+.towngas-report-card .eyebrow { color: #8cdbad; }
+.towngas-report-card h2 { max-width: 18ch; margin-top: 0.75rem; font-size: clamp(2rem, 4.2vw, 4.3rem); font-weight: 600; line-height: 1; letter-spacing: -0.05em; }
+.towngas-report-card > div > p:not(.eyebrow) { max-width: 44rem; margin-top: 1rem; color: rgb(255 255 255 / 0.62); font-size: 0.8rem; line-height: 1.65; }
+.towngas-actions--compact { margin-top: 1.4rem; }
+.towngas-pdf-link { display: inline-flex; margin-top: 0.8rem; color: #8cdbad; font-size: 0.69rem; font-weight: 700; gap: 0.4rem; text-decoration: underline; text-underline-offset: 0.22rem; }
+.towngas-report-card aside { display: grid; padding: 1.2rem; align-content: start; border-left: 1px solid rgb(255 255 255 / 0.17); gap: 0.4rem; }
+.towngas-report-card aside span { margin-top: 0.75rem; color: rgb(255 255 255 / 0.42); font-size: 0.55rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.towngas-report-card aside strong { color: rgb(255 255 255 / 0.82); font-size: 0.72rem; line-height: 1.5; }
+
+.towngas-references { display: grid; margin-top: 5rem; gap: 2rem; grid-template-columns: minmax(12rem, 0.4fr) minmax(0, 1.6fr); }
+.towngas-references .eyebrow { color: #8cdbad; }
+.towngas-references h2 { margin-top: 0.6rem; font-size: clamp(1.5rem, 2.8vw, 2.6rem); line-height: 1.05; }
+.towngas-references ol { display: grid; border-top: 1px solid rgb(255 255 255 / 0.15); }
+.towngas-references li { display: grid; padding: 0.8rem 0; align-items: start; gap: 0.8rem; border-bottom: 1px solid rgb(255 255 255 / 0.15); grid-template-columns: 1.4rem minmax(0, 1fr) auto; }
+.towngas-references li > span { color: #8cdbad; font-family: var(--font-code); font-size: 0.57rem; }
+.towngas-references li strong { color: rgb(255 255 255 / 0.82); font-size: 0.67rem; line-height: 1.45; }
+.towngas-references li small { display: block; margin-top: 0.2rem; color: rgb(255 255 255 / 0.42); font-size: 0.56rem; line-height: 1.4; }
+.towngas-references li > a { color: #8cdbad; font-size: 0.75rem; }
+.towngas-page-footer { display: flex; margin-top: 4rem; padding-top: 1.2rem; align-items: center; justify-content: space-between; gap: 1rem; border-top: 1px solid rgb(255 255 255 / 0.18); color: rgb(255 255 255 / 0.46); font-size: 0.62rem; }
+.towngas-page-footer div { display: flex; gap: 1rem; }
+.towngas-page-footer a { color: rgb(255 255 255 / 0.72); }
+
+@media (max-width: 1120px) {
+  .towngas-policy-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .towngas-flow-main { overflow-x: auto; padding-bottom: 0.65rem; grid-template-columns: repeat(7, minmax(9rem, 1fr)); scrollbar-color: rgb(10 35 115 / 0.3) transparent; }
+  .towngas-conflicts > ol > li { grid-template-columns: 2rem minmax(9rem, 0.8fr) auto minmax(9rem, 1fr); }
+  .towngas-conflicts li > div:last-child { grid-column: 2 / -1; }
+  .towngas-conflicts li > .towngas-conflict-arrow:nth-last-of-type(2) { display: none; }
+}
+
+@media (max-width: 960px) {
+  .towngas-hero { min-height: auto; }
+  .towngas-hero-inner { min-height: auto; }
+  .towngas-hero-grid { align-items: stretch; grid-template-columns: 1fr; }
+  .towngas-hero-basis { max-width: 40rem; }
+  .towngas-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .towngas-proposition-grid { grid-template-columns: 1fr; }
+  .towngas-proposition-grid > li { min-height: 0; }
+  .towngas-feed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .towngas-feed-grid > article, .towngas-feed-grid > article:nth-child(4), .towngas-feed-grid > article:nth-child(5) { grid-column: auto; }
+  .towngas-feed-grid > article:last-child { grid-column: 1 / -1; }
+  .towngas-stage-lists { grid-template-columns: 1fr 1fr; }
+  .towngas-stage-lists > div:first-child { grid-column: 1 / -1; }
+  .towngas-balance-figure { grid-template-columns: 1fr 0.55fr; }
+  .towngas-balance-outputs { grid-column: 1 / -1; }
+  .towngas-cost-grid, .towngas-benchmark { grid-template-columns: 1fr; }
+  .towngas-economic-basis { grid-template-columns: 1fr 1fr; }
+  .towngas-economic-basis > div:last-child { grid-column: 1 / -1; }
+  .towngas-risk-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .towngas-report-card, .towngas-references { grid-template-columns: 1fr; }
+  .towngas-report-card aside { border-top: 1px solid rgb(255 255 255 / 0.17); border-left: 0; }
+}
+
+@media (max-width: 720px) {
+  .towngas-shell { padding-inline: 1rem; }
+  .towngas-hero-inner { padding-block: 1rem 1.35rem; }
+  .towngas-hero-topline { align-items: start; }
+  .towngas-hero-topline > p { max-width: 12rem; flex-wrap: wrap; justify-content: end; font-size: 0.56rem; text-align: right; }
+  .towngas-hero-topline > p span:nth-child(2) { display: none; }
+  .towngas-hero-grid { padding-block: 3.5rem; gap: 2rem; }
+  .towngas-hero-copy h1 { font-size: clamp(2.9rem, 14.4vw, 4.7rem); }
+  .towngas-hero-subtitle { font-size: 1rem; }
+  .towngas-actions { display: grid; grid-template-columns: 1fr; }
+  .towngas-button { width: 100%; }
+  .towngas-affiliation { grid-template-columns: 1fr; }
+  .towngas-affiliation-logos { width: fit-content; }
+  .towngas-local-nav .towngas-shell { padding-inline: 0; }
+  .towngas-section { padding-block: 4.4rem; }
+  .towngas-section-heading h2 { font-size: clamp(2.15rem, 11vw, 3.35rem); }
+  .towngas-metric-grid { grid-template-columns: 1fr; }
+  .towngas-metric { min-height: 12.5rem; }
+  .towngas-evidence-key > div { grid-template-columns: 1fr; }
+  .towngas-feed-grid { grid-template-columns: 1fr; }
+  .towngas-feed-grid > article:last-child { grid-column: auto; }
+  .towngas-figure-heading, .towngas-flow-heading, .towngas-carbon-heading { align-items: start; flex-direction: column; gap: 0.7rem; }
+  .towngas-figure-heading > p, .towngas-flow-heading-side > p { text-align: left; }
+  .towngas-flow-heading-side { width: 100%; max-width: none; justify-items: start; }
+  .towngas-flow-controls { width: 100%; flex-wrap: wrap; justify-content: flex-start; }
+  .towngas-feed-controls { grid-template-columns: 1fr; }
+  .towngas-map-figure { padding: 0.85rem; }
+  .towngas-flow-main { grid-template-columns: 1fr; }
+  .towngas-flow-stage { min-height: 7rem; }
+  .towngas-flow-stage .towngas-flow-arrow { top: auto; right: 50%; bottom: -1rem; display: grid !important; width: 1.4rem; transform: translateX(50%) rotate(90deg); }
+  .towngas-flow-stage:last-child .towngas-flow-arrow { display: none !important; }
+  .towngas-flow-lower, .towngas-flow-streams { grid-template-columns: 1fr; }
+  .towngas-equations { grid-template-columns: 1fr; }
+  .towngas-equations div { align-items: start; flex-direction: column; gap: 0.4rem; }
+  .towngas-stage > summary { padding: 0.8rem; grid-template-columns: 2.7rem minmax(0, 1fr) auto; }
+  .towngas-stage > summary > span:first-child { width: 2.7rem; height: 2.7rem; }
+  .towngas-stage-body { grid-template-columns: 1fr; }
+  .towngas-stage-lists, .towngas-stage-risk { grid-column: auto; grid-template-columns: 1fr; }
+  .towngas-stage-lists > div:first-child { grid-column: auto; }
+  .towngas-conflicts > ol > li { align-items: start; grid-template-columns: 1.7rem minmax(0, 1fr); }
+  .towngas-conflicts li > div { grid-column: 2; }
+  .towngas-conflicts .towngas-conflict-arrow { display: none; }
+  .towngas-balance-figure { grid-template-columns: 1fr; }
+  .towngas-balance-outputs { grid-column: auto; }
+  .towngas-balance-closure { min-height: 10rem; }
+  .towngas-carbon-heading > p strong { text-align: left; }
+  .towngas-carbon-figure > ol { grid-template-columns: 1fr; }
+  .towngas-energy-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .towngas-energy-summary > div:last-child { grid-column: 1 / -1; }
+  .towngas-energy-step { gap: 0.35rem; grid-template-columns: minmax(0, 1fr) 4.8rem; }
+  .towngas-energy-step > div { align-items: start; flex-direction: column; }
+  .towngas-energy-step .towngas-energy-bar { grid-column: 1 / -1; grid-row: 2; }
+  .towngas-energy-step > strong { grid-column: 2; grid-row: 1; }
+  .towngas-economic-basis { grid-template-columns: 1fr; }
+  .towngas-economic-basis > div:last-child { grid-column: auto; }
+  .towngas-economics-result dl { grid-template-columns: 1fr 1fr; }
+  .towngas-revenue-grid { grid-template-columns: 1fr; }
+  .towngas-revenue-grid ol { grid-template-columns: 1fr; }
+  .towngas-policy-grid, .towngas-risk-grid { grid-template-columns: 1fr; }
+  .towngas-policy-grid > article, .towngas-risk-grid > article { min-height: 0; }
+  .towngas-more-risks > div { grid-template-columns: 1fr; }
+  .towngas-gates > ol::before { left: 1.6rem; }
+  .towngas-gates li { gap: 0.75rem; grid-template-columns: 3.2rem minmax(0, 1fr); }
+  .towngas-gates li > span { width: 3.2rem; height: 3.2rem; }
+  .towngas-report-card { padding: 1.2rem; }
+  .towngas-references { margin-top: 3.5rem; }
+  .towngas-page-footer { align-items: start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .towngas-local-nav-progress,
+  .towngas-flow-controls { display: none; }
+}
+
+@media (max-width: 430px) {
+  .towngas-technology-list li { font-size: 0.62rem; }
+  .towngas-economics-result dl { grid-template-columns: 1fr; }
+  .towngas-energy-summary { grid-template-columns: 1fr; }
+  .towngas-energy-summary > div:last-child { grid-column: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .towngas-button { transition: none; }
+  .towngas-button:hover { transform: none; }
+}
+
+/* Keep the redesigned case study inside the established site language: warm
+   paper, soft rounded surface cards and green-first accents.  These overrides
+   are page-scoped; no shared site component or token is changed. */
+.towngas-page { --tg-sand: rgb(var(--color-mist) / 0.46); }
+
+.towngas-hero {
+  min-height: auto;
+  border-bottom-color: rgb(var(--color-ink) / 0.1);
+  background: rgb(var(--color-paper));
+  color: rgb(var(--color-ink));
+}
+
+.towngas-hero-image { filter: saturate(0.72) contrast(0.92); }
+.towngas-hero-image::after {
+  background:
+    linear-gradient(90deg, rgb(var(--color-paper) / 0.92) 0%, rgb(var(--color-paper) / 0.82) 58%, rgb(var(--color-paper) / 0.46) 100%),
+    linear-gradient(0deg, rgb(var(--color-paper) / 0.98), transparent 52%);
+}
+
+.towngas-hero-inner { min-height: min(58rem, 100svh); }
+.towngas-hero-topline > p { color: rgb(var(--color-ink) / 0.58); }
+.towngas-hero .eyebrow { color: var(--tg-green); }
+.towngas-hero-grid { align-items: stretch; }
+
+.towngas-hero-copy {
+  padding: clamp(1.4rem, 3.3vw, 3rem);
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 2rem;
+  background: rgb(var(--color-surface) / 0.94);
+  box-shadow: var(--shadow-lift);
+  backdrop-filter: blur(4px);
+}
+
+.towngas-hero-copy h1 { color: rgb(var(--color-ink)); }
+.towngas-hero-subtitle { color: var(--tg-navy); }
+.towngas-hero-summary { color: rgb(var(--color-ink) / 0.68); }
+.towngas-technology-list li { border-color: rgb(0 115 54 / 0.22); background: rgb(0 115 54 / 0.065); color: #075e31; }
+.towngas-button--primary { background: var(--tg-green); color: white; }
+.towngas-button--primary:hover { background: #075f31; }
+.towngas-button--secondary { border-color: rgb(0 115 54 / 0.28); background: rgb(var(--color-surface) / 0.82); color: var(--tg-green); }
+.towngas-button--secondary:hover { border-color: rgb(0 115 54 / 0.52); background: rgb(0 115 54 / 0.07); }
+
+.towngas-hero-basis {
+  border-color: rgb(0 115 54 / 0.22);
+  border-radius: 2rem;
+  background: rgb(var(--color-surface) / 0.94);
+  color: rgb(var(--color-ink));
+  box-shadow: var(--shadow-lift);
+  backdrop-filter: blur(4px);
+}
+
+.towngas-hero-basis .eyebrow { color: var(--tg-green); }
+.towngas-hero-basis-number { border-bottom-color: rgb(var(--color-ink) / 0.1); }
+.towngas-hero-basis-number strong { color: var(--tg-green); }
+.towngas-hero-basis-number span { color: rgb(var(--color-ink) / 0.55); }
+.towngas-hero-basis dt { color: rgb(var(--color-ink) / 0.5); }
+.towngas-hero-basis dd { color: rgb(var(--color-ink) / 0.78); }
+.towngas-hero-warning { border-top-color: rgb(185 90 47 / 0.2); color: #8d4828; }
+.towngas-affiliation { border-top-color: rgb(var(--color-ink) / 0.12); }
+.towngas-affiliation-logos { border: 1px solid rgb(var(--color-ink) / 0.09); background: rgb(var(--color-surface) / 0.94); }
+.towngas-affiliation p { color: rgb(var(--color-ink) / 0.58); }
+
+.towngas-metric-grid,
+.towngas-economic-basis { border: 0; gap: 1rem; }
+
+.towngas-metric,
+.towngas-economic-basis > div {
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.5rem;
+  background: rgb(var(--color-surface) / 0.62);
+}
+
+.towngas-evidence-key,
+.towngas-technical-detail,
+.towngas-feed-controls details,
+.towngas-economic-inputs,
+.towngas-more-risks,
+.towngas-map-figure,
+.towngas-flow-figure,
+.towngas-equations,
+.towngas-stage,
+.towngas-conflicts > ol > li,
+.towngas-cost-chart,
+.towngas-benchmark-copy > p:last-child,
+.towngas-revenue-grid,
+.towngas-sensitivity,
+.towngas-gates li > div {
+  border-radius: 1.5rem;
+}
+
+.towngas-proposition-grid > li,
+.towngas-feed-grid > article,
+.towngas-policy-grid > article,
+.towngas-risk-grid > article {
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 32px rgb(var(--color-ink) / 0.035);
+}
+
+.towngas-flow-id,
+.towngas-stage > summary > span:first-child { border-radius: 0.7rem; background: var(--tg-green); }
+.towngas-stage > summary { border-radius: 1.5rem; }
+.towngas-stage[open] > summary { border-radius: 1.5rem 1.5rem 0 0; background: rgb(0 115 54 / 0.055); }
+.towngas-flow-stage,
+.towngas-flow-branch,
+.towngas-flow-recycle,
+.towngas-flow-product,
+.towngas-flow-stream,
+.towngas-stage-lists > div,
+.towngas-stage-risk > div,
+.towngas-stage-conditions > div { border-radius: 1rem; }
+
+.towngas-flow-stage { min-width: 0; border-color: rgb(0 115 54 / 0.22); }
+.towngas-flow-stage strong,
+.towngas-flow-stage small { overflow-wrap: anywhere; }
+.towngas-flow-stage strong { color: #075e31; }
+.towngas-flow-arrow { color: var(--tg-green); }
+.towngas-cost-chart li > span i { background: var(--tg-green); }
+
+/* The balance chapter remains visually distinct, but uses the earlier page's
+   pale-green surface treatment instead of a new dark-site mode. */
+.towngas-section--dark { background: rgb(var(--color-mist) / 0.56); color: rgb(var(--color-ink)); }
+.towngas-section--dark .eyebrow { color: var(--tg-green); }
+.towngas-section--dark .towngas-section-heading h2,
+.towngas-section--dark .towngas-figure-heading h3 { color: var(--tg-navy); }
+.towngas-section--dark .towngas-section-lede,
+.towngas-section--dark .towngas-figure-heading > p { color: rgb(var(--color-ink) / 0.64); }
+.towngas-section--dark .towngas-evidence { border-color: rgb(var(--color-ink) / 0.16); color: rgb(var(--color-ink) / 0.66); }
+.towngas-section--dark figcaption { border-color: rgb(var(--color-ink) / 0.13); color: rgb(var(--color-ink) / 0.62); }
+
+.towngas-balance-figure,
+.towngas-carbon-figure,
+.towngas-energy-figure {
+  border-color: rgb(var(--color-ink) / 0.1);
+  border-radius: 2rem;
+  background: rgb(var(--color-surface) / 0.68);
+  box-shadow: 0 16px 42px rgb(var(--color-ink) / 0.045);
+}
+
+.towngas-balance-inputs > strong,
+.towngas-balance-outputs > strong,
+.towngas-carbon-heading h3,
+.towngas-carbon-heading > p strong,
+.towngas-energy-summary strong { color: var(--tg-green); }
+.towngas-balance-inputs > strong span,
+.towngas-balance-outputs > strong span { color: rgb(var(--color-ink) / 0.5); }
+.towngas-balance-inputs li { border-bottom-color: rgb(var(--color-ink) / 0.1); color: rgb(var(--color-ink) / 0.64); }
+.towngas-balance-inputs li strong,
+.towngas-balance-outputs li strong,
+.towngas-carbon-figure li strong,
+.towngas-energy-step > strong { color: rgb(var(--color-ink) / 0.82); }
+.towngas-balance-outputs li > div,
+.towngas-carbon-figure li,
+.towngas-energy-step > div > span { color: rgb(var(--color-ink) / 0.65); }
+.towngas-balance-bar,
+.towngas-energy-bar { background: rgb(var(--color-ink) / 0.08); }
+.towngas-balance-bar i,
+.towngas-energy-step--recovery .towngas-energy-bar i,
+.towngas-energy-step--credit .towngas-energy-bar i { background: var(--tg-green); }
+.towngas-balance-closure { border-color: rgb(0 115 54 / 0.3); border-radius: 1.5rem; background: rgb(0 115 54 / 0.07); }
+.towngas-balance-closure span { color: var(--tg-green); }
+.towngas-balance-closure strong { color: var(--tg-green); }
+.towngas-balance-closure small,
+.towngas-carbon-figure > p { color: rgb(var(--color-ink) / 0.58); }
+.towngas-energy-summary { border-color: rgb(var(--color-ink) / 0.1); border-radius: 1.4rem; overflow: hidden; }
+.towngas-energy-summary > div { border-color: rgb(var(--color-ink) / 0.1); }
+.towngas-energy-summary span,
+.towngas-energy-summary small { color: rgb(var(--color-ink) / 0.55); }
+.towngas-energy-step--net { border-color: rgb(var(--color-ink) / 0.12); }
+.towngas-energy-step--net .towngas-energy-bar i { background: var(--tg-navy); }
+.towngas-energy-figure blockquote { border-radius: 0 1.2rem 1.2rem 0; background: rgb(0 115 54 / 0.065); color: rgb(var(--color-ink) / 0.7); }
+
+.towngas-economics-result,
+.towngas-economics-result dl > div,
+.towngas-report-card { border-radius: 1.5rem; }
+.towngas-economics-result dl { gap: 0.65rem; border: 0; }
+.towngas-economics-result dl > div { border: 1px solid rgb(157 52 45 / 0.17); }
+.towngas-section--report { background: #064727; }
+.towngas-report-card { background: rgb(255 255 255 / 0.065); }
+
+/* Critical evidence and non-guarantee text must remain comfortably legible. */
+.towngas-evidence { font-size: 0.68rem; }
+.towngas-page figcaption { color: rgb(var(--color-ink) / 0.66); font-size: 0.72rem; }
+.towngas-source { color: rgb(var(--color-ink) / 0.62); font-size: 0.68rem; line-height: 1.55; }
+.towngas-revenue-grid li > p { color: rgb(var(--color-ink) / 0.64); font-size: 0.68rem; }
+.towngas-references li small { color: rgb(255 255 255 / 0.66); font-size: 0.66rem; }
+.towngas-inline-link { font-size: 0.68rem; }
+
+@media (max-width: 720px) {
+  .towngas-hero-copy,
+  .towngas-hero-basis { border-radius: 1.5rem; }
+  .towngas-hero-grid { padding-block: 2.5rem; }
+  .towngas-page figcaption,
+  .towngas-source,
+  .towngas-revenue-grid li > p { font-size: 0.7rem; }
+}
+
+/* Scientific-paper refinement. The route keeps the site's paper, ink and
+   green palette, but presents the case study as a technical record rather
+   than a promotional landing page. Everything remains page-scoped. */
+.towngas-hero-image {
+  inset: 0 0 0 58%;
+  opacity: 0.42;
+  filter: grayscale(0.35) saturate(0.62) contrast(0.9);
+  transform: none;
+}
+
+.towngas-hero-image::after {
+  background: linear-gradient(90deg, rgb(var(--color-paper)) 0%, rgb(var(--color-paper) / 0.72) 42%, rgb(var(--color-paper) / 0.3) 100%);
+}
+
+.towngas-hero-inner {
+  min-height: auto;
+  padding-block: 1.25rem 2rem;
+}
+
+.towngas-hero-grid {
+  margin-block: 0;
+  padding-block: clamp(3.5rem, 7vw, 6rem) 2.75rem;
+  align-items: start;
+  gap: clamp(2.5rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 23rem);
+}
+
+.towngas-hero-copy {
+  max-width: 58rem;
+  padding: 2rem 0 1.5rem;
+  border: 0;
+  border-top: 0.22rem solid var(--tg-green);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.15);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.towngas-hero-copy h1 {
+  max-width: 16ch;
+  margin-top: 0.65rem;
+  font-size: clamp(3rem, 5.5vw, 5.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.towngas-hero-subtitle {
+  max-width: 52rem;
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  font-weight: 550;
+  line-height: 1.45;
+}
+
+.towngas-hero-abstract {
+  max-width: 51rem;
+  margin-top: 1.5rem;
+  padding: 0.2rem 0 0.2rem 1.1rem;
+  border-left: 2px solid var(--tg-green);
+}
+
+.towngas-hero-abstract .eyebrow { color: var(--tg-green); }
+.towngas-hero-abstract .towngas-hero-summary { margin-top: 0.4rem; }
+
+.towngas-keywords {
+  display: grid;
+  margin-top: 1.25rem;
+  align-items: baseline;
+  gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.towngas-keywords > p {
+  color: var(--tg-green);
+  font-family: var(--font-code);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.towngas-technology-list { margin-top: 0; gap: 0.2rem 0.45rem; }
+.towngas-technology-list li {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgb(var(--color-ink) / 0.64);
+  font-size: 0.72rem;
+  font-weight: 500;
+  backdrop-filter: none;
+}
+.towngas-technology-list li:not(:last-child)::after { content: ","; }
+
+.towngas-actions { margin-top: 1.4rem; }
+.towngas-button {
+  min-height: 2.75rem;
+  padding: 0.67rem 0.85rem 0.67rem 1rem;
+  border-radius: 0.16rem;
+  font-size: 0.74rem;
+}
+.towngas-button:hover { transform: none; }
+
+.towngas-hero-basis {
+  padding: 1.2rem;
+  border: 1px solid rgb(var(--color-ink) / 0.16);
+  border-top: 0.22rem solid var(--tg-green);
+  border-radius: 0.16rem;
+  background: rgb(var(--color-surface) / 0.78);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.towngas-hero-basis-number strong { font-size: clamp(1.55rem, 2.2vw, 2.15rem); }
+.towngas-affiliation-logos { border-radius: 0.15rem; box-shadow: none; }
+
+.towngas-local-nav-label {
+  display: flex;
+  min-width: max-content;
+  padding: 1rem 1.25rem 1rem 0;
+  align-items: center;
+  border-right: 1px solid var(--tg-line);
+  color: var(--tg-green);
+  font-family: var(--font-code);
+  font-size: 0.6rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.towngas-section { padding-block: clamp(4.75rem, 7vw, 7rem); }
+.towngas-section-heading { gap: 0.7rem; }
+.towngas-section-heading h2 {
+  max-width: 34ch;
+  font-size: clamp(2rem, 3.3vw, 3.45rem);
+  line-height: 1.06;
+  letter-spacing: -0.038em;
+}
+.towngas-section-lede { font-size: clamp(0.9rem, 1.1vw, 1rem); line-height: 1.7; }
+.towngas-proposition-intro h3 { font-size: clamp(1.75rem, 2.8vw, 2.8rem); line-height: 1.08; }
+.towngas-figure-heading h3 { font-size: clamp(1.4rem, 2.1vw, 2.1rem); line-height: 1.12; }
+
+.towngas-metric-grid,
+.towngas-economic-basis {
+  border-top: 1px solid var(--tg-line);
+  border-left: 1px solid var(--tg-line);
+  gap: 0;
+}
+.towngas-metric,
+.towngas-economic-basis > div {
+  min-height: 11.5rem;
+  border: 0;
+  border-right: 1px solid var(--tg-line);
+  border-bottom: 1px solid var(--tg-line);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.towngas-evidence { border-radius: 0.14rem; }
+
+.towngas-evidence-key,
+.towngas-technical-detail,
+.towngas-feed-controls details,
+.towngas-economic-inputs,
+.towngas-more-risks,
+.towngas-map-figure,
+.towngas-flow-figure,
+.towngas-equations,
+.towngas-stage,
+.towngas-conflicts > ol > li,
+.towngas-cost-chart,
+.towngas-benchmark-copy > p:last-child,
+.towngas-revenue-grid,
+.towngas-sensitivity,
+.towngas-gates li > div,
+.towngas-proposition-grid > li,
+.towngas-feed-grid > article,
+.towngas-policy-grid > article,
+.towngas-risk-grid > article,
+.towngas-balance-figure,
+.towngas-carbon-figure,
+.towngas-energy-figure,
+.towngas-economics-result,
+.towngas-economics-result dl > div,
+.towngas-report-card {
+  border-radius: 0.18rem;
+  box-shadow: none;
+}
+
+.towngas-flow-id,
+.towngas-stage > summary > span:first-child,
+.towngas-flow-stage,
+.towngas-flow-branch,
+.towngas-flow-recycle,
+.towngas-flow-product,
+.towngas-flow-stream,
+.towngas-stage-lists > div,
+.towngas-stage-risk > div,
+.towngas-stage-conditions > div,
+.towngas-balance-closure,
+.towngas-energy-summary,
+.towngas-energy-figure blockquote {
+  border-radius: 0.14rem;
+}
+.towngas-flow-id,
+.towngas-stage > summary > span:first-child { background: var(--tg-navy); }
+.towngas-flow-recycle .towngas-flow-id { background: var(--tg-green); }
+.towngas-cost-chart li > span i { background: var(--tg-navy); }
+.towngas-cost-chart--opex li > span i { background: var(--tg-green); }
+.towngas-stage > summary { border-radius: 0.14rem; }
+.towngas-stage[open] > summary { border-radius: 0.14rem 0.14rem 0 0; }
+
+.towngas-section--report {
+  border-top: 1px solid rgb(var(--color-ink) / 0.14);
+  background: rgb(var(--color-mist) / 0.4);
+  color: rgb(var(--color-ink));
+}
+.towngas-report-card {
+  border: 1px solid rgb(var(--color-ink) / 0.16);
+  border-top: 0.22rem solid var(--tg-green);
+  background: rgb(var(--color-surface) / 0.68);
+}
+.towngas-report-card .eyebrow,
+.towngas-references .eyebrow { color: var(--tg-green); }
+.towngas-report-card h2 {
+  color: var(--tg-navy);
+  font-size: clamp(1.9rem, 3.1vw, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: -0.038em;
+}
+.towngas-report-card > div > p:not(.eyebrow) { color: rgb(var(--color-ink) / 0.64); }
+.towngas-report-card aside { border-left-color: rgb(var(--color-ink) / 0.15); }
+.towngas-report-card aside span { color: rgb(var(--color-ink) / 0.5); }
+.towngas-report-card aside strong { color: rgb(var(--color-ink) / 0.8); }
+.towngas-pdf-link { color: var(--tg-green); }
+.towngas-references h2 { color: var(--tg-navy); }
+.towngas-references ol { border-top-color: rgb(var(--color-ink) / 0.15); }
+.towngas-references li { border-bottom-color: rgb(var(--color-ink) / 0.15); }
+.towngas-references li > span,
+.towngas-references li > a { color: var(--tg-green); }
+.towngas-references li strong { color: rgb(var(--color-ink) / 0.82); }
+.towngas-references li small { color: rgb(var(--color-ink) / 0.62); }
+.towngas-page-footer {
+  border-top-color: rgb(var(--color-ink) / 0.16);
+  color: rgb(var(--color-ink) / 0.54);
+}
+.towngas-page-footer a { color: var(--tg-green); }
+
+@media (max-width: 960px) {
+  .towngas-hero-grid { grid-template-columns: 1fr; }
+  .towngas-hero-basis { max-width: none; }
+  .towngas-report-card aside { border-top-color: rgb(var(--color-ink) / 0.15); }
+}
+
+@media (max-width: 720px) {
+  .towngas-hero-image { inset: 0 0 48% 35%; opacity: 0.3; }
+  .towngas-hero-grid { padding-block: 2.5rem 2rem; }
+  .towngas-hero-copy { padding: 1.35rem 0 1.2rem; border-radius: 0; }
+  .towngas-hero-copy h1 { font-size: clamp(2.4rem, 11vw, 3.6rem); }
+  .towngas-hero-basis { border-radius: 0.16rem; }
+  .towngas-keywords { align-items: start; grid-template-columns: 1fr; }
+  .towngas-local-nav-label { padding-left: 1rem; }
+  .towngas-section { padding-block: 4rem; }
+  .towngas-section-heading h2 { font-size: clamp(1.9rem, 8.8vw, 2.7rem); }
+  .towngas-stage-conditions > div { align-items: start; grid-template-columns: 1fr; }
+  .towngas-stage-conditions dd { align-items: flex-start; text-align: left; }
+}
+
+/* Towngas process chapter — restored vertical Aspen-style scrollytelling.
+   The diagram is a PFD reference figure; the report-current stage definition is
+   the reading payload. This section alone uses the historical sticky geometry. */
+.towngas-process-overview { margin-top: 2.8rem; }
+
+.towngas-process-preface {
+  display: grid;
+  padding-block: 0.9rem;
+  align-items: start;
+  gap: 1rem 2rem;
+  border-block: 1px solid var(--tg-line);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.towngas-process-preface > p {
+  max-width: 45rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.74rem;
+  line-height: 1.65;
+}
+
+.towngas-process-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-family: var(--font-code);
+  font-size: 0.64rem;
+}
+
+.towngas-process-legend li { display: inline-flex; align-items: center; gap: 0.4rem; }
+.towngas-process-legend-line { width: 1.4rem; border-top: 1.5px solid var(--tg-navy); }
+.towngas-process-legend-tag {
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border: 1px solid var(--tg-navy);
+  color: var(--tg-navy);
+  font-size: 0.47rem;
+  transform: rotate(45deg);
+}
+.towngas-process-legend-tag i { font-style: normal; transform: rotate(-45deg); }
+.towngas-process-legend-flow {
+  width: 1.4rem;
+  border-top: 1.5px dashed var(--tg-green);
+}
+.towngas-process-legend-alert { width: 0.42rem; height: 0.42rem; border-radius: 999px; background: var(--tg-orange); }
+.towngas-process-legend-static { display: none; }
+
+.towngas-page .scwg-process-diagram-frame {
+  display: flex;
+  min-height: 0;
+  padding: 0.8rem;
+  flex-direction: column;
+  border-color: rgb(var(--color-ink) / 0.16);
+  border-radius: 0.18rem;
+  background: rgb(var(--color-surface) / 0.96);
+  box-shadow: none;
+}
+
+.towngas-page .scwg-process-diagram-frame > svg { min-height: 0; flex: 1; }
+
+.towngas-page .scwg-process-flow-cue {
+  display: grid;
+  margin-top: 0;
+  min-height: 2.1rem;
+  padding-top: 0.65rem;
+  align-items: center;
+  gap: 0.48rem;
+  border-top: 1px solid var(--tg-line);
+  color: rgb(var(--color-ink) / 0.62);
+  font-family: var(--font-code);
+  font-size: 0.58rem;
+  line-height: 1.35;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.scwg-process-flow-cue > span:first-child {
+  width: 1.7rem;
+  border-top: 2px dashed var(--tg-green);
+}
+.scwg-process-flow-cue-static { display: none; }
+.scwg-process-flow-cue strong { color: var(--tg-green); font-size: 0.58rem; }
+
+/* Anime.js owns only dash offset in this restored view; D3 owns only viewBox. */
+.towngas-page .scwg-process-scroller-layout .scwg-stream-active {
+  animation: none;
+  stroke-dasharray: 7 6;
+}
+
+.towngas-page .scwg-process-reading-column [data-scwg-block] > section > div {
+  border-color: rgb(var(--color-ink) / 0.16);
+  border-radius: 0.18rem;
+  background: rgb(var(--color-surface) / 0.76);
+  box-shadow: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.towngas-page .scwg-process-reading-column [data-active="true"] > section > div {
+  border-color: rgb(0 115 54 / 0.48);
+  box-shadow: inset 3px 0 0 var(--tg-green);
+}
+
+.towngas-page .scwg-process-condition-grid {
+  display: grid;
+  margin-top: 1rem;
+  gap: 0.4rem;
+  border: 0;
+  background: transparent;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+}
+
+.towngas-page .scwg-process-condition-grid > div {
+  display: grid;
+  min-width: 0;
+  padding: 0.75rem;
+  align-content: start;
+  gap: 0.32rem;
+  border: 1px solid var(--tg-line);
+  background: rgb(var(--color-surface) / 0.92);
+}
+
+.towngas-page .scwg-process-condition-grid dt {
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.55rem;
+  line-height: 1.4;
+}
+
+.towngas-page .scwg-process-condition-grid dd {
+  color: var(--tg-navy);
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.scwg-process-condition-basis {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  color: rgb(var(--color-ink) / 0.6);
+  font-size: 0.56rem;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+.scwg-process-condition-basis::before { content: "○"; color: var(--tg-green); }
+.scwg-process-condition-basis--calculated-result::before { content: "="; color: var(--tg-navy); }
+.scwg-process-condition-basis--published-evidence::before { content: "↗"; }
+.scwg-process-condition-basis--requires-pilot-validation::before { content: "!"; color: var(--tg-orange); }
+
+.scwg-process-source-note {
+  margin-top: 0.85rem;
+  color: rgb(var(--color-ink) / 0.58);
+  font-size: 0.62rem;
+  line-height: 1.5;
+}
+
+.towngas-page .scwg-stream-table { min-width: 34rem; }
+
+.towngas-process-recycle-spec {
+  margin-top: 2rem;
+  padding: 1.2rem;
+  border: 1px solid rgb(0 115 54 / 0.3);
+  border-left: 0.22rem solid var(--tg-green);
+  background: rgb(0 115 54 / 0.035);
+}
+
+.towngas-process-recycle-spec header {
+  display: grid;
+  align-items: start;
+  gap: 0.8rem;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+}
+
+.towngas-process-recycle-spec header > span {
+  display: grid;
+  width: 2.6rem;
+  height: 2.6rem;
+  place-items: center;
+  background: var(--tg-green);
+  color: white;
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+}
+.towngas-process-recycle-spec header p { color: var(--tg-green); font-size: 0.56rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-process-recycle-spec h3 { margin-top: 0.25rem; color: var(--tg-navy); font-size: 1rem; line-height: 1.3; }
+.towngas-process-recycle-spec > div { display: grid; margin-top: 1rem; gap: 0.65rem; color: rgb(var(--color-ink) / 0.63); font-size: 0.7rem; line-height: 1.6; }
+.towngas-process-recycle-spec dl { display: grid; margin-top: 1rem; gap: 1px; background: var(--tg-line); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.towngas-process-recycle-spec dl > div { padding: 0.75rem; background: rgb(var(--color-surface) / 0.88); }
+.towngas-process-recycle-spec dt { color: rgb(var(--color-ink) / 0.48); font-size: 0.54rem; }
+.towngas-process-recycle-spec dd { margin-top: 0.3rem; color: var(--tg-navy); font-family: var(--font-code); font-size: 0.65rem; }
+.towngas-process-recycle-risk { display: grid; margin-top: 1rem; gap: 0.35rem; color: rgb(var(--color-ink) / 0.62); font-size: 0.67rem; line-height: 1.55; }
+.towngas-process-recycle-risk strong { color: var(--tg-orange); font-size: 0.55rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.towngas-process-recycle-spec .towngas-process-recycle-lists {
+  display: grid;
+  margin-top: 1rem;
+  gap: 0.55rem;
+  grid-template-columns: 1.4fr 1fr 1fr;
+}
+.towngas-process-recycle-lists section { padding: 0.75rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.72); }
+.towngas-process-recycle-lists h4 { color: var(--tg-navy); font-size: 0.6rem; }
+.towngas-process-recycle-lists ul { display: grid; margin-top: 0.5rem; gap: 0.35rem; }
+.towngas-process-recycle-lists li { position: relative; padding-left: 0.7rem; color: rgb(var(--color-ink) / 0.6); font-size: 0.62rem; line-height: 1.45; }
+.towngas-process-recycle-lists li::before { content: "–"; position: absolute; left: 0; color: var(--tg-green); }
+
+@media (min-width: 1024px) {
+  .towngas-page .scwg-process-scroller-layout {
+    display: grid;
+    gap: clamp(1.4rem, 3vw, 2.5rem);
+    grid-template-columns: minmax(15rem, 34%) minmax(0, 66%);
+  }
+
+  .towngas-page .scwg-process-diagram-sticky { margin-bottom: 0; }
+  .towngas-page .scwg-process-diagram-frame { height: calc(100vh - 4.5rem); padding: 1rem; }
+  .towngas-process-recycle-spec { width: 63%; margin-left: 37%; }
+}
+
+@media (max-width: 1023px) {
+  .towngas-process-preface { grid-template-columns: 1fr; }
+  .towngas-process-legend { justify-content: flex-start; }
+  .towngas-page .scwg-process-diagram-frame { height: 42vh; min-height: 19rem; }
+  .towngas-process-recycle-spec dl { grid-template-columns: 1fr; }
+  .towngas-process-recycle-spec .towngas-process-recycle-lists { grid-template-columns: 1fr; }
+}
+
+@media (max-height: 640px) {
+  .towngas-page .scwg-process-diagram-sticky { position: relative; top: auto; }
+  .towngas-page .scwg-process-diagram-frame { height: 30rem; min-height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .towngas-page .scwg-process-reading-column [data-scwg-block] > section > div { transition: none; }
+  .towngas-page .scwg-process-scroller-layout .scwg-stream-active { stroke-dasharray: none; }
+  .towngas-process-legend-motion,
+  .scwg-process-flow-cue-motion { display: none; }
+  .towngas-process-legend-static,
+  .scwg-process-flow-cue-static { display: inline; }
+  .scwg-process-flow-cue > span:first-child { border-top-style: solid; }
 }

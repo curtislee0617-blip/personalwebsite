@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState, type CSSProperties } from "react";
 import { SnapCarousel } from "@/components/snap-carousel";
 import type { ProjectEntry } from "@/lib/projects";
@@ -12,6 +13,7 @@ type ProjectCarouselProps = {
 
 export function ProjectCarousel({ projects }: ProjectCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const shouldReduceMotion = useReducedMotion();
   const activeProject = projects[activeIndex] ?? projects[0];
 
   if (!activeProject) return null;
@@ -65,25 +67,36 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
         })}
       </SnapCarousel>
 
-      <div aria-atomic="true" aria-live="polite" className="project-focus-panel" key={activeProject.slug}>
-        <div className="project-focus-copy">
-          <p className="project-focus-eyebrow">{activeProject.year} · {activeProject.eyebrow}</p>
-          <p className="project-focus-description">{activeProject.description}</p>
-        </div>
-        <Link aria-label={`Open ${activeProject.title}`} className="project-focus-preview" href={`/projects/${activeProject.slug}`}>
-          <span className="project-focus-preview-media">
-            {activePreview ? (
-              <Image alt="" fill sizes="4rem" src={activePreview.src} />
-            ) : (
-              <span aria-hidden="true" />
-            )}
-          </span>
-          <span className="project-focus-preview-copy">
-            <small>View project</small>
-            <strong>{activeProject.shortTitle ?? activeProject.title}</strong>
-          </span>
-        </Link>
-      </div>
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          aria-atomic="true"
+          aria-live="polite"
+          className="project-focus-panel"
+          exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: -4 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
+          key={activeProject.slug}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.22, ease: "easeOut" }}
+        >
+          <div className="project-focus-copy">
+            <p className="project-focus-eyebrow">{activeProject.year} · {activeProject.eyebrow}</p>
+            <p className="project-focus-description">{activeProject.description}</p>
+          </div>
+          <Link aria-label={`Open ${activeProject.title}`} className="project-focus-preview" href={`/projects/${activeProject.slug}`}>
+            <span className="project-focus-preview-media">
+              {activePreview ? (
+                <Image alt="" fill sizes="4rem" src={activePreview.src} />
+              ) : (
+                <span aria-hidden="true" />
+              )}
+            </span>
+            <span className="project-focus-preview-copy">
+              <small>View project</small>
+              <strong>{activeProject.shortTitle ?? activeProject.title}</strong>
+            </span>
+          </Link>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

@@ -120,7 +120,7 @@ export const ScwgProcessDiagram = forwardRef<SVGSVGElement, Props>(function Scwg
           const opacity = activeId === undefined ? 1 : isActive ? 1 : isCompleted ? 0.55 : 0.32;
           const border = isActive ? "text-moss" : "text-ink";
           const textX = box.x + 118;
-          const nameLines = wrapName(block.name);
+          const nameLines = wrapName(block.diagramLabel ?? block.name);
           return (
             <g key={block.id} opacity={opacity}>
               <rect
@@ -157,16 +157,6 @@ export const ScwgProcessDiagram = forwardRef<SVGSVGElement, Props>(function Scwg
                   {line}
                 </text>
               ))}
-              <text
-                className="font-mono"
-                fill="rgb(var(--color-ink))"
-                fillOpacity="0.6"
-                fontSize="10.5"
-                x={textX}
-                y={box.y + box.h - 14}
-              >
-                {block.conditions.summary}
-              </text>
             </g>
           );
         })}

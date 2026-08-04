@@ -40,6 +40,7 @@ export function buildScwgConnectors(blocks: ProcessBlock[], boxes: ScwgBox[]): S
   const tags = new Set<string>([...producer.keys(), ...consumer.keys()]);
   const connectors: ScwgConnector[] = [];
   const pairCount = new Map<string, number>();
+  let recycleChannelIndex = 0;
 
   const feedsByBlock = new Map<string, string[]>();
   const productsByBlock = new Map<string, string[]>();
@@ -78,7 +79,10 @@ export function buildScwgConnectors(blocks: ProcessBlock[], boxes: ScwgBox[]): S
         const ch = SCWG_CH_JUMP;
         connectors.push({ key: tag, tag, kind: "jump", from: p, to: c, d: `M ${from.x} ${from.cy} H ${ch} V ${to.cy} H ${to.x}`, label: [ch, (from.cy + to.cy) / 2] });
       } else {
-        const ch = SCWG_CH_RECYCLE;
+        // Separate parallel recycle loops into adjacent left-hand channels so
+        // water, CO₂ and mineral returns remain independently traceable.
+        const ch = SCWG_CH_RECYCLE + recycleChannelIndex * 18;
+        recycleChannelIndex += 1;
         connectors.push({ key: tag, tag, kind: "recycle", from: p, to: c, d: `M ${from.x} ${from.cy} H ${ch} V ${to.cy} H ${to.x}`, label: [ch, (from.cy + to.cy) / 2] });
       }
     } else if (to && !from) {

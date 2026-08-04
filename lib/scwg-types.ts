@@ -206,7 +206,8 @@ export type BlockSymbol =
   | "absorber-pair" // B5 — packed absorber + regenerator column pair
   | "fired-reformer" // B6 — fired tubular reformer, radiant box
   | "fixed-bed" // B7 — fixed-bed catalytic reactor
-  | "regenerator"; // B8 — rotary/fluid-bed regenerator + leach train
+  | "regenerator" // legacy B8 — rotary/fluid-bed regenerator + leach train
+  | "washer-conditioner"; // report-current B8 — counter-current wash + solids conditioning
 
 export type StreamPhase = "solid" | "liquid" | "gas" | "slurry" | "supercritical" | "mixed";
 
@@ -251,6 +252,8 @@ export type EnergyDuty = {
 export type ProcessBlock = {
   id: string; // "B1" … "B8" (or a dummy id when testing extensibility)
   name: string;
+  /** Optional concise equipment label for the PFD; the reading card keeps `name`. */
+  diagramLabel?: string;
   symbol: BlockSymbol;
   /** Operating conditions shown as tags on the diagram and in the header. */
   conditions: {
@@ -259,9 +262,13 @@ export type ProcessBlock = {
     /** Free-text condition line when a range does not fit, e.g. "Ambient → 25 MPa". */
     summary: string;
   };
+  /** Report-facing conditions shown in the reading column, not inside the PFD. */
+  conditionDetails?: { label: string; value: string; basis?: string }[];
   needsValidation: boolean;
   /** Function prose — the block description. */
   function: string[];
+  /** Traceable report section or source basis shown with the reading card. */
+  sourceNote?: string;
   /** Optional multi-role breakdown (B2's three red-mud roles, B5's stages). */
   roles?: BlockRole[];
   inlet: StreamRow[];

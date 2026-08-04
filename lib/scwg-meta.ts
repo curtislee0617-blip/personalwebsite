@@ -143,7 +143,7 @@ export const scwgUi = {
   },
   process: {
     diagramAriaLabel:
-      "Process flow diagram: eight unit operations from feed preparation to red mud regeneration, flowing top to bottom",
+      "Process flow diagram: eight unit operations from feed preparation to mineral conditioning, flowing top to bottom",
     inletLabel: "Inlet streams",
     outletLabel: "Outlet streams",
     contextValuesLabel: "Context values",

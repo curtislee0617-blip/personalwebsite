@@ -180,6 +180,34 @@ function Regenerator({ w, h }: GlyphProps) {
   );
 }
 
+function WasherConditioner({ w, h }: GlyphProps) {
+  // Aspen-style agitated wash vessel followed by two solids-separation stages.
+  // This intentionally avoids the fired/fluid-bed regenerator convention: the
+  // report credits washing, conditioning and qualification, not oxygen-carrier
+  // regeneration.
+  const tankX = w * 0.08;
+  const tankY = h * 0.16;
+  const tankW = w * 0.38;
+  const tankH = h * 0.68;
+  const filterX = w * 0.62;
+  const filterW = w * 0.13;
+  const filterH = h * 0.48;
+  const filterY = (h - filterH) / 2;
+  return (
+    <g {...stroke}>
+      <rect height={tankH} rx={tankW * 0.18} width={tankW} x={tankX} y={tankY} />
+      <path d={`M ${tankX + tankW / 2} ${tankY - 7} V ${tankY + tankH * 0.68}`} />
+      <path d={`M ${tankX + tankW * 0.3} ${tankY + tankH * 0.62} h ${tankW * 0.4}`} />
+      <path d={`M ${tankX + tankW} ${h / 2} H ${filterX}`} />
+      <rect height={filterH} rx={2} width={filterW} x={filterX} y={filterY} />
+      <path d={`M ${filterX + 3} ${filterY + filterH * 0.33} h ${filterW - 6}`} opacity={0.55} />
+      <path d={`M ${filterX + 3} ${filterY + filterH * 0.66} h ${filterW - 6}`} opacity={0.55} />
+      <path d={`M ${filterX + filterW} ${h / 2} h ${w * 0.07}`} />
+      <rect height={filterH} rx={2} width={filterW} x={filterX + filterW + w * 0.07} y={filterY} />
+    </g>
+  );
+}
+
 const GLYPHS: Record<BlockSymbol, (props: GlyphProps) => React.ReactElement> = {
   "mix-pump": MixPump,
   "tubular-reactor": TubularReactor,
@@ -189,6 +217,7 @@ const GLYPHS: Record<BlockSymbol, (props: GlyphProps) => React.ReactElement> = {
   "fired-reformer": FiredReformer,
   "fixed-bed": FixedBed,
   regenerator: Regenerator,
+  "washer-conditioner": WasherConditioner,
 };
 
 export function BlockGlyph({ symbol, w, h }: { symbol: BlockSymbol } & GlyphProps) {

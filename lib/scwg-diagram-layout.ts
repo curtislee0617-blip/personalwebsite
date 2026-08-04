@@ -19,7 +19,7 @@ export const SCWG_CENTER_X = SCWG_VIEW_W / 2;
 
 // Side channels (x positions) for non-spine streams.
 export const SCWG_CH_RECYCLE = 34;
-export const SCWG_CH_JUMP = 74;
+export const SCWG_CH_JUMP = 94;
 
 export function scwgViewHeight(count: number): number {
   return SCWG_MARGIN_Y * 2 + (count - 1) * SCWG_CELL_H + SCWG_BOX_H;
@@ -48,8 +48,11 @@ export function scwgBoxes(blocks: ProcessBlock[]): ScwgBox[] {
 export function scwgViewBoxFor(box: ScwgBox | undefined, count: number): [number, number, number, number] {
   const viewH = scwgViewHeight(count);
   if (!box) return [0, 0, SCWG_VIEW_W, viewH];
-  const vw = SCWG_VIEW_W;
-  const vh = SCWG_CELL_H * 3.4; // taller sticky panel — show the active block plus more context
+  // The active PFD view deliberately trims unused right-hand whitespace. This
+  // keeps stream channels and product stubs visible while making equipment
+  // symbols large enough to read in the narrow sticky column.
+  const vw = 560;
+  const vh = SCWG_CELL_H * 2.85;
   let vy = box.cy - vh / 2;
   vy = Math.max(0, Math.min(vy, viewH - vh));
   return [0, vy, vw, vh];

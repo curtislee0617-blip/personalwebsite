@@ -1,5 +1,6 @@
 "use client";
 
+import { animate } from "animejs";
 import { useEffect, useRef, useState } from "react";
 import { select } from "d3-selection";
 import "d3-transition";
@@ -15,6 +16,7 @@ import { scwgBoxes, scwgViewBoxFor } from "@/lib/scwg-diagram-layout";
 // scroll-jacking). Reduced motion disables the pan/zoom and the stream dashes.
 
 export function ScwgProcessScroller({ blocks }: { blocks: ProcessBlock[] }) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const [activeId, setActiveId] = useState(blocks[0]?.id);
@@ -64,28 +66,63 @@ export function ScwgProcessScroller({ blocks }: { blocks: ProcessBlock[] }) {
     if (!svg || !activeId) return;
     const box = scwgBoxes(blocks).find((b) => b.id === activeId);
     const target = scwgViewBoxFor(box, blocks.length).join(" ");
-    if (reducedMotion) {
+    const motionDisabled = reducedMotion || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (motionDisabled) {
       svg.setAttribute("viewBox", target);
       return;
     }
     select(svg).transition().duration(560).attr("viewBox", target);
   }, [activeId, blocks, reducedMotion]);
 
+  // Anime.js owns only the directional dash offset. D3 continues to own the
+  // diagram viewBox, keeping the two animation systems on separate properties.
+  // Each connector path is drawn from source to destination, so a negative dash
+  // offset reads in the same direction as the PFD arrowhead.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || reducedMotion || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const activeStreams = root.querySelectorAll<SVGPathElement>(".scwg-stream-active");
+    if (activeStreams.length === 0) return;
+
+    const flow = animate(activeStreams, {
+      strokeDashoffset: { from: 0, to: -13 },
+      duration: 900,
+      loop: true,
+      ease: "linear",
+    });
+
+    return () => {
+      flow.cancel();
+      activeStreams.forEach((path) => path.style.removeProperty("stroke-dashoffset"));
+    };
+  }, [activeId, reducedMotion]);
+
   // The diagram is a reference figure, not the payload — the reading column gets
   // the majority of the width.
   return (
-    <div className="mt-8 lg:grid lg:grid-cols-[minmax(0,34%)_minmax(0,66%)] lg:gap-10">
+    <div
+      className="scwg-process-scroller-layout mt-8 lg:grid lg:grid-cols-[minmax(0,34%)_minmax(0,66%)] lg:gap-10"
+      ref={rootRef}
+    >
       {/* Sticky below the legend bar. Opaque background: the text column scrolls
           underneath it on narrow screens, so it must not be see-through. */}
-      <div className="sticky top-[3.25rem] z-20 mb-6 self-start lg:top-[3.25rem] lg:mb-0">
-        <div className="h-[44vh] overflow-hidden rounded-[2rem] border border-ink/10 bg-paper p-3 shadow-soft lg:h-[calc(100vh-4.5rem)] lg:bg-surface/40 lg:p-4 lg:shadow-none">
+      <div className="scwg-process-diagram-sticky sticky top-[3.25rem] z-20 mb-6 self-start lg:top-[3.25rem] lg:mb-0">
+        <figure className="scwg-process-diagram-frame h-[44vh] overflow-hidden rounded-[2rem] border border-ink/10 bg-paper p-3 shadow-soft lg:h-[calc(100vh-4.5rem)] lg:bg-surface/40 lg:p-4 lg:shadow-none">
           <ScwgProcessDiagram activeId={activeId} blocks={blocks} ref={svgRef} reducedMotion={reducedMotion} />
-        </div>
+          <figcaption className="scwg-process-flow-cue">
+            <span aria-hidden="true" />
+            <span className="scwg-process-flow-cue-motion">Moving dashes show material direction</span>
+            <span className="scwg-process-flow-cue-static">Arrowheads show material direction</span>
+            <strong>{activeId}</strong>
+          </figcaption>
+        </figure>
       </div>
 
-      <div className="space-y-8">
+      <div className="scwg-process-reading-column space-y-8">
         {blocks.map((block, index) => (
           <div
+            data-active={block.id === activeId ? "true" : undefined}
             data-scwg-block={block.id}
             key={block.id}
             ref={(node) => {

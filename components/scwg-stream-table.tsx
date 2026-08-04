@@ -17,9 +17,10 @@ export function ScwgStreamTable({ title, rows }: { title: string; rows: StreamRo
   if (rows.length === 0) return null;
 
   return (
-    <div className="overflow-x-auto">
+    <div className="scwg-stream-table-wrap overflow-x-auto">
       <p className="eyebrow mb-2">{title}</p>
-      <table className="w-full border-collapse text-left text-sm">
+      <table className="scwg-stream-table w-full border-collapse text-left text-sm">
+        <caption className="sr-only">{title}</caption>
         <thead>
           <tr className="border-b border-ink/15 text-[0.7rem] uppercase tracking-[0.12em] text-ink/45">
             <th className="py-1.5 pr-3 font-semibold">Tag</th>

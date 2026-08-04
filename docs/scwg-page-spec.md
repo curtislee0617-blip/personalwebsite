@@ -1,5 +1,10 @@
 # Build spec — Interactive process scrollytelling page
 
+> **Superseded:** the current route is the source-backed Towngas
+> screening/pre-FEED case study dated 3 August 2026. This file documents the
+> earlier placeholder-era page and is not the current balance, economic, or
+> content basis.
+
 **Target route:** `/projects/supercritical-water-gasification`
 
 This is a complete build specification. Follow it directly; it is written to be self-contained and should not

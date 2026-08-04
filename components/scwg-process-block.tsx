@@ -14,6 +14,10 @@ const FLAG_STYLE: Record<BlockFlag["kind"], string> = {
   note: "border-ink/15 bg-ink/5 text-ink/70",
 };
 
+function basisSlug(basis: string) {
+  return basis.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
   return (
     <section
@@ -36,29 +40,49 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
           ) : null}
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-ink/60">
-          {block.conditions.temperature ? (
-            <span className="inline-flex items-baseline gap-1.5">
-              <span className="text-xs uppercase tracking-[0.1em] text-ink/40">T</span>
-              <ScwgRange data={block.conditions.temperature} />
-            </span>
-          ) : null}
-          {block.conditions.pressure ? (
-            <span className="inline-flex items-baseline gap-1.5">
-              <span className="text-xs uppercase tracking-[0.1em] text-ink/40">P</span>
-              <ScwgRange data={block.conditions.pressure} />
-            </span>
-          ) : null}
-          {!block.conditions.temperature && !block.conditions.pressure ? (
-            <span className="font-mono tabular-nums">{block.conditions.summary}</span>
-          ) : null}
-        </div>
+        {block.conditionDetails?.length ? (
+          <dl className="scwg-process-condition-grid">
+            {block.conditionDetails.map((condition) => (
+              <div key={condition.label}>
+                <dt>{condition.label}</dt>
+                <dd>{condition.value}</dd>
+                {condition.basis ? (
+                  <small className={`scwg-process-condition-basis scwg-process-condition-basis--${basisSlug(condition.basis)}`}>
+                    {condition.basis}
+                  </small>
+                ) : null}
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-ink/60">
+            {block.conditions.temperature ? (
+              <span className="inline-flex items-baseline gap-1.5">
+                <span className="text-xs uppercase tracking-[0.1em] text-ink/40">T</span>
+                <ScwgRange data={block.conditions.temperature} />
+              </span>
+            ) : null}
+            {block.conditions.pressure ? (
+              <span className="inline-flex items-baseline gap-1.5">
+                <span className="text-xs uppercase tracking-[0.1em] text-ink/40">P</span>
+                <ScwgRange data={block.conditions.pressure} />
+              </span>
+            ) : null}
+            {!block.conditions.temperature && !block.conditions.pressure ? (
+              <span className="font-mono tabular-nums">{block.conditions.summary}</span>
+            ) : null}
+          </div>
+        )}
 
         <div className="mt-5 space-y-3 text-sm leading-7 text-ink/65">
           {block.function.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}
         </div>
+
+        {block.sourceNote ? (
+          <p className="scwg-process-source-note">Source basis: {block.sourceNote}</p>
+        ) : null}
 
         {block.roles ? (
           <ul className="mt-5 space-y-3">

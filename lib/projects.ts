@@ -26,17 +26,17 @@ export type ProjectEntry = {
 export const projects: ProjectEntry[] = [
   {
     slug: "supercritical-water-gasification",
-    eyebrow: "Process design concept",
-    title: "Co-Valorization of Bauxite Residue and Soybean Processing Waste",
-    shortTitle: "SCWG concept",
-    year: "July 2026",
+    eyebrow: "Screening / pre-FEED process design",
+    title: "Towngas SCWG–OXZEO Waste-to-Olefins Study",
+    shortTitle: "Towngas SCWG–OXZEO",
+    year: "August 2026",
     description:
-      "An interactive process-design concept: supercritical water gasification co-processing red mud and douzha, with a scroll-driven flowsheet, siting analysis, and strict placeholder discipline on unclosed balances.",
+      "An integrated screening/pre-FEED process design for a five-train, 1,500 t/d SCWG–OXZEO concept that co-processes wet soybean okara, straw, and fresh red mud into light olefins.",
     detail: [
-      "Two individually awkward waste streams become tractable when co-processed: douzha is 80–85 wt% water, which suits supercritical water gasification, while bauxite residue supplies iron redox capacity and alkalinity.",
-      "The page descends through the plant as you scroll, block by block, and is explicit about what is unvalidated: the mass and energy balances are not yet written, so every unclosed figure is rendered as a flagged placeholder rather than an invented number.",
+      "The B1–B8 design basis runs from feed handling and salt management through supercritical water gasification, gas cleanup, reforming, OXZEO synthesis, and heat-and-water integration, supported by closed screening mass, carbon, and energy balances.",
+      "The economics are reported without hiding the outcome: RMB 1.90 billion base-case CAPEX, RMB 5.2 million per year EBITDA, a 20-year pretax NPV at 10% of −RMB 1.856 billion, and no positive IRR; staged validation gates define what must be proven before FEED.",
     ],
-    tags: ["Chemical engineering", "Process design", "Supercritical water", "Red mud", "Waste valorization"],
+    tags: ["Chemical engineering", "FEED-gate design", "SCWG", "OXZEO", "Techno-economics"],
     previews: [
       {
         src: "/photos/scwg-hero-card.webp",
@@ -47,6 +47,20 @@ export const projects: ProjectEntry[] = [
       {
         src: "/photos/scwg-hero-wide.webp",
         alt: "Aerial view of the green-methanol plant at Jungar Banner, Inner Mongolia",
+      },
+    ],
+    documents: [
+      {
+        href: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China.docx",
+        label: "Download final engineering report",
+        description: "Final RMB-denominated Towngas SCWG–OXZEO screening/pre-FEED report in DOCX format.",
+        viewer: "external",
+      },
+      {
+        href: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China.pdf",
+        label: "Open report PDF",
+        description: "PDF review copy of the final engineering report.",
+        viewer: "external",
       },
     ],
   },

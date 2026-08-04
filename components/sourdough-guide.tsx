@@ -677,77 +677,68 @@ function StarterMicrobeFigures() {
     <div className="mb-6 grid min-w-0 gap-7 border-b border-ink/[0.07] pb-6 xl:grid-cols-2">
       <figure className="min-w-0">
         <div className="mb-3 flex items-baseline gap-2">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-moss">Figure 1</span>
-          <h3 className="text-sm font-semibold tracking-tight text-ink">Representative sourdough microbes</h3>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-moss">Figure 1</span>
+          <h3 className="text-base font-semibold tracking-tight text-ink">Representative sourdough microbes</h3>
         </div>
         <div className="grid border-y border-ink/10 bg-surface/28 sm:grid-cols-2 sm:divide-x sm:divide-ink/10">
           <div className="border-b border-ink/10 p-4 sm:border-b-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-moss">Yeasts</p>
-            <p className="mt-1 text-[9px] text-ink/42">Unicellular fungi · budding forms shown</p>
-            <svg aria-label="Schematic budding sourdough yeast cells" className="mx-auto mt-2 h-auto w-full max-w-[18rem] text-ink" role="img" viewBox="0 0 300 115">
-              <g className="fill-moss/15 stroke-moss" strokeWidth="2">
-                <ellipse cx="60" cy="64" rx="26" ry="33" />
-                <ellipse cx="89" cy="39" rx="14" ry="18" />
-                <ellipse cx="168" cy="62" rx="23" ry="30" />
-                <ellipse cx="193" cy="40" rx="12" ry="15" />
-                <ellipse cx="245" cy="76" rx="20" ry="26" />
-                <ellipse cx="262" cy="53" rx="10" ry="13" />
-              </g>
-              <g className="fill-moss">
-                <circle cx="54" cy="58" r="4" />
-                <circle cx="163" cy="56" r="4" />
-                <circle cx="241" cy="70" r="3.5" />
-              </g>
-            </svg>
-            <dl className="grid gap-2 border-t border-ink/[0.07] pt-3">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-moss">Yeasts</p>
+            <p className="mt-1 text-[11px] leading-4 text-ink/48">Unicellular fungi · budding forms shown</p>
+            <div className="relative mt-3 aspect-[3/2] overflow-hidden rounded-xl border border-moss/15 bg-paper/75">
+              <Image
+                alt="Microscopy-inspired illustration of budding oval sourdough yeast cells"
+                className="object-cover"
+                fill
+                sizes="(max-width: 639px) calc(100vw - 4rem), (max-width: 1279px) 50vw, 22vw"
+                src="/recipes/sourdough-guide/sourdough-yeast-micrograph.jpg"
+              />
+            </div>
+            <dl className="mt-3 grid gap-2 border-t border-ink/[0.07] pt-3">
               <div>
-                <dt className="text-xs italic text-ink">Saccharomyces cerevisiae</dt>
-                <dd className="text-[9px] leading-4 text-ink/48">Frequent, fast CO₂ producer</dd>
+                <dt className="text-[13px] italic text-ink sm:text-sm">Saccharomyces cerevisiae</dt>
+                <dd className="text-[12px] leading-5 text-ink/52">Frequent, fast CO₂ producer</dd>
               </div>
               <div>
-                <dt className="text-xs italic text-ink">Kazachstania humilis</dt>
-                <dd className="text-[9px] leading-4 text-ink/48">Often associated with F. sanfranciscensis</dd>
+                <dt className="text-[13px] italic text-ink sm:text-sm">Kazachstania humilis</dt>
+                <dd className="text-[12px] leading-5 text-ink/52">Often associated with F. sanfranciscensis</dd>
               </div>
               <div>
-                <dt className="text-xs italic text-ink">K. servazzii · W. anomalus</dt>
-                <dd className="text-[9px] leading-4 text-ink/48">Other recurrent sourdough yeasts</dd>
+                <dt className="text-[13px] italic text-ink sm:text-sm">K. servazzii · W. anomalus</dt>
+                <dd className="text-[12px] leading-5 text-ink/52">Other recurrent sourdough yeasts</dd>
               </div>
             </dl>
           </div>
 
           <div className="p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-clay">Lactic-acid bacteria</p>
-            <p className="mt-1 text-[9px] text-ink/42">Rods and cocci · morphology is schematic</p>
-            <svg aria-label="Schematic rod-shaped and coccus-shaped sourdough lactic-acid bacteria" className="mx-auto mt-2 h-auto w-full max-w-[18rem] text-ink" role="img" viewBox="0 0 300 115">
-              <g className="fill-clay/15 stroke-clay" strokeWidth="2">
-                <rect height="21" rx="10.5" transform="rotate(-17 51 39)" width="58" x="22" y="28" />
-                <rect height="21" rx="10.5" transform="rotate(13 141 37)" width="61" x="111" y="27" />
-                <rect height="21" rx="10.5" transform="rotate(-8 239 55)" width="64" x="207" y="45" />
-              </g>
-              <g className="fill-clay/15 stroke-clay" strokeWidth="2">
-                <circle cx="82" cy="89" r="12" />
-                <circle cx="105" cy="89" r="12" />
-                <circle cx="128" cy="89" r="12" />
-              </g>
-            </svg>
-            <dl className="grid gap-2 border-t border-ink/[0.07] pt-3">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-clay">Lactic-acid bacteria</p>
+            <p className="mt-1 text-[11px] leading-4 text-ink/48">Rods and cocci · representative morphology</p>
+            <div className="relative mt-3 aspect-[3/2] overflow-hidden rounded-xl border border-clay/15 bg-paper/75">
+              <Image
+                alt="Microscopy-inspired illustration of rod-shaped and coccus-shaped sourdough lactic-acid bacteria"
+                className="object-cover"
+                fill
+                sizes="(max-width: 639px) calc(100vw - 4rem), (max-width: 1279px) 50vw, 22vw"
+                src="/recipes/sourdough-guide/sourdough-lab-micrograph.jpg"
+              />
+            </div>
+            <dl className="mt-3 grid gap-2 border-t border-ink/[0.07] pt-3">
               <div>
-                <dt className="text-xs italic text-ink">Fructilactobacillus sanfranciscensis</dt>
-                <dd className="text-[9px] leading-4 text-ink/48">Sourdough-adapted obligate heterofermenter</dd>
+                <dt className="text-[13px] italic text-ink sm:text-sm">Fructilactobacillus sanfranciscensis</dt>
+                <dd className="text-[12px] leading-5 text-ink/52">Sourdough-adapted obligate heterofermenter</dd>
               </div>
               <div>
-                <dt className="text-xs italic text-ink">Lactiplantibacillus plantarum</dt>
-                <dd className="text-[9px] leading-4 text-ink/48">Facultative heterofermenter</dd>
+                <dt className="text-[13px] italic text-ink sm:text-sm">Lactiplantibacillus plantarum</dt>
+                <dd className="text-[12px] leading-5 text-ink/52">Facultative heterofermenter</dd>
               </div>
               <div>
-                <dt className="text-xs italic text-ink">Levilactobacillus brevis · Pediococcus</dt>
-                <dd className="text-[9px] leading-4 text-ink/48">Other frequently observed LAB groups</dd>
+                <dt className="text-[13px] italic text-ink sm:text-sm">Levilactobacillus brevis · Pediococcus</dt>
+                <dd className="text-[12px] leading-5 text-ink/52">Other frequently observed LAB groups</dd>
               </div>
             </dl>
           </div>
         </div>
-        <figcaption className="mt-2 text-[9px] leading-4 text-ink/40">
-          Original schematic based on{" "}
+        <figcaption className="mt-2 text-[10px] leading-4 text-ink/44 sm:text-[11px] sm:leading-5">
+          Microscopy-inspired illustrations generated for this guide, with representative morphology based on{" "}
           <a className="underline decoration-ink/20 underline-offset-2 hover:text-ink" href="https://doi.org/10.7554/eLife.61644" rel="noreferrer" target="_blank">
             Landis et al., 2021
           </a>
@@ -757,32 +748,32 @@ function StarterMicrobeFigures() {
 
       <figure className="min-w-0">
         <div className="mb-3 flex items-baseline gap-2">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-moss">Figure 2</span>
-          <h3 className="text-sm font-semibold tracking-tight text-ink">Three LAB fermentation modes</h3>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-moss">Figure 2</span>
+          <h3 className="text-base font-semibold tracking-tight text-ink">Three LAB fermentation modes</h3>
         </div>
         <div className="grid border-y border-ink/10 bg-surface/28 sm:grid-cols-3 sm:divide-x sm:divide-ink/10">
           {labModes.map((mode, index) => (
             <div className="border-b border-ink/10 p-4 last:border-b-0 sm:border-b-0" key={mode.title}>
               <div className="mb-4 flex items-center gap-2">
-                <span className="grid size-6 shrink-0 place-items-center rounded-full border border-moss/35 text-[10px] font-semibold text-moss">{index + 1}</span>
-                <h4 className="text-xs font-semibold leading-4 text-ink">{mode.title}</h4>
+                <span className="grid size-6 shrink-0 place-items-center rounded-full border border-moss/35 text-[11px] font-semibold text-moss">{index + 1}</span>
+                <h4 className="text-[13px] font-semibold leading-5 text-ink">{mode.title}</h4>
               </div>
               <div className="text-center">
-                <span className="inline-flex rounded-full border border-ink/10 px-2.5 py-1 text-[10px] font-medium text-ink/65">sugar</span>
+                <span className="inline-flex rounded-full border border-ink/10 px-2.5 py-1 text-[12px] font-medium text-ink/65">sugar</span>
                 <div className="mx-auto h-5 w-px bg-moss/45" />
                 <div className="mx-auto -mt-1 size-2 rotate-45 border-b border-r border-moss/60" />
-                <p className="mt-2 text-[10px] font-medium leading-4 text-ink/55">{mode.route}</p>
+                <p className="mt-2 text-[12px] font-medium leading-5 text-ink/55">{mode.route}</p>
               </div>
               <div className="mt-3 grid gap-1 border-t border-ink/[0.07] pt-3">
                 {mode.outputs.map((output) => (
-                  <p className="text-[10px] leading-4 text-ink/62" key={output}>→ {output}</p>
+                  <p className="text-[12px] leading-5 text-ink/62" key={output}>→ {output}</p>
                 ))}
               </div>
-              <p className="mt-3 text-[9px] italic leading-4 text-ink/42">{mode.examples}</p>
+              <p className="mt-3 text-[11px] italic leading-5 text-ink/46">{mode.examples}</p>
             </div>
           ))}
         </div>
-        <figcaption className="mt-2 text-[9px] leading-4 text-ink/40">
+        <figcaption className="mt-2 text-[10px] leading-4 text-ink/44 sm:text-[11px] sm:leading-5">
           Original pathway summary based on the LAB classification reviewed in{" "}
           <a className="underline decoration-ink/20 underline-offset-2 hover:text-ink" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8306212/" rel="noreferrer" target="_blank">
             Sourdough Microbiome Comparison and Benefits
@@ -1065,7 +1056,7 @@ export function SourdoughGuide({
             <div>
               <p className="eyebrow">Food science review</p>
               <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Sourdough as a coupled biochemical and mechanical system</h2>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-ink/62">
+              <p className="mt-3 max-w-3xl text-[0.95rem] leading-7 text-ink/62 sm:text-base">
                 Here is my really long rant about sourdough food science, fact-checked with papers just in case.
               </p>
             </div>
@@ -1076,7 +1067,7 @@ export function SourdoughGuide({
               <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p className="text-lg font-semibold tracking-tight text-ink sm:text-xl">1. Starter ecology and biochemical control</p>
-                  <p className="mt-1 max-w-3xl text-sm leading-6 text-ink/52">
+                  <p className="mt-1 max-w-3xl text-[0.9rem] leading-6 text-ink/52 sm:text-[0.95rem] sm:leading-7">
                     The starter ecosystem, yeast and LAB metabolism, gluten breakdown, hydration, flour choice and the controls that shift a culture.
                   </p>
                 </div>
@@ -1094,7 +1085,7 @@ export function SourdoughGuide({
                     <h3 className="text-base font-semibold tracking-tight text-ink">{topic.title}</h3>
                     <div className="mt-3 grid gap-3">
                       {topic.points.map((point) => (
-                        <p className="text-sm leading-6 text-ink/62" key={point}>{point}</p>
+                        <p className="text-[0.95rem] leading-7 text-ink/62 sm:text-base" key={point}>{point}</p>
                       ))}
                     </div>
                   </section>
@@ -1107,7 +1098,7 @@ export function SourdoughGuide({
                 <summary className="flex cursor-pointer list-none items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="text-lg font-semibold tracking-tight text-ink sm:text-xl">{chapter.title}</p>
-                    <p className="mt-1 max-w-3xl text-sm leading-6 text-ink/52">{chapter.summary}</p>
+                    <p className="mt-1 max-w-3xl text-[0.9rem] leading-6 text-ink/52 sm:text-[0.95rem] sm:leading-7">{chapter.summary}</p>
                   </div>
                   <span aria-hidden="true" className="mt-0.5 text-xl leading-none text-moss transition group-open:rotate-45">+</span>
                 </summary>
@@ -1127,7 +1118,7 @@ export function SourdoughGuide({
                       <h3 className="text-base font-semibold tracking-tight text-ink">{section.title}</h3>
                       <div className="mt-3 grid gap-3">
                         {section.paragraphs.map((paragraph) => (
-                          <p className="text-sm leading-7 text-ink/64" key={paragraph}>{paragraph}</p>
+                          <p className="text-[0.95rem] leading-7 text-ink/64 sm:text-base" key={paragraph}>{paragraph}</p>
                         ))}
                       </div>
                     </section>
