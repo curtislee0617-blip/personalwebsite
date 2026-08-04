@@ -130,7 +130,7 @@ const education: EducationItem[] = [
   {
     dates: "2024 - 2028",
     school: "California Institute of Technology",
-    detail: "B.S., dual major in Chemical Engineering (process track) and Business Economics & Management (BEM). GPA: 3.8 / 4.0. Relevant coursework includes Econometrics (EC 122) and Hedge Funds (BEM 114). Current and past campus activities include Caltech Chamber Singers, chamber music, Glee Club, and Out of Context a cappella.",
+    detail: "B.S., dual major in Chemical Engineering (process track) and Business Economics & Management (BEM). GPA: 3.8 / 4.0. Relevant coursework includes Hedge Funds (BEM 114). Current and past campus activities include Caltech Chamber Singers, chamber music, Glee Club, and Out of Context a cappella.",
     logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white/90", imageClassName: "mix-blend-normal" },
   },
   {
@@ -173,12 +173,12 @@ export default function AboutPage() {
     <div className="about-page">
       <PageIntro
         eyebrow="CV"
-        title="Engineering, commercial thinking, and hands-on leadership."
+        title="Chemical engineering, food science, and kitchens."
         description={
           <>
             I am pursuing a dual B.S. major in Chemical Engineering (process track) and BEM (Business Economics & Management) at{" "}
             <OrganisationWordmark alt="Caltech" fallback="Caltech" src="/logos/caltechname-cropped.png" />.
-            {" "}I am also a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. Across engineering, research, teaching, and entrepreneurship, I enjoy turning ambiguous problems into evidence-backed decisions and helping teams deliver them.
+            {" "}I am a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics.
           </>
         }
         actions={
@@ -291,7 +291,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <dt className="font-semibold text-ink">Strategy &amp; analysis</dt>
-                  <dd>Structured problem-solving, commercial analysis, econometrics, financial and techno-economic modelling.</dd>
+                  <dd>Structured problem-solving, commercial analysis, financial and techno-economic modelling.</dd>
                 </div>
                 <div>
                   <dt className="font-semibold text-ink">Engineering &amp; data</dt>
