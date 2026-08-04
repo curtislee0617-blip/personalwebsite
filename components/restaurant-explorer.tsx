@@ -28,7 +28,10 @@ type GeocodeSuggestion = {
   result: google.maps.GeocoderResult;
 };
 
-const resultListLimit = 250;
+const initialResultListLimit = 80;
+const maximumResultListLimit = 250;
+const resultListPageSize = 80;
+const desktopMarkerLimit = 220;
 const mobileMarkerLimit = 350;
 const mobileMapMediaQuery = "(max-width: 1099px), (max-width: 1366px) and (pointer: coarse) and (hover: none)";
 const defaultMapCenter = { lat: 22.3027, lng: 114.1772 };
@@ -191,6 +194,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
   const [isMobileMapMoving, setIsMobileMapMoving] = useState(false);
   const [loadedMobileRestaurantIds, setLoadedMobileRestaurantIds] = useState<Set<string>>(() => new Set());
   const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const [visibleResultLimit, setVisibleResultLimit] = useState(initialResultListLimit);
   const dateOptions = useMemo(() => buildDateOptions(), []);
   const timeOptions = useMemo(() => buildTimeOptions(), []);
 
@@ -211,6 +215,13 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         .map(([category]) => category),
     ];
   }, [restaurants]);
+  const hasOpeningHoursData = useMemo(
+    () => restaurants.some((restaurant) => Boolean(
+      restaurant.openingHours?.periods?.length
+      || restaurant.openingHours?.weekdayDescriptions.length,
+    )),
+    [restaurants],
+  );
   const filteredRestaurants = useMemo(() => {
     const targetDateTime = parseDateTimeInput(hoursDate, hoursTime);
     return restaurants.filter((restaurant) => {
@@ -242,8 +253,16 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     () => mobileRestaurantsInView.filter((restaurant) => !loadedMobileRestaurantIds.has(restaurant.id)),
     [loadedMobileRestaurantIds, mobileRestaurantsInView],
   );
+  const desktopMarkerRestaurants = useMemo(
+    () => !isMobileMap && mapBounds
+      ? restaurantsInView.slice(0, desktopMarkerLimit)
+      : [],
+    [isMobileMap, mapBounds, restaurantsInView],
+  );
   const selectedRestaurant = filteredRestaurants.find((restaurant) => restaurant.id === selectedId);
-  const listedRestaurants = restaurantsInView.slice(0, resultListLimit);
+  const maximumListedRestaurants = Math.min(restaurantsInView.length, maximumResultListLimit);
+  const listedRestaurants = restaurantsInView.slice(0, Math.min(visibleResultLimit, maximumListedRestaurants));
+  const remainingListedRestaurants = maximumListedRestaurants - listedRestaurants.length;
   const selectedHoursDateTime = useMemo(
     () => parseDateTimeInput(hoursDate, hoursTime),
     [hoursDate, hoursTime],
@@ -324,22 +343,16 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           : requestBrowserPosition();
         didRequestUserLocationRef.current = true;
 
-        const [[{ Map, RenderingType }, { AdvancedMarkerElement, PinElement }], initialUserPosition] = await Promise.all([
-          Promise.all([
-            importGoogleMapsLibrary("maps"),
-            importGoogleMapsLibrary("marker"),
-          ]),
-          userPositionPromise,
+        const [{ Map, RenderingType }, { AdvancedMarkerElement, PinElement }] = await Promise.all([
+          importGoogleMapsLibrary("maps"),
+          importGoogleMapsLibrary("marker"),
         ]);
 
         if (cancelled || !mapElementRef.current) return;
         markerLibraryRef.current = { AdvancedMarkerElement, PinElement };
-        if (initialUserPosition) {
-          userPositionRef.current = initialUserPosition;
-        }
 
         const map = new Map(mapElementRef.current, {
-          center: initialUserPosition ?? defaultMapCenter,
+          center: userPositionRef.current ?? defaultMapCenter,
           zoom: 12,
           mapId,
           gestureHandling: isMobileMap ? "greedy" : "cooperative",
@@ -356,8 +369,10 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         });
 
         mapRef.current = map;
+        let userMovedMap = false;
         map.addListener("click", () => setSelectedId(""));
         const pauseMobileMarkers = () => {
+          userMovedMap = true;
           if (!isMobileMap) return;
           if (mobileMarkerPauseTimeoutRef.current) {
             window.clearTimeout(mobileMarkerPauseTimeoutRef.current);
@@ -398,6 +413,11 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         });
 
         setMapStatus("ready");
+        void userPositionPromise.then((initialUserPosition) => {
+          if (cancelled || !initialUserPosition) return;
+          userPositionRef.current = initialUserPosition;
+          if (!userMovedMap) map.panTo(initialUserPosition);
+        });
       } catch (error) {
         console.error("Google Maps failed to load", error);
         setMapStatus("error");
@@ -487,18 +507,28 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
     const visibleRestaurants = isMobileMap
       ? mobileRestaurantsInView.filter((restaurant) => loadedMobileRestaurantIds.has(restaurant.id))
-      : filteredRestaurants;
+      : desktopMarkerRestaurants;
     visibleRestaurants.forEach((restaurant) => ensureRestaurantMarker(restaurant));
 
     const visibleIds = new Set(visibleRestaurants.map((restaurant) => restaurant.id));
     markerRefs.current.forEach((marker, id) => {
-      marker.map = visibleIds.has(id) ? mapRef.current : null;
+      if (visibleIds.has(id)) {
+        marker.map = mapRef.current;
+        return;
+      }
+
+      marker.map = null;
+      if (!isMobileMap) {
+        marker.remove();
+        markerRefs.current.delete(id);
+        markerElementRefs.current.delete(id);
+      }
     });
 
     if (!isShowingPlaceSearch && filteredRestaurants.length === 1) {
       fitRestaurantBounds(mapRef.current, filteredRestaurants, 15);
     }
-  }, [detachMarkers, ensureRestaurantMarker, filteredRestaurants, isMobileMap, isMobileMapMoving, isShowingPlaceSearch, loadedMobileRestaurantIds, mapStatus, mobileRestaurantsInView]);
+  }, [desktopMarkerRestaurants, detachMarkers, ensureRestaurantMarker, filteredRestaurants, isMobileMap, isMobileMapMoving, isShowingPlaceSearch, loadedMobileRestaurantIds, mapStatus, mobileRestaurantsInView]);
 
   useEffect(() => {
     markerElementRefs.current.forEach((element, id) => {
@@ -620,7 +650,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       return { label: "Temporarily closed", className: "is-temporarily-closed" };
     }
     if (!restaurant.openingHours) {
-      return { label: "Hours awaiting sync", className: "" };
+      return null;
     }
 
     const checkingSelectedTime = activeHours === "OpenAtDateTime";
@@ -760,10 +790,15 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         </label>
         <label>
           <span>Hours</span>
-          <select onChange={(event) => setActiveHours(event.target.value as HoursFilter)} value={activeHours}>
-            <option value="All">All hours</option>
-            <option value="OpenNow">Open now</option>
-            <option value="OpenAtDateTime">Open at a specific date & time</option>
+          <select
+            aria-describedby={!hasOpeningHoursData ? "restaurant-hours-note" : undefined}
+            disabled={!hasOpeningHoursData}
+            onChange={(event) => setActiveHours(event.target.value as HoursFilter)}
+            value={activeHours}
+          >
+            <option value="All">{hasOpeningHoursData ? "All hours" : "Live hours on Google Maps"}</option>
+            {hasOpeningHoursData ? <option value="OpenNow">Open now</option> : null}
+            {hasOpeningHoursData ? <option value="OpenAtDateTime">Open at a specific date & time</option> : null}
           </select>
         </label>
         <label>
@@ -804,11 +839,21 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         ))}
       </div>
 
-      <p className="restaurant-export-note">The downloaded CSV can be imported into Google My Maps. Google limits each imported layer to 2,000 rows. Opening-hours filters use the latest Google hours synced into this site, including specific date-and-time checks.</p>
+      <p className="restaurant-export-note" id="restaurant-hours-note">
+        The downloaded CSV can be imported into Google My Maps. Google limits each imported layer to 2,000 rows. {hasOpeningHoursData
+          ? "Opening-hours filters use the latest Google hours synced into this site, including specific date-and-time checks."
+          : "Opening hours are not stored in this list yet; use each restaurant’s Google Maps link for its current live hours."}
+      </p>
 
       <div className="restaurant-map-layout">
         <div className="restaurant-map-shell">
           <div className="restaurant-map" ref={mapElementRef} />
+
+          {!isMobileMap && mapBounds && restaurantsInView.length > desktopMarkerLimit && (
+            <p className="restaurant-map-density" role="status">
+              Showing {desktopMarkerLimit} of {restaurantsInView.length} pins in view · zoom in for more detail
+            </p>
+          )}
 
           {shouldShowMobileLoadPinsButton && (
             <button className="restaurant-load-area" onClick={loadMobileRestaurantsInArea} type="button">
@@ -878,14 +923,25 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
                   </span>
                 </button>
                 <div className="restaurant-result-meta">
-                  <span className={status.className}>{status.label}</span>
+                  {status ? <span className={status.className}>{status.label}</span> : null}
                   <a href={googleMapsUrl(restaurant)} rel="noreferrer" target="_blank">Google Maps ↗</a>
                 </div>
               </article>
               );
             })}
-            {restaurantsInView.length > resultListLimit && (
-              <p className="restaurant-results-limit">Showing the first {resultListLimit} places. Use search or filters to narrow the list.</p>
+            {remainingListedRestaurants > 0 && (
+              <div className="restaurant-results-limit">
+                <p>Showing {listedRestaurants.length} of {maximumListedRestaurants} places.</p>
+                <button
+                  onClick={() => setVisibleResultLimit((currentLimit) => Math.min(currentLimit + resultListPageSize, maximumResultListLimit))}
+                  type="button"
+                >
+                  Show {Math.min(resultListPageSize, remainingListedRestaurants)} more
+                </button>
+              </div>
+            )}
+            {remainingListedRestaurants === 0 && restaurantsInView.length > maximumResultListLimit && (
+              <p className="restaurant-results-limit">Showing the first {maximumResultListLimit} places. Use search or filters to narrow the list.</p>
             )}
           </div>
         </aside>

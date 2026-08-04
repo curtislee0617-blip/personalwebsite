@@ -3697,6 +3697,25 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   transform: translateX(-50%);
 }
 
+.restaurant-map-density {
+  position: absolute;
+  z-index: 4;
+  top: 0.9rem;
+  left: 50%;
+  max-width: calc(100% - 2rem);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgb(var(--color-ink) / 0.13);
+  border-radius: 999px;
+  background: rgb(var(--color-paper) / 0.92);
+  box-shadow: 0 10px 26px rgb(var(--color-ink) / 0.12);
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
 .restaurant-map-marker {
   position: relative;
   display: grid;
@@ -3886,6 +3905,9 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   width: 100%;
   padding: 0;
   border-bottom: 1px solid rgb(var(--color-ink) / 0.08);
+  contain: layout style paint;
+  content-visibility: auto;
+  contain-intrinsic-block-size: 7.75rem;
   text-align: left;
   transition: background-color 180ms ease;
 }
@@ -3942,7 +3964,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
 .restaurant-map-card .is-open { color: #52704d; font-weight: 700; }
 .restaurant-result-meta .is-temporarily-closed,
 .restaurant-map-card .is-temporarily-closed { color: #b42318; font-weight: 700; }
-.restaurant-result-meta a { text-decoration: underline; text-underline-offset: 0.15rem; }
+.restaurant-result-meta a { margin-left: auto; text-decoration: underline; text-underline-offset: 0.15rem; }
 
 .recipes-section-summary::-webkit-details-marker { display: none; }
 
@@ -3951,6 +3973,28 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   color: rgb(var(--color-ink) / 0.5);
   font-size: 0.72rem;
   line-height: 1.5;
+}
+
+div.restaurant-results-limit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.restaurant-results-limit button {
+  flex: none;
+  padding: 0.42rem 0.65rem;
+  border: 1px solid rgb(var(--color-ink) / 0.14);
+  border-radius: 999px;
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.restaurant-results-limit button:hover {
+  border-color: rgb(var(--color-ink) / 0.32);
+  color: rgb(var(--color-ink));
 }
 
 .restaurant-recommendations {

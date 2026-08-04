@@ -15,6 +15,7 @@
     "maps:enrich": "node scripts/enrich-google-places.mjs",
     "maps:resolve-pins": "node scripts/resolve-google-maps-pins.mjs",
     "maps:refresh": "node scripts/refresh-google-maps-pipeline.mjs",
+    "maps:sync-details": "node scripts/sync-google-maps-details.mjs",
     "maps:audit-status": "node scripts/audit-restaurant-status.mjs",
     "maps:sync-status": "node scripts/sync-restaurant-business-status.mjs",
     "maps:upload": "node scripts/upload-restaurants-to-supabase.mjs",

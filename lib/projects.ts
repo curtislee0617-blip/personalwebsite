@@ -39,7 +39,7 @@ export const projects: ProjectEntry[] = [
     tags: ["Chemical engineering", "FEED-gate design", "SCWG", "OXZEO", "Techno-economics"],
     previews: [
       {
-        src: "/photos/scwg-hero-card.webp",
+        src: "/project-thumbnails/scwg-hero-card.webp",
         alt: "Aerial view of the green-methanol plant at Jungar Banner, Inner Mongolia",
       },
       // The carousel shows `previews[1]` in its large panel, so it needs a source

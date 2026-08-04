@@ -130,13 +130,13 @@ const education: EducationItem[] = [
   {
     dates: "2024 - 2028",
     school: "California Institute of Technology",
-    detail: "B.S., dual major in Chemical Engineering (process track) and Business Economics & Management (BEM). GPA: 3.8 / 4.0. Relevant coursework includes Econometrics (EC 122) and Hedge Funds (BEM 114).",
+    detail: "B.S., dual major in Chemical Engineering (process track) and Business Economics & Management (BEM). GPA: 3.8 / 4.0. Relevant coursework includes Econometrics (EC 122) and Hedge Funds (BEM 114). Current and past campus activities include Caltech Chamber Singers, chamber music, Glee Club, and Out of Context a cappella.",
     logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white/90", imageClassName: "mix-blend-normal" },
   },
   {
     dates: "2019 - 2024",
     school: "The King's School, Canterbury",
-    detail: "A-Levels in Mathematics, Further Mathematics, Physics and Chemistry.",
+    detail: "A-Levels in Mathematics, Further Mathematics, Physics and Chemistry. Served as a School Monitor and Admissions Ambassador, received the Science Communication Award, composed for and conducted a 50-person choir, and was deputy concertmaster of the orchestra.",
     logo: { src: "/logos/kings-school.png", alt: "The King's School Canterbury logo", fallback: "KSC", fitClassName: "h-9 w-11", frameClassName: "bg-white" },
   },
 ];
@@ -173,12 +173,12 @@ export default function AboutPage() {
     <div className="about-page">
       <PageIntro
         eyebrow="CV"
-        title="Chemical engineering, food science, and kitchens."
+        title="Engineering, commercial thinking, and hands-on leadership."
         description={
           <>
             I am pursuing a dual B.S. major in Chemical Engineering (process track) and BEM (Business Economics & Management) at{" "}
             <OrganisationWordmark alt="Caltech" fallback="Caltech" src="/logos/caltechname-cropped.png" />.
-            {" "}I am a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. My interests include food science, manufacturing, materials science, macroeconomics, and political economics.
+            {" "}I am also a Michelin-trained cook, having trained under chefs and at restaurants with a combined 42 Michelin stars. Across engineering, research, teaching, and entrepreneurship, I enjoy turning ambiguous problems into evidence-backed decisions and helping teams deliver them.
           </>
         }
         actions={
@@ -257,23 +257,51 @@ export default function AboutPage() {
                 <li>RSC UK Chemistry Olympiad - Gold Award, 2024</li>
                 <li>Cambridge Chemistry Challenge - Gold Award, 2023</li>
                 <li>BPhO Senior Physics Challenge - Gold Award, 2023</li>
+                <li>The King&apos;s School, Canterbury - Science Communication Award</li>
                 <li>Young Enterprise Kent Finals - Best Company</li>
               </ul>
             </section>
 
-            <section className="about-section about-section--beyond scroll-mt-24" data-reveal id="about-beyond" style={{ "--reveal-delay": "80ms" } as CSSProperties}>
+            <section className="about-section about-section--leadership scroll-mt-24" data-reveal style={{ "--reveal-delay": "80ms" } as CSSProperties}>
+              <h2 className="about-section-heading eyebrow">Leadership experience</h2>
+              <ul className="about-aside-list mt-5 space-y-4 text-sm leading-6 text-ink/60">
+                <li><strong className="font-semibold text-ink">Built and led a 17-person venture</strong> to a Kent-wide Best Company award and £5,850 in revenue.</li>
+                <li><strong className="font-semibold text-ink">Teach and mentor students</strong> through practical science, mathematics, and cooking.</li>
+                <li><strong className="font-semibold text-ink">Held school-wide and musical leadership roles at The King&apos;s School, Canterbury</strong>, serving as a School Monitor, Admissions Ambassador, and deputy concertmaster, and composing for and conducting a 50-person choir.</li>
+                <li><strong className="font-semibold text-ink">Adapt across technical and operational teams</strong>, from multidisciplinary engineering work to Michelin-starred kitchen service.</li>
+              </ul>
+            </section>
+
+            <section className="about-section about-section--beyond scroll-mt-24" data-reveal id="about-beyond" style={{ "--reveal-delay": "160ms" } as CSSProperties}>
               <h2 className="about-section-heading eyebrow">Beyond the lab</h2>
               <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">ChemE Car, chamber singing, a cappella, glee club, violin and cooking. Grade 8 in singing and violin, and a PADI Advanced Open Water Diver.</p>
             </section>
 
-            <section className="about-section about-section--languages scroll-mt-24" data-reveal id="about-languages" style={{ "--reveal-delay": "160ms" } as CSSProperties}>
+            <section className="about-section about-section--languages scroll-mt-24" data-reveal id="about-languages" style={{ "--reveal-delay": "240ms" } as CSSProperties}>
               <h2 className="about-section-heading eyebrow">Languages</h2>
               <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">English, Cantonese and Mandarin (native); French (elementary).</p>
             </section>
 
-            <section className="about-section about-section--skills scroll-mt-24" data-reveal id="about-skills" style={{ "--reveal-delay": "240ms" } as CSSProperties}>
-              <h2 className="about-section-heading eyebrow">Technical skills</h2>
-              <p className="about-aside-copy mt-5 text-sm leading-6 text-ink/60">Python, process and techno-economic modelling, DWSIM, NMR, IR and mass spectrometry.</p>
+            <section className="about-section about-section--skills scroll-mt-24" data-reveal id="about-skills" style={{ "--reveal-delay": "320ms" } as CSSProperties}>
+              <h2 className="about-section-heading eyebrow">Consulting &amp; technical skills</h2>
+              <dl className="about-aside-copy mt-5 space-y-4 text-sm leading-6 text-ink/60">
+                <div>
+                  <dt className="font-semibold text-ink">Leadership &amp; delivery</dt>
+                  <dd>Team leadership, mentoring, project ownership and cross-functional collaboration.</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-ink">Strategy &amp; analysis</dt>
+                  <dd>Structured problem-solving, commercial analysis, econometrics, financial and techno-economic modelling.</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-ink">Engineering &amp; data</dt>
+                  <dd>Python, process modelling, DWSIM and experimental design.</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-ink">Laboratory</dt>
+                  <dd>NMR, IR and mass spectrometry.</dd>
+                </div>
+              </dl>
             </section>
           </aside>
         </div>
