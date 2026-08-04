@@ -84,7 +84,7 @@ const experience: TimelineItem[] = [
     dates: "September 2024 - Present",
     role: "Teaching Assistant",
     organisation: "Caltech",
-    detail: "Teaching Caltech students how to cook in Tom Mannion's cooking class.",
+    detail: "Teach Caltech students through practical cooking and food-science demonstrations in Tom Mannion's cooking class.",
     logo: { src: "/logos/caltechname.png", alt: "Caltech logo", fallback: "CIT", fitClassName: "h-9 w-12", frameClassName: "bg-white/90", imageClassName: "mix-blend-normal" },
   },
   {
@@ -114,6 +114,8 @@ const experience: TimelineItem[] = [
     organisation: "cook.enterprise",
     detail: "Managed and led a team of 17 students competing in the Young Enterprise UK competition, winning the Kent Finals Best Company award. We created a student-centric cookbook inspired by works such as Modernist Cuisine, researching novel ways to prepare food quickly and microwave-cooking techniques suited to a busy student, earning £5,850 in revenue.",
     logo: { src: "/logos/cook.png", alt: "cook.enterprise logo", fallback: "COOK", fitClassName: "h-10 w-10", frameClassName: "bg-white" },
+    projectHref: "/projects/cook-enterprise",
+    projectLabel: "Open the cook.enterprise cookbook",
   },
   {
     dates: "July 2021 - Present",
@@ -150,13 +152,13 @@ const featuredWork = [
     href: "/projects/biodiesel-from-used-cooking-oil",
     type: "Chemical Engineering",
     title: "Biodiesel from used cooking oil",
-    summary: "A two-part June 2026 ChemE project spanning plant design and biodiesel synthesis routes.",
+    summary: "Tested ethanol as a substitute for methanol across acid- and base-catalysed biodiesel routes using waste cooking oil, reaching more than 75% conversion.",
   },
   {
     href: "/projects/bem-114-report",
     type: "Finance & NLP",
     title: "Earnings Call NLP-Based Long-Short Strategy",
-    summary: "A June 2026 BEM 114 report on using earnings-call language to build a long-short equity signal.",
+    summary: "A market-neutral FinBERT strategy using earnings-call sentiment, with near-zero beta and a statistically significant 1.18% monthly alpha in the study period.",
   },
   {
     href: "/projects/cook-enterprise",

@@ -1,3 +1,5 @@
+@import "maplibre-gl/dist/maplibre-gl.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -73,6 +75,26 @@
 }
 
 html { scroll-behavior: smooth; }
+
+.interaction-maplibre,
+.interaction-cytoscape,
+.interaction-pixi,
+.interaction-observable-plot {
+  position: relative;
+  width: 100%;
+  min-height: 20rem;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 1.25rem;
+  background: rgb(var(--color-surface) / 0.6);
+}
+
+.interaction-maplibre .maplibregl-canvas { outline: none; }
+.interaction-maplibre .maplibregl-ctrl-group { border-radius: 0.65rem; box-shadow: 0 0 0 1px rgb(28 34 29 / 0.12); }
+.interaction-observable-plot { min-height: 0; padding: 0.8rem; }
+.interaction-observable-plot > svg,
+.interaction-observable-plot > figure { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.interaction-pixi canvas { display: block; width: 100%; height: 100%; }
 
 .site-app-shell {
   min-width: 0;
@@ -2355,7 +2377,28 @@ body.has-page-cursor * { cursor: inherit; }
 .website-project-facts li { display: grid; padding: 0.72rem 0; gap: 0.55rem; border-top: 1px solid rgb(var(--color-ink) / 0.09); grid-template-columns: 5.6rem minmax(0, 1fr); }
 .website-project-facts strong { color: rgb(var(--color-ink) / 0.72); font-size: 0.64rem; line-height: 1.55; }
 .website-project-facts span { color: rgb(var(--color-ink) / 0.54); font-size: 0.68rem; line-height: 1.55; }
+.website-project-toolkit { margin-top: 1.15rem; padding-top: 1rem; border-top: 1px solid rgb(var(--color-ink) / 0.09); }
+.website-project-toolkit-heading { display: grid; gap: 0.25rem; }
+.website-project-toolkit-heading strong { color: rgb(var(--color-ink) / 0.72); font-size: 0.64rem; letter-spacing: 0.04em; }
+.website-project-toolkit-heading span { max-width: 31rem; color: rgb(var(--color-ink) / 0.48); font-size: 0.66rem; line-height: 1.55; }
+.website-project-toolkit ul { display: flex; flex-wrap: wrap; gap: 0.42rem; margin-top: 0.8rem; list-style: none; }
+.website-project-toolkit li { display: inline-flex; align-items: center; gap: 0.42rem; min-height: 1.8rem; padding: 0.34rem 0.55rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 9999px; background: rgb(var(--color-paper) / 0.55); }
+.website-project-toolkit li > span { color: rgb(var(--color-ink) / 0.67); font-size: 0.6rem; font-weight: 700; }
+.website-project-toolkit li small { display: inline-flex; align-items: center; gap: 0.24rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.website-project-toolkit li small::before { width: 0.33rem; height: 0.33rem; border-radius: 9999px; background: currentColor; content: ""; }
+.website-project-toolkit li[data-status="in-use"] small { color: rgb(var(--color-clay) / 0.8); }
+.website-project-toolkit li[data-status="ready"] small,
+.website-project-toolkit li[data-status="native"] small { color: rgb(var(--color-moss) / 0.78); }
 .website-project-link { margin-top: 1.25rem; }
+
+.interaction-canvas { position: relative; min-width: 0; min-height: 1px; overflow: hidden; }
+.view-transition-surface { view-transition-name: var(--view-transition-name, none); }
+::view-transition-group(root) { animation-duration: var(--motion-standard); animation-timing-function: var(--ease-standard); }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation-duration: 1ms !important; }
+}
 .contact-city-timeline-control { margin-top: 1.5rem; }
 .contact-city-timeline-heading {
   display: flex;
@@ -9364,7 +9407,146 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   box-shadow: none;
 }
 
-.towngas-page .scwg-process-diagram-frame > svg { min-height: 0; flex: 1; }
+.scwg-process-instrument-bar {
+  display: grid;
+  padding-bottom: 0.62rem;
+  align-items: end;
+  gap: 0.55rem;
+  border-bottom: 1px solid var(--tg-line);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.scwg-process-active-readout {
+  display: grid;
+  min-width: 0;
+  gap: 0.18rem;
+}
+
+.scwg-process-active-readout > span {
+  color: rgb(var(--color-ink) / 0.48);
+  font-family: var(--font-code);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scwg-process-active-readout strong {
+  overflow: hidden;
+  color: var(--tg-navy);
+  font-size: 0.64rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scwg-process-inspection-controls {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--tg-line);
+}
+
+.scwg-process-inspection-controls button {
+  min-width: 1.75rem;
+  height: 1.7rem;
+  padding-inline: 0.46rem;
+  border: 0;
+  border-left: 1px solid var(--tg-line);
+  background: rgb(var(--color-surface) / 0.9);
+  color: rgb(var(--color-ink) / 0.58);
+  font-family: var(--font-code);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.scwg-process-inspection-controls button:first-child { border-left: 0; }
+.scwg-process-inspection-controls button:hover:not(:disabled),
+.scwg-process-inspection-controls button[aria-pressed="true"] { background: var(--tg-green); color: white; }
+.scwg-process-inspection-controls button:disabled { opacity: 0.34; }
+.scwg-process-inspection-controls button:focus-visible { position: relative; z-index: 2; outline: 2px solid var(--tg-orange); outline-offset: -2px; }
+
+.scwg-process-stage-index {
+  position: relative;
+  padding-block: 0.55rem 0.48rem;
+  border-bottom: 1px solid var(--tg-line);
+}
+
+.scwg-process-stage-index ol {
+  display: grid;
+  gap: 0.22rem;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.scwg-process-stage-index li { min-width: 0; }
+
+.scwg-process-stage-index button {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  height: 1.6rem;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  background: transparent;
+  color: rgb(var(--color-ink) / 0.5);
+  font-family: var(--font-code);
+  font-size: 0.5rem;
+  font-weight: 700;
+}
+
+.scwg-process-stage-index button > span:last-child { position: relative; z-index: 1; }
+.scwg-process-stage-index button[aria-current="step"] { border-color: rgb(0 115 54 / 0.48); color: white; }
+.scwg-process-stage-index button:hover { border-color: var(--tg-green); color: var(--tg-green); }
+.scwg-process-stage-index button[aria-current="step"]:hover { color: white; }
+.scwg-process-stage-index button:focus-visible { outline: 2px solid var(--tg-orange); outline-offset: 1px; }
+
+.scwg-process-stage-marker {
+  position: absolute;
+  inset: 0;
+  background: var(--tg-green);
+}
+
+.scwg-process-stage-progress {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  overflow: hidden;
+  background: rgb(var(--color-ink) / 0.08);
+}
+
+.scwg-process-stage-progress > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--tg-green);
+  transform-origin: left center;
+}
+
+.scwg-process-diagram-viewport {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  flex: 1;
+}
+
+.scwg-process-diagram-transform,
+.scwg-process-diagram-gesture-layer {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.scwg-process-diagram-transform { transform-origin: center; }
+.scwg-process-diagram-transform[data-inspection-enabled="true"] { cursor: grab; }
+.scwg-process-diagram-transform[data-inspection-enabled="true"]:active { cursor: grabbing; }
+.scwg-process-diagram-gesture-layer > svg { width: 100%; min-height: 0; height: 100%; }
 
 .towngas-page .scwg-process-flow-cue {
   display: grid;
@@ -9381,12 +9563,19 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
-.scwg-process-flow-cue > span:first-child {
-  width: 1.7rem;
-  border-top: 2px dashed var(--tg-green);
+.scwg-process-flow-lottie {
+  width: 2.5rem;
+  height: 1rem;
+  background: transparent;
 }
+.scwg-process-flow-lottie canvas { display: block; width: 100% !important; height: 100% !important; }
 .scwg-process-flow-cue-static { display: none; }
 .scwg-process-flow-cue strong { color: var(--tg-green); font-size: 0.58rem; }
+
+::view-transition-group(scwg-process-stage-marker) {
+  animation-duration: 260ms;
+  animation-timing-function: var(--ease-standard);
+}
 
 /* Anime.js owns only dash offset in this restored view; D3 owns only viewBox. */
 .towngas-page .scwg-process-scroller-layout .scwg-stream-active {
@@ -9524,9 +9713,16 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 @media (max-width: 1023px) {
   .towngas-process-preface { grid-template-columns: 1fr; }
   .towngas-process-legend { justify-content: flex-start; }
-  .towngas-page .scwg-process-diagram-frame { height: 42vh; min-height: 19rem; }
+  .towngas-page .scwg-process-diagram-frame { height: 52vh; min-height: 24rem; }
   .towngas-process-recycle-spec dl { grid-template-columns: 1fr; }
   .towngas-process-recycle-spec .towngas-process-recycle-lists { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .scwg-process-instrument-bar { align-items: stretch; grid-template-columns: 1fr; }
+  .scwg-process-inspection-controls { width: 100%; }
+  .scwg-process-inspection-controls button { flex: 1; }
+  .scwg-process-stage-index ol { gap: 0.15rem; }
 }
 
 @media (max-height: 640px) {
@@ -9541,5 +9737,5 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .scwg-process-flow-cue-motion { display: none; }
   .towngas-process-legend-static,
   .scwg-process-flow-cue-static { display: inline; }
-  .scwg-process-flow-cue > span:first-child { border-top-style: solid; }
+  .scwg-process-stage-progress > span { transform: none !important; }
 }

@@ -8,6 +8,7 @@ import {
   CoffeeRoastProfileDeepDive,
 } from "@/components/coffee-book-expansion";
 import { CoffeePostHarvestGuide } from "@/components/coffee-post-harvest-guide";
+import { MatterCoffeeBeans } from "@/components/interaction/matter-coffee-beans";
 import { CoffeeRegionExplorer } from "@/components/coffee-region-explorer";
 import { CoffeeRoastingSystems } from "@/components/coffee-roasting-systems";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
@@ -31,6 +32,7 @@ const coffeeGuideContents = [
     sections: [
       { href: "#coffee-botany", label: "Plant and cherry anatomy" },
       { href: "#coffee-plant-life-title", label: "Seed to ripe fruit" },
+      { href: "#coffee-bean-physics", label: "Coffee-bean physics" },
     ],
     title: "What coffee is",
   },
@@ -238,6 +240,25 @@ export function CoffeeGuide() {
           </div>
           <div className="border-t border-ink/[0.07] p-5 sm:p-6">
             <CoffeePlantDeepDive />
+          </div>
+        </DraftSection>
+        <DraftSection eyebrow="Interactive mechanics" id="coffee-bean-physics" title="A pile of coffee beans, governed by physics">
+          <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(16rem,0.72fr)_minmax(0,1.28fr)] lg:items-center">
+            <div className="grid content-start">
+              <CopyBlock title="Why use a physics engine here?">
+                <p className={paragraphClass}>
+                  A normal animation plays positions someone authored in advance. Matter.js instead calculates what
+                  should happen next from gravity, mass, friction, restitution and constraints. That makes every drop
+                  slightly different and lets your pointer become part of the system.
+                </p>
+                <p className={paragraphClass}>
+                  The same idea can become a draggable process-design sandbox: equipment blocks can have collision
+                  boundaries, snap constraints and connections that respond while you rearrange a flowsheet. The
+                  physics should support the explanation, though; it does not replace precise engineering geometry.
+                </p>
+              </CopyBlock>
+            </div>
+            <MatterCoffeeBeans />
           </div>
         </DraftSection>
       </GuideChapter>

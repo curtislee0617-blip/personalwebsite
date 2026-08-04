@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ContactCityTimeline } from "@/components/contact-city-timeline";
 import { PageIntro } from "@/components/page-intro";
 import { ProjectCarousel } from "@/components/project-carousel";
+import { websiteInteractionTools } from "@/lib/interaction-toolkit";
 import { projects } from "@/lib/projects";
 
 export const metadata: Metadata = { title: "Projects" };
@@ -43,11 +44,30 @@ export default function ProjectsPage() {
                   Over the summer of 2026, I launched this website. I wanted to build an internet presence beyond social media and combine everything I do in one place. Everything was designed and coded by me (with a significant amount of help from Codex). It was plenty of fun: I got to design my ideal website without being constrained by syntax, and I could be nitpicky about little details like my pixel-art map.
                 </p>
                 <ul className="website-project-facts">
-                  <li><strong>Built with</strong><span>Next.js 16, React 19, TypeScript, Tailwind CSS, and a lot of deliberate details built in CSS for artwork, transitions, and responsive layouts.</span></li>
+                  <li>
+                    <strong>Built with</strong>
+                    <span>
+                      Next.js 16, React 19, TypeScript, and Tailwind CSS form the core. D3.js powers the scientific maps and data graphics; Motion, Anime.js, GSAP + ScrollTrigger, dotLottie, use-gesture, and the View Transitions API handle movement and continuity; XState coordinates explicit interface modes; and Matter.js runs the interactive coffee-bean physics.
+                    </span>
+                  </li>
                   <li><strong>Hosted on</strong><span>Vercel, connected to the GitHub repository. The main branch powers production, while other branches receive preview deployments.</span></li>
                   <li><strong>Database</strong><span>Supabase Postgres stores the restaurant directory, restaurant recommendations, website-error feedback, contact-page presence, synced course plans, and recipe-upload metadata.</span></li>
                   <li><strong>File storage</strong><span>Cloudflare R2 stores the original images uploaded through the recipe admin.</span></li>
                 </ul>
+                <div className="website-project-toolkit">
+                  <div className="website-project-toolkit-heading">
+                    <strong>Interaction toolkit</strong>
+                    <span>Active foundations and client-only components, ready for experiments without changing the current visual language.</span>
+                  </div>
+                  <ul aria-label="Website animation and interaction technologies">
+                    {websiteInteractionTools.map((tool) => (
+                      <li data-status={tool.status.toLowerCase().replace(" ", "-")} key={tool.name} title={tool.capability}>
+                        <span>{tool.name}</span>
+                        <small>{tool.status}</small>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
                 <Link className="back-link-bubble website-project-link" href="/">Visit the front page</Link>
               </div>
             </article>

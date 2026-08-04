@@ -24,6 +24,94 @@
   gap: clamp(2.6rem, 5vw, 4.35rem);
 }
 
+.matter-coffee-beans {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.11);
+  border-radius: 1.35rem;
+  background: rgb(var(--color-paper) / 0.72);
+  box-shadow: 0 1rem 2.5rem rgb(57 39 27 / 0.09);
+}
+
+.matter-coffee-beans-stage {
+  position: relative;
+  height: clamp(18rem, 38vw, 25rem);
+  min-height: 18rem;
+  overflow: hidden;
+  background: #e8dece;
+}
+
+.matter-coffee-beans canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.matter-coffee-beans canvas:active { cursor: grabbing; }
+
+.matter-coffee-beans-label {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: grid;
+  padding: 0.55rem 0.65rem;
+  gap: 0.12rem;
+  border: 1px solid rgb(68 50 36 / 0.12);
+  border-radius: 0.65rem;
+  background: rgb(250 247 239 / 0.78);
+  color: rgb(62 47 36 / 0.66);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.matter-coffee-beans-label span {
+  font-size: 0.55rem;
+  font-weight: 760;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+.matter-coffee-beans-label strong {
+  font-family: var(--font-code);
+  font-size: 0.5rem;
+  font-weight: 520;
+}
+
+.matter-coffee-beans figcaption {
+  display: grid;
+  padding: 0.9rem;
+  align-items: center;
+  gap: 0.8rem;
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.matter-coffee-beans figcaption > div { display: grid; gap: 0.2rem; }
+.matter-coffee-beans figcaption strong { color: rgb(var(--color-ink) / 0.84); font-size: 0.67rem; }
+.matter-coffee-beans figcaption span { color: rgb(var(--color-ink) / 0.52); font-size: 0.58rem; line-height: 1.5; }
+
+.matter-coffee-beans button {
+  min-height: 2.25rem;
+  padding: 0.55rem 0.78rem;
+  border: 1px solid rgb(var(--color-moss) / 0.38);
+  border-radius: 999px;
+  background: rgb(var(--color-moss) / 0.12);
+  color: rgb(var(--color-ink) / 0.78);
+  font-size: 0.62rem;
+  font-weight: 760;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.matter-coffee-beans button:hover:not(:disabled) {
+  border-color: rgb(var(--color-moss) / 0.66);
+  background: rgb(var(--color-moss) / 0.2);
+  transform: translateY(-1px);
+}
+
+.matter-coffee-beans button:focus-visible { outline: 2px solid rgb(var(--color-moss)); outline-offset: 2px; }
+.matter-coffee-beans button:disabled { cursor: not-allowed; opacity: 0.5; }
+
 .coffee-guide-contents {
   display: none;
   overflow: hidden;
@@ -3648,4 +3736,10 @@
   .coffee-roaster-fan > span,
   .coffee-loop-pipe > i,
   .coffee-recirc-drum { animation: none; }
+  .matter-coffee-beans button { transition: none; }
+}
+
+@media (max-width: 560px) {
+  .matter-coffee-beans figcaption { grid-template-columns: 1fr; }
+  .matter-coffee-beans button { width: 100%; }
 }
