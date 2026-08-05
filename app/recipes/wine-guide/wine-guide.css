@@ -307,67 +307,35 @@
   overflow: hidden;
   border: 1px solid rgb(var(--color-ink) / 0.09);
   border-radius: 1.2rem;
-  background:
-    radial-gradient(circle at 38% 40%, rgb(var(--wine-cream) / 0.15), transparent 34%),
-    rgb(var(--color-paper) / 0.36);
+  background: rgb(var(--color-paper) / 0.36);
 }
 
-.wine-grape-anatomy svg {
+.wine-grape-anatomy-photo {
   display: block;
   width: 100%;
   height: auto;
 }
 
 .wine-grape-anatomy figcaption {
+  display: grid;
   padding: 0.75rem 0.9rem;
+  gap: 0.35rem;
   border-top: 1px solid rgb(var(--color-ink) / 0.07);
   color: rgb(var(--color-ink) / 0.49);
   font-size: 0.58rem;
   line-height: 1.55;
 }
 
-.wine-grape-skin-line {
-  fill: none;
-  stroke: rgb(var(--wine-red-dark) / 0.82);
-  stroke-width: 11;
+.wine-grape-photo-credit {
+  color: rgb(var(--color-ink) / 0.4);
+  font-size: 0.5rem;
 }
 
-.wine-grape-vein {
-  fill: none;
-  stroke: rgb(var(--wine-red-dark) / 0.18);
-  stroke-width: 3;
-}
-
-.wine-grape-seed {
-  fill: #a67b3e;
-  stroke: #735027;
-  stroke-width: 2;
-}
-
-.wine-grape-stem {
-  fill: none;
-  stroke: rgb(var(--wine-leaf));
-  stroke-linecap: round;
-  stroke-width: 10;
-}
-
-.wine-grape-callouts path {
-  fill: none;
-  stroke: rgb(var(--color-ink) / 0.28);
-  stroke-width: 1.5;
-}
-
-.wine-grape-callouts text {
-  fill: rgb(var(--color-ink) / 0.78);
-  font-family: var(--font-ui);
-  font-size: 16px;
-  font-weight: 760;
-}
-
-.wine-grape-callouts .is-note {
-  fill: rgb(var(--color-ink) / 0.48);
-  font-size: 11px;
-  font-weight: 560;
+.wine-grape-photo-credit a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--color-ink) / 0.2);
+  text-underline-offset: 0.14em;
 }
 
 .wine-book-note,
@@ -459,6 +427,27 @@
   color: rgb(var(--color-ink) / 0.55);
   font-size: 0.57rem;
   font-weight: 560;
+}
+
+.wine-climate-clock {
+  margin-top: 0.8rem;
+  padding: 1rem;
+  border: 1px solid rgb(var(--wine-gold) / 0.22);
+  border-radius: 1rem;
+  background: rgb(var(--wine-gold) / 0.065);
+}
+
+.wine-climate-clock h4 {
+  margin-top: 0.3rem;
+  font-size: 0.92rem;
+}
+
+.wine-climate-clock > p:last-child {
+  margin-top: 0.5rem;
+  max-width: 58rem;
+  color: rgb(var(--color-ink) / 0.54);
+  font-size: 0.62rem;
+  line-height: 1.62;
 }
 
 .wine-section-intro {
@@ -606,16 +595,17 @@
 }
 
 .wine-world-country {
-  fill: rgb(245 245 238);
-  stroke: rgb(146 157 153 / 0.78);
-  stroke-width: 0.62;
+  fill: rgb(239 241 234);
+  stroke: rgb(111 130 122 / 0.9);
+  stroke-width: 0.9;
   vector-effect: non-scaling-stroke;
   transition: fill 150ms ease, opacity 150ms ease, stroke 150ms ease;
 }
 
 .wine-world-country[data-featured="true"] {
-  fill: rgb(222 229 211);
-  stroke: rgb(101 119 107 / 0.74);
+  fill: rgb(190 211 185);
+  stroke: rgb(66 91 72 / 0.96);
+  stroke-width: 1.08;
   cursor: pointer;
   outline: none;
 }
@@ -1201,11 +1191,6 @@
   outline-offset: 2px;
 }
 
-.wine-map-layer-switch {
-  width: fit-content;
-  margin-bottom: 0.45rem;
-}
-
 .wine-burgundy-detail,
 .wine-bordeaux-detail-map {
   display: grid;
@@ -1482,13 +1467,7 @@
   fill: rgb(var(--color-surface) / 0.94);
 }
 
-.wine-country-boundary-map[data-map-layer="atlas"] .wine-vector-map-paper,
-.wine-bordeaux-boundary-map[data-map-layer="atlas"] .wine-vector-map-paper {
-  fill: rgb(211 230 239);
-}
-
-.wine-burgundy-overview-map .wine-vector-map-paper,
-.wine-burgundy-boundary-map[data-map-layer="atlas"] .wine-vector-map-paper {
+.wine-burgundy-overview-map .wine-vector-map-paper {
   fill: rgb(241 242 234);
 }
 
@@ -1504,16 +1483,6 @@
   fill: rgb(var(--color-paper) / 0.14);
 }
 
-.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-land {
-  fill: transparent;
-}
-
-.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-neighbours path {
-  fill: rgb(var(--color-paper) / 0.08);
-  stroke: rgb(var(--color-paper) / 0.68);
-}
-
-.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-border,
 .wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-shape,
 .wine-burgundy-boundary-map[data-map-layer="satellite"] .wine-burgundy-boundary-area,
 .wine-bordeaux-boundary-map[data-map-layer="satellite"] .wine-bordeaux-boundary-area {
@@ -1640,21 +1609,14 @@
 
 /* Country view */
 
-.wine-country-neighbours path {
-  fill: rgb(235 238 231);
-  stroke: rgb(116 130 127 / 0.76);
-  stroke-width: 0.82;
-  vector-effect: non-scaling-stroke;
-}
-
-.wine-country-land {
-  fill: rgb(248 245 234);
-}
-
-.wine-country-border {
+.wine-country-shared-borders {
   fill: none;
-  stroke: rgb(83 98 94 / 0.88);
-  stroke-width: 1.35;
+  stroke: rgb(251 250 240 / 0.84);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.05;
+  filter: drop-shadow(0 0 0.8px rgb(25 35 31 / 0.82));
+  pointer-events: none;
   vector-effect: non-scaling-stroke;
 }
 
@@ -1676,20 +1638,20 @@
 }
 
 .wine-country-region-shape {
-  stroke: rgb(var(--color-ink) / 0.3);
-  stroke-width: 0.72;
+  stroke: rgb(var(--color-ink) / 0.62);
+  stroke-width: 1.12;
   cursor: pointer;
   outline: none;
   vector-effect: non-scaling-stroke;
   transition: filter 150ms ease, fill 150ms ease, stroke 150ms ease;
 }
 
-.wine-country-region-shape[data-colour-index="0"] { fill: rgb(117 61 75 / 0.24); }
-.wine-country-region-shape[data-colour-index="1"] { fill: rgb(86 114 82 / 0.22); }
-.wine-country-region-shape[data-colour-index="2"] { fill: rgb(182 135 68 / 0.21); }
-.wine-country-region-shape[data-colour-index="3"] { fill: rgb(86 104 124 / 0.2); }
-.wine-country-region-shape[data-colour-index="4"] { fill: rgb(133 91 112 / 0.21); }
-.wine-country-region-shape[data-colour-index="5"] { fill: rgb(93 124 119 / 0.22); }
+.wine-country-region-shape[data-colour-index="0"] { fill: rgb(117 61 75 / 0.42); }
+.wine-country-region-shape[data-colour-index="1"] { fill: rgb(86 114 82 / 0.4); }
+.wine-country-region-shape[data-colour-index="2"] { fill: rgb(182 135 68 / 0.4); }
+.wine-country-region-shape[data-colour-index="3"] { fill: rgb(86 104 124 / 0.38); }
+.wine-country-region-shape[data-colour-index="4"] { fill: rgb(133 91 112 / 0.4); }
+.wine-country-region-shape[data-colour-index="5"] { fill: rgb(93 124 119 / 0.4); }
 
 .wine-country-region-shape[data-precision="administrative-redraw"] {
   stroke-dasharray: 2 2;
@@ -1713,7 +1675,6 @@
   vector-effect: non-scaling-stroke;
 }
 
-.wine-country-rivers path,
 .wine-bordeaux-rivers path,
 .wine-burgundy-overview-water path {
   fill: none;
@@ -1722,26 +1683,7 @@
   vector-effect: non-scaling-stroke;
 }
 
-.wine-country-rivers .wine-waterway-bank {
-  stroke: rgb(var(--color-paper) / 0.72);
-  stroke-width: 2.4;
-}
-
-.wine-country-rivers .wine-waterway-channel {
-  stroke: rgb(79 119 135 / 0.68);
-  stroke-width: 1.05;
-}
-
-.wine-country-rivers [data-waterway-size="minor"] .wine-waterway-bank {
-  stroke-width: 1.8;
-}
-
-.wine-country-rivers [data-waterway-size="minor"] .wine-waterway-channel {
-  stroke-width: 0.72;
-}
-
-.wine-country-contour-labels text,
-.wine-country-river-labels text {
+.wine-country-contour-labels text {
   font-family: var(--font-ui);
   font-size: 9px;
   font-style: italic;
@@ -1753,10 +1695,6 @@
 
 .wine-country-contour-labels text {
   fill: rgb(var(--color-ink) / 0.42);
-}
-
-.wine-country-river-labels text {
-  fill: rgb(65 104 119 / 0.78);
 }
 
 .wine-country-region-labels g {
@@ -1933,40 +1871,40 @@
 }
 
 .wine-burgundy-boundary-area[data-tier="village"] {
-  fill: rgb(var(--wine-leaf) / 0.09);
-  stroke: rgb(var(--wine-leaf) / 0.48);
-  stroke-width: 1.2;
+  fill: rgb(var(--wine-leaf) / 0.22);
+  stroke: rgb(var(--wine-leaf) / 0.76);
+  stroke-width: 1.5;
 }
 
 .wine-burgundy-boundary-area[data-tier="village"][data-parent="Meursault"] {
-  fill: rgb(208 174 105 / 0.13);
-  stroke: rgb(154 111 48 / 0.58);
+  fill: rgb(208 174 105 / 0.28);
+  stroke: rgb(154 111 48 / 0.8);
 }
 
 .wine-burgundy-boundary-area[data-tier="village"][data-parent="Puligny-Montrachet"] {
-  fill: rgb(93 128 98 / 0.12);
-  stroke: rgb(72 104 77 / 0.58);
+  fill: rgb(93 128 98 / 0.27);
+  stroke: rgb(72 104 77 / 0.82);
 }
 
 .wine-burgundy-boundary-area[data-tier="village"][data-parent="Chassagne-Montrachet"] {
-  fill: rgb(122 62 79 / 0.1);
-  stroke: rgb(122 62 79 / 0.55);
+  fill: rgb(122 62 79 / 0.24);
+  stroke: rgb(122 62 79 / 0.8);
 }
 
 .wine-burgundy-boundary-area[data-tier="premier"] {
-  fill: rgb(var(--wine-red) / 0.3);
-  stroke: rgb(var(--wine-red-dark) / 0.7);
-  stroke-width: 1.1;
+  fill: rgb(var(--wine-red) / 0.46);
+  stroke: rgb(var(--wine-red-dark) / 0.86);
+  stroke-width: 1.4;
 }
 
 .wine-burgundy-boundary-area[data-tier="premier"][data-parent="Meursault"] {
-  fill: rgb(194 142 65 / 0.4);
-  stroke: rgb(148 100 39 / 0.78);
+  fill: rgb(194 142 65 / 0.54);
+  stroke: rgb(148 100 39 / 0.9);
 }
 
 .wine-burgundy-boundary-area[data-tier="premier"][data-parent="Puligny-Montrachet"] {
-  fill: rgb(76 119 81 / 0.38);
-  stroke: rgb(54 94 63 / 0.8);
+  fill: rgb(76 119 81 / 0.52);
+  stroke: rgb(54 94 63 / 0.92);
 }
 
 .wine-burgundy-boundary-area[data-tier="grand"] {
@@ -2076,7 +2014,7 @@
 
 .wine-bordeaux-boundary-area {
   stroke-linejoin: round;
-  stroke-width: 0.72;
+  stroke-width: 1.12;
   cursor: pointer;
   outline: none;
   vector-effect: non-scaling-stroke;
@@ -2084,18 +2022,18 @@
 }
 
 .wine-bordeaux-boundary-area[data-bank="Left Bank"] {
-  fill: rgb(126 60 84 / 0.2);
-  stroke: rgb(111 46 68 / 0.56);
+  fill: rgb(126 60 84 / 0.38);
+  stroke: rgb(111 46 68 / 0.82);
 }
 
 .wine-bordeaux-boundary-area[data-bank="Right Bank"] {
-  fill: rgb(77 112 78 / 0.2);
-  stroke: rgb(57 91 61 / 0.58);
+  fill: rgb(77 112 78 / 0.38);
+  stroke: rgb(57 91 61 / 0.84);
 }
 
 .wine-bordeaux-boundary-area[data-bank="Between the rivers"] {
-  fill: rgb(190 137 58 / 0.19);
-  stroke: rgb(152 99 34 / 0.58);
+  fill: rgb(190 137 58 / 0.36);
+  stroke: rgb(152 99 34 / 0.84);
 }
 
 .wine-bordeaux-boundary-area:hover,
@@ -2775,6 +2713,10 @@
   color: rgb(var(--color-ink) / 0.54);
   font-size: 0.61rem;
   line-height: 1.6;
+}
+
+.wine-production-language {
+  margin-top: 0.8rem;
 }
 
 /* Production */
@@ -3715,12 +3657,6 @@
 
   .wine-map-frame {
     overflow-x: auto;
-  }
-
-  .wine-map-layer-switch {
-    position: sticky;
-    z-index: 2;
-    left: 0;
   }
 
   .wine-satellite-attribution {
@@ -4809,4 +4745,1707 @@
     max-width: 100%;
     overflow-x: auto;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Printed-atlas texture. The vector maps were flat fills, which read as a
+   diagram rather than an engraved plate. Filters and patterns live in
+   components/wine-map-texture.tsx; these rules control where they show.
+--------------------------------------------------------------------------- */
+
+/* Grain wash sits directly on the land, under every data layer. */
+.wine-map-grain {
+  fill: rgb(248 245 234);
+  pointer-events: none;
+}
+
+/* Water rule only belongs on the atlas layer — over satellite imagery it would
+   just be noise on top of a photograph. */
+.wine-map-water-hatch {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.wine-country-boundary-map[data-map-layer="atlas"] .wine-map-water-hatch,
+.wine-bordeaux-boundary-map[data-map-layer="atlas"] .wine-map-water-hatch,
+.wine-burgundy-boundary-map[data-map-layer="atlas"] .wine-map-water-hatch {
+  opacity: 1;
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-map-grain {
+  opacity: 0;
+}
+
+/* Rivers, restrained. They were competing with the appellation boundaries that
+   carry the actual argument, so the channel is thinner, cooler and translucent,
+   and the paper-coloured bank that made them read as roads is much softer. */
+.wine-country-rivers .wine-waterway-bank {
+  stroke: rgb(var(--color-paper) / 0.45);
+  stroke-width: 1.9;
+}
+
+.wine-country-rivers .wine-waterway-channel {
+  stroke: rgb(96 134 152 / 0.5);
+  stroke-width: 0.85;
+}
+
+.wine-country-rivers [data-waterway-size="minor"] .wine-waterway-bank {
+  stroke-width: 1.3;
+}
+
+.wine-country-rivers [data-waterway-size="minor"] .wine-waterway-channel {
+  stroke: rgb(96 134 152 / 0.36);
+  stroke-width: 0.58;
+}
+
+/* River labels should whisper. */
+.wine-country-rivers text {
+  fill: rgb(88 122 138 / 0.72);
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wine-map-grain { opacity: 0.65; }
+}
+
+/* ==========================================================================
+   Paper layer
+   --------------------------------------------------------------------------
+   The guide had grown into a wall of bordered cards: every fact in its own
+   bubble, three and four to a row, which reads as a dashboard rather than as
+   something you sit down and read. Nothing is removed here — every section,
+   figure and interactive stays — but the reading parts are set as continuous
+   prose, at a size meant for actual reading, and only meaningful diagrams keep
+   their own visual frames.
+   ========================================================================== */
+
+.wine-guide {
+  --wine-measure: 100%;
+}
+
+/* Sections stop being cards and become article divisions. */
+.wine-section {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.wine-section > header {
+  max-width: var(--wine-measure);
+  margin-inline: auto;
+  padding: 0 0 0.6rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.14);
+}
+
+.wine-section-body {
+  padding: 1.3rem 0 0;
+}
+
+.wine-guide-chapter-sections {
+  margin-top: 1.8rem;
+  gap: clamp(2.6rem, 4.5vw, 4rem);
+}
+
+/* Reading size. 0.72rem was sized for a card, not for prose. */
+.wine-copy,
+.wine-section-body article > p,
+.wine-section-body .wine-copy-block p {
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: 0.84rem;
+  line-height: 1.8;
+}
+
+.wine-copy + .wine-copy,
+.wine-section-body article > p + p {
+  margin-top: 0.85rem;
+}
+
+/* Every text run shares the full guide width. */
+.wine-copy-block,
+.wine-section-intro,
+.wine-book-note,
+.wine-science-aside,
+.wine-source-method,
+.wine-extraction-note,
+.wine-sparkling-base-note,
+.wine-map-source-note {
+  max-width: var(--wine-measure);
+  margin-inline: auto;
+}
+
+.wine-copy-block {
+  padding: 0 0 1.15rem;
+  border-bottom: 0;
+}
+
+.wine-copy-block h4,
+.wine-section-body article > h4 {
+  margin-bottom: 0.35rem;
+  font-size: 0.92rem;
+}
+
+/* Card grids become stacked prose. */
+.wine-two-column,
+.wine-two-column.is-anatomy,
+.wine-three-column,
+.wine-composition-grid,
+.wine-vineyard-grid,
+.wine-language-grid,
+.wine-cellar-tools,
+.wine-cellar-paths,
+.wine-style-grid,
+.wine-service-grid,
+.wine-sweet-paths,
+.wine-sherry-family,
+.wine-fortified-grid {
+  display: block;
+  max-width: var(--wine-measure);
+  margin-inline: auto;
+  margin-top: 1.4rem;
+}
+
+/* No leading gap when the run opens the section — the header rule already
+   provides the separation. */
+.wine-section-body > *:first-child {
+  margin-top: 0;
+}
+
+.wine-composition-grid article,
+.wine-vineyard-grid article,
+.wine-language-grid article,
+.wine-cellar-tools article,
+.wine-cellar-paths > article,
+.wine-style-grid article,
+.wine-service-grid article,
+.wine-sweet-paths article,
+.wine-sherry-family article,
+.wine-fortified-grid article {
+  overflow: visible;
+  min-height: 0;
+  margin: 0 0 1.45rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* The small kicker above a term reads as an eyebrow rather than a chip. */
+.wine-language-grid article > span,
+.wine-sweet-paths article > span {
+  display: block;
+  margin-bottom: 0.1rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.6rem;
+  font-weight: 640;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* Composition figures read as a run-in definition: "≈85% water — the solvent…" */
+.wine-composition-grid article > strong,
+.wine-composition-grid article > h4 {
+  display: inline;
+  font-size: 0.92rem;
+}
+
+.wine-composition-grid article > h4::before {
+  content: " ";
+}
+
+.wine-composition-grid article > h4::after {
+  content: " — ";
+  color: rgb(var(--color-ink) / 0.4);
+  font-weight: 500;
+}
+
+.wine-composition-grid article > p {
+  display: inline;
+}
+
+/* Cellar paths keep their numbered steps, minus the card. */
+.wine-cellar-paths article > header {
+  padding: 0 0 0.35rem;
+  border: 0;
+  background: none;
+}
+
+.wine-cellar-paths article > ol {
+  padding: 0 0 0 0.1rem;
+}
+
+/* The anatomy figure now has the column to itself, so it can be larger and the
+   callouts stay legible. */
+.wine-grape-anatomy {
+  max-width: var(--wine-measure);
+  margin: 0 auto 1.5rem;
+  border-radius: 0.9rem;
+}
+
+@media (min-width: 1100px) {
+  .wine-grape-anatomy {
+    max-width: calc(var(--wine-measure) + 9rem);
+  }
+}
+
+/* Cellar paths: the four routes now run down the page, so the steps are set at
+   reading size and the closing note loses its tinted band. */
+.wine-cellar-paths li {
+  color: rgb(var(--color-ink) / 0.66);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.wine-cellar-paths ol {
+  padding: 0.4rem 0 0.55rem;
+  gap: 0.34rem;
+}
+
+.wine-cellar-paths article > p {
+  margin-top: 0.45rem;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.wine-cellar-paths article > header > h4 {
+  font-size: 0.92rem;
+}
+
+/* Section headings carry the structure now that nothing is boxed: a rule under
+   each one tells the reader where they are without narrowing the text. */
+.wine-section > header {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.16);
+}
+
+/* Multi-item runs can use the width again — two columns of prose rather than
+   one narrow ribbon, and never a single stranded column on a wide screen. */
+@media (min-width: 900px) {
+  .wine-vineyard-grid,
+  .wine-language-grid,
+  .wine-cellar-tools,
+  .wine-service-grid,
+  .wine-sweet-paths,
+  .wine-style-grid,
+  .wine-cellar-paths {
+    column-gap: 2.6rem;
+    columns: 2;
+  }
+
+  .wine-vineyard-grid article,
+  .wine-language-grid article,
+  .wine-cellar-tools article,
+  .wine-service-grid article,
+  .wine-sweet-paths article,
+  .wine-style-grid article,
+  .wine-cellar-paths > article {
+    break-inside: avoid;
+  }
+}
+
+/* Grape atlas imagery. */
+.wine-grape-thumb {
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: none;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.wine-grape-photo {
+  margin: 0 0 0.7rem;
+}
+
+.wine-grape-photo img {
+  display: block;
+  width: 100%;
+  max-height: 15rem;
+  border-radius: 0.85rem;
+  object-fit: cover;
+}
+
+.wine-grape-photo figcaption {
+  margin-top: 0.3rem;
+  color: rgb(var(--color-ink) / 0.44);
+  font-size: 0.56rem;
+  line-height: 1.5;
+}
+
+.wine-grape-photo figcaption a {
+  color: rgb(var(--color-ink) / 0.6);
+  text-decoration: underline;
+}
+
+/* Concise index. Eight boxed cards listing every sub-section was a page of its
+   own before the guide had started; this is a single wrapped run of chapters,
+   with the sub-sections inline underneath each one. */
+.wine-guide-contents {
+  overflow: visible;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.14);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.14);
+  border-radius: 0;
+  background: none;
+}
+
+.wine-guide-contents > header {
+  display: block;
+  padding: 0.75rem 0 0.15rem;
+  border-bottom: 0;
+}
+
+.wine-guide-contents h2 {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.wine-guide-contents > header > p {
+  display: none;
+}
+
+.wine-guide-contents > ol {
+  display: grid;
+  padding: 0.35rem 0 0.85rem;
+  gap: 0.5rem 1.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+}
+
+.wine-guide-contents li {
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.wine-guide-contents-chapter {
+  padding: 0;
+  border-bottom: 0;
+  font-size: 0.68rem;
+}
+
+.wine-guide-contents li > div {
+  display: block;
+  padding: 0.1rem 0 0;
+}
+
+/* Sub-sections run inline and wrap, separated by a thin divider. */
+.wine-guide-contents li > div a {
+  display: inline;
+  padding: 0;
+  font-size: 0.56rem;
+}
+
+.wine-guide-contents li > div a + a::before {
+  content: " · ";
+  color: rgb(var(--color-ink) / 0.28);
+}
+
+/* ---------------------------------------------------------------------------
+   Satellite legibility
+   The satellite layer was being muted almost out of existence: the tiles were
+   desaturated to 0.68, then covered by a 14% paper wash, a 8% paper fill over
+   every neighbouring country, and finally the appellation fills. The imagery
+   survived on water, where nothing else is drawn, which is why the sea looked
+   photographic and the land looked like flat card. The base is the point of
+   this layer, so it now stays close to the original and the overlays step back.
+   --------------------------------------------------------------------------- */
+.wine-satellite-tiles image {
+  filter: saturate(0.92) contrast(1) brightness(1);
+}
+
+.wine-satellite-wash {
+  fill: rgb(var(--color-paper) / 0.04);
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-neighbours path {
+  fill: rgb(var(--color-paper) / 0.03);
+}
+
+/* Appellation fills read as a tint over imagery rather than as a coat of paint.
+   The boundary stroke carries the shape, so the fill can afford to be faint. */
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-shape {
+  fill-opacity: 0.42;
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-shape:hover,
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-shape:focus-visible,
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-shape[data-selected="true"] {
+  fill-opacity: 1;
+}
+
+/* Contour and elevation guides are an atlas device; over imagery they are noise
+   on top of terrain that is already visible. */
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-contours {
+  opacity: 0.35;
+}
+
+/* Over imagery the coastline is already there, drawn by nature at infinite
+   resolution. A vector outline on top of it can only disagree with it, so the
+   country and neighbour outlines drop out on the satellite layer and the
+   neighbour labels carry the orientation instead. */
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-border {
+  display: none;
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-neighbours path {
+  stroke: none;
+}
+
+/* On the atlas layer the outline is the map, so it stays — just with joins that
+   round off the remaining facets rather than spiking at every vertex. */
+.wine-country-border,
+.wine-country-neighbours path,
+.wine-country-region-shape {
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* ---------------------------------------------------------------------------
+   Terrain layer
+   A self-hosted Natural Earth relief pyramid, so this basemap costs no API call
+   and cannot be taken away. Everything the satellite layer does to get out of
+   the base's way applies here too: no paper grain, no vector coastline over a
+   raster that already draws one, and appellation fills that tint rather than
+   cover. The relief is calmer than photography, so the fills can sit a little
+   stronger than they do over imagery.
+   --------------------------------------------------------------------------- */
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-land,
+.wine-bordeaux-boundary-map[data-map-layer="terrain"] .wine-country-land,
+.wine-burgundy-boundary-map[data-map-layer="terrain"] .wine-country-land {
+  fill: transparent;
+}
+
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-map-grain,
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-map-water-hatch {
+  opacity: 0;
+}
+
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-border {
+  display: none;
+}
+
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-neighbours path {
+  fill: rgb(var(--color-paper) / 0.06);
+  stroke: rgb(var(--color-ink) / 0.14);
+}
+
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-region-shape {
+  fill-opacity: 0.52;
+}
+
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-region-shape:hover,
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-region-shape:focus-visible,
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-region-shape[data-selected="true"] {
+  fill-opacity: 1;
+}
+
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-region-labels rect {
+  fill: rgb(var(--color-paper) / 0.92);
+}
+
+/* Relief is already a soft, low-contrast image; the satellite wash and
+   desaturation would only mud it. */
+.wine-satellite-tiles[data-source="terrain"] image {
+  filter: none;
+}
+
+.wine-satellite-tiles[data-source="terrain"] .wine-satellite-wash {
+  fill: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Region shading
+   The appellation fills sat at roughly 0.2 alpha, which over a terrain or
+   satellite base amounted to nothing — the names read as words floating on a
+   photograph rather than as labels belonging to an area. The six hues are now
+   carried at a strength you can actually see and tell apart, with a firmer
+   boundary, and each layer scales them back only as far as its base demands.
+   --------------------------------------------------------------------------- */
+.wine-country-region-shape {
+  stroke: rgb(var(--color-ink) / 0.42);
+  stroke-width: 0.95;
+}
+
+.wine-country-region-shape[data-colour-index="0"] { fill: rgb(140 58 78 / 0.6); }
+.wine-country-region-shape[data-colour-index="1"] { fill: rgb(88 124 78 / 0.58); }
+.wine-country-region-shape[data-colour-index="2"] { fill: rgb(198 140 56 / 0.56); }
+.wine-country-region-shape[data-colour-index="3"] { fill: rgb(76 106 138 / 0.56); }
+.wine-country-region-shape[data-colour-index="4"] { fill: rgb(146 84 122 / 0.57); }
+.wine-country-region-shape[data-colour-index="5"] { fill: rgb(74 130 122 / 0.58); }
+
+/* Relief is soft and low-contrast, so the fills barely need holding back. Over
+   photography they do, or the imagery stops being readable underneath. */
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-region-shape {
+  fill-opacity: 0.88;
+}
+
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-shape {
+  fill-opacity: 0.62;
+}
+
+/* A selected or hovered region should still read as clearly chosen against
+   neighbours that are now themselves strongly coloured. */
+.wine-country-region-shape:hover,
+.wine-country-region-shape:focus-visible,
+.wine-country-region-shape[data-selected="true"],
+.wine-country-boundary-map[data-map-layer="terrain"] .wine-country-region-shape[data-selected="true"],
+.wine-country-boundary-map[data-map-layer="satellite"] .wine-country-region-shape[data-selected="true"] {
+  fill: rgb(var(--wine-red) / 0.86);
+  fill-opacity: 1;
+  stroke: rgb(var(--wine-gold));
+  stroke-width: 1.9;
+}
+
+/* The name now sits on colour, so it needs a slightly heavier halo to stay
+   legible rather than a light one tuned for near-white ground. */
+.wine-country-region-labels text {
+  paint-order: stroke;
+  stroke: rgb(252 251 247 / 0.92);
+  stroke-width: 3.4px;
+}
+
+/* ==========================================================================
+   Editorial reading layer
+   --------------------------------------------------------------------------
+   Maps, atlases and true comparisons remain figures. Everything else reads as
+   a continuous field guide: one measure, ordinary paragraphs and ruled rows
+   instead of a new rounded container around every fact.
+   ========================================================================== */
+
+.wine-guide-page > .page-intro .page-intro-description {
+  max-width: 47rem;
+  font-size: clamp(0.86rem, 1.05vw, 1rem);
+  line-height: 1.78;
+}
+
+.wine-guide {
+  gap: clamp(4.5rem, 8vw, 7rem);
+}
+
+.wine-guide-contents {
+  display: block;
+  width: var(--wine-measure);
+  margin-inline: auto;
+}
+
+.wine-guide-contents > ol {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.wine-guide-contents li {
+  width: auto;
+  scroll-snap-align: unset;
+}
+
+.wine-essay-intro {
+  width: var(--wine-measure);
+  margin-inline: auto;
+}
+
+.wine-essay-intro p {
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: clamp(0.86rem, 0.9vw, 0.96rem);
+  line-height: 1.82;
+  text-wrap: pretty;
+}
+
+.wine-essay-intro p + p {
+  margin-top: 1rem;
+}
+
+.wine-essay-intro {
+  margin-bottom: 1.35rem;
+}
+
+.wine-guide-chapter-header {
+  display: block;
+  width: var(--wine-measure);
+  margin-inline: auto;
+  padding: clamp(2.4rem, 5vw, 4rem) 0 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.2);
+  border-bottom: 0;
+}
+
+.wine-guide-chapter-header h2 {
+  max-width: 42rem;
+  font-size: clamp(2.25rem, 5vw, 3.8rem);
+  font-weight: 560;
+  line-height: 0.98;
+}
+
+.wine-guide-chapter-header > p {
+  max-width: 43rem;
+  margin-top: 0.9rem;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  line-height: 1.75;
+}
+
+.wine-guide-chapter-sections {
+  margin-top: clamp(2.8rem, 5vw, 4.2rem);
+  gap: clamp(3.8rem, 7vw, 6rem);
+}
+
+.wine-section > header {
+  width: var(--wine-measure);
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+}
+
+.wine-section > header h3 {
+  max-width: 43rem;
+  margin-top: 0.35rem;
+  font-size: clamp(1.55rem, 3vw, 2.2rem);
+  font-weight: 590;
+  line-height: 1.12;
+}
+
+.wine-section-body {
+  padding: 1.15rem 0 0;
+}
+
+.wine-copy,
+.wine-section-body article > p,
+.wine-section-body .wine-copy-block p {
+  color: rgb(var(--color-ink) / 0.72);
+  font-size: clamp(0.84rem, 0.88vw, 0.94rem);
+  line-height: 1.82;
+}
+
+.wine-copy-block {
+  padding-bottom: 1.25rem;
+}
+
+.wine-copy-block h4,
+.wine-section-body article > h4 {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.wine-section-intro {
+  display: block;
+  width: var(--wine-measure);
+  padding-bottom: 0;
+  border: 0;
+}
+
+.wine-section-intro > p + p {
+  margin-top: 0.9rem;
+}
+
+/* Numbered material keeps sequence, without pretending that every step is a
+   separate object floating above the page. */
+.wine-vine-cycle > ol,
+.wine-cellar-reception,
+.wine-finishing-flow,
+.wine-traditional-steps,
+.wine-tasting-sequence {
+  display: block;
+  width: var(--wine-measure);
+  margin-inline: auto;
+}
+
+.wine-guide :is(
+  .wine-vine-cycle > ol > li,
+  .wine-cellar-reception > li,
+  .wine-finishing-flow > article,
+  .wine-traditional-steps > li,
+  .wine-tasting-sequence > li,
+  .wine-port-process > ol > li
+) {
+  display: grid;
+  min-height: 0;
+  margin: 0;
+  padding: 1.05rem 0;
+  gap: 0.9rem;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  grid-template-columns: 2.3rem minmax(0, 1fr);
+}
+
+.wine-guide :is(
+  .wine-vine-cycle > ol > li,
+  .wine-cellar-reception > li,
+  .wine-finishing-flow > article,
+  .wine-traditional-steps > li,
+  .wine-port-process > ol > li
+) > span,
+.wine-cellar-paths li span {
+  display: block;
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: rgb(var(--wine-red));
+  font-size: 0.67rem;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.wine-tasting-sequence > li > span {
+  padding-top: 0.05rem;
+  color: rgb(var(--wine-red));
+  font-size: 0.69rem;
+  font-weight: 760;
+}
+
+.wine-finishing-flow > article > :not(span) {
+  grid-column: 2;
+}
+
+/* Reference groups become ruled reading lists. Interactive atlas controls are
+   deliberately absent from this selector. */
+.wine-guide :is(
+  .wine-composition-grid,
+  .wine-vineyard-grid,
+  .wine-language-grid,
+  .wine-vineyard-practice-grid,
+  .wine-farming-approaches,
+  .wine-hazard-grid,
+  .wine-harvest-compare,
+  .wine-press-grid,
+  .wine-cellar-control-grid,
+  .wine-extraction-atlas > div,
+  .wine-package-grid,
+  .wine-cellar-tools,
+  .wine-cellar-paths,
+  .wine-style-grid,
+  .wine-sweet-paths,
+  .wine-sparkling-methods,
+  .wine-sparkling-science,
+  .wine-sparkling-region-atlas,
+  .wine-fortification-choices,
+  .wine-fault-atlas,
+  .wine-service-grid,
+  .wine-service-temperatures,
+  .wine-source-list,
+  .wine-fortified-grid
+) {
+  display: block;
+  width: var(--wine-measure);
+  margin-inline: auto;
+  columns: auto;
+}
+
+.wine-guide :is(
+  .wine-composition-grid,
+  .wine-vineyard-grid,
+  .wine-language-grid,
+  .wine-vineyard-practice-grid,
+  .wine-farming-approaches,
+  .wine-hazard-grid,
+  .wine-harvest-compare,
+  .wine-press-grid,
+  .wine-cellar-control-grid,
+  .wine-extraction-atlas > div,
+  .wine-package-grid,
+  .wine-cellar-tools,
+  .wine-cellar-paths,
+  .wine-style-grid,
+  .wine-sweet-paths,
+  .wine-sparkling-methods,
+  .wine-sparkling-science,
+  .wine-sparkling-region-atlas,
+  .wine-fortification-choices,
+  .wine-fault-atlas,
+  .wine-service-grid,
+  .wine-service-temperatures,
+  .wine-source-list,
+  .wine-fortified-grid
+) > article {
+  min-height: 0;
+  margin: 0;
+  padding: 1.05rem 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  break-inside: avoid;
+}
+
+.wine-guide :is(
+  .wine-vineyard-practice-grid,
+  .wine-hazard-grid,
+  .wine-press-grid,
+  .wine-cellar-control-grid,
+  .wine-finishing-flow,
+  .wine-sparkling-region-atlas,
+  .wine-fault-atlas
+) > article:nth-child(n) {
+  background: none;
+}
+
+.wine-guide :is(
+  .wine-vineyard-practice-grid,
+  .wine-farming-approaches,
+  .wine-hazard-grid,
+  .wine-harvest-compare,
+  .wine-press-grid,
+  .wine-cellar-control-grid,
+  .wine-package-grid,
+  .wine-sparkling-science,
+  .wine-sparkling-region-atlas,
+  .wine-fortification-choices,
+  .wine-fault-atlas,
+  .wine-service-temperatures,
+  .wine-source-list
+) :is(p, small, dd) {
+  font-size: clamp(0.78rem, 0.82vw, 0.87rem);
+  line-height: 1.72;
+}
+
+.wine-guide :is(
+  .wine-vineyard-practice-grid,
+  .wine-farming-approaches,
+  .wine-hazard-grid,
+  .wine-harvest-compare,
+  .wine-press-grid,
+  .wine-cellar-control-grid,
+  .wine-package-grid,
+  .wine-sparkling-region-atlas
+) article > span {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: rgb(var(--color-ink) / 0.45);
+  letter-spacing: 0.1em;
+}
+
+/* Small measurements read as footnotes to the sequence, not KPI cards. */
+.wine-vine-physiology {
+  display: grid;
+  width: var(--wine-measure);
+  margin: 1rem auto 0;
+  gap: 0 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.wine-vine-physiology article {
+  min-height: 0;
+  padding: 0.85rem 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 0;
+  background: none;
+}
+
+.wine-vine-physiology strong {
+  font-size: 1rem;
+}
+
+.wine-vine-physiology p {
+  font-size: 0.72rem;
+  line-height: 1.62;
+}
+
+/* A short comparison deserves alignment, not a bubble. */
+.wine-ripeness-board,
+.wine-harvest-board,
+.wine-dosage-scale,
+.wine-port-process,
+.wine-finishing-detail,
+.wine-label-service-layout,
+.wine-storage-pairing {
+  width: var(--wine-measure);
+  margin-inline: auto;
+}
+
+.wine-ripeness-board,
+.wine-harvest-board,
+.wine-dosage-scale,
+.wine-port-process {
+  padding: 1.1rem 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.16);
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.16);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.wine-ripeness-board li,
+.wine-harvest-board > div:first-child > div > p,
+.wine-dosage-scale > div p {
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 0;
+  background: none;
+}
+
+.wine-harvest-board {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.wine-harvest-compare {
+  display: grid;
+  width: 100%;
+  gap: 0 1.6rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.wine-harvest-compare > article {
+  padding-bottom: 0;
+}
+
+.wine-finishing-detail,
+.wine-label-service-layout,
+.wine-storage-pairing {
+  display: block;
+}
+
+.wine-finishing-detail > section,
+.wine-label-service-layout > section,
+.wine-storage-pairing > section {
+  margin: 0;
+  padding: 1.15rem 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.14);
+  border-radius: 0;
+  background: none;
+}
+
+.wine-finishing-detail > section:first-child > div > p,
+.wine-price-ladder > div > p,
+.wine-storage-pairing dl > div,
+.wine-storage-pairing > section:last-child > div > p,
+.wine-label-decoder li {
+  border-radius: 0;
+  background: none;
+}
+
+/* Keep genuine branches and matrices, but draw them like comparison plates. */
+.wine-sherry-split,
+.wine-fortified-compass {
+  width: var(--wine-measure);
+  margin-inline: auto;
+}
+
+.wine-sherry-split article {
+  padding: 1rem 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.14);
+  border-radius: 0;
+  background: none;
+}
+
+.wine-sherry-split article:first-child,
+.wine-sherry-split article:last-child {
+  background: none;
+}
+
+.wine-sherry-family {
+  display: block;
+  width: var(--wine-measure);
+  margin: 1rem auto 0;
+  columns: auto;
+}
+
+.wine-sherry-family p {
+  display: grid;
+  margin: 0;
+  padding: 0.75rem 0;
+  gap: 1rem;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 0;
+  background: none;
+  grid-template-columns: 10rem minmax(0, 1fr);
+}
+
+.wine-extraction-atlas {
+  width: var(--wine-measure);
+  margin-inline: auto;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.wine-extraction-atlas > header {
+  padding: 0 0 1rem;
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.14);
+  background: none;
+  grid-template-columns: 1fr;
+}
+
+.wine-extraction-atlas > header > p:last-child {
+  max-width: 43rem;
+  margin-top: 0.55rem;
+  grid-column: 1;
+  grid-row: auto;
+}
+
+.wine-extraction-atlas article {
+  padding: 1.05rem 0;
+  border-radius: 0;
+  background: none;
+}
+
+.wine-extraction-atlas article > span,
+.wine-fault-atlas header span,
+.wine-sparkling-region-atlas header span {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.wine-source-list article {
+  display: grid;
+  gap: 0.15rem 1.25rem;
+  grid-template-columns: 9rem minmax(0, 1fr);
+}
+
+.wine-source-list article > span {
+  padding-top: 0.12rem;
+  grid-column: 1;
+  grid-row: 1 / 3;
+}
+
+.wine-source-list article > h4,
+.wine-source-list article > p {
+  grid-column: 2;
+}
+
+.wine-source-list h4 {
+  margin-top: 0;
+  font-size: 0.9rem;
+}
+
+.wine-source-list p {
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.68;
+}
+
+/* Routine asides share one marginal-note language. */
+.wine-science-aside,
+.wine-climate-clock,
+.wine-extraction-note,
+.wine-sparkling-base-note,
+.wine-grape-method-note,
+.wine-source-method {
+  width: var(--wine-measure);
+  margin: 1.25rem auto 0;
+  padding: 0.1rem 0 0.1rem 1rem;
+  border: 0;
+  border-left: 2px solid rgb(var(--wine-gold) / 0.72);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.76rem;
+  line-height: 1.72;
+}
+
+.wine-climate-clock h4 {
+  font-size: 0.94rem;
+}
+
+.wine-climate-clock > p:last-child,
+.wine-sparkling-base-note p,
+.wine-extraction-note p {
+  color: rgb(var(--color-ink) / 0.62);
+  font-size: 0.78rem;
+  line-height: 1.72;
+}
+
+.wine-book-note,
+.wine-map-source-note {
+  width: var(--wine-measure);
+  margin: 1.5rem auto 0;
+  padding-top: 0.75rem;
+  color: rgb(var(--color-ink) / 0.44);
+  font-size: 0.64rem;
+  line-height: 1.7;
+}
+
+/* Rounded chrome is reserved for controls and interactive surfaces. */
+.wine-grape-family-lines p,
+.wine-service-temperatures article,
+.wine-fault-atlas article,
+.wine-sparkling-region-atlas article,
+.wine-sparkling-science article,
+.wine-fortification-choices article {
+  border-radius: 0;
+  background: none;
+}
+
+.wine-fault-atlas header,
+.wine-sparkling-region-atlas header {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.wine-sparkling-methods article > p {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.wine-sparkling-methods dl,
+.wine-fortified-grid dl {
+  margin-top: 0.7rem;
+}
+
+.wine-fortified-grid article > dl,
+.wine-style-grid article > dl {
+  border-top: 1px solid rgb(var(--color-ink) / 0.08);
+}
+
+.wine-fortified-compass {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.14);
+  border-radius: 0;
+}
+
+.wine-fortified-compass > div {
+  border-radius: 0;
+  background: none;
+}
+
+.wine-port-process {
+  grid-template-columns: 1fr;
+}
+
+.wine-port-process > ol {
+  margin: 0;
+}
+
+.wine-port-process > div {
+  display: block;
+  margin-top: 1rem;
+}
+
+.wine-port-process > div article {
+  padding: 1rem 0;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 0;
+  background: none;
+}
+
+/* Equations and scales are figures; the frame is a rule, not a rounded card. */
+.wine-fermentation-equation,
+.wine-structure-ribbon {
+  width: var(--wine-measure);
+  margin-inline: auto;
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.wine-aroma-chemistry {
+  display: block;
+  width: var(--wine-measure);
+  margin-inline: auto;
+}
+
+.wine-aroma-chemistry p {
+  display: grid;
+  margin: 0;
+  padding: 0.7rem 0;
+  gap: 1rem;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 0;
+  background: none;
+  grid-template-columns: 10rem minmax(0, 1fr);
+}
+
+.wine-grape-family-lines {
+  gap: 0;
+}
+
+.wine-grape-family-lines p {
+  padding: 0.55rem 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.1);
+}
+
+/* A few comparison-heavy references keep two aligned columns on wide pages.
+   They remain ruled lists rather than returning to a card grid. */
+@media (min-width: 900px) {
+  .wine-farming-approaches,
+  .wine-sparkling-science,
+  .wine-sparkling-region-atlas {
+    display: grid;
+    gap: 0 1.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .wine-guide-contents > ol,
+  .wine-vine-physiology,
+  .wine-harvest-compare,
+  .wine-sherry-split,
+  .wine-fortified-compass {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wine-ripeness-board li,
+  .wine-harvest-board > div:first-child > div > p,
+  .wine-finishing-detail > section:first-child > div > p,
+  .wine-price-ladder > div > p,
+  .wine-storage-pairing dl > div,
+  .wine-storage-pairing > section:last-child > div > p,
+  .wine-label-decoder li,
+  .wine-aroma-chemistry p,
+  .wine-sherry-family p,
+  .wine-source-list article {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wine-source-list article > span,
+  .wine-source-list article > h4,
+  .wine-source-list article > p {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .wine-source-list article > span {
+    padding-top: 0;
+  }
+}
+
+/* Expandable guide index ---------------------------------------------------
+   A compact, taskbar-like control replaces the always-open table of contents.
+   Native details/summary keeps the interaction keyboard-friendly without
+   adding client-side state. */
+.wine-guide-contents {
+  display: block;
+  width: var(--wine-measure);
+  margin-inline: auto;
+  overflow: visible;
+  border: 0;
+  background: none;
+}
+
+.wine-guide-contents > details {
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 0.78rem;
+  background: rgb(var(--color-paper) / 0.92);
+  box-shadow: 0 0.65rem 2.2rem rgb(var(--color-ink) / 0.08);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+.wine-guide-contents summary {
+  display: grid;
+  min-height: 3.15rem;
+  padding: 0.62rem 0.72rem 0.62rem 0.82rem;
+  align-items: center;
+  gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr) auto 1.55rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.wine-guide-contents summary::-webkit-details-marker {
+  display: none;
+}
+
+.wine-guide-contents summary:focus-visible {
+  outline: 2px solid rgb(var(--wine-red) / 0.72);
+  outline-offset: -3px;
+}
+
+.wine-guide-index-kicker {
+  padding-right: 0.75rem;
+  border-right: 1px solid rgb(var(--color-ink) / 0.12);
+  color: rgb(var(--wine-red));
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.wine-guide-contents summary > strong {
+  color: rgb(var(--color-ink) / 0.84);
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.wine-guide-index-meta {
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.52rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.wine-guide-index-toggle {
+  position: relative;
+  display: block;
+  width: 1.55rem;
+  height: 1.55rem;
+  border: 1px solid rgb(var(--color-ink) / 0.12);
+  border-radius: 50%;
+}
+
+.wine-guide-index-toggle::before,
+.wine-guide-index-toggle::after {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.55rem;
+  height: 1px;
+  background: rgb(var(--color-ink) / 0.56);
+  content: "";
+  transform: translate(-50%, -50%);
+  transition: opacity 160ms ease, transform 200ms ease;
+}
+
+.wine-guide-index-toggle::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.wine-guide-contents details[open] .wine-guide-index-toggle::after {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.wine-guide-contents details[open] > summary {
+  border-bottom: 1px solid rgb(var(--color-ink) / 0.1);
+}
+
+.wine-guide-index-panel {
+  max-height: min(68svh, 34rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.wine-guide-index-panel > ol {
+  display: grid;
+  margin: 0;
+  padding: 0.2rem 0.85rem 0.8rem;
+  gap: 0 1.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+}
+
+.wine-guide-index-panel li {
+  width: auto;
+  min-width: 0;
+  padding: 0.9rem 0;
+  overflow: visible;
+  border: 0;
+  border-top: 1px solid rgb(var(--color-ink) / 0.09);
+  border-radius: 0;
+  background: none;
+  scroll-snap-align: unset;
+}
+
+.wine-guide-index-panel li:nth-child(-n + 2) {
+  border-top: 0;
+}
+
+.wine-guide-index-panel .wine-guide-contents-chapter {
+  display: grid;
+  padding: 0;
+  gap: 0.45rem;
+  border: 0;
+  color: rgb(var(--color-ink) / 0.84);
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+}
+
+.wine-guide-index-panel .wine-guide-contents-chapter > span {
+  padding-top: 0.08rem;
+  color: rgb(var(--wine-red) / 0.68);
+  font-family: var(--font-code);
+  font-size: 0.48rem;
+  font-weight: 700;
+}
+
+.wine-guide-index-panel .wine-guide-contents-chapter > strong {
+  font-size: 0.67rem;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.wine-guide-index-panel li > div {
+  display: grid;
+  margin: 0.38rem 0 0 1.95rem;
+  padding: 0 0 0 0.65rem;
+  gap: 0.08rem;
+  border-left: 1px solid rgb(var(--color-ink) / 0.11);
+}
+
+.wine-guide-index-panel li > div a {
+  display: block;
+  padding: 0.08rem 0;
+  color: rgb(var(--color-ink) / 0.48);
+  font-size: 0.55rem;
+  line-height: 1.55;
+}
+
+.wine-guide-index-panel li > div a + a::before {
+  content: none;
+}
+
+.wine-guide-index-panel a:hover {
+  color: rgb(var(--wine-red));
+}
+
+.wine-guide-index-panel a:focus-visible {
+  border-radius: 0.15rem;
+  outline: 2px solid rgb(var(--wine-red) / 0.68);
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .wine-guide-contents summary {
+    gap: 0.55rem;
+  }
+
+  .wine-guide-index-panel > ol {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wine-guide-index-panel li:nth-child(2) {
+    border-top: 1px solid rgb(var(--color-ink) / 0.09);
+  }
+}
+
+@media (max-width: 470px) {
+  .wine-guide-contents summary {
+    grid-template-columns: minmax(0, 1fr) auto 1.55rem;
+  }
+
+  .wine-guide-index-kicker {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wine-guide-index-toggle::before,
+  .wine-guide-index-toggle::after {
+    transition: none;
+  }
+}
+
+/* Broad guide canvas -------------------------------------------------------
+   The shared page shell supplies the same comfortable outer gutter as the CV.
+   Inside that frame, prose and figures use one generous width so diagrams do
+   not appear to break out of a much narrower text column. */
+.wine-guide-chapter-header h2,
+.wine-guide-chapter-header > p,
+.wine-section > header h3,
+.wine-extraction-atlas > header > p:last-child {
+  width: 100%;
+  max-width: none;
+}
+
+.wine-guide,
+.wine-guide-chapter,
+.wine-guide-chapter-sections,
+.wine-section,
+.wine-section-body,
+.wine-grape-anatomy {
+  width: 100%;
+  max-width: none;
+}
+
+/* Seasonal photographs ---------------------------------------------------
+   Each stage stays part of the ruled reading sequence. The photographs make
+   the biological change legible without turning the stages back into cards. */
+.wine-guide .wine-vine-cycle > ol > li {
+  align-items: start;
+  column-gap: clamp(0.9rem, 1.8vw, 1.35rem);
+  row-gap: 0.45rem;
+  grid-template-columns: 2.3rem minmax(13rem, 0.72fr) minmax(0, 1.28fr);
+}
+
+.wine-editorial-photo {
+  min-width: 0;
+  margin: 0;
+}
+
+.wine-editorial-photo > div {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 0.22rem;
+  background: rgb(var(--color-ink) / 0.035);
+}
+
+.wine-editorial-photo img {
+  object-fit: cover;
+}
+
+.wine-editorial-photo figcaption {
+  margin-top: 0.4rem;
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.52rem;
+  line-height: 1.45;
+}
+
+.wine-editorial-photo figcaption a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--color-ink) / 0.2);
+  text-underline-offset: 0.15em;
+}
+
+.wine-editorial-photo figcaption a:hover {
+  color: rgb(var(--wine-red));
+  text-decoration-color: currentColor;
+}
+
+.wine-editorial-photo figcaption a:focus-visible {
+  border-radius: 0.1rem;
+  outline: 2px solid rgb(var(--wine-red) / 0.68);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .wine-guide .wine-vine-cycle > ol > li {
+    grid-template-columns: 2.3rem minmax(0, 1fr);
+  }
+
+  .wine-vine-cycle-photo {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .wine-vine-cycle > ol > li > div {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+/* Vineyard and cellar photo rows -----------------------------------------
+   The same editorial figure pattern carries into establishment and making.
+   Images sit beside the explanation on wide pages and stack into the reading
+   order on small screens; the surrounding material remains a ruled article. */
+.wine-guide .wine-vineyard-practice-grid > article,
+.wine-guide .wine-cellar-paths > article,
+.wine-guide .wine-cellar-tools > article {
+  display: grid;
+  align-items: start;
+  column-gap: clamp(1rem, 2vw, 1.45rem);
+  row-gap: 0.22rem;
+  grid-template-columns: minmax(13rem, 0.7fr) minmax(0, 1.3fr);
+}
+
+.wine-planting-photo,
+.wine-cellar-path-photo,
+.wine-cellar-tool-photo {
+  grid-column: 1;
+  grid-row: 1 / 5;
+}
+
+.wine-vineyard-practice-grid > article > :not(.wine-planting-photo),
+.wine-cellar-paths > article > :not(.wine-cellar-path-photo),
+.wine-cellar-tools > article > :not(.wine-cellar-tool-photo) {
+  grid-column: 2;
+}
+
+.wine-guide .wine-cellar-reception > li {
+  align-items: start;
+  column-gap: clamp(0.9rem, 1.8vw, 1.35rem);
+  row-gap: 0.45rem;
+  grid-template-columns: 2.3rem minmax(13rem, 0.72fr) minmax(0, 1.28fr);
+}
+
+.wine-planting-photo > div,
+.wine-cellar-reception-photo > div,
+.wine-cellar-path-photo > div,
+.wine-cellar-tool-photo > div {
+  aspect-ratio: 3 / 2;
+}
+
+@media (max-width: 760px) {
+  .wine-guide .wine-vineyard-practice-grid > article,
+  .wine-guide .wine-cellar-paths > article,
+  .wine-guide .wine-cellar-tools > article {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wine-planting-photo,
+  .wine-cellar-path-photo,
+  .wine-cellar-tool-photo,
+  .wine-vineyard-practice-grid > article > :not(.wine-planting-photo),
+  .wine-cellar-paths > article > :not(.wine-cellar-path-photo),
+  .wine-cellar-tools > article > :not(.wine-cellar-tool-photo) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .wine-guide .wine-cellar-reception > li {
+    grid-template-columns: 2.3rem minmax(0, 1fr);
+  }
+
+  .wine-cellar-reception-photo {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .wine-cellar-reception > li > div {
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Illustrated step lists
+   The numbered steps were laid out as [number | content]. Adding a photograph
+   made three children, so the text wrapped onto a second row and landed in the
+   2.3rem number column — a 37px ribbon setting one word per line — while the
+   photo stretched to the full 900px measure and was upscaled from a 384px
+   source to fill it.
+
+   They are now genuinely three columns: number, photo, text. The photo column
+   is capped near the width the image's own `sizes` attribute already declares,
+   so the browser picks a candidate that matches its display size instead of
+   enlarging a small one.
+   --------------------------------------------------------------------------- */
+@media (min-width: 860px) {
+  .wine-guide :is(.wine-cellar-reception > li, .wine-vine-cycle > ol > li) {
+    align-items: start;
+    grid-template-columns: 2.3rem minmax(0, 21rem) minmax(0, 1fr);
+    column-gap: 1.3rem;
+  }
+}
+
+/* Below that the three columns cannot all breathe, so the photo and the text
+   stack under the number rather than being squeezed side by side. */
+@media (max-width: 859px) {
+  .wine-guide :is(.wine-cellar-reception > li, .wine-vine-cycle > ol > li) {
+    grid-template-columns: 2.3rem minmax(0, 1fr);
+  }
+
+  .wine-guide :is(.wine-cellar-reception, .wine-vine-cycle > ol) > li > .wine-editorial-photo,
+  .wine-guide :is(.wine-cellar-reception, .wine-vine-cycle > ol) > li > div {
+    grid-column: 2;
+  }
+}
+
+/* The step text was inheriting the small caption sizing that suited a narrow
+   card column; at reading width it should read like the rest of the guide. */
+.wine-guide .wine-cellar-reception p,
+.wine-guide .wine-vine-cycle dd {
+  font-size: 0.8rem;
+  line-height: 1.7;
 }

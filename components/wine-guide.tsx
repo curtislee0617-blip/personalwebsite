@@ -1,6 +1,8 @@
+import Image from "next/image";
 import type { CSSProperties, ReactNode } from "react";
 import {
   WineCellarReception,
+  WineEditorialPhoto,
   WineExtractionAtlas,
   WineFaultAtlas,
   WineFinishingAndPackaging,
@@ -147,35 +149,49 @@ function WineSection({
 
 function CopyBlock({ children, title }: { children: ReactNode; title?: string }) {
   return (
-    <section className="wine-copy-block">
+    <div className="wine-copy-block">
       {title ? <h4>{title}</h4> : null}
       <div>{children}</div>
-    </section>
+    </div>
   );
 }
 
+function EssayIntro({ children }: { children: ReactNode }) {
+  return <div className="wine-essay-intro">{children}</div>;
+}
+
 function WineGuideContents() {
+  const sectionCount = wineContents.reduce((count, chapter) => count + chapter.sections.length, 0);
+
   return (
     <nav aria-labelledby="wine-guide-contents-title" className="wine-guide-contents">
-      <header>
-        <div>
-          <p className="eyebrow">Guide index</p>
-          <h2 id="wine-guide-contents-title">On this page</h2>
+      <details>
+        <summary>
+          <span className="wine-guide-index-kicker">Guide index</span>
+          <strong id="wine-guide-contents-title">Contents</strong>
+          <span className="wine-guide-index-meta">
+            {wineContents.length} chapters · {sectionCount} topics
+          </span>
+          <span aria-hidden="true" className="wine-guide-index-toggle" />
+        </summary>
+        <div className="wine-guide-index-panel">
+          <ol>
+            {wineContents.map((chapter, chapterIndex) => (
+              <li key={chapter.href}>
+                <a className="wine-guide-contents-chapter" href={chapter.href}>
+                  <span>{String(chapterIndex + 1).padStart(2, "0")}</span>
+                  <strong>{chapter.title}</strong>
+                </a>
+                <div>
+                  {chapter.sections.map((section) => (
+                    <a href={section.href} key={section.href}>{section.label}</a>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-        <p>A smaller index for mobile and tablet; the desktop taskbar follows the main chapters.</p>
-      </header>
-      <ol>
-        {wineContents.map((chapter) => (
-          <li key={chapter.href}>
-            <a className="wine-guide-contents-chapter" href={chapter.href}>{chapter.title}</a>
-            <div>
-              {chapter.sections.map((section) => (
-                <a href={section.href} key={section.href}>{section.label}</a>
-              ))}
-            </div>
-          </li>
-        ))}
-      </ol>
+      </details>
     </nav>
   );
 }
@@ -183,39 +199,27 @@ function WineGuideContents() {
 function GrapeAnatomy() {
   return (
     <figure className="wine-grape-anatomy">
-      <svg aria-labelledby="wine-grape-anatomy-title wine-grape-anatomy-desc" role="img" viewBox="0 0 620 430">
-        <title id="wine-grape-anatomy-title">Cross-section through a wine grape</title>
-        <desc id="wine-grape-anatomy-desc">
-          The diagram labels skin, bloom, pulp, seeds and vascular bundles, with notes about the compounds each
-          contributes during winemaking.
-        </desc>
-        <defs>
-          <radialGradient id="wine-grape-flesh" cx="42%" cy="35%" r="68%">
-            <stop offset="0%" stopColor="#f4df9d" />
-            <stop offset="76%" stopColor="#d8ba68" />
-            <stop offset="100%" stopColor="#754452" />
-          </radialGradient>
-          <filter id="wine-grape-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="8" floodColor="#251c22" floodOpacity=".18" stdDeviation="10" />
-          </filter>
-        </defs>
-        <circle cx="250" cy="215" fill="url(#wine-grape-flesh)" filter="url(#wine-grape-shadow)" r="150" />
-        <circle className="wine-grape-skin-line" cx="250" cy="215" r="143" />
-        <path className="wine-grape-vein" d="M241 68c-4 57-3 104 3 141M244 181c-50 23-81 58-95 105M245 187c45 22 76 58 91 108" />
-        <path className="wine-grape-seed" d="M209 222c-26 34-21 69 15 86 29-27 26-61-15-86Z" />
-        <path className="wine-grape-seed" d="M282 216c-17 39-4 72 36 79 21-33 10-64-36-79Z" />
-        <path className="wine-grape-stem" d="M242 69c4-39 21-57 48-74" />
-        <g className="wine-grape-callouts">
-          <path d="M112 121 46 82" /><text x="18" y="67">bloom</text><text className="is-note" x="18" y="85">waxes + ambient microbes</text>
-          <path d="M111 162 38 159" /><text x="18" y="145">skin</text><text className="is-note" x="18" y="178">colour, tannin + aroma</text>
-          <path d="M164 301 60 350" /><text x="18" y="337">pulp</text><text className="is-note" x="18" y="356">water, sugar + acids</text>
-          <path d="M316 271 468 318" /><text x="478" y="306">seeds</text><text className="is-note" x="478" y="325">tannin + bitter lipids</text>
-          <path d="M248 176 454 131" /><text x="466" y="118">vascular tissue</text><text className="is-note" x="466" y="137">feeds the berry</text>
-        </g>
-      </svg>
+      <Image
+        alt="Macro photograph of a red grape cut lengthwise, showing its thin red skin, translucent pale pulp, vascular strands, stem and two seeds."
+        className="wine-grape-anatomy-photo"
+        height={1581}
+        sizes="(max-width: 768px) 100vw, 56rem"
+        src="/recipes/wine-guide/grape-cross-section.jpg"
+        width={1920}
+      />
       <figcaption>
-        Most red pigment is in the skin, while the juice of nearly every wine grape begins pale. Time, heat, alcohol
-        and movement decide how much skin material dissolves into the fermenting wine.
+        <span>
+          A red grape in longitudinal section: the dark skin forms a thin perimeter around pale pulp, with seeds and
+          the berry&apos;s vascular strands visible inside.
+        </span>
+        <span className="wine-grape-photo-credit">
+          Photograph by V. Boldychev via{" "}
+          <a href="https://commons.wikimedia.org/wiki/File:Rote_Weinbeere_im_L%C3%A4ngsschnitt.jpg">
+            Wikimedia Commons
+          </a>
+          , licensed{" "}
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Resized; no other changes.
+        </span>
       </figcaption>
     </figure>
   );
@@ -261,24 +265,141 @@ const cellarPaths = [
     colour: "white",
     steps: ["crush or whole-bunch press", "separate juice from skins", "settle or clarify", "ferment", "lees / MLF / oak choices", "stabilise and bottle"],
     note: "Removing skins early limits tannin and colour. Cool 12–16°C ferments often retain more fruit-driven ester aroma.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/paths/white.jpg",
+      alt: "Freshly pressed white grapes and juice at a Santorini winery.",
+      credit: "Klearchos Kapoutsis",
+      source: "https://commons.wikimedia.org/wiki/File:White_wine_grape_pressing_in_Santorini.jpg",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+      position: "50% 52%",
+    },
   },
   {
     type: "Red",
     colour: "red",
     steps: ["destem / crush or keep whole bunches", "ferment with skins", "manage the cap", "drain and press", "usually complete MLF", "mature and bottle"],
     note: "Alcohol, heat and cap movement extract anthocyanins, tannins and flavour. Time is not automatically quality: seeds and stems can also contribute harshness.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/paths/red.jpg",
+      alt: "A winery worker punching down the floating cap of red grape skins during fermentation.",
+      credit: "Ian Brown",
+      source: "https://commons.wikimedia.org/wiki/File:Fermentation_tank_and_cap_management_Smith-Madrone.jpg",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+      position: "50% 42%",
+    },
   },
   {
     type: "Rosé",
     colour: "rose",
     steps: ["direct press or short maceration", "separate pale juice", "cool fermentation", "protect from oxygen", "brief ageing", "bottle"],
     note: "Pale colour can come from gentle direct pressing; deeper rosé uses more skin time. Saignée bleeds juice from a red ferment but changes that red wine too.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/paths/rose.jpg",
+      alt: "Pale pink rosé juice actively fermenting in a winery vessel.",
+      credit: "Olivier Lemoine / Photo-Terroir.fr",
+      source: "https://commons.wikimedia.org/wiki/File:Fermentation_vin_ros%C3%A9.jpg",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      position: "50% 50%",
+    },
   },
   {
     type: "Orange / amber",
     colour: "amber",
     steps: ["use white grapes", "ferment with skins", "extract phenolics", "press later", "age with chosen oxygen", "bottle"],
     note: "This is a production method, not orange flavouring. White skins add tannin, colour, tea-like aromas and a very different texture.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/paths/orange-amber.jpg",
+      alt: "A row of amphorae used for skin-contact winemaking in a Sicilian cellar.",
+      credit: "Olivier Lemoine / Photo-Terroir.fr",
+      source: "https://commons.wikimedia.org/wiki/File:Amphores_Frank_Cornelissen.jpg",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      position: "50% 52%",
+    },
+  },
+] as const;
+
+const cellarTools = [
+  {
+    title: "Lees",
+    text: "Dead yeast can release mannoproteins and other compounds that soften texture, bind aroma and improve foam. Stirring speeds contact but also introduces oxygen and labour.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/tools/lees.jpg",
+      alt: "Dense Merlot lees left behind after fermentation.",
+      credit: "Agne27",
+      source: "https://commons.wikimedia.org/wiki/File:Merlot_wine_lees_after_fermentation.JPG",
+      license: "CC BY-SA 3.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
+      position: "50% 50%",
+    },
+  },
+  {
+    title: "Oxygen",
+    text: "Too much browns and flattens fruit; controlled exposure polymerises tannins, develops nuts and dried fruit, and helps some reductive compounds dissipate.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/tools/oxygen-racking.jpg",
+      alt: "A transparent racking wand used to transfer wine while monitoring sediment.",
+      credit: "Agne27",
+      source: "https://commons.wikimedia.org/wiki/File:Close_up_of_viewer_and_racking_wand_apparatus.JPG",
+      license: "CC BY-SA 3.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
+      position: "50% 48%",
+    },
+  },
+  {
+    title: "Oak",
+    text: "New, small barrels give the most flavour and oxygen per litre. American oak generally carries more coconut-like oak lactone and a stronger flavour impact; European oak is often subtler and can contribute more tannin. Grain tightness varies with tree growth and origin, so “European” does not itself mean “tight-grained.” Toast level changes smoke, spice and vanillin.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/tools/oak-barrels.jpg",
+      alt: "Rows of oak barrels holding wine for maturation in a cellar.",
+      credit: "Pradeep717",
+      source: "https://commons.wikimedia.org/wiki/File:Wine_in_oak_barrels.jpg",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      position: "50% 55%",
+    },
+  },
+  {
+    title: "Concrete & amphora",
+    text: "Concrete buffers temperature and can admit slow oxygen without adding wood aroma. Clay vessels range from porous to lined, so “amphora” alone does not tell me how oxidative the wine was.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/tools/concrete-egg.jpg",
+      alt: "An egg-shaped concrete wine vessel inside a Bordeaux cellar.",
+      credit: "Jefunky",
+      source: "https://commons.wikimedia.org/wiki/File:Cuve_oeuf_b%C3%A9ton_au_ch%C3%A2teau_de_Reignac_(Gironde),_janvier_2024.jpg",
+      license: "CC0 1.0",
+      licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+      position: "50% 48%",
+    },
+  },
+  {
+    title: "Stainless steel",
+    text: "Inert, cleanable and easy to cool. It is ideal when the aim is fruit protection, but the headspace still has to be managed.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/tools/stainless-tanks.jpg",
+      alt: "Temperature-controlled stainless-steel wine tanks in a cellar.",
+      credit: "Cjp24",
+      source: "https://commons.wikimedia.org/wiki/File:Stainless_steel_vinification_tanks.jpg",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      position: "50% 50%",
+    },
+  },
+  {
+    title: "Blending",
+    text: "A blend can combine grapes, plots, vessels or years. It may build complexity, correct balance, preserve house style or create the exact volume and price a producer needs.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/tools/blending.jpg",
+      alt: "A group of tasting glasses prepared for comparing wines and trial blends.",
+      credit: "Véronique Pagnier",
+      source: "https://commons.wikimedia.org/wiki/File:Verres_d%C3%A9gustations.JPG",
+      license: "Public domain",
+      licenseUrl: "https://commons.wikimedia.org/wiki/Template:PD-self",
+      position: "50% 50%",
+    },
   },
 ] as const;
 
@@ -301,7 +422,7 @@ const sparklingMethods = [
     name: "Traditional method",
     gas: "Second fermentation in the bottle sold",
     lees: "Bottle lees; riddled and disgorged",
-    style: "Fine mousse, high pressure and optional bread / biscuit autolysis",
+    style: "High pressure; extended lees ageing can add bread / biscuit complexity",
     examples: "Champagne, Cava, Franciacorta, Trentodoc, Cap Classique, English sparkling",
   },
   {
@@ -336,7 +457,7 @@ const sparklingMethods = [
     name: "Carbonation",
     gas: "Food-grade CO₂ is injected into finished wine",
     lees: "None",
-    style: "Largest bubbles and simplest fruit; cheapest route",
+    style: "Base-wine fruit stays intact, with no secondary-fermentation or lees-derived character; cheapest route",
     examples: "Inexpensive sparkling wine",
   },
 ] as const;
@@ -353,13 +474,13 @@ const traditionalSteps = [
 ] as const;
 
 const dosageScale = [
-  { name: "Brut Nature", value: "0–3 g/L", width: "7%" },
+  { name: "Brut Nature", value: "<3 g/L · no sugar added after secondary fermentation", width: "7%" },
   { name: "Extra Brut", value: "0–6", width: "10%" },
-  { name: "Brut", value: "0–12", width: "18%" },
+  { name: "Brut", value: "<12", width: "18%" },
   { name: "Extra Dry", value: "12–17", width: "25%" },
   { name: "Sec", value: "17–32", width: "42%" },
   { name: "Demi-Sec", value: "32–50", width: "67%" },
-  { name: "Doux", value: "50+ g/L", width: "92%" },
+  { name: "Doux", value: ">50 g/L", width: "92%" },
 ] as const;
 
 export function WineGuide() {
@@ -459,6 +580,13 @@ export function WineGuide() {
         title="How wine grapes are grown"
       >
         <WineSection eyebrow="One crop, prepared across two seasons" id="wine-vine-cycle" title="The vine’s year">
+          <EssayIntro>
+            <p>
+              A vintage lasts a season, but the crop does not begin at budburst. The buds that carry this year’s
+              bunches were formed in the previous summer, and the carbohydrates that wake them were stored before
+              the leaves fell. Each harvest is therefore an overlap between two years of weather and farming.
+            </p>
+          </EssayIntro>
           <WineVineCycle />
           <p className="wine-book-note">
             Book trail · <i>Wined4 / Wine Production</i>, anatomy, propagation, growth-cycle and grape-development
@@ -467,6 +595,14 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="Terroir without magic" id="wine-vineyard" title="What the vine is actually responding to">
+          <EssayIntro>
+            <p>
+              Terroir is useful when it is treated as a set of causes rather than a promise of flavour. Latitude,
+              elevation and aspect alter heat and light; soil structure changes drainage, rooting and water supply;
+              wind and humidity change disease pressure. The vine responds to those conditions, not to the romance
+              of a rock name.
+            </p>
+          </EssayIntro>
           <div className="wine-vineyard-grid">
             {vineyardFactors.map((factor) => (
               <article key={factor.title}>
@@ -493,6 +629,16 @@ export function WineGuide() {
               <li><span>Harvest window</span><b>the desired compromise, before weather decides for us</b></li>
             </ol>
           </div>
+          <aside className="wine-climate-clock">
+            <p className="eyebrow">Climate adaptation</p>
+            <h4>Climate change moves the clocks at different speeds</h4>
+            <p>
+              Warming advances budburst and harvest, accelerates sugar gain and acid loss, and raises drought and
+              extreme-weather risk; aroma and tannin development do not necessarily keep pace. Adaptation can mean
+              cooler sites or aspects, later-ripening plant material, better shade and water management and—in some
+              regions—different varieties.
+            </p>
+          </aside>
         </WineSection>
 
         <WineSection
@@ -500,6 +646,13 @@ export function WineGuide() {
           id="wine-vineyard-practice"
           title="Planting, roots, pruning, water and farming choices"
         >
+          <EssayIntro>
+            <p>
+              Many of the most consequential vineyard decisions are made before the first crop: where rows run,
+              which variety and rootstock are planted, how the vine is trained and how much machinery the slope will
+              allow. Annual work then adjusts that permanent design rather than starting from zero.
+            </p>
+          </EssayIntro>
           <WineVineyardPracticeAtlas />
         </WineSection>
 
@@ -508,6 +661,13 @@ export function WineGuide() {
           id="wine-hazards-harvest"
           title="What can go wrong—and how picking finally happens"
         >
+          <EssayIntro>
+            <p>
+              Farming wine grapes is less a search for perfect ripeness than a series of risk trades. Waiting may
+              deepen flavour and soften tannin, but it also lengthens exposure to rain, rot, heat, birds and labour
+              shortages. Harvest is the moment the grower decides which risks are still worth carrying.
+            </p>
+          </EssayIntro>
           <WineHazardsAndHarvest />
           <p className="wine-book-note">
             Book trail · <i>Wined4 / Wine Production</i>, vineyard establishment, soil and water management, canopy,
@@ -560,6 +720,13 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="A label can hide a genealogy" id="wine-grape-language" title="Variety, clone, mutation and synonym are different">
+          <EssayIntro>
+            <p>
+              Wine labels compress botany into a few familiar words. Some words are alternate names for the same
+              vine, some describe a selected clone, and others cover a family of genuinely different varieties.
+              Keeping those relationships separate prevents regional custom from being mistaken for genetics.
+            </p>
+          </EssayIntro>
           <div className="wine-language-grid">
             <article><span>same grape, new name</span><h4>Synonym</h4><p>Syrah and Shiraz are the same variety. So are Tempranillo, Tinta Roriz and Aragonez. The name can still signal a regional or stylistic convention.</p></article>
             <article><span>same basic genome, skin changed</span><h4>Colour mutation</h4><p>Pinot Noir, Pinot Gris and Pinot Blanc are colour forms inside the Pinot family, not three unrelated vines.</p></article>
@@ -582,7 +749,31 @@ export function WineGuide() {
           id="wine-cellar-reception"
           title="From harvested fruit to a prepared must"
         >
+          <EssayIntro>
+            <p>
+              The first hours in the cellar decide what the ferment will inherit. Warm, broken fruit can oxidise or
+              begin an uncontrolled fermentation before a tank is filled; cool, intact fruit gives the winemaker
+              time to sort, separate press fractions and choose how much stem, skin and oxygen belong in the wine.
+            </p>
+          </EssayIntro>
           <WineCellarReception />
+          <div className="wine-language-grid wine-production-language">
+            <article>
+              <span>certification claim</span>
+              <h4>Organic</h4>
+              <p>Rules depend on jurisdiction and certifier. Organic wine may still use selected yeasts, nutrients, fining agents, processing aids and sulfur dioxide where the applicable standard permits them.</p>
+            </article>
+            <article>
+              <span>certified fruit + cellar standard</span>
+              <h4>Biodynamic</h4>
+              <p>Certified biodynamic wine starts with certified biodynamic fruit and follows its certifier’s cellar standard; permitted yeasts, additions and processes vary by scheme and country.</p>
+            </article>
+            <article>
+              <span>production philosophy</span>
+              <h4>Natural / low-intervention</h4>
+              <p>There is no single universal legal category. The term usually signals few additions or manipulations, but farming, yeast, filtration and sulfur practices should be stated rather than inferred from the word.</p>
+            </article>
+          </div>
           <p className="wine-book-note">
             Book trail · <i>Wined4 / Wine Production</i>, transport, grape reception, sorting, crushing, pressing,
             must adjustment, oxygen, sulfur dioxide and hygiene chapters.
@@ -590,6 +781,13 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="The central reaction" id="wine-fermentation" title="Yeast turns sugar into alcohol, gas, heat and flavour">
+          <EssayIntro>
+            <p>
+              Fermentation is a living process rather than a formula executed once. Yeast changes its behaviour as
+              sugar falls, alcohol rises and nutrients run short; the heat it produces can alter both aroma and
+              extraction. The cellar’s task is to guide that ecology without pretending it can be made inert.
+            </p>
+          </EssayIntro>
           <div className="wine-fermentation-equation" aria-label="Simplified alcoholic fermentation equation">
             <span>grape sugar</span><b>→ yeast →</b><span>ethanol</span><i>+</i><span>carbon dioxide</span><i>+</i><span>heat</span>
           </div>
@@ -627,9 +825,18 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="Four routes through the same fruit" id="wine-cellar-paths" title="White, red, rosé and orange are process choices">
+          <EssayIntro>
+            <p>
+              Colour categories are also contact decisions. Press a pale grape quickly and fermentation begins as
+              juice; leave juice with skins and the wine gathers pigment, tannin, aroma precursors and texture. The
+              familiar families below are not four unrelated recipes, but different answers to when solids and
+              liquid should meet.
+            </p>
+          </EssayIntro>
           <div className="wine-cellar-paths">
             {cellarPaths.map((path) => (
               <article data-colour={path.colour} key={path.type}>
+                <WineEditorialPhoto className="wine-cellar-path-photo" image={path.image} />
                 <header><i aria-hidden="true" /><h4>{path.type}</h4></header>
                 <ol>
                   {path.steps.map((step, index) => (
@@ -652,31 +859,22 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="The quiet decisions after fermentation" id="wine-cellar-tools" title="Lees, oxygen, vessels and blending">
+          <EssayIntro>
+            <p>
+              Once the ferment stops, change becomes slower but no less deliberate. Lees can broaden texture,
+              oxygen can either knit tannin or flatten fruit, and a vessel controls exchange as much as it lends a
+              flavour. Blending is the final version of the same work: choosing which differences should remain
+              visible and which should be brought into balance.
+            </p>
+          </EssayIntro>
           <div className="wine-cellar-tools">
-            <article>
-              <h4>Lees</h4>
-              <p>Dead yeast can release mannoproteins and other compounds that soften texture, bind aroma and improve foam. Stirring speeds contact but also introduces oxygen and labour.</p>
-            </article>
-            <article>
-              <h4>Oxygen</h4>
-              <p>Too much browns and flattens fruit; controlled exposure polymerises tannins, develops nuts and dried fruit, and helps some reductive compounds dissipate.</p>
-            </article>
-            <article>
-              <h4>Oak</h4>
-              <p>New, small barrels give the most flavour and oxygen per litre. American oak tends toward coconut-like lactones; European oak is often tighter and more tannic. Toast level changes smoke, spice and vanillin.</p>
-            </article>
-            <article>
-              <h4>Concrete & amphora</h4>
-              <p>Concrete buffers temperature and can admit slow oxygen without adding wood aroma. Clay vessels range from porous to lined, so “amphora” alone does not tell me how oxidative the wine was.</p>
-            </article>
-            <article>
-              <h4>Stainless steel</h4>
-              <p>Inert, cleanable and easy to cool. It is ideal when the aim is fruit protection, but the headspace still has to be managed.</p>
-            </article>
-            <article>
-              <h4>Blending</h4>
-              <p>A blend can combine grapes, plots, vessels or years. It may build complexity, correct balance, preserve house style or create the exact volume and price a producer needs.</p>
-            </article>
+            {cellarTools.map((tool) => (
+              <article key={tool.title}>
+                <WineEditorialPhoto className="wine-cellar-tool-photo" image={tool.image} />
+                <h4>{tool.title}</h4>
+                <p>{tool.text}</p>
+              </article>
+            ))}
           </div>
           <p className="wine-book-note">
             Book trail · <i>Wined4 / Wine Production</i>, fermentation, extraction, MLF, maturation and blending
@@ -689,6 +887,13 @@ export function WineGuide() {
           id="wine-finishing"
           title="Clarification, stability, packaging and closures"
         >
+          <EssayIntro>
+            <p>
+              A wine is not finished simply because fermentation is over. It must survive temperature changes,
+              transport, light, oxygen and time without throwing an avoidable haze or restarting in bottle. Fining,
+              filtration and packaging are therefore trade-offs between stability, flavour, cost and intervention.
+            </p>
+          </EssayIntro>
           <WineFinishingAndPackaging />
           <p className="wine-book-note">
             Book trail · <i>Wined4 / Wine Production</i>, finishing, filtration, stabilisation, packaging, closures,
@@ -704,6 +909,13 @@ export function WineGuide() {
         title="The main types of wine"
       >
         <WineSection eyebrow="Not just red, white and pink" id="wine-style-atlas" title="A working wine-style atlas">
+          <EssayIntro>
+            <p>
+              Colour alone is a poor filing system. A pale wine can be sweet, sparkling, tannic or oxidative; two
+              reds can share a grape and differ completely in body and extraction. A more useful taxonomy begins
+              with structure—acid, tannin, alcohol, sugar and texture—then asks how the cellar built it.
+            </p>
+          </EssayIntro>
           <div className="wine-style-grid">
             {wineStyles.map((style) => (
               <article key={style.name}>
@@ -719,6 +931,13 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="Sugar has to survive fermentation" id="wine-sweetness" title="Five routes to sweet wine">
+          <EssayIntro>
+            <p>
+              Every sweet wine solves the same problem: preserve or restore sugar without letting the result feel
+              merely heavy. Some methods concentrate the grape before fermentation; others stop yeast or sweeten a
+              dry base afterwards. Acidity, bitterness and aroma decide whether that sugar feels vivid or tiring.
+            </p>
+          </EssayIntro>
           <div className="wine-sweet-paths">
             <article><span>on the vine</span><h4>Late harvest</h4><p>Leave fruit longer so water loss and continued ripening raise sugar. The risks are rain, rot, birds and falling acidity.</p></article>
             <article><span>fungal concentration</span><h4>Noble rot</h4><p><i>Botrytis cinerea</i> perforates skins under misty mornings and drying afternoons. Water leaves, while honey, apricot, citrus-peel and ginger-like compounds develop.</p></article>
@@ -740,6 +959,14 @@ export function WineGuide() {
         title="Sparkling wine"
       >
         <WineSection eyebrow="Where the gas is captured" id="wine-sparkling-methods" title="Six ways to trap carbon dioxide">
+          <EssayIntro>
+            <p>
+              All sparkling wine contains dissolved carbon dioxide, but the place where that gas is captured changes
+              the work around it. A bottle fermentation creates lees that must be moved and removed one bottle at a
+              time; a pressure tank can do the same work for a large blend; direct carbonation preserves the base
+              wine most literally because there is no second ferment.
+            </p>
+          </EssayIntro>
           <div className="wine-sparkling-methods">
             {sparklingMethods.map((method) => (
               <article key={method.name}>
@@ -764,6 +991,14 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="Champagne’s core engineering" id="wine-champagne-process" title="Traditional method, bottle by bottle">
+          <EssayIntro>
+            <p>
+              The traditional method turns every bottle into a small fermenter and pressure vessel. Its apparent
+              complexity comes from a simple constraint: the second fermentation happens in the bottle that will be
+              sold, so the yeast sediment must be aged, gathered in the neck and expelled without losing the wine’s
+              pressure.
+            </p>
+          </EssayIntro>
           <ol className="wine-traditional-steps">
             {traditionalSteps.map((step, index) => (
               <li key={step.title}>
@@ -798,6 +1033,14 @@ export function WineGuide() {
           id="wine-sparkling-world"
           title="A world atlas of sparkling styles"
         >
+          <EssayIntro>
+            <p>
+              Method names travel more easily than climates do. Traditional-method wine made on English chalk,
+              South African limestone or an Australian mountain still begins with different fruit. The regional
+              atlas is therefore best read as a set of local answers to acidity, grapes, pressure and ageing rather
+              than a ranking by prestige.
+            </p>
+          </EssayIntro>
           <WineSparklingWorld />
           <p className="wine-book-note">
             Book trail · every regional chapter in <i>Sparkling Wines</i>: Champagne, Alsace, Burgundy, Loire, Cava,
@@ -818,10 +1061,31 @@ export function WineGuide() {
           id="wine-fortification-primer"
           title="The four decisions behind fortified wine"
         >
+          <EssayIntro>
+            <p>
+              Fortification is not one style. Spirit added during fermentation preserves grape sugar; spirit added
+              after a dry ferment changes which yeasts can live and how safely the wine can age. What follows—fresh
+              fruit, flor, oxygen, heat or decades in wood—matters as much as the alcohol itself.
+            </p>
+          </EssayIntro>
           <WineFortificationPrimer />
         </WineSection>
 
         <WineSection eyebrow="Andalusia" id="wine-sherry" title="Sherry: one neutral grape, several ageing environments">
+          <EssayIntro>
+            <p>
+              Sherry is easiest to understand as an ageing system. Palomino supplies a deliberately quiet base;
+              fortification strength and the presence or absence of flor then divide it into biological and
+              oxidative families. The solera preserves house style by blending ages rather than by keeping one wine
+              untouched forever.
+            </p>
+          </EssayIntro>
+          <p className="wine-science-aside">
+            Press fraction helps set the ageing path before fortification: low-pressure <i>primera yema</i>, with
+            less skin-derived phenolic material, is generally directed toward Fino or Manzanilla because phenolics
+            restrict flor; more structured <i>segunda yema</i> is generally directed toward oxidative Oloroso. This
+            is a sorting tendency, not an absolute recipe.
+          </p>
           <div className="wine-sherry-split">
             <article>
               <span>≈15–15.5% alcohol · flor alive</span>
@@ -858,6 +1122,13 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="Douro" id="wine-port" title="Port: extract quickly, fortify early, then choose fruit or oxygen">
+          <EssayIntro>
+            <p>
+              Port compresses the red-wine ferment. Colour and tannin must be extracted before spirit stops the yeast,
+              often after only a day or two. Maturation then opens a second divide: protect the young wine from
+              oxygen for ruby fruit, or give it years in smaller wood for the tawny family.
+            </p>
+          </EssayIntro>
           <div className="wine-port-process">
             <ol>
               <li><span>1</span><div><h4>Rapid extraction</h4><p>Fermentation may last only one or two days, so foot-trodden or robotic lagares, pistons and pumping-over move a great deal of colour and tannin quickly.</p></div></li>
@@ -867,7 +1138,7 @@ export function WineGuide() {
             </ol>
             <div>
               <article><h4>Ruby family</h4><p><strong>Ruby · Reserve Ruby · LBV · Vintage</strong></p><p>Protected from substantial oxygen to preserve deep colour and black fruit. Vintage and some LBV continue developing in bottle.</p></article>
-              <article><h4>Tawny family</h4><p><strong>Tawny · 10/20/30/40-year · Colheita</strong></p><p>Long barrel exposure softens tannin and builds nuts, caramel and dried citrus. An age indication describes approved style, not the youngest component.</p></article>
+              <article><h4>Tawny family</h4><p><strong>Tawny · 10/20/30/40/50/80-year · VVO · Colheita</strong></p><p>Long barrel exposure softens tannin and builds nuts, caramel and dried citrus. Numeric indications describe IVDP-approved organoleptic character, not the youngest component; VVO is reserved for wine aged in wood for more than 80 years, without a numeric age on the label.</p></article>
               <article><h4>White & rosé</h4><p><strong>Dry to sweet White · Rosé Port</strong></p><p>White grapes can ferment cooler and may be protected from oxygen; rosé uses gentle extraction and fresh-fruit handling.</p></article>
             </div>
           </div>
@@ -912,6 +1183,10 @@ export function WineGuide() {
                 pressed and fortified to about 17.5%. Warm old barrels lose water over years, concentrating sugar,
                 acid and alcohol while oxidation builds raisin, fig, treacle and spice.
               </p>
+              <p>
+                The four tiers classify a sensory progression in richness, complexity and intensity. Age is only
+                one input, so the figures below are expected average ages rather than classification thresholds.
+              </p>
               <dl>
                 <div><dt>Rutherglen</dt><dd>roughly 3–5 years average · fruit-led</dd></div>
                 <div><dt>Classic</dt><dd>roughly 6–10 years · deeper and more complex</dd></div>
@@ -935,6 +1210,13 @@ export function WineGuide() {
         title="How to read a glass"
       >
         <WineSection eyebrow="A repeatable sequence" id="wine-tasting-method" title="Taste the wine before guessing the label">
+          <EssayIntro>
+            <p>
+              A useful tasting note separates observation from explanation. Colour, aroma and structure are evidence;
+              grape, climate, method and age are hypotheses built from it. Starting with the conclusion makes every
+              later sensation bend toward the label.
+            </p>
+          </EssayIntro>
           <ol className="wine-tasting-sequence">
             <li><span>Look</span><p>Clarity, depth and hue give clues about extraction, grape, oxidation and age, but rarely one certain answer.</p></li>
             <li><span>Smell</span><p>Check condition first. Then group fruit, flowers, herbs, spice, earth, fermentation, oak and development rather than chasing one perfect noun.</p></li>
@@ -955,6 +1237,13 @@ export function WineGuide() {
           id="wine-faults"
           title="Recognising faults without blaming every unusual aroma"
         >
+          <EssayIntro>
+            <p>
+              A fault is rarely just the presence of one compound. Concentration, context and the intended style
+              matter: volatile acidity may lift aroma at one level and turn vinegary at another, while a harmless
+              deposit can look alarming without changing flavour at all.
+            </p>
+          </EssayIntro>
           <WineFaultAtlas />
           <p className="wine-science-aside">
             Cloudiness, sediment and tartrate crystals can be visually unexpected without harming flavour or safety.
@@ -967,6 +1256,13 @@ export function WineGuide() {
           id="wine-label-service"
           title="Labels, price, bottle ageing, storage, service and food"
         >
+          <EssayIntro>
+            <p>
+              A label is a legal document before it is a tasting note. It records origin, responsibility, alcohol and
+              category, while many of the words that sound qualitative mean only what a local rule defines. Once the
+              bottle is home, stable storage and thoughtful serving usually matter more than ritual.
+            </p>
+          </EssayIntro>
           <WineLabelAndService />
           <p className="wine-book-note">
             Book trail · <i>Understanding Wines: Explaining Style and Quality</i> and <i>Wined4 / Wine
@@ -976,6 +1272,13 @@ export function WineGuide() {
         </WineSection>
 
         <WineSection eyebrow="Sources used to build this guide" id="wine-sources" title="The book trail">
+          <EssayIntro>
+            <p>
+              This is a synthesis rather than a substitute for the books. Production texts supply mechanisms,
+              regional texts supply place and the current official sources settle rules that have changed since
+              publication. The notes below show where each part of the argument began.
+            </p>
+          </EssayIntro>
           <div className="wine-source-list">
             <article>
               <span>Core production</span>

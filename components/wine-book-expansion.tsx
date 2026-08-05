@@ -1,39 +1,134 @@
+import Image from "next/image";
+
+export type WineEditorialPhotoData = {
+  src: string;
+  alt: string;
+  credit: string;
+  source: string;
+  license: string;
+  licenseUrl: string;
+  position: string;
+};
+
+export function WineEditorialPhoto({
+  image,
+  className,
+  sizes = "(max-width: 760px) calc(100vw - 5rem), (max-width: 1100px) 34vw, 420px",
+}: {
+  image: WineEditorialPhotoData;
+  className?: string;
+  sizes?: string;
+}) {
+  return (
+    <figure className={`wine-editorial-photo${className ? ` ${className}` : ""}`}>
+      <div>
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          sizes={sizes}
+          style={{ objectPosition: image.position }}
+        />
+      </div>
+      <figcaption>
+        Photo: <a href={image.source}>{image.credit}</a>
+        {" · "}
+        <a href={image.licenseUrl}>{image.license}</a>
+      </figcaption>
+    </figure>
+  );
+}
+
 const vineCycle = [
   {
     stage: "Dormancy",
     timing: "winter",
     vine: "Leaves are gone and the vine lives from carbohydrates stored in its roots, trunk and old wood.",
     work: "Prune to decide where next year’s shoots can grow and how many buds—and therefore how much potential crop—to retain.",
+    image: {
+      src: "/recipes/wine-guide/vine-cycle/dormancy.jpg",
+      alt: "Bare, pruned grapevines in a winter vineyard.",
+      credit: "Arria Belli",
+      source: "https://commons.wikimedia.org/wiki/File:Vineyard_winter.jpg",
+      license: "CC BY 2.5",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.5/",
+      position: "center 56%",
+    },
   },
   {
     stage: "Budburst",
     timing: "early spring",
     vine: "Sap rises and compound buds open. Primary buds carry most of the crop; backup buds may grow after frost but are usually less fruitful.",
     work: "Watch frost forecasts, remove badly placed shoots and begin tying or positioning the young canopy.",
+    image: {
+      src: "/recipes/wine-guide/vine-cycle/budburst.jpg",
+      alt: "Pale green grapevine shoots and folded young leaves emerging at budburst.",
+      credit: "Jennifer Woodard Maderazo",
+      source: "https://commons.wikimedia.org/wiki/File:Grape_leaves_during_budbreak.jpg",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+      position: "center center",
+    },
   },
   {
     stage: "Flowering & fruit set",
     timing: "late spring",
-    vine: "Tiny self-pollinating flowers become berries. Cold, rain or wind can cause coulure; uneven fertilisation leaves small seedless berries called millerandage.",
+    vine: "Tiny self-pollinating flowers become berries. Coulure is failed fruit set: cold or cloudy bloom weather, water stress or overly vigorous shoots can limit carbohydrate supply to the flowers. Cold, wet or windy fruit-set conditions can also leave many small seedless berries, called millerandage.",
     work: "Keep the canopy open and healthy. There is very little a grower can repair once flowering weather has reduced the crop.",
+    image: {
+      src: "/recipes/wine-guide/vine-cycle/flowering.jpg",
+      alt: "Open grapevine flowers and unopened buds on a green inflorescence.",
+      credit: "Darijanus",
+      source: "https://commons.wikimedia.org/wiki/File:Vitis_vinifera_-_flower.jpg",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      position: "center 45%",
+    },
   },
   {
     stage: "Berry growth",
     timing: "early summer",
     vine: "Cells divide, berries remain hard and green, and malic acid, tannin and herbaceous compounds accumulate. Shoots are still competing strongly with fruit.",
     work: "Manage water and vigour, tuck shoots, trim when needed and keep disease away from tight bunches.",
+    image: {
+      src: "/recipes/wine-guide/vine-cycle/berry-growth.jpg",
+      alt: "A compact bunch of hard green Merlot berries before véraison.",
+      credit: "David Huang",
+      source: "https://commons.wikimedia.org/wiki/File:Merlot_grapes_pre-veraison.jpg",
+      license: "CC BY-SA 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
+      position: "center center",
+    },
   },
   {
     stage: "Véraison & ripening",
     timing: "mid to late summer",
     vine: "Berries soften and change colour. Sugar and water arrive, malic acid is respired, skins build aroma and colour, and seeds gradually lose green bitterness.",
     work: "Adjust fruit exposure, protect against sunburn and begin sampling separate blocks rather than trusting one vineyard average.",
+    image: {
+      src: "/recipes/wine-guide/vine-cycle/veraison.jpg",
+      alt: "Pinot Noir grapes at véraison, with green berries turning blue-purple on the vine.",
+      credit: "Philip Larson",
+      source: "https://commons.wikimedia.org/wiki/File:Pinot_noir_grapes_going_through_veraison.jpg",
+      license: "CC BY-SA 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
+      position: "center center",
+    },
   },
   {
     stage: "Harvest & leaf fall",
     timing: "late summer to autumn",
     vine: "Picking stops berry ripening, but the leaves keep photosynthesising afterwards and replenish the vine’s reserves before they fall.",
     work: "Choose the compromise between sugar, acid, flavour, tannin and weather; then protect enough healthy leaf area for next spring.",
+    image: {
+      src: "/recipes/wine-guide/vine-cycle/harvest-leaf-fall.jpg",
+      alt: "Ripe dark wine grapes among red autumn vine leaves.",
+      credit: "Ilares Riolfi",
+      source: "https://commons.wikimedia.org/wiki/File:Early_October_wine_grapes_with_leaf_color_change.jpg",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+      position: "65% center",
+    },
   },
 ] as const;
 
@@ -42,41 +137,113 @@ const vineyardDecisions = [
     title: "Site before vine",
     label: "establishment",
     text: "Slope, frost drainage, water, access, labour, machinery and appellation rules belong in the same decision as climate and soil. A beautiful steep plot may cost far more to farm; a flat warm one can make healthy fruit cheaply and consistently.",
+    image: {
+      src: "/recipes/wine-guide/planting/site-and-rows.jpg",
+      alt: "Aerial view of vineyard parcels whose rows curve and change direction across the landscape.",
+      credit: "Taxiarchos228",
+      source: "https://commons.wikimedia.org/wiki/File:Aerial_View_-_Landschaft_Markgr%C3%A4flerland1.jpg",
+      license: "CC BY 3.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/3.0/",
+      position: "50% 50%",
+    },
   },
   {
     title: "Variety, clone and selection",
     label: "plant material",
     text: "The variety sets the broad ripening window. A clone narrows berry size, yield or aroma within it. Mass selection takes cuttings from many good vines, preserving more diversity but also demanding careful disease screening.",
+    image: {
+      src: "/recipes/wine-guide/planting/plant-material.jpg",
+      alt: "Dense parallel rows of young grafted grapevines growing in a vine nursery.",
+      credit: "Graftedvines",
+      source: "https://commons.wikimedia.org/wiki/File:Grafted_vine_rows.JPG",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      position: "50% 55%",
+    },
   },
   {
     title: "The rootstock is half the plant",
     label: "below ground",
     text: "Most vinifera is grafted for phylloxera protection. Rootstocks also alter vigour, rooting depth and tolerance of drought, lime, salinity, waterlogging or nematodes, so there is no universally superior one.",
+    image: {
+      src: "/recipes/wine-guide/planting/rootstock-graft.jpg",
+      alt: "Close view of a woody graft union on a young grapevine beside its support stake.",
+      credit: "W.carter",
+      source: "https://commons.wikimedia.org/wiki/File:Graft_union_on_vines_in_Lysekil_1.jpg",
+      license: "CC0 1.0",
+      licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+      position: "40% 50%",
+    },
   },
   {
     title: "Training and pruning",
     label: "permanent shape",
     text: "Head or cordon training describes old wood; spur or replacement-cane pruning describes the fruitful one-year wood retained each winter. VSP suits moderate vigour, while divided canopies spread a larger vine into more light.",
+    image: {
+      src: "/recipes/wine-guide/planting/training-pruning.jpg",
+      alt: "Vineyard worker pruning and tying a dormant cane along a wire trellis.",
+      credit: "Mark Smith",
+      source: "https://commons.wikimedia.org/wiki/File:Example_of_grapevine_pruning.jpg",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+      position: "42% 50%",
+    },
   },
   {
     title: "Balance is not simply low yield",
     label: "crop × canopy",
     text: "Too much fruit can delay ripening and drain stored carbohydrates. Too little can let shoots keep growing, making a dense shady canopy. The useful yield is the largest crop that this vine, site and wine style can ripen properly.",
+    image: {
+      src: "/recipes/wine-guide/planting/crop-canopy-balance.jpg",
+      alt: "Pinot Noir bunches lying between vineyard rows after green harvesting reduced the crop.",
+      credit: "kvins.com",
+      source: "https://commons.wikimedia.org/wiki/File:Leftovers_of_green_harvesting.jpg",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+      position: "50% 67%",
+    },
   },
   {
     title: "Soil is a living reservoir",
     label: "nutrients",
     text: "Structure, oxygen, drainage, water holding, humus and microbial activity decide how roots function. Compost and cover crops work slowly; mineral fertilisers act more directly. Excess nitrogen can be as troublesome as deficiency.",
+    image: {
+      src: "/recipes/wine-guide/planting/soil-cover-crop.jpg",
+      alt: "Chianti vineyard rows separated by a tall, continuous green cover crop.",
+      credit: "drdcuddy",
+      source: "https://commons.wikimedia.org/wiki/File:Organic_Chianti_vineyard_with_expansive_cover_crop_Italia_2010.jpg",
+      license: "CC BY-SA 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
+      position: "50% 55%",
+    },
   },
   {
     title: "Water is timed, not merely supplied",
     label: "irrigation",
     text: "Drip irrigation is precise and can carry nutrients. Mild deficit between fruit set and véraison can slow shoot growth; severe stress closes stomata and stops photosynthesis. Dry farming can be a choice, a legal requirement or simply no available water.",
+    image: {
+      src: "/recipes/wine-guide/planting/drip-irrigation.jpg",
+      alt: "Drip-irrigated vines in dry soil, with black irrigation lines running beneath the rows.",
+      credit: "Greg Rinder, CSIRO",
+      source: "https://commons.wikimedia.org/wiki/File:CSIRO_ScienceImage_4206_Drip_irrigation_vineyard_near_Angle_Vale_SA_2003.jpg",
+      license: "CC BY 3.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/3.0/",
+      position: "50% 70%",
+    },
   },
   {
     title: "Rows create a microclimate",
     label: "canopy",
     text: "Orientation, shoot position and leaf removal alter light, berry temperature, wind and drying speed. More exposure can reduce green methoxypyrazines and improve colour, but hot afternoon sun can scar berries and flatten aroma.",
+    image: {
+      src: "/recipes/wine-guide/planting/canopy-microclimate.jpg",
+      alt: "Dormant wine vines trained on V-shaped trellises to open the canopy to light and air.",
+      credit: "Sandy Austin",
+      source: "https://commons.wikimedia.org/wiki/File:Tatura_Trellis_%22V-shape%22_grape_vine_system.jpg",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+      position: "50% 70%",
+    },
   },
 ] as const;
 
@@ -130,7 +297,7 @@ const vineyardHazards = [
   },
   {
     name: "Fungal disease",
-    trigger: "Warmth and moisture favour downy mildew, powdery mildew and grey rot; pruning wounds admit trunk fungi.",
+    trigger: "Warm, wet conditions favour downy mildew and grey rot; powdery mildew needs moisture for some primary infections but can spread through warm, relatively dry weather, especially in dense, shaded canopies. Pruning wounds admit trunk fungi.",
     consequence: "Leaves lose function, berries split or rot, off-flavours develop and vines may decline permanently.",
     response: "Airflow, monitoring, timely sprays and clean pruning matter. Noble rot is only useful when healthy ripe fruit meets humid mornings and dry afternoons.",
   },
@@ -160,26 +327,80 @@ const cellarReception = [
   {
     step: "Cool and protect",
     text: "Small crates reduce crushing. Night picking, refrigeration, inert gas and carefully timed sulfur slow oxidation and unwanted microbes before the chosen ferment begins.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/reception/cool-protect.jpg",
+      alt: "Freshly harvested white grape clusters resting in shallow crates on grass.",
+      credit: "W.carter",
+      source: "https://commons.wikimedia.org/wiki/File:Grape_harvest_in_Chateaux_Luna_vineyard_2.jpg",
+      license: "CC0 1.0",
+      licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+      position: "50% 52%",
+    },
   },
   {
     step: "Sort",
     text: "Remove leaves, insects, rot and badly unripe or shrivelled fruit. Hand sorting is flexible; optical sorting is fast and precise but expensive. Every rejected berry also reduces saleable volume.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/reception/sorting.jpg",
+      alt: "Workers’ hands sorting dark wine grapes across a winery sorting table.",
+      credit: "ryanovineyards",
+      source: "https://commons.wikimedia.org/wiki/File:Table_de_triage_de_la_vendange.jpg",
+      license: "CC BY-SA 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
+      position: "50% 44%",
+    },
   },
   {
     step: "Destem or keep whole",
     text: "Stems add space, tannin and fresh herbal or floral character when ripe. Whole bunches enable carbonic behaviour; destemming makes extraction and vessel filling more uniform.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/reception/destem-or-whole.jpg",
+      alt: "Whole clusters of white wine grapes being tipped into a crusher-destemmer hopper.",
+      credit: "Fabio Ingrosso",
+      source: "https://commons.wikimedia.org/wiki/File:Harvested_grapes_being_loaded_into_crusher_destemmer.jpg",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+      position: "52% 58%",
+    },
   },
   {
     step: "Crush",
     text: "Breaking skins releases juice without deliberately breaking seeds. Crusher settings decide how many berries remain whole and how quickly skin extraction or ambient fermentation can start.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/reception/crush.jpg",
+      alt: "Dark grapes and juice falling from a crusher into a collection bucket.",
+      credit: "Daniel Spiess",
+      source: "https://commons.wikimedia.org/wiki/File:Crushed_grape_must.jpg",
+      license: "CC BY-SA 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
+      position: "50% 55%",
+    },
   },
   {
     step: "Press in fractions",
     text: "Free-run or low-pressure juice is gentler. Harder pressings add yield, solids, potassium and phenolics, so fractions are kept apart and blended only if they improve the wine.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/reception/press-fractions.jpg",
+      alt: "Pinot Noir juice dripping from a press into stainless-steel collection pans.",
+      credit: "Robert Pitkin",
+      source: "https://commons.wikimedia.org/wiki/File:Pinot_noir_juice_from_press_collecting_in_the_press_pans.jpg",
+      license: "CC BY-SA 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/",
+      position: "50% 62%",
+    },
   },
   {
     step: "Measure and adjust",
     text: "Sugar, acid, pH, nitrogen and fruit condition decide whether the must needs enrichment, acidification, deacidification, nutrients or simply restraint. Law determines which options exist.",
+    image: {
+      src: "/recipes/wine-guide/winemaking/reception/measure-must.jpg",
+      alt: "A winegrower looking through a handheld refractometer to assess grape-juice sugar.",
+      credit: "Kandschwar",
+      source: "https://commons.wikimedia.org/wiki/File:WinzerMitRefraktometer.jpg",
+      license: "CC BY-SA 2.0 DE",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/de/deed.en",
+      position: "48% 45%",
+    },
   },
 ] as const;
 
@@ -382,7 +603,7 @@ const sparklingRegions = [
   ["United States", "Chardonnay · Pinot Noir · local varieties", "traditional and tank", "Coastal California leads premium production, but Oregon, Washington, New York and New Mexico show that altitude, latitude and water can all provide cool fruit."],
   ["Chile", "Chardonnay · Pinot Noir", "traditional and tank", "Pacific influence and high or southern sites supply freshness; large producers can blend across cool zones for consistent base wine."],
   ["Argentina", "Chardonnay · Pinot Noir", "traditional and tank", "Elevation moderates strong sun and dry heat. Acidity depends on altitude, harvest date and irrigation rather than latitude alone."],
-  ["South Africa", "Chardonnay · Pinot Noir · Chenin Blanc", "traditional / Cap Classique", "Coastal and elevated sites bring acid; Chenin can add local identity beside the classic Champagne grapes."],
+  ["South Africa", "Chardonnay · Pinot Noir · Chenin Blanc · Pinotage", "traditional / Cap Classique", "Coastal and elevated sites bring acid; Chenin Blanc and Pinotage add local identity beside the classic Champagne grapes."],
   ["Australia", "Chardonnay · Pinot Noir · Shiraz", "traditional and tank", "Tasmania, Yarra Valley and Adelaide Hills supply cool base wine; sparkling Shiraz is the distinctive red branch."],
   ["New Zealand", "Pinot Noir · Chardonnay", "traditional", "Marlborough is the volume centre while cooler subregions and Central Otago offer increasingly precise, long-lees styles."],
 ] as const;
@@ -491,6 +712,7 @@ export function WineVineCycle() {
         {vineCycle.map((phase, index) => (
           <li key={phase.stage}>
             <span>{String(index + 1).padStart(2, "0")}</span>
+            <WineEditorialPhoto className="wine-vine-cycle-photo" image={phase.image} />
             <div>
               <p>{phase.timing}</p>
               <h4>{phase.stage}</h4>
@@ -518,6 +740,7 @@ export function WineVineyardPracticeAtlas() {
       <div className="wine-vineyard-practice-grid">
         {vineyardDecisions.map((decision) => (
           <article key={decision.title}>
+            <WineEditorialPhoto className="wine-planting-photo" image={decision.image} />
             <span>{decision.label}</span>
             <h4>{decision.title}</h4>
             <p>{decision.text}</p>
@@ -597,6 +820,7 @@ export function WineCellarReception() {
         {cellarReception.map((item, index) => (
           <li key={item.step}>
             <span>{String(index + 1).padStart(2, "0")}</span>
+            <WineEditorialPhoto className="wine-cellar-reception-photo" image={item.image} />
             <div><h4>{item.step}</h4><p>{item.text}</p></div>
           </li>
         ))}

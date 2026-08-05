@@ -10,6 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type WheelEvent as ReactWheelEvent,
 } from "react";
+import { layoutMapLabels } from "@/components/wine-map-viewport";
 
 export type CoffeeMapLocation = {
   coordinates: Array<[number, number]>;
@@ -25,8 +26,6 @@ type CoffeeCountryTerrainMapProps = {
   onSelectLocation: (locationId: string) => void;
   selectedLocationId: string | null;
 };
-
-type MapLayer = "terrain" | "satellite";
 
 type MapSize = {
   height: number;
@@ -60,7 +59,6 @@ const tileSize = 256;
 const minimumZoom = 2;
 const maximumZoom = 10;
 const maximumLatitude = 85.05112878;
-const terrainServers = ["a", "b", "c"] as const;
 const locationColours = [
   "#a95639",
   "#356b55",
@@ -209,15 +207,8 @@ function viewForCoordinates(
   };
 }
 
-function tileUrl(layer: MapLayer, zoom: number, x: number, y: number) {
-  if (layer === "satellite") {
-    return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${y}/${x}`;
-  }
-
-  const server = terrainServers[
-    Math.abs(x + y) % terrainServers.length
-  ];
-  return `https://${server}.tile.opentopomap.org/${zoom}/${x}/${y}.png`;
+function satelliteTileUrl(zoom: number, x: number, y: number) {
+  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${y}/${x}`;
 }
 
 export function CoffeeCountryTerrainMap({
@@ -230,7 +221,6 @@ export function CoffeeCountryTerrainMap({
   const mapElementRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragState | null>(null);
   const selectedLocationIdRef = useRef(selectedLocationId);
-  const [layer, setLayer] = useState<MapLayer>("terrain");
   const [size, setSize] = useState<MapSize>({ height: 440, width: 760 });
 
   const allCoordinates = useMemo(
@@ -335,16 +325,16 @@ export function CoffeeCountryTerrainMap({
       const x = ((rawX % tileCount) + tileCount) % tileCount;
       for (let y = minimumTileY; y <= maximumTileY; y += 1) {
         nextTiles.push({
-          key: `${layer}-${zoom}-${rawX}-${y}`,
+          key: `satellite-${zoom}-${rawX}-${y}`,
           left: rawX * tileSize - (center.x - size.width / 2),
           top: y * tileSize - (center.y - size.height / 2),
-          url: tileUrl(layer, zoom, x, y),
+          url: satelliteTileUrl(zoom, x, y),
         });
       }
     }
 
     return nextTiles;
-  }, [layer, size, viewport]);
+  }, [size, viewport]);
 
   const mappedLocations = useMemo(() => {
     const worldSize = tileSize * 2 ** viewport.zoom;
@@ -380,6 +370,15 @@ export function CoffeeCountryTerrainMap({
           id: location.id,
           isSelected: location.id === selectedLocationId,
           label: location.label,
+          labelHeight: context === "macro" ? 24 : 38,
+          labelWidth: clamp(
+            Math.max(
+              location.label.length * 6.2 + 24,
+              context === "macro" ? 0 : location.detail.length * 4.2 + 24,
+            ),
+            context === "macro" ? 74 : 96,
+            context === "macro" ? 154 : 214,
+          ),
           left: size.width / 2 + horizontalOffset,
           radiusInPixels,
           top: size.height / 2 + point.y - center.y,
@@ -387,6 +386,42 @@ export function CoffeeCountryTerrainMap({
       })
     );
   }, [context, locations, selectedLocationId, size, viewport]);
+
+  const labelPlacements = useMemo(
+    () => layoutMapLabels(
+      mappedLocations.flatMap((location) => (
+        location.coordinateIndex === 0
+          ? [{
+              height: location.labelHeight,
+              id: location.id,
+              point: [location.left, location.top] as [number, number],
+              priority: location.isSelected ? 100 : 10,
+              width: location.labelWidth,
+            }]
+          : []
+      )),
+      { scale: 1, x: 0, y: 0 },
+      size.width,
+      size.height,
+      {
+        obstacles: [
+          {
+            bottom: 54,
+            left: Math.max(0, size.width - 178),
+            right: size.width - 8,
+            top: 8,
+          },
+          {
+            bottom: size.height - 8,
+            left: 8,
+            right: Math.min(size.width - 8, 340),
+            top: size.height - 56,
+          },
+        ],
+      },
+    ),
+    [mappedLocations, size.height, size.width],
+  );
 
   const changeZoom = useCallback((change: number) => {
     setViewportState((current) => {
@@ -457,9 +492,9 @@ export function CoffeeCountryTerrainMap({
   return (
     <section
       aria-label={ariaLabel}
-      className="coffee-country-terrain-map coffee-slippy-map"
+      className="coffee-country-satellite-map coffee-slippy-map"
       data-context={context}
-      data-layer={layer}
+      data-layer="satellite"
     >
       <div
         className="coffee-terrain-map-canvas"
@@ -493,9 +528,11 @@ export function CoffeeCountryTerrainMap({
             />
           ))}
         </div>
+        <div aria-hidden="true" className="coffee-satellite-wash" />
 
         <div className="coffee-slippy-locations">
           {mappedLocations.map((location) => {
+            const labelPlacement = labelPlacements.get(location.id);
             const style = {
               "--coffee-location-colour": location.colour,
               "--coffee-location-radius": `${location.radiusInPixels}px`,
@@ -519,10 +556,18 @@ export function CoffeeCountryTerrainMap({
                 <span aria-hidden="true" className="coffee-slippy-footprint" />
                 <span aria-hidden="true" className="coffee-slippy-pin" />
                 {location.coordinateIndex === 0 ? (
-                  <span className="coffee-slippy-label">
-                    <strong>{location.label}</strong>
-                    <small>{location.detail}</small>
-                  </span>
+                  labelPlacement && !labelPlacement.hidden ? (
+                    <span
+                      className="coffee-slippy-label"
+                      style={{
+                        transform: `translate(calc(-50% + ${labelPlacement.offsetX}px), calc(-50% + ${labelPlacement.offsetY}px))`,
+                        width: location.labelWidth,
+                      }}
+                    >
+                      <strong>{location.label}</strong>
+                      {context === "country" ? <small>{location.detail}</small> : null}
+                    </span>
+                  ) : null
                 ) : null}
               </button>
             );
@@ -530,23 +575,7 @@ export function CoffeeCountryTerrainMap({
         </div>
       </div>
 
-      <div aria-label="Map view" className="coffee-terrain-map-controls" role="group">
-        <div>
-          <button
-            aria-pressed={layer === "terrain"}
-            onClick={() => setLayer("terrain")}
-            type="button"
-          >
-            Terrain
-          </button>
-          <button
-            aria-pressed={layer === "satellite"}
-            onClick={() => setLayer("satellite")}
-            type="button"
-          >
-            Satellite
-          </button>
-        </div>
+      <div aria-label="Satellite map controls" className="coffee-terrain-map-controls" role="group">
         <div className="coffee-map-zoom-controls">
           <button
             aria-label="Zoom out"
@@ -566,37 +595,22 @@ export function CoffeeCountryTerrainMap({
             +
           </button>
         </div>
-        <button onClick={showOverview} type="button">Show all</button>
+        <button className="coffee-map-show-all" onClick={showOverview} type="button">Show all</button>
       </div>
 
       <p className="coffee-terrain-map-legend">
-        Drag to pan · scroll or use +/− to zoom · shaded circles are approximate growing areas.
+        Satellite view · drag to pan · shaded areas mark approximate coffee-growing locations.
       </p>
 
       <p className="coffee-map-attribution">
-        {layer === "terrain" ? (
-          <>
-            Map:{" "}
-            <a href="https://opentopomap.org/about" rel="noreferrer" target="_blank">
-              OpenTopoMap
-            </a>
-            {" · "}
-            <a href="https://www.openstreetmap.org/copyright" rel="noreferrer" target="_blank">
-              © OpenStreetMap contributors
-            </a>
-          </>
-        ) : (
-          <>
-            Imagery:{" "}
-            <a
-              href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Esri, Maxar, Earthstar Geographics and the GIS User Community
-            </a>
-          </>
-        )}
+        Imagery:{" "}
+        <a
+          href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
+          rel="noreferrer"
+          target="_blank"
+        >
+          Esri, Maxar, Earthstar Geographics and the GIS User Community
+        </a>
       </p>
     </section>
   );

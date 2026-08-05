@@ -7,7 +7,7 @@ import { geoNaturalEarth1, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import type { GeometryCollection, Topology } from "topojson-specification";
-import type { CoffeeMapLocation } from "@/components/coffee-altitude-map";
+import type { CoffeeMapLocation } from "@/components/coffee-country-terrain-map";
 import {
   coffeeGrowingRegionCount,
   coffeeOriginCount,
@@ -29,13 +29,13 @@ type AtlasTopology = Topology<{
 
 type AtlasFeature = Feature<Geometry, AtlasProperties>;
 
-const CoffeeAltitudeMap = dynamic(
-  () => import("@/components/coffee-altitude-map")
-    .then((module) => module.CoffeeAltitudeMap),
+const CoffeeSatelliteMap = dynamic(
+  () => import("@/components/coffee-country-terrain-map")
+    .then((module) => module.CoffeeCountryTerrainMap),
   {
     loading: () => (
-      <div className="coffee-altitude-map coffee-altitude-map-loading">
-        <p>Drawing the altitude atlas…</p>
+      <div className="coffee-country-satellite-map coffee-terrain-map-loading">
+        <p>Loading the satellite map…</p>
       </div>
     ),
     ssr: false,
@@ -159,14 +159,13 @@ export function CoffeeRegionExplorer() {
       <div className="coffee-map-stage">
         <div className="coffee-map-frame">
           {selectedRegion ? (
-            <CoffeeAltitudeMap
+            <CoffeeSatelliteMap
               ariaLabel={
                 selectedOrigin
                   ? `${selectedOrigin.name} coffee-growing regions and altitude guides`
                   : `${selectedRegion.name} coffee origins and altitude guides`
               }
               context={selectedOrigin ? "country" : "macro"}
-              focusIso={selectedOrigin?.iso}
               key={selectedOrigin?.iso ?? selectedRegion.id}
               locations={mapLocations}
               onSelectLocation={selectMapLocation}
@@ -276,12 +275,18 @@ export function CoffeeRegionExplorer() {
           ) : null}
 
           <div className="coffee-map-caption">
-            <span>{selectedOrigin ? "Country atlas" : selectedRegion ? "Regional view" : "The coffee belt"}</span>
+            <span>
+              {selectedOrigin
+                ? "Satellite country map"
+                : selectedRegion
+                  ? "Satellite regional map"
+                  : "The coffee belt"}
+            </span>
             <p>
               {selectedOrigin
-                ? `${selectedOrigin.growingRegions.length} named growing regions—follow the altitude guides, pan or zoom, then choose an outlined area.`
+                ? `${selectedOrigin.growingRegions.length} named growing regions—pan or zoom, then choose a shaded area.`
                 : selectedRegion
-                  ? `${regionOrigins.length} countries—compare their growing elevations, then choose a mapped origin.`
+                  ? `${regionOrigins.length} countries—compare their geography, then choose a mapped origin.`
                   : `${coffeeOriginCount} countries and ${coffeeGrowingRegionCount} growing zones—choose a region or click a dot.`}
             </p>
           </div>
@@ -459,9 +464,9 @@ export function CoffeeRegionExplorer() {
       <p className="coffee-map-source">
         World overview geometry:{" "}
         <a href="https://www.naturalearthdata.com/" rel="noreferrer" target="_blank">Natural Earth</a>
-        {" "}through D3 Maps Atlas. Regional and country close-ups use the same clean vector geography with
-        schematic altitude lines built from each source-backed growing range. The coloured outlines are approximate
-        orientation footprints, not surveyed contours, administrative limits or farm boundaries. The atlas combines
+        {" "}through D3 Maps Atlas. Regional and country close-ups use Esri World Imagery with source-backed coffee
+        locations placed over the real terrain. The shaded areas are approximate orientation footprints, not surveyed
+        contours, administrative limits or farm boundaries. The atlas combines
         national coffee bodies, origin-specific public references,{" "}
         <a href="https://varieties.worldcoffeeresearch.org/" rel="noreferrer" target="_blank">
           World Coffee Research

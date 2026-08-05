@@ -18,6 +18,7 @@ type ViewportTransform = {
 export type MapLabelCandidate = {
   height: number;
   id: string;
+  placement?: "adaptive" | "centered";
   point: [number, number];
   priority?: number;
   width: number;
@@ -43,6 +44,18 @@ const maximumScale = 6;
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
+}
+
+function constrainViewport(
+  viewport: ViewportTransform,
+  width: number,
+  height: number,
+) {
+  return {
+    ...viewport,
+    x: clamp(viewport.x, width - width * viewport.scale, 0),
+    y: clamp(viewport.y, height - height * viewport.scale, 0),
+  };
 }
 
 export type MapLabelBox = {
@@ -93,17 +106,19 @@ export function layoutMapLabels(
       return;
     }
 
-    const candidates: Array<[number, number]> = [
-      [0, -label.height * 0.72],
-      [0, label.height * 0.72],
-      [label.width * 0.5 + 8, 0],
-      [-label.width * 0.5 - 8, 0],
-      [label.width * 0.42, -label.height * 0.62],
-      [-label.width * 0.42, -label.height * 0.62],
-      [label.width * 0.42, label.height * 0.62],
-      [-label.width * 0.42, label.height * 0.62],
-      [0, 0],
-    ];
+    const candidates: Array<[number, number]> = label.placement === "centered"
+      ? [[0, 0]]
+      : [
+          [0, -label.height * 0.72],
+          [0, label.height * 0.72],
+          [label.width * 0.5 + 8, 0],
+          [-label.width * 0.5 - 8, 0],
+          [label.width * 0.42, -label.height * 0.62],
+          [-label.width * 0.42, -label.height * 0.62],
+          [label.width * 0.42, label.height * 0.62],
+          [-label.width * 0.42, label.height * 0.62],
+          [0, 0],
+        ];
     let best:
       | { box: MapLabelBox; centerX: number; centerY: number; score: number }
       | null = null;
@@ -166,11 +181,11 @@ export function useWineMapViewport(width: number, height: number) {
       const scale = clamp(nextScale, minimumScale, maximumScale);
       if (scale === current.scale) return current;
       const ratio = scale / current.scale;
-      return {
+      return constrainViewport({
         scale,
         x: focusX - (focusX - current.x) * ratio,
         y: focusY - (focusY - current.y) * ratio,
-      };
+      }, width, height);
     });
   }, [height, width]);
 
@@ -214,11 +229,11 @@ export function useWineMapViewport(width: number, height: number) {
       event.currentTarget.setPointerCapture(event.pointerId);
     }
     suppressClick.current = true;
-    setViewport({
+    setViewport(constrainViewport({
       scale: start.scale,
       x: start.x + deltaX,
       y: start.y + deltaY,
-    });
+    }, width, height));
   }, [height, width]);
 
   const finishPointer = useCallback((event: ReactPointerEvent<SVGSVGElement>) => {

@@ -82,7 +82,7 @@ export const wineCountries: WineCountry[] = [
     vineyardLens: "French labels often lead with place rather than grape. Region, village and vineyard can therefore tell us more than the variety printed—or not printed—on the front.",
     regions: [
       region("fr-bordeaux", "Bordeaux", [-0.58, 44.84], "Moderate maritime; rain and humidity make vintage timing important.", "Gravel on the Left Bank; clay and limestone are especially important on the Right Bank.", ["Cabernet Sauvignon", "Merlot", "Cabernet Franc", "Sauvignon Blanc", "Sémillon"], ["structured red blends", "dry white", "botrytised sweet"], "The Gironde and its tributaries divide the region into banks with different soils and blending priorities.", [
-        subregion("Médoc & Haut-Médoc", "Cabernet Sauvignon-led blends", "Well-drained gravel favours later-ripening Cabernet; Margaux, Pauillac, Saint-Julien and Saint-Estèphe each shift the balance."),
+        subregion("Médoc & Haut-Médoc", "Cabernet Sauvignon-led blends", "Gravel drains freely and releases stored heat, helping later-ripening Cabernet; shallow sites can suffer drought, while Margaux, Pauillac, Saint-Julien and Saint-Estèphe each shift the balance."),
         subregion("Graves & Pessac-Léognan", "Cabernet Sauvignon, Merlot; Sauvignon Blanc, Sémillon", "Gravelly terraces produce both firm reds and barrel-shaped dry whites."),
         subregion("Saint-Émilion", "Merlot, Cabernet Franc", "Limestone plateau, clay slopes and sandier flats give very different expressions within one appellation."),
         subregion("Pomerol", "Merlot, Cabernet Franc", "Small, gently rolling vineyards; clay-rich sectors can make dense, plush and long-lived Merlot."),
@@ -97,7 +97,7 @@ export const wineCountries: WineCountry[] = [
       ]),
       region("fr-champagne", "Champagne", [4.0, 49.05], "Cool continental with Atlantic rain; marginal ripening preserves the acidity needed for sparkling wine.", "Chalk, limestone and marl store water while draining freely; exposure is important this far north.", ["Chardonnay", "Pinot Noir", "Meunier"], ["traditional-method sparkling"], "Blending across grapes, villages, years and reserve wines is as important as any single vineyard.", [
         subregion("Montagne de Reims", "Pinot Noir", "A wooded limestone plateau with villages on several exposures; Pinot Noir contributes structure."),
-        subregion("Vallée de la Marne", "Meunier, Pinot Noir", "Frost-prone valleys and clay-rich soils suit earlier-budding, resilient Meunier."),
+        subregion("Vallée de la Marne", "Meunier, Pinot Noir", "Frost-prone valleys and clay-rich soils suit Meunier, whose late budburst reduces spring-frost exposure."),
         subregion("Côte des Blancs", "Chardonnay", "East-facing chalk slopes make high-acid Chardonnay with a particularly linear frame."),
         subregion("Côte des Bar", "Pinot Noir", "Warmer, more southerly Kimmeridgian country; Pinot Noir dominates."),
       ]),
@@ -115,7 +115,7 @@ export const wineCountries: WineCountry[] = [
         subregion("Pays Nantais", "Melon B", "Muscadet’s Atlantic, schist-rich country makes light, high-acid whites often aged on lees."),
         subregion("Anjou-Saumur", "Chenin Blanc, Cabernet Franc", "Schist to the west and tuffeau limestone around Saumur support dry, sweet, red and sparkling styles."),
         subregion("Touraine", "Chenin Blanc, Cabernet Franc, Sauvignon Blanc", "Vouvray, Montlouis, Chinon and Bourgueil translate river exposure and limestone into contrasting wines."),
-        subregion("Central Vineyards", "Sauvignon Blanc, Pinot Noir", "Sancerre and Pouilly-Fumé combine continental conditions with limestone, marl and flint."),
+        subregion("Central Vineyards", "Sauvignon Blanc, Pinot Noir", "Sancerre and Pouilly-Fumé span fast-warming caillottes limestone, slower-ripening terres blanches marl and heat-storing silex."),
       ]),
       region("fr-northern-rhone", "Northern Rhône", [4.82, 45.25], "Moderate continental with strong sun on steep exposures and a cold mistral wind.", "Very steep granite slopes; terraces are often essential.", ["Syrah", "Viognier", "Marsanne", "Roussanne"], ["structured red", "aromatic white"], "The valley is narrow enough that vineyard aspect can determine whether grapes ripen fully.", [
         subregion("Côte-Rôtie", "Syrah, sometimes co-fermented Viognier", "Very steep, sun-catching slopes make perfumed yet structured Syrah."),
@@ -135,7 +135,7 @@ export const wineCountries: WineCountry[] = [
         subregion("Bandol", "Mourvèdre", "Warm, terraced limestone slopes near the sea can ripen late Mourvèdre for powerful red."),
         subregion("Cassis", "Marsanne, Clairette and local whites", "A small limestone amphitheatre near the sea known mainly for white wine."),
       ]),
-      region("fr-languedoc-roussillon", "Languedoc-Roussillon", [3.0, 43.3], "Warm, dry Mediterranean; elevation and distance from the sea are the main cooling levers.", "Coastal plains rise into limestone, schist and mountain foothills.", ["Grenache", "Syrah", "Mourvèdre", "Carignan", "Cinsault", "Picpoul", "Muscat"], ["red blend", "rosé", "white", "sparkling", "VDN"], "This huge southern arc contains inexpensive regional wine, old-vine mountain plots and several historically distinct sweet and sparkling traditions.", [
+      region("fr-languedoc-roussillon", "Languedoc-Roussillon", [3.0, 43.3], "Warm, dry Mediterranean; elevation, distance from the sea and—in the west—the cool, dry Tramontane moderate heat and fungal pressure.", "Coastal plains rise into limestone, schist and mountain foothills.", ["Grenache", "Syrah", "Mourvèdre", "Carignan", "Cinsault", "Picpoul", "Muscat"], ["red blend", "rosé", "white", "sparkling", "VDN"], "This huge southern arc contains inexpensive regional wine, old-vine mountain plots and several historically distinct sweet and sparkling traditions.", [
         subregion("Pic Saint-Loup & Terrasses du Larzac", "Syrah, Grenache, Mourvèdre", "Altitude and night-time cooling sharpen southern red blends."),
         subregion("Corbières & Minervois", "Carignan, Grenache, Syrah, Mourvèdre", "Large, rugged appellations with old vines and varied limestone and schist."),
         subregion("Limoux", "Mauzac, Chardonnay, Chenin Blanc", "A cooler western pocket with long-established sparkling wine."),
@@ -278,7 +278,7 @@ export const wineCountries: WineCountry[] = [
         subregion("High parajes", "Mencía, Godello", "Slate slopes and old vines give lower yields and more definition."),
       ]),
       region("es-priorat-montsant", "Priorat & Montsant", [0.75, 41.15], "Hot, dry Mediterranean with cooler nights at elevation.", "Priorat’s fractured llicorella slate is encircled by Montsant’s varied limestone, clay and granite.", ["Garnacha", "Cariñena", "Syrah"], ["concentrated red"], "Old vines survive on steep, low-yielding slopes where water access is the central challenge.", [
-        subregion("Priorat", "Garnacha, Cariñena", "Steep llicorella slopes make dense but mineral-framed reds."),
+        subregion("Priorat", "Garnacha, Cariñena", "Thin, vertically fissured llicorella lets roots chase scarce water at depth; terraces slow runoff, while low water and nutrients keep old-vine yields very low."),
         subregion("Montsant", "Garnacha, Cariñena", "A horseshoe around Priorat with more varied soils and often softer styles."),
       ]),
       region("es-penedes-cava", "Penedès & Cava country", [1.7, 41.4], "Mediterranean, cooler with altitude toward the interior.", "Coastal and pre-littoral limestone-clay basins.", ["Xarel·lo", "Macabeo", "Parellada", "Chardonnay", "Garnacha"], ["traditional-method sparkling", "still white", "red"], "The three traditional Cava grapes contribute body, aroma and freshness in different proportions.", [

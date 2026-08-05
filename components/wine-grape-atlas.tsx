@@ -8,6 +8,7 @@ import {
   wineGrapes,
   type WineGrapeColour,
 } from "@/data/wine-grape-data";
+import { wineGrapeImages } from "@/data/wine-grape-images";
 
 type ColourFilter = "all" | WineGrapeColour;
 type RoleFilter = "all" | "still" | "sparkling" | "sweet" | "fortified" | "skin-contact";
@@ -71,6 +72,7 @@ export function WineGrapeAtlas() {
     ?? wineGrapes[0];
   const selectedUse = wineGrapeUseById[selectedGrape.id];
   const selectedRank = wineGrapeUseRankById[selectedGrape.id];
+  const selectedImage = wineGrapeImages[selectedGrape.id];
 
   return (
     <div className="wine-grape-atlas">
@@ -170,6 +172,7 @@ export function WineGrapeAtlas() {
               {filteredGrapes.map((item) => {
                 const usage = wineGrapeUseById[item.id];
                 const rank = wineGrapeUseRankById[item.id];
+                const image = wineGrapeImages[item.id];
                 return (
                   <button
                     aria-pressed={selectedGrape.id === item.id}
@@ -178,7 +181,13 @@ export function WineGrapeAtlas() {
                     onClick={() => setSelectedId(item.id)}
                     type="button"
                   >
-                    <i aria-hidden="true" />
+                    {/* Varieties without a verified image keep the colour marker
+                        rather than showing a broken or placeholder picture. */}
+                    {image ? (
+                      <img alt="" className="wine-grape-thumb" loading="lazy" src={image.thumb} />
+                    ) : (
+                      <i aria-hidden="true" />
+                    )}
                     <span>
                       <strong>{item.name}</strong>
                       <small className="wine-grape-usage">
@@ -207,6 +216,21 @@ export function WineGrapeAtlas() {
             </div>
             <span data-colour={selectedGrape.colour} aria-hidden="true" />
           </header>
+          {selectedImage ? (
+            <figure className="wine-grape-photo">
+              <img
+                alt={`${selectedGrape.name} grapes`}
+                key={selectedImage.file}
+                src={selectedImage.file}
+              />
+              <figcaption>
+                {selectedImage.credit} · {selectedImage.license} ·{" "}
+                <a href={selectedImage.sourceUrl} rel="noreferrer" target="_blank">
+                  Wikimedia Commons ↗
+                </a>
+              </figcaption>
+            </figure>
+          ) : null}
           {selectedGrape.aliases.length ? (
             <p className="wine-grape-aliases">
               Also called {selectedGrape.aliases.join(", ")}
