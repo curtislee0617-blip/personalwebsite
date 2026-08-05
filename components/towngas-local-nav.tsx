@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 const sections = [
   { href: "#overview", label: "Overview" },
   { href: "#feedstocks", label: "Feedstocks + siting" },
+  { href: "#cofeed", label: "Regional co-feed" },
   { href: "#process-design", label: "Process design" },
   { href: "#balances", label: "Balances" },
   { href: "#economics", label: "RMB economics" },

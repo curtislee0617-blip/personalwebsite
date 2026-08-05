@@ -64,7 +64,7 @@ function ReportActions({ compact = false }: { compact?: boolean }) {
         <span aria-hidden="true">↓</span>
       </a>
       <a className="towngas-button towngas-button--secondary" href={processAnchor}>
-        <span>Section 3 · Process design</span>
+        <span>Section 4 · Process design</span>
         <span aria-hidden="true">↘</span>
       </a>
     </div>
@@ -88,6 +88,7 @@ export function TowngasCaseStudy() {
   const maxEnergy = Math.max(...data.energyCascade.steps.map((row) => row.valueGjPerDay));
   const maxCapex = Math.max(...data.capex.areas.map((row) => row.valueRmbMillion));
   const maxOpex = Math.max(...data.opex.items.map((row) => row.valueRmbMillion));
+  const maxRegionalProduction = Math.max(...data.regionalFeedStrategy.productionCases.flatMap((item) => [item.controlKtPerYear, item.regionalKtPerYear]));
 
   return (
     <article className="scwg-page towngas-page" id="top">
@@ -138,7 +139,7 @@ export function TowngasCaseStudy() {
               <dl>
                 <div>
                   <dt>Products</dt>
-                  <dd>≈19.33 kt/year light olefins</dd>
+                  <dd>19.33 base → 22.74 kt/year B2 screen</dd>
                 </div>
                 <div>
                   <dt>Base NPV</dt>
@@ -317,9 +318,117 @@ export function TowngasCaseStudy() {
           </div>
         </section>
 
+        <section className="towngas-section towngas-shell" id="cofeed">
+          <SectionHeading
+            eyebrow="03 · Regional co-feed strategy"
+            title="Raise feed carbon without increasing gross slurry"
+            lede={
+              <p>
+                The integrated feed strategy substitutes regional wastes on a dry-solids basis while holding every train at 300 t/day. B2 is the preferred development blend: it raises screened feed carbon by 17.6%, but remains a pilot target—not a proven yield or a remedy for the five-train economics.
+              </p>
+            }
+          />
+
+          <div className="towngas-cofeed-rule">
+            <div>
+              <p className="eyebrow">Binding feed rule</p>
+              <h3>Substitute solids; do not add wet tonnes.</h3>
+            </div>
+            <p>{data.regionalFeedStrategy.rule}</p>
+            <EvidenceTag basis={data.regionalFeedStrategy.basis} />
+          </div>
+
+          <div className="towngas-table-wrap towngas-cofeed-table">
+            <table>
+              <caption>Table 1. Staged one-train recipes and calculated blend properties; every recipe totals 300 t/day gross slurry.</caption>
+              <thead>
+                <tr><th>Input / property</th>{data.regionalFeedStrategy.blends.map((blend) => <th key={blend.id}>{blend.id}<small>{blend.name}</small></th>)}</tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Wet okara", "okara"],
+                  ["Cassava / starch cake", "cassavaCake"],
+                  ["Fruit / vegetable pulp", "fruitPulp"],
+                  ["Soluble organic liquor", "organicLiquor"],
+                  ["Milled crop residue", "cropResidue"],
+                  ["Dewatered manure cake", "manureCake"],
+                  ["Fresh red mud", "redMud"],
+                  ["Water", "water"],
+                ].map(([label, key]) => (
+                  <tr key={key}>
+                    <th>{label} <small>t/day</small></th>
+                    {data.regionalFeedStrategy.blends.map((blend) => <td key={blend.id}>{blend.recipe[key as keyof typeof blend.recipe]}</td>)}
+                  </tr>
+                ))}
+                <tr className="towngas-cofeed-table-divider">
+                  <th>Total solids <small>t/day</small></th>
+                  {data.regionalFeedStrategy.blends.map((blend) => <td key={blend.id}>{blend.solidsTPerDay.toFixed(2)}</td>)}
+                </tr>
+                <tr>
+                  <th>Total solids <small>wt%</small></th>
+                  {data.regionalFeedStrategy.blends.map((blend) => <td key={blend.id}>{blend.solidsWtPct.toFixed(2)}%</td>)}
+                </tr>
+                <tr>
+                  <th>Feed carbon <small>t C/day</small></th>
+                  {data.regionalFeedStrategy.blends.map((blend) => <td key={blend.id}>{blend.feedCarbonTPerDay.toFixed(3)}</td>)}
+                </tr>
+                <tr>
+                  <th>Slurry carbon <small>wt%</small></th>
+                  {data.regionalFeedStrategy.blends.map((blend) => <td key={blend.id}>{blend.slurryCarbonWtPct.toFixed(3)}%</td>)}
+                </tr>
+                <tr>
+                  <th>Ash + mineral <small>t/day</small></th>
+                  {data.regionalFeedStrategy.blends.map((blend) => <td key={blend.id}>{blend.ashMineralTPerDay.toFixed(3)}</td>)}
+                </tr>
+                <tr>
+                  <th>Carbon / nitrogen ratio</th>
+                  {data.regionalFeedStrategy.blends.map((blend) => <td key={blend.id}>{blend.carbonNitrogenRatio.toFixed(2)}</td>)}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="towngas-cofeed-notes">
+            {data.regionalFeedStrategy.blends.map((blend) => (
+              <article className={blend.id === data.regionalFeedStrategy.preferredDevelopmentBlend ? "is-preferred" : undefined} key={blend.id}>
+                <header><span>{blend.id}</span><strong>{blend.name}</strong></header>
+                <p>{blend.purpose}</p>
+                {blend.id === data.regionalFeedStrategy.preferredDevelopmentBlend ? <small>Preferred pilot blend</small> : null}
+              </article>
+            ))}
+          </div>
+
+          <div className="towngas-cofeed-outcomes">
+            <div className="towngas-figure-heading">
+              <div><p className="eyebrow">Scale and economics screen</p><h3>Carbon density helps; the surrounding commercial model decides whether it matters.</h3></div>
+              <p>Calculated cases from the same report, shown separately to prevent the improved envelope from reading as the base forecast.</p>
+            </div>
+            <div className="towngas-cofeed-cases">
+              {data.regionalFeedStrategy.productionCases.map((item) => (
+                <article key={item.id}>
+                  <header><div><span>{item.status}</span><h4>{item.label}</h4></div><EvidenceTag basis={item.id === "five-train" ? "calculated result" : "screening assumption"} /></header>
+                  <div className="towngas-cofeed-production">
+                    <div><span>Control B0</span><i><b style={{ "--bar": `${(item.controlKtPerYear / maxRegionalProduction) * 100}%` } as CSSProperties} /></i><strong>{item.controlKtPerYear.toFixed(2)} kt/y</strong></div>
+                    <div><span>Regional B2</span><i><b style={{ "--bar": `${(item.regionalKtPerYear / maxRegionalProduction) * 100}%` } as CSSProperties} /></i><strong>{item.regionalKtPerYear.toFixed(2)} kt/y</strong></div>
+                  </div>
+                  <p className="towngas-cofeed-uplift">+{item.upliftKtPerYear.toFixed(2)} kt/year screened olefin uplift</p>
+                  <p className="towngas-cofeed-assumptions"><strong>Case assumptions:</strong> {item.assumptions}</p>
+                  <ul>{item.financialBridge.map((line) => <li key={line}>{line}</li>)}</ul>
+                  <p className="towngas-cofeed-conclusion">{item.conclusion}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="towngas-cofeed-decision">
+            <div><p className="eyebrow">Decision</p><h3>Advance B2 to pilot; do not advance commercial FEED.</h3></div>
+            <div><p>{data.regionalFeedStrategy.decision}</p><p><strong>Manure gate:</strong> {data.regionalFeedStrategy.manureGate}</p><SourceNote>{data.regionalFeedStrategy.source}</SourceNote></div>
+          </div>
+        </section>
+
         <section className="towngas-section towngas-shell" id="process-design">
           <SectionHeading
-            eyebrow="03 · Integrated process design"
+            eyebrow="04 · Integrated process design"
             title="Integrated process configuration and battery-limit definitions"
             lede={<p>The route is deliberately serial through B1–B7. B8 receives mineral solids after B4, and R1 returns only a controlled conditioned fraction to B1.</p>}
           />
@@ -355,7 +464,7 @@ export function TowngasCaseStudy() {
         <section className="towngas-section towngas-section--dark" id="balances">
           <div className="towngas-shell">
             <SectionHeading
-              eyebrow="04 · Closed screening balances"
+              eyebrow="05 · Closed screening balances"
               title="Reconciled one-train mass, carbon, and energy balances"
               lede={<p>The closure is arithmetic, not pilot evidence. It reconciles pseudo-components so the process and economics can be screened consistently.</p>}
             />
@@ -438,7 +547,7 @@ export function TowngasCaseStudy() {
 
         <section className="towngas-section towngas-shell" id="economics">
           <SectionHeading
-            eyebrow="05 · China-specific RMB economics"
+            eyebrow="06 · China-specific RMB economics"
             title="China-specific cost basis and 20-year economic evaluation"
             lede={<p>The model uses 2026 China screening inputs and a Class 4 range. It assumes 20 operating years, nominal pre-tax unlevered cash flow, and a 10% discount rate.</p>}
           />
@@ -564,7 +673,7 @@ export function TowngasCaseStudy() {
         <section className="towngas-section towngas-section--tint" id="policy">
           <div className="towngas-shell">
             <SectionHeading
-              eyebrow="06 · Environmental policy + certification"
+              eyebrow="07 · Environmental policy + certification"
               title="Environmental, certification, and product-qualification basis"
               lede={<p>Carbon, circularity, fertilizer, and residue claims require different evidence chains. None is converted into guaranteed revenue in the base case.</p>}
             />
@@ -583,7 +692,7 @@ export function TowngasCaseStudy() {
 
         <section className="towngas-section towngas-shell" id="development">
           <SectionHeading
-            eyebrow="07 · Risk register + development programme"
+            eyebrow="08 · Risk register + development programme"
             title="Risk retirement and development gates G0–G7"
             lede={<p>The concept advances only when the physical failure modes and commercial assumptions are retired with representative material and real gas.</p>}
           />
@@ -625,7 +734,7 @@ export function TowngasCaseStudy() {
               <div>
                 <p className="eyebrow">Report files</p>
                 <h2>Process design and pre-FEED screening report</h2>
-                <p>The downloadable 3 August 2026 report contains the complete screening basis, tables, references, assumptions register, arithmetic checks, and development plan.</p>
+                <p>The downloadable {data.meta.reportDate} report contains the complete screening basis, integrated regional feed strategy, tables, references, assumptions register, arithmetic checks, and development plan.</p>
                 <ReportActions compact />
                 <a className="towngas-pdf-link" href={data.meta.reportDownloads.pdf} target="_blank">Open PDF review copy <span aria-hidden="true">↗</span></a>
               </div>
@@ -650,7 +759,7 @@ export function TowngasCaseStudy() {
             </div>
 
             <footer className="towngas-page-footer">
-              <p>Screening/pre-FEED case study · 3 August 2026</p>
+              <p>Screening/pre-FEED case study · {data.meta.reportDate}</p>
               <div><Link href="/projects">All projects</Link><a href="#top">Back to top ↑</a></div>
             </footer>
           </div>

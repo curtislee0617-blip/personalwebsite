@@ -3,7 +3,7 @@ import { TowngasCaseStudy } from "@/components/towngas-case-study";
 
 const title = "Towngas SCWG–OXZEO process design";
 const description =
-  "Screening/pre-FEED design integrating supercritical water gasification, bauxite-residue treatment, bi-reforming and OXZEO light-olefin synthesis, with closed balances and China-specific RMB economics.";
+  "Screening/pre-FEED design integrating supercritical water gasification, bauxite-residue treatment, regional co-feeds, bi-reforming and OXZEO light-olefin synthesis, with closed balances and China-specific RMB economics.";
 const canonicalPath = "/projects/supercritical-water-gasification";
 
 export const metadata: Metadata = {

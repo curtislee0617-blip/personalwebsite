@@ -31,10 +31,10 @@ export const projects: ProjectEntry[] = [
     shortTitle: "Towngas SCWG–OXZEO",
     year: "August 2026",
     description:
-      "An integrated screening/pre-FEED process design for a five-train, 1,500 t/d SCWG–OXZEO concept that co-processes wet soybean okara, straw, and fresh red mud into light olefins.",
+      "An integrated screening/pre-FEED process design for a five-train, 1,500 t/d SCWG–OXZEO concept, now extended with a regional co-feed strategy for wet agro-industrial residues.",
     detail: [
       "The B1–B8 design basis runs from feed handling and salt management through supercritical water gasification, gas cleanup, reforming, OXZEO synthesis, and heat-and-water integration, supported by closed screening mass, carbon, and energy balances.",
-      "The economics are reported without hiding the outcome: RMB 1.90 billion base-case CAPEX, RMB 5.2 million per year EBITDA, a 20-year pretax NPV at 10% of −RMB 1.856 billion, and no positive IRR; staged validation gates define what must be proven before FEED.",
+      "The preferred B2 regional blend raises calculated five-train olefin output from 19.33 to 22.74 kt/year at unchanged conversion, but the report still finds the five-train case non-financeable and keeps commercial FEED behind explicit technical and commercial gates.",
     ],
     tags: ["Chemical engineering", "FEED-gate design", "SCWG", "OXZEO", "Techno-economics"],
     previews: [
@@ -51,15 +51,15 @@ export const projects: ProjectEntry[] = [
     ],
     documents: [
       {
-        href: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China.docx",
+        href: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_Integrated_Feed_Strategy.docx",
         label: "Download final engineering report",
-        description: "Final RMB-denominated Towngas SCWG–OXZEO screening/pre-FEED report in DOCX format.",
+        description: "5 August 2026 screening/pre-FEED report with the integrated regional feed strategy, in DOCX format.",
         viewer: "external",
       },
       {
-        href: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China.pdf",
+        href: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_Integrated_Feed_Strategy.pdf",
         label: "Open report PDF",
-        description: "PDF review copy of the final engineering report.",
+        description: "PDF review copy of the updated engineering report and regional co-feed strategy.",
         viewer: "external",
       },
     ],

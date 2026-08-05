@@ -2,8 +2,8 @@
  * Source-backed content for the redesigned Towngas engineering case study.
  *
  * Numerical content comes from
- * `Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China.docx` (3 August
- * 2026), as extracted to `/tmp/towngas-report.txt`. The provenance label on
+ * `Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_Integrated_Feed_Strategy.docx`
+ * (5 August 2026). The provenance label on
  * every quantitative record is intentional: this is a screening/pre-FEED
  * design, not a vendor guarantee or an investment-grade FEED package.
  */
@@ -167,16 +167,16 @@ export const towngasEvidenceLegend = [
 
 export const towngasCaseStudyMeta = {
   eyebrow: "Towngas · screening / pre-FEED process design",
-  title: "Co-processing wet soybean waste and bauxite residue",
+  title: "Co-valorization of bauxite residue and soybean processing waste",
   subtitle:
-    "Supercritical water gasification, purposeful salt recovery, bi-reforming, and OXZEO light-olefin synthesis",
+    "A multifunctional red-mud bed, purposeful salt recovery, Rectisol purification, bi-reforming, and OXZEO light-olefin synthesis",
   summary:
-    "An integrated screening/pre-FEED design for converting wet soybean-processing waste and bauxite residue into purified syngas, light olefins, recovered salts, and conditioned mineral products. The study closes one-train mass, carbon, and screening energy balances and tests the concept against China-specific RMB economics without hiding the negative base case.",
+    "An integrated screening/pre-FEED design for co-processing wet soybean waste and bauxite residue into light olefins, recovered salts, elemental sulfur, and conditioned mineral products. The revised study closes the one-train balances, states the negative China base economics plainly, and tests a regional co-feed strategy that raises carbon density without pretending it rescues the five-train case.",
   status: "Screening/pre-FEED process design — not a completed commercial FEED package",
-  reportDate: "3 August 2026",
+  reportDate: "5 August 2026",
   reportDownloads: {
-    docx: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China.docx",
-    pdf: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China.pdf",
+    docx: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_Integrated_Feed_Strategy.docx",
+    pdf: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_Integrated_Feed_Strategy.pdf",
   },
   processAnchor: "#process-design",
 } as const;
@@ -246,6 +246,16 @@ export const towngasDesignMetrics = [
     basis: "screening assumption",
     source: "Final report §4.1 and §5.3",
     note: "Depends on assumed SCWG conversion and OXZEO performance; not a pilot result.",
+  },
+  {
+    id: "regional-cofeed-olefins",
+    label: "Regional co-feed screen",
+    value: 22.74,
+    unit: "kt/year",
+    display: "≈22.74",
+    basis: "calculated result",
+    source: "Final report §5.1.1 and Table 5.1B",
+    note: "Five trains at the unchanged 42% overall olefin-carbon efficiency; requires integrated validation.",
   },
   {
     id: "scwg-temperature",
@@ -428,39 +438,39 @@ export const towngasFeedstocks = [
 
 export const towngasCompatibleCoFeeds = [
   {
-    id: "soybean-straw",
-    name: "Soybean straw",
-    verdict: "Design basis",
-    caseFor: "Same supply chain, complementary carbon-to-nitrogen ratio, and no unusual contaminant burden.",
-    constraint: "Competes directly with red mud for the slurry-solids headroom.",
+    id: "cassava-cake",
+    name: "Cassava / starch cake",
+    verdict: "Preferred · 20–35% of dry solids",
+    caseFor: "Raises carbon density with a familiar wet-cake handling profile and less nitrogen than okara.",
+    constraint: "Substitute on a dry-solids basis and recheck slurry rheology, cyanogenic residues, chloride, and seasonal availability.",
   },
   {
-    id: "pig-manure",
-    name: "Pig manure",
-    verdict: "Evaluate first",
-    caseFor: "Demonstrated SCWG feed that could add nitrogen, potassium, and phosphorus to the recovered concentrate.",
-    constraint: "Copper and zinc from feed additives can report to the mineral residue; published high gas yields used much more dilute feeds.",
+    id: "fruit-vegetable-pulp",
+    name: "Fruit / vegetable pulp",
+    verdict: "Preferred · 5–10% of dry solids",
+    caseFor: "Adds readily gasifiable carbohydrate while remaining compatible with wet reception and blending.",
+    constraint: "Composition, spoilage rate, grit, and cleaning-chemical carryover are source dependent.",
   },
   {
-    id: "food-waste",
-    name: "Food waste",
-    verdict: "Caution",
-    caseFor: "Wet, energy-dense, and available near cities.",
-    constraint: "Cooking salt can raise chloride loading in an already severe corrosion environment.",
+    id: "organic-liquor",
+    name: "Soluble organic liquor",
+    verdict: "Preferred · up to 5% of dry solids",
+    caseFor: "Uses spare liquid blending capacity and can add soluble carbon without new milling duty.",
+    constraint: "Accept only after chloride, sulfur, refractory COD, and cleaning-agent screening.",
   },
   {
-    id: "sewage-sludge",
-    name: "Sewage sludge",
-    verdict: "Rejected for the residue-product case",
-    caseFor: "Close chemistry match and a published red-mud co-gasification precedent.",
-    constraint: "Heavy metals can partition to solids and foreclose sorbent and cementitious product routes.",
+    id: "crop-residue",
+    name: "Milled crop residue",
+    verdict: "Preferred · 15–25% of dry solids",
+    caseFor: "Raises C/N and extends the existing straw preparation concept to locally available residues.",
+    constraint: "Fibres consume pumpability headroom; milling power, silica, ash, and bridging must be qualified.",
   },
   {
-    id: "septage",
-    name: "Human faeces or septage",
-    verdict: "Rejected",
-    caseFor: "Technically similar to sewage sludge.",
-    constraint: "Certification, fertilizer, and public-acceptance exposure conflict with the proposed product slate.",
+    id: "dewatered-manure",
+    name: "Dewatered manure",
+    verdict: "Trial only · 0–15% of dry solids",
+    caseFor: "Could add gate-fee income and regional waste-treatment value.",
+    constraint: "Higher ash, nitrogen, phosphorus, copper, and zinc can reduce product yield and restrict residue outlets; screen only with a paid gate fee.",
   },
 ] as const;
 
@@ -508,6 +518,102 @@ export const towngasFeedAcceptance = [
     source: "Final report §4.2, Table 4.2",
   },
 ] as const satisfies readonly TowngasFeedAcceptanceItem[];
+
+export const towngasRegionalFeedStrategy = {
+  rule:
+    "Introduce every new waste by dry-solids substitution—not by adding wet tonnes. Hold gross slurry at 300 t/day per train, stay inside the 18–22 wt% pumpability envelope, and recalculate chloride, ammonia, salts, ash, and mineral-product quality for every source change.",
+  preferredDevelopmentBlend: "B2",
+  blends: [
+    {
+      id: "B0",
+      name: "Control basis",
+      purpose: "Current okara-rich design basis and comparison point.",
+      recipe: { okara: 250, cassavaCake: 0, fruitPulp: 0, organicLiquor: 0, cropResidue: 8, manureCake: 0, redMud: 7, water: 35 },
+      solidsTPerDay: 57.2,
+      solidsWtPct: 19.07,
+      feedCarbonTPerDay: 23.688,
+      slurryCarbonWtPct: 7.896,
+      ashMineralTPerDay: 8.652,
+      carbonNitrogenRatio: 6.82,
+    },
+    {
+      id: "B1",
+      name: "Transition blend",
+      purpose: "First regional substitution step with moderate cassava-cake exposure.",
+      recipe: { okara: 150, cassavaCake: 60, fruitPulp: 20, organicLiquor: 10, cropResidue: 12, manureCake: 0, redMud: 7, water: 41 },
+      solidsTPerDay: 62.4,
+      solidsWtPct: 20.8,
+      feedCarbonTPerDay: 25.947,
+      slurryCarbonWtPct: 8.649,
+      ashMineralTPerDay: 9.147,
+      carbonNitrogenRatio: 10.97,
+    },
+    {
+      id: "B2",
+      name: "Regional target",
+      purpose: "Preferred technical-development blend; maximises screened carbon density while remaining at the upper pumpability boundary.",
+      recipe: { okara: 80, cassavaCake: 100, fruitPulp: 20, organicLiquor: 15, cropResidue: 18, manureCake: 0, redMud: 7, water: 60 },
+      solidsTPerDay: 66.16,
+      solidsWtPct: 22.05,
+      feedCarbonTPerDay: 27.864,
+      slurryCarbonWtPct: 9.288,
+      ashMineralTPerDay: 9.498,
+      carbonNitrogenRatio: 17.74,
+    },
+    {
+      id: "B3",
+      name: "Manure trial",
+      purpose: "Controlled gate-fee trial—not the preferred production recipe.",
+      recipe: { okara: 80, cassavaCake: 80, fruitPulp: 20, organicLiquor: 15, cropResidue: 13, manureCake: 30, redMud: 7, water: 55 },
+      solidsTPerDay: 65.66,
+      solidsWtPct: 21.89,
+      feedCarbonTPerDay: 26.848,
+      slurryCarbonWtPct: 8.949,
+      ashMineralTPerDay: 11.771,
+      carbonNitrogenRatio: 13.9,
+    },
+  ],
+  productionCases: [
+    {
+      id: "five-train",
+      label: "Five-train base configuration",
+      status: "Screening outcome",
+      controlKtPerYear: 19.33,
+      regionalKtPerYear: 22.74,
+      upliftKtPerYear: 3.41,
+      assumptions: "Unchanged 42% overall olefin-carbon efficiency and five 300 t/day trains.",
+      financialBridge: [
+        "Gross product-value uplift: RMB 25.6 million/year at RMB 7,500/t",
+        "Incremental OPEX: RMB 10–18 million/year",
+        "Incremental receiving CAPEX: RMB 30–60 million",
+        "20-year NPV uplift: RMB 4–102 million",
+      ],
+      conclusion: "The revised NPV remains approximately −RMB 1.85 to −1.75 billion. Feed blending improves the case but does not make the five-train plant financeable.",
+    },
+    {
+      id: "ten-train",
+      label: "Ten-train improved envelope",
+      status: "Decision envelope—not a forecast",
+      controlKtPerYear: 50.62,
+      regionalKtPerYear: 59.55,
+      upliftKtPerYear: 8.92,
+      assumptions: "55% carbon efficiency, RMB 7,500/t netback, RMB 250/t weighted gate fee, 15% CAPEX reduction, and 20% energy reduction.",
+      financialBridge: [
+        "Gross product-value uplift: RMB 66.9 million/year",
+        "Incremental OPEX: RMB 20–35 million/year",
+        "Incremental receiving CAPEX: RMB 60–100 million",
+        "20-year NPV uplift: RMB 171–339 million",
+      ],
+      conclusion: "Only with all improvement assumptions combined does the screening NPV move into a positive RMB 243–411 million range.",
+    },
+  ],
+  manureGate:
+    "Manure needs about RMB 163/t merely to replace its screened lost product value; use a practical entry threshold of roughly RMB 200–250/t after handling and treatment allowance.",
+  decision:
+    "Develop B2 in the continuous pilot, but do not treat calculated carbon uplift as achieved yield. Commercial FEED still waits on pumpability, salt availability, complete carbon closure, real-gas catalyst life, residue qualification, contracted gate fees, and product offtake.",
+  basis: "requires pilot validation",
+  source: "Final report §5.1.1, Tables 5.1A–5.1B, §8.12–§8.13",
+} as const;
 
 export const towngasProcessStages = [
   {
@@ -1456,6 +1562,7 @@ export const towngasCaseStudy = {
   feedstocks: towngasFeedstocks,
   compatibleCoFeeds: towngasCompatibleCoFeeds,
   feedAcceptance: towngasFeedAcceptance,
+  regionalFeedStrategy: towngasRegionalFeedStrategy,
   processStages: towngasProcessStages,
   designConflicts: towngasDesignConflicts,
   massBalance: towngasMassBalance,
