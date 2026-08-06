@@ -9858,3 +9858,298 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .towngas-cofeed-notes { grid-template-columns: 1fr; }
   .towngas-cofeed-production > div { grid-template-columns: 4.6rem minmax(0, 1fr) 5.25rem; }
 }
+
+/* Towngas third edition — reasoning-led technical paper layout. */
+.towngas-evidence--contractual-requirement::before { content: "§"; color: var(--tg-green); }
+
+.towngas-reasoning-path {
+  display: grid;
+  margin-top: clamp(2.8rem, 5vw, 4.8rem);
+  border-top: 1px solid var(--tg-line);
+}
+
+.towngas-reasoning-path > li {
+  display: grid;
+  padding-block: 1.25rem;
+  align-items: start;
+  gap: 1rem 1.5rem;
+  border-bottom: 1px solid var(--tg-line);
+  grid-template-columns: 3rem minmax(10rem, 0.85fr) minmax(14rem, 1.15fr) minmax(14rem, 1.15fr);
+}
+
+.towngas-reasoning-path > li > span {
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  place-items: center;
+  background: var(--tg-navy);
+  color: white;
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+}
+
+.towngas-reasoning-path div > p:first-child {
+  color: var(--tg-green);
+  font-size: 0.57rem;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.towngas-reasoning-path h3 {
+  margin-top: 0.38rem;
+  color: var(--tg-navy);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.towngas-reasoning-path div > p:last-child:not(:first-child) {
+  margin-top: 0.38rem;
+  color: rgb(var(--color-ink) / 0.66);
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.towngas-waste-pair {
+  display: grid;
+  margin-top: clamp(3.5rem, 6vw, 6rem);
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.towngas-waste-pair article {
+  padding: clamp(1.35rem, 2.7vw, 2.25rem);
+  border: 1px solid var(--tg-line);
+  border-top: 0.25rem solid var(--tg-green);
+  background: rgb(var(--color-surface) / 0.72);
+}
+
+.towngas-waste-pair article:last-child { border-top-color: #9b6f32; }
+.towngas-waste-pair header { display: flex; align-items: start; justify-content: space-between; gap: 1.5rem; }
+.towngas-waste-pair header > div p { color: var(--tg-green); font-size: 0.58rem; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase; }
+.towngas-waste-pair h3 { margin-top: 0.35rem; color: var(--tg-navy); font-size: clamp(1.5rem, 2.6vw, 2.3rem); letter-spacing: -0.035em; }
+.towngas-waste-pair header > p { display: grid; justify-items: end; flex: none; text-align: right; }
+.towngas-waste-pair header > p strong { color: var(--tg-navy); font-family: var(--font-code); font-size: 1.8rem; font-weight: 500; }
+.towngas-waste-pair header > p span { max-width: 6rem; color: rgb(var(--color-ink) / 0.5); font-size: 0.58rem; line-height: 1.4; }
+.towngas-waste-pair dl { display: grid; margin-top: 1.5rem; gap: 0.9rem; }
+.towngas-waste-pair dl > div { display: grid; padding-top: 0.85rem; gap: 0.5rem; border-top: 1px solid var(--tg-line); grid-template-columns: 7.5rem minmax(0, 1fr); }
+.towngas-waste-pair dt { color: rgb(var(--color-ink) / 0.5); font-size: 0.61rem; font-weight: 700; }
+.towngas-waste-pair dd { color: rgb(var(--color-ink) / 0.67); font-size: 0.76rem; line-height: 1.6; }
+
+.towngas-recipe-layout {
+  display: grid;
+  margin-top: 3rem;
+  align-items: stretch;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 0.5fr);
+}
+
+.towngas-recipe-figure,
+.towngas-feed-rule {
+  padding: clamp(1.2rem, 2.5vw, 2rem);
+  border: 1px solid var(--tg-line);
+  background: rgb(var(--color-surface) / 0.74);
+}
+
+.towngas-recipe-figure ol { display: grid; margin-top: 1rem; gap: 0.75rem; }
+.towngas-recipe-figure li { display: grid; align-items: center; gap: 1rem; grid-template-columns: minmax(9rem, 0.8fr) minmax(0, 1.2fr); }
+.towngas-recipe-figure li > div { display: grid; gap: 0.16rem; }
+.towngas-recipe-figure li > div span { color: var(--tg-navy); font-size: 0.73rem; font-weight: 700; }
+.towngas-recipe-figure li > div small { color: rgb(var(--color-ink) / 0.48); font-size: 0.58rem; }
+.towngas-recipe-figure li > span { display: grid; align-items: center; gap: 0.75rem; grid-template-columns: minmax(0, 1fr) 3.8rem; }
+.towngas-recipe-figure li i,
+.towngas-cost-split li i,
+.towngas-v3-balance li > i {
+  height: 0.38rem;
+  overflow: hidden;
+  background: rgb(var(--color-ink) / 0.08);
+}
+.towngas-recipe-figure li i b,
+.towngas-cost-split li i b,
+.towngas-v3-balance li > i b { display: block; width: var(--bar); height: 100%; background: var(--tg-green); }
+.towngas-recipe-figure li > span strong { color: var(--tg-navy); font-family: var(--font-code); font-size: 0.65rem; font-weight: 600; text-align: right; }
+
+.towngas-feed-rule { display: flex; flex-direction: column; border-left: 0.25rem solid var(--tg-green); }
+.towngas-feed-rule h3 { margin-top: 1rem; color: var(--tg-navy); font-size: clamp(1.4rem, 2.5vw, 2rem); line-height: 1.16; letter-spacing: -0.03em; }
+.towngas-feed-rule > p:not(.eyebrow) { margin-block: 1rem auto; color: rgb(var(--color-ink) / 0.65); font-size: 0.78rem; line-height: 1.72; }
+.towngas-feed-rule .towngas-evidence { margin-top: 1.2rem; }
+
+.towngas-blend-grid { display: grid; margin-top: 1rem; gap: 0.65rem; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.towngas-blend-grid article { position: relative; padding: 1rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.58); }
+.towngas-blend-grid article.is-selected { border-color: rgb(0 115 54 / 0.48); box-shadow: inset 0 0.2rem 0 var(--tg-green); }
+.towngas-blend-grid header { display: grid; gap: 0.65rem; grid-template-columns: 2rem minmax(0, 1fr); }
+.towngas-blend-grid header > span { display: grid; width: 2rem; height: 2rem; place-items: center; background: var(--tg-navy); color: white; font-family: var(--font-code); font-size: 0.58rem; }
+.towngas-blend-grid h3 { color: var(--tg-navy); font-size: 0.79rem; line-height: 1.3; }
+.towngas-blend-grid header p { margin-top: 0.2rem; color: rgb(var(--color-ink) / 0.47); font-size: 0.57rem; line-height: 1.4; }
+.towngas-blend-grid dl { display: grid; margin-top: 1rem; gap: 0.5rem; }
+.towngas-blend-grid dl > div { display: flex; padding-top: 0.5rem; align-items: baseline; justify-content: space-between; gap: 0.6rem; border-top: 1px solid var(--tg-line); }
+.towngas-blend-grid dt { color: rgb(var(--color-ink) / 0.49); font-size: 0.56rem; }
+.towngas-blend-grid dd { color: var(--tg-navy); font-family: var(--font-code); font-size: 0.6rem; text-align: right; }
+.towngas-blend-grid article > small { display: inline-block; margin-top: 0.8rem; color: var(--tg-green); font-size: 0.53rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.towngas-siting-logic { display: grid; margin-top: 3rem; gap: 1px; background: var(--tg-line); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.towngas-siting-logic article { display: grid; padding: 1.2rem; align-content: start; gap: 0.55rem; background: rgb(var(--color-surface)); }
+.towngas-siting-logic p { color: var(--tg-green); font-size: 0.57rem; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase; }
+.towngas-siting-logic strong { color: var(--tg-navy); font-family: var(--font-code); font-size: clamp(1.7rem, 3vw, 2.6rem); font-weight: 500; }
+.towngas-siting-logic span { color: rgb(var(--color-ink) / 0.62); font-size: 0.72rem; line-height: 1.58; }
+
+.towngas-architecture-note { display: grid; margin-top: 3rem; padding: 1rem; align-items: stretch; gap: 0.75rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.75); grid-template-columns: minmax(10rem, 1fr) auto minmax(10rem, 1fr) auto minmax(10rem, 1fr); }
+.towngas-architecture-note > div { display: grid; padding: 1rem; align-items: center; gap: 0.8rem; background: rgb(0 115 54 / 0.05); grid-template-columns: auto minmax(0, 1fr); }
+.towngas-architecture-note > div > span { color: var(--tg-green); font-family: var(--font-code); font-size: 1.3rem; }
+.towngas-architecture-note p { color: rgb(var(--color-ink) / 0.62); font-size: 0.68rem; line-height: 1.45; }
+.towngas-architecture-note p strong { display: block; color: var(--tg-navy); font-size: 0.74rem; }
+.towngas-architecture-note > span { align-self: center; color: var(--tg-green); }
+
+.towngas-chemistry-strip { margin-top: clamp(4rem, 7vw, 6rem); padding: clamp(1.2rem, 2.6vw, 2.2rem); border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.72); }
+.towngas-chemistry-strip ol { display: grid; margin-top: 1.5rem; gap: 1px; background: var(--tg-line); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.towngas-chemistry-strip li { display: grid; padding: 1.25rem; align-content: start; gap: 0.65rem; background: rgb(var(--color-surface)); }
+.towngas-chemistry-strip li > span { color: var(--tg-green); font-family: var(--font-code); font-size: 0.6rem; }
+.towngas-chemistry-strip li > p { color: var(--tg-navy); font-size: 0.63rem; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase; }
+.towngas-chemistry-strip li > strong { color: var(--tg-navy); font-family: var(--font-code); font-size: clamp(0.78rem, 1.2vw, 0.95rem); font-weight: 500; line-height: 1.6; }
+.towngas-chemistry-strip li > small { color: rgb(var(--color-ink) / 0.58); font-size: 0.65rem; line-height: 1.55; }
+
+.towngas-v3-balance { display: grid; margin-top: 3rem; padding: clamp(1.2rem, 3vw, 2.5rem); align-items: stretch; gap: 1.2rem; border: 1px solid rgb(255 255 255 / 0.16); background: rgb(255 255 255 / 0.035); grid-template-columns: minmax(12rem, 0.75fr) minmax(8rem, 0.35fr) minmax(16rem, 1fr); }
+.towngas-v3-balance-in > p { color: #8cdbad; font-size: 0.59rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-v3-balance-in > strong { display: block; margin-block: 0.6rem 1rem; font-family: var(--font-code); font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 500; }
+.towngas-v3-balance-in > strong span { color: rgb(255 255 255 / 0.48); font-size: 0.65rem; }
+.towngas-v3-balance-in > div { display: flex; padding-block: 0.5rem; justify-content: space-between; gap: 1rem; border-top: 1px solid rgb(255 255 255 / 0.12); color: rgb(255 255 255 / 0.62); font-size: 0.62rem; }
+.towngas-v3-balance-in b { color: white; font-family: var(--font-code); font-weight: 500; }
+.towngas-v3-balance-close { display: grid; padding: 1rem; place-content: center; border: 1px solid rgb(117 211 157 / 0.4); background: rgb(0 115 54 / 0.14); text-align: center; }
+.towngas-v3-balance-close span { color: #8cdbad; font-size: 0.56rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-v3-balance-close strong { font-family: var(--font-code); font-size: clamp(2.5rem, 5vw, 4.3rem); font-weight: 500; letter-spacing: -0.06em; }
+.towngas-v3-balance-close small { color: rgb(255 255 255 / 0.48); font-size: 0.58rem; }
+.towngas-v3-balance ol { display: grid; align-content: start; gap: 0.75rem; }
+.towngas-v3-balance li > div { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; color: rgb(255 255 255 / 0.65); font-size: 0.63rem; }
+.towngas-v3-balance li strong { color: white; font-family: var(--font-code); font-size: 0.64rem; font-weight: 500; }
+.towngas-v3-balance li > i { display: block; margin-top: 0.28rem; background: rgb(255 255 255 / 0.1); }
+.towngas-v3-balance li > i b { background: #75d39d; }
+.towngas-v3-balance li small { display: block; margin-top: 0.28rem; color: rgb(255 255 255 / 0.43); font-size: 0.53rem; line-height: 1.4; }
+.towngas-v3-balance figcaption { grid-column: 1 / -1; }
+
+.towngas-carbon-cases { display: grid; margin-top: 1rem; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-carbon-cases article { padding: 1.3rem; border: 1px solid rgb(255 255 255 / 0.16); background: rgb(255 255 255 / 0.035); }
+.towngas-carbon-cases header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.towngas-carbon-cases header p { color: #8cdbad; font-size: 0.56rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-carbon-cases h3 { margin-top: 0.35rem; font-size: clamp(1.25rem, 2.3vw, 1.9rem); }
+.towngas-carbon-cases header > strong { color: #8cdbad; font-family: var(--font-code); font-size: 2.2rem; font-weight: 500; }
+.towngas-carbon-cases dl { display: grid; margin-top: 1rem; gap: 1px; background: rgb(255 255 255 / 0.12); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-carbon-cases dl > div { padding: 0.75rem; background: #101827; }
+.towngas-carbon-cases dt { color: rgb(255 255 255 / 0.46); font-size: 0.55rem; }
+.towngas-carbon-cases dd { margin-top: 0.3rem; font-family: var(--font-code); font-size: 0.64rem; }
+
+.towngas-energy-v3 { margin-top: clamp(3.5rem, 6vw, 5rem); }
+.towngas-energy-columns { display: grid; margin-top: 1rem; gap: 1px; background: rgb(255 255 255 / 0.14); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.towngas-energy-columns section { padding: 1.2rem; background: #101827; }
+.towngas-energy-columns h4 { margin-bottom: 0.8rem; color: #8cdbad; font-size: 0.6rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.towngas-energy-columns section > p { display: flex; padding-block: 0.52rem; align-items: baseline; justify-content: space-between; gap: 1rem; border-top: 1px solid rgb(255 255 255 / 0.12); color: rgb(255 255 255 / 0.62); font-size: 0.6rem; line-height: 1.4; }
+.towngas-energy-columns p strong { color: white; font-family: var(--font-code); font-size: 0.67rem; font-weight: 500; }
+.towngas-energy-columns .is-total > p:first-of-type strong { color: #8cdbad; font-size: 1.5rem; }
+.towngas-energy-columns p small { max-width: 12rem; color: white; font-size: 0.58rem; line-height: 1.45; text-align: right; }
+
+.towngas-cert-grid { display: grid; margin-top: 3rem; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-cert-grid article { display: flex; padding: 1.35rem; flex-direction: column; border: 1px solid var(--tg-line); border-top: 0.2rem solid var(--tg-green); background: rgb(var(--color-surface) / 0.62); }
+.towngas-cert-grid header { display: grid; align-items: start; gap: 0.8rem; grid-template-columns: 2.2rem minmax(0, 1fr); }
+.towngas-cert-grid header span { display: grid; width: 2.2rem; height: 2.2rem; place-items: center; background: var(--tg-navy); color: white; font-family: var(--font-code); font-size: 0.58rem; }
+.towngas-cert-grid h3 { color: var(--tg-navy); font-size: 1rem; line-height: 1.35; }
+.towngas-cert-grid article > p { margin-top: 1rem; color: rgb(var(--color-ink) / 0.64); font-size: 0.76rem; line-height: 1.62; }
+.towngas-cert-grid article > div { margin-block: 1rem; padding: 0.9rem; border-left: 2px solid var(--tg-orange); background: rgb(185 90 47 / 0.045); }
+.towngas-cert-grid article > div strong { color: var(--tg-orange); font-size: 0.56rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-cert-grid article > div p { margin-top: 0.35rem; color: rgb(var(--color-ink) / 0.64); font-size: 0.7rem; line-height: 1.55; }
+.towngas-cert-grid .towngas-evidence { margin-top: auto; }
+
+.towngas-capital-dilution { margin-top: 3rem; padding: clamp(1.4rem, 3vw, 2.4rem); border-left: 0.3rem solid var(--tg-orange); background: var(--tg-navy-deep); color: white; }
+.towngas-capital-dilution .eyebrow { color: #8cdbad; }
+.towngas-capital-dilution h3 { margin-top: 0.6rem; font-family: var(--font-code); font-size: clamp(2.4rem, 5vw, 4.7rem); font-weight: 500; letter-spacing: -0.065em; }
+.towngas-capital-dilution > p:not(.eyebrow) { max-width: 52rem; margin-top: 0.7rem; color: rgb(255 255 255 / 0.68); font-size: 0.8rem; line-height: 1.65; }
+.towngas-capital-dilution > div { display: flex; margin-top: 1.3rem; padding-top: 1rem; align-items: baseline; gap: 0.75rem 1.5rem; border-top: 1px solid rgb(255 255 255 / 0.16); }
+.towngas-capital-dilution > div span { color: rgb(255 255 255 / 0.48); font-size: 0.57rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.towngas-capital-dilution > div strong { font-family: var(--font-code); font-size: 0.75rem; font-weight: 500; }
+
+.towngas-cost-split { display: grid; margin-top: 1rem; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-cost-split figure { padding: 1.25rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.7); }
+.towngas-cost-split h3 { color: var(--tg-navy); font-size: 0.9rem; }
+.towngas-cost-split h3 span { color: rgb(var(--color-ink) / 0.45); font-size: 0.55rem; font-weight: 500; }
+.towngas-cost-split ol { display: grid; margin-top: 1rem; gap: 0.7rem; }
+.towngas-cost-split li { display: grid; align-items: center; gap: 0.7rem; grid-template-columns: minmax(8rem, 1fr) minmax(4rem, 0.8fr) 2.5rem; }
+.towngas-cost-split li span { color: rgb(var(--color-ink) / 0.6); font-size: 0.61rem; line-height: 1.4; }
+.towngas-cost-split li strong { color: var(--tg-navy); font-family: var(--font-code); font-size: 0.61rem; font-weight: 500; text-align: right; }
+
+.towngas-scenario-grid { display: grid; margin-top: clamp(3rem, 5vw, 4.5rem); gap: 0.75rem; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.towngas-scenario-grid article { padding: 1.1rem; border: 1px solid var(--tg-line); border-top: 0.22rem solid var(--tg-red); background: rgb(var(--color-surface) / 0.72); }
+.towngas-scenario-grid article.is-caution { border-top-color: var(--tg-orange); }
+.towngas-scenario-grid article.is-positive { border-top-color: var(--tg-green); }
+.towngas-scenario-grid header > span { color: rgb(var(--color-ink) / 0.48); font-family: var(--font-code); font-size: 0.53rem; }
+.towngas-scenario-grid h3 { min-height: 3rem; margin-top: 0.35rem; color: var(--tg-navy); font-size: 0.78rem; line-height: 1.4; }
+.towngas-scenario-npv { margin-top: 0.8rem; padding-block: 0.75rem; border-block: 1px solid var(--tg-line); }
+.towngas-scenario-npv span { display: block; color: rgb(var(--color-ink) / 0.47); font-size: 0.55rem; }
+.towngas-scenario-npv strong { display: block; margin-top: 0.3rem; color: var(--tg-red); font-family: var(--font-code); font-size: clamp(0.9rem, 1.7vw, 1.25rem); font-weight: 500; }
+.towngas-scenario-grid .is-caution .towngas-scenario-npv strong { color: var(--tg-orange); }
+.towngas-scenario-grid .is-positive .towngas-scenario-npv strong { color: var(--tg-green); }
+.towngas-scenario-grid dl { display: grid; margin-top: 0.6rem; gap: 0.42rem; }
+.towngas-scenario-grid dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
+.towngas-scenario-grid dt { color: rgb(var(--color-ink) / 0.48); font-size: 0.54rem; }
+.towngas-scenario-grid dd { color: rgb(var(--color-ink) / 0.72); font-family: var(--font-code); font-size: 0.55rem; text-align: right; }
+
+.towngas-economic-tables { display: grid; margin-top: 1rem; gap: 1rem; grid-template-columns: minmax(0, 1.25fr) minmax(15rem, 0.75fr); }
+.towngas-economic-tables > figure { border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.7); }
+.towngas-economic-tables table { min-width: 42rem; }
+.towngas-economic-risk-list { display: grid; gap: 0.55rem; }
+.towngas-economic-risk-list article { padding: 0.85rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.65); }
+.towngas-economic-risk-list article > div { display: flex; align-items: baseline; justify-content: space-between; gap: 0.8rem; }
+.towngas-economic-risk-list h3 { color: var(--tg-navy); font-size: 0.69rem; }
+.towngas-economic-risk-list strong { color: var(--tg-orange); font-family: var(--font-code); font-size: 0.6rem; text-align: right; }
+.towngas-economic-risk-list p { margin-top: 0.4rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.62rem; line-height: 1.5; }
+
+.towngas-final-conclusion { margin-top: 3rem; padding: clamp(1.4rem, 3vw, 2.5rem); border-left: 0.3rem solid var(--tg-green); background: var(--tg-navy-deep); color: white; }
+.towngas-final-conclusion > p { color: #8cdbad; font-size: 0.58rem; font-weight: 750; letter-spacing: 0.07em; text-transform: uppercase; }
+.towngas-final-conclusion blockquote { max-width: 64rem; margin-top: 0.8rem; font-size: clamp(1.35rem, 2.8vw, 2.45rem); font-weight: 550; line-height: 1.25; letter-spacing: -0.035em; text-wrap: balance; }
+
+.towngas-decision-ledger { display: grid; margin-top: 1rem; border-top: 1px solid var(--tg-line); }
+.towngas-decision-ledger article { display: grid; padding-block: 1rem; gap: 1rem 1.5rem; border-bottom: 1px solid var(--tg-line); grid-template-columns: 9rem minmax(0, 1fr); }
+.towngas-decision-ledger h3 { color: var(--tg-green); font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-decision-ledger p { max-width: 62rem; color: rgb(var(--color-ink) / 0.67); font-size: 0.77rem; line-height: 1.62; }
+
+.towngas-open-evidence { margin-top: clamp(3.5rem, 6vw, 5rem); padding: clamp(1.2rem, 2.6vw, 2.2rem); border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.65); }
+.towngas-open-evidence ol { display: grid; margin-top: 1rem; border-top: 1px solid var(--tg-line); }
+.towngas-open-evidence li { display: grid; padding-block: 0.9rem; align-items: start; gap: 1rem; border-bottom: 1px solid var(--tg-line); grid-template-columns: 3.2rem minmax(0, 1fr); }
+.towngas-open-evidence li > span { color: var(--tg-orange); font-family: var(--font-code); font-size: 0.61rem; }
+.towngas-open-evidence li strong { color: var(--tg-navy); font-size: 0.73rem; line-height: 1.45; }
+.towngas-open-evidence li p { margin-top: 0.25rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.66rem; line-height: 1.52; }
+
+@media (max-width: 1000px) {
+  .towngas-reasoning-path > li { grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 1fr); }
+  .towngas-reasoning-path > li > div:last-child { grid-column: 2 / -1; }
+  .towngas-recipe-layout,
+  .towngas-economic-tables { grid-template-columns: 1fr; }
+  .towngas-blend-grid,
+  .towngas-scenario-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .towngas-architecture-note { grid-template-columns: 1fr; }
+  .towngas-architecture-note > span { justify-self: center; transform: rotate(90deg); }
+  .towngas-v3-balance { grid-template-columns: minmax(12rem, 0.8fr) minmax(10rem, 1fr); }
+  .towngas-v3-balance-close { display: none; }
+  .towngas-cost-split { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .towngas-reasoning-path > li { grid-template-columns: 2.7rem minmax(0, 1fr); }
+  .towngas-reasoning-path > li > div { grid-column: 2; }
+  .towngas-waste-pair,
+  .towngas-cert-grid,
+  .towngas-carbon-cases { grid-template-columns: 1fr; }
+  .towngas-waste-pair dl > div { grid-template-columns: 1fr; }
+  .towngas-siting-logic,
+  .towngas-chemistry-strip ol,
+  .towngas-energy-columns { grid-template-columns: 1fr; }
+  .towngas-v3-balance { grid-template-columns: 1fr; }
+  .towngas-blend-grid,
+  .towngas-scenario-grid { grid-template-columns: 1fr; }
+  .towngas-decision-ledger article { grid-template-columns: 1fr; }
+  .towngas-capital-dilution > div { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 520px) {
+  .towngas-recipe-figure li { grid-template-columns: 1fr; }
+  .towngas-recipe-figure li > span { grid-template-columns: minmax(0, 1fr) 3.8rem; }
+  .towngas-cost-split li { grid-template-columns: minmax(7rem, 1fr) 2.4rem; }
+  .towngas-cost-split li i { display: none; }
+}

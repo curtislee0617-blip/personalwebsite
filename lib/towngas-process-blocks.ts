@@ -1,15 +1,5 @@
-import {
-  towngasProcessStages,
-  type TowngasProcessStageId,
-} from "@/lib/towngas-case-study";
-import type {
-  BlockSymbol,
-  ProcessBlock,
-  StreamPhase,
-  StreamRow,
-} from "@/lib/scwg-types";
-
-type DiagramStageId = Exclude<TowngasProcessStageId, "R1">;
+import { towngasProcessStages, type TowngasProcessStageId } from "@/lib/towngas-case-study";
+import type { BlockSymbol, ProcessBlock, StreamPhase, StreamRow } from "@/lib/scwg-types";
 
 type DiagramStream = {
   tag: string;
@@ -25,168 +15,129 @@ type DiagramTopology = {
   outlet: DiagramStream[];
 };
 
-// Aspen-style PFD topology for the report-current B1–B8 process. Stream tags are
-// intentionally short and stable: the connector builder matches identical outlet
-// and inlet tags, so the same data generates the numbered diamonds, feed/product
-// stubs, the B4→B8 solids jump, the B7→B6 gas recycle, and the R1 solids recycle.
-const topology: Record<DiagramStageId, DiagramTopology> = {
+// Aspen-style topology for the report-current ten-train architecture. B1–B4
+// describes one of ten identical dirty-service trains. Stream 9 enters the shared
+// B5–B7 conversion island; solids leave through B8 rather than an indefinite recycle.
+const topology: Record<TowngasProcessStageId, DiagramTopology> = {
   B1: {
     symbol: "mix-pump",
-    summary: "18–22 wt% solids · 25 MPa",
+    summary: "B1 blend · 20.80 wt% solids · 25 MPa",
     inlet: [
-      { tag: "1", name: "Wet biomass", phase: "slurry", components: "Okara and make-up/recycle water" },
-      { tag: "2", name: "Milled straw", phase: "solid", components: "Prepared soybean straw" },
-      { tag: "3", name: "Fresh red mud", phase: "slurry", components: "Conditioned bauxite residue" },
-      { tag: "10", name: "Polished water recycle", phase: "liquid", components: "B4 water accepted for B1 make-up" },
-      { tag: "R1", name: "Conditioned mineral recycle", phase: "slurry", components: "Controlled B8 return" },
+      { tag: "1", name: "Douzha + wet co-feeds", phase: "slurry", components: "Douzha, cassava cake, pulp, and organic liquor" },
+      { tag: "2", name: "Milled straw", phase: "solid", components: "Qualified fine fibre; D90 below 0.5 mm" },
+      { tag: "3", name: "Bauxite residue", phase: "slurry", components: "Assayed mineral treatment feed" },
+      { tag: "4", name: "Blend water", phase: "liquid", components: "Make-up or qualified recycle water" },
     ],
-    outlet: [
-      { tag: "4", name: "Pressurised feed slurry", phase: "slurry", components: "Organic and mineral feed at reactor pressure" },
-    ],
+    outlet: [{ tag: "5", name: "Released HP slurry", phase: "slurry", components: "300 t/day carbon-controlled B1 feed" }],
   },
   B2: {
     symbol: "tubular-reactor",
-    summary: "625 °C · 25 MPa · 60 s",
-    inlet: [
-      { tag: "4", name: "Pressurised feed slurry", phase: "slurry", components: "Organic and mineral feed" },
-    ],
-    outlet: [
-      { tag: "5", name: "SCWG effluent", phase: "supercritical", components: "Gas, water, salts, and mineral solids" },
-    ],
+    summary: "625 °C · 25 MPa · 30–90 s screen",
+    inlet: [{ tag: "5", name: "Released HP slurry", phase: "slurry", components: "Wet organic and mineral feed" }],
+    outlet: [{ tag: "6", name: "SCWG effluent", phase: "supercritical", components: "Methane-rich gas, water, salts, and mineral solids" }],
   },
   B3: {
     symbol: "cyclone",
-    summary: "Supercritical · continuous underflow",
-    inlet: [
-      { tag: "5", name: "SCWG effluent", phase: "supercritical", components: "Gas, water, salts, and mineral solids" },
-    ],
+    summary: "Twin lead/lag · continuous underflow",
+    inlet: [{ tag: "6", name: "SCWG effluent", phase: "supercritical", components: "Gas, water, precipitating salts, and mineral solids" }],
     outlet: [
-      { tag: "6", name: "Salt-depleted effluent", phase: "supercritical", components: "Gas and water with entrained mineral solids" },
-      { tag: "7", name: "Salt concentrate", phase: "mixed", components: "Segregated N-K-P-S-bearing concentrate" },
-      { tag: "8", name: "Dealkalised mineral solids", phase: "solid", components: "Conditioned red-mud fraction" },
+      { tag: "7", name: "Salt-depleted effluent", phase: "supercritical", components: "Gas/water/mineral stream to heat recovery" },
+      { tag: "8", name: "B3 concentrate", phase: "mixed", components: "Na/K/P/S/Cl-bearing controlled product or purge" },
     ],
   },
   B4: {
     symbol: "flash-drum",
-    summary: "25 MPa → approximately 3 MPa",
-    inlet: [
-      { tag: "6", name: "Salt-depleted effluent", phase: "supercritical", components: "Gas and water" },
-      { tag: "8", name: "Dealkalised mineral solids", phase: "solid", components: "Entrained mineral phase" },
-    ],
+    summary: "555 GJ/d heat recovery · staged letdown",
+    inlet: [{ tag: "7", name: "Salt-depleted effluent", phase: "supercritical", components: "Hot gas, water, and mineral solids" }],
     outlet: [
-      { tag: "9", name: "Wet raw gas", phase: "gas", components: "CH₄, CO₂, H₂, H₂S, and COS" },
-      { tag: "10", name: "Polished water", phase: "liquid", components: "Recycle water, ammonia-rich cut, and purge" },
-      { tag: "11", name: "Separated mineral solids", phase: "solid", components: "Mineral phase routed to B8" },
+      { tag: "9", name: "Accepted wet raw gas", phase: "gas", components: "CH₄, CO₂, H₂, CO, and acid-gas traces" },
+      { tag: "10", name: "Aqueous treatment stream", phase: "liquid", components: "Water, ammonia equivalent, organics, and ions" },
+      { tag: "11", name: "Separated mineral solids", phase: "solid", components: "Conditioned solids routed to B8" },
     ],
   },
   B5: {
     symbol: "absorber-pair",
-    summary: "approximately 3 MPa · below 0.1 ppmv S",
-    inlet: [
-      { tag: "9", name: "Wet raw gas", phase: "gas", components: "CH₄, CO₂, H₂, H₂S, and COS" },
-    ],
+    summary: "Shared Rectisol · ZnO guard · <0.1 ppmv S screen",
+    inlet: [{ tag: "9", name: "Ten-train raw-gas header", phase: "gas", components: "Accepted B4 gas only; up to 558 t/day screen" }],
     outlet: [
-      { tag: "12", name: "Clean methane-rich gas", phase: "gas", components: "Sulfur-free reformer feed" },
-      { tag: "13", name: "Metered carbon dioxide", phase: "gas", components: "Controlled reformer feed or export" },
-      { tag: "14", name: "Recovered sulfur", phase: "solid", components: "Elemental sulfur product" },
+      { tag: "12", name: "Clean methane-rich gas", phase: "gas", components: "Sulfur-protected reformer feed" },
+      { tag: "13", name: "Controlled CO₂ split", phase: "gas", components: "Bi-reformer ratio-control feed or export" },
+      { tag: "14", name: "Recovered sulfur", phase: "solid", components: "Qualified sulfur outlet" },
     ],
   },
   B6: {
     symbol: "fired-reformer",
-    summary: "approximately 850 °C · approximately 2.8 MPa",
+    summary: "≈850 °C · ≈2.8 MPa · strongly endothermic",
     inlet: [
-      { tag: "12", name: "Clean methane-rich gas", phase: "gas", components: "Sulfur-free B5 gas" },
-      { tag: "13", name: "Metered carbon dioxide", phase: "gas", components: "Ratio-control feed from B5" },
-      { tag: "17", name: "Carbon-dioxide recycle", phase: "gas", components: "Controlled B7 carbon-dioxide return" },
-      { tag: "20", name: "Reforming steam", phase: "gas", components: "Recovered or generated hydrothermal-island steam" },
+      { tag: "12", name: "Clean methane-rich gas", phase: "gas", components: "Rectisol/ZnO-protected SCWG gas" },
+      { tag: "13", name: "Controlled CO₂ split", phase: "gas", components: "Dry-reforming contribution" },
+      { tag: "15", name: "Reforming steam", phase: "gas", components: "Recovered/generated steam" },
     ],
-    outlet: [
-      { tag: "15", name: "Ratio-controlled synthesis gas", phase: "gas", components: "CO and H₂ for OXZEO" },
-    ],
+    outlet: [{ tag: "16", name: "Ratio-controlled syngas", phase: "gas", components: "CO and H₂ for OXZEO" }],
   },
   B7: {
     symbol: "fixed-bed",
-    summary: "approximately 400 °C · 4 MPa",
+    summary: "≈400 °C · 2–3 MPa · 42% current / 55% target",
     inlet: [
-      { tag: "15", name: "Ratio-controlled synthesis gas", phase: "gas", components: "Sulfur-free CO and H₂" },
-      { tag: "18", name: "Unconverted synthesis-gas recycle", phase: "gas", components: "Internal OXZEO-loop return" },
+      { tag: "16", name: "Ratio-controlled syngas", phase: "gas", components: "Sulfur-free CO and H₂" },
+      { tag: "17", name: "Qualified recycle gas", phase: "gas", components: "Unconverted synthesis-loop return" },
     ],
     outlet: [
-      { tag: "16", name: "Light-olefin product", phase: "gas", components: "Recovered C₂–C₄ olefins" },
-      { tag: "17", name: "Carbon-dioxide recycle", phase: "gas", components: "Separated CO₂ returned to B6" },
-      { tag: "18", name: "Unconverted synthesis-gas recycle", phase: "gas", components: "Internal return to the B7 feed" },
-      { tag: "21", name: "Water, oxygenates, and purge", phase: "mixed", components: "Condensed coproducts and controlled fuel purge" },
+      { tag: "18", name: "Light-olefin product", phase: "gas", components: "Recovered C₂–C₄ olefins" },
+      { tag: "17", name: "Qualified recycle gas", phase: "gas", components: "Unconverted loop return" },
+      { tag: "19", name: "Water, oxygenates, and purge", phase: "mixed", components: "Condensed coproducts and controlled fuel purge" },
     ],
   },
   B8: {
     symbol: "washer-conditioner",
-    summary: "Wash · qualify · controlled purge",
-    inlet: [
-      { tag: "11", name: "Separated mineral solids", phase: "solid", components: "Conditioned solids from B4" },
-    ],
+    summary: "Wash · test · release or retreat",
+    inlet: [{ tag: "11", name: "Separated mineral solids", phase: "solid", components: "B4 mineral phase" }],
     outlet: [
-      { tag: "R1", name: "Conditioned mineral recycle", phase: "slurry", components: "Controlled return to B1" },
-      { tag: "19", name: "Qualified mineral purge", phase: "solid", components: "Released product or managed disposal" },
+      { tag: "20", name: "Qualified residue", phase: "solid", components: "Destination-specific conditioned mineral product" },
+      { tag: "21", name: "Off-spec retreatment", phase: "slurry", components: "Second wash or controlled treatment; no indefinite recycle" },
     ],
   },
 };
 
-const diagramLabels: Record<DiagramStageId, string> = {
-  B1: "Feed preparation + pumping",
+const diagramLabels: Record<TowngasProcessStageId, string> = {
+  B1: "Feed preparation + HP pumping",
   B2: "SCWG reactor",
-  B3: "Hot-salt separation",
+  B3: "Purposeful hot-salt separation",
   B4: "Heat recovery + phase split",
   B5: "Rectisol + ZnO guard",
-  B6: "Bi-reforming",
-  B7: "OXZEO + recovery",
-  B8: "Mineral conditioning",
+  B6: "Steam/CO₂ bi-reforming",
+  B7: "OXZEO + product recovery",
+  B8: "Residue qualification",
 };
 
-const qualificationStages = new Set<DiagramStageId>(["B1", "B2", "B3", "B6", "B7", "B8"]);
+const qualificationStages = new Set<TowngasProcessStageId>(["B1", "B2", "B3", "B5", "B6", "B7", "B8"]);
 
 function toStreamRows(streams: DiagramStream[]): StreamRow[] {
   return streams.map((stream) => ({ ...stream }));
 }
 
-export const towngasCurrentProcessBlocks: ProcessBlock[] = towngasProcessStages
-  .filter((stage) => stage.id !== "R1")
-  .map((stage) => {
-    const stageTopology = topology[stage.id];
-
-    return {
-      id: stage.id,
-      name: stage.name,
-      diagramLabel: diagramLabels[stage.id],
-      symbol: stageTopology.symbol,
-      conditions: { summary: stageTopology.summary },
-      conditionDetails: stage.conditions.map((condition) => ({
-        label: condition.label,
-        value: condition.value,
-        basis: condition.basis,
-      })),
-      needsValidation: qualificationStages.has(stage.id),
-      function: [stage.purpose, stage.mechanism],
-      sourceNote: stage.source,
-      inlet: toStreamRows(stageTopology.inlet),
-      outlet: toStreamRows(stageTopology.outlet),
-      flags: [
-        {
-          kind: "note",
-          title: "Main equipment",
-          body: stage.equipment.join("; "),
-        },
-        {
-          kind: "warning",
-          title: "Critical design risk",
-          body: stage.risk,
-        },
-        {
-          kind: "needs-validation",
-          title: "Evidence required to retire it",
-          body: stage.validation,
-        },
-      ],
-    };
-  });
-
-export const towngasRecycleStage = towngasProcessStages.find((stage) => stage.id === "R1");
+export const towngasCurrentProcessBlocks: ProcessBlock[] = towngasProcessStages.map((stage) => {
+  const stageTopology = topology[stage.id];
+  return {
+    id: stage.id,
+    name: stage.name,
+    diagramLabel: diagramLabels[stage.id],
+    symbol: stageTopology.symbol,
+    conditions: { summary: stageTopology.summary },
+    conditionDetails: stage.conditions.map((condition) => ({
+      label: condition.label,
+      value: condition.value,
+      basis: condition.basis,
+    })),
+    needsValidation: qualificationStages.has(stage.id),
+    function: [stage.purpose, stage.mechanism],
+    sourceNote: stage.source,
+    inlet: toStreamRows(stageTopology.inlet),
+    outlet: toStreamRows(stageTopology.outlet),
+    flags: [
+      { kind: "note", title: "Main equipment", body: stage.equipment.join("; ") },
+      { kind: "warning", title: "Critical design risk", body: stage.risk },
+      { kind: "needs-validation", title: "Evidence required to retire it", body: stage.validation },
+    ],
+  };
+});

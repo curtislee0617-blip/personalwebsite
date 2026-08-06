@@ -4,15 +4,15 @@ import { motion, useReducedMotion, useScroll } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 const sections = [
-  { href: "#overview", label: "Overview" },
-  { href: "#feedstocks", label: "Feedstocks + siting" },
-  { href: "#cofeed", label: "Regional co-feed" },
-  { href: "#process-design", label: "Process design" },
-  { href: "#balances", label: "Balances" },
+  { href: "#reasoning", label: "Design reasoning" },
+  { href: "#feed-platform", label: "Feed platform" },
+  { href: "#siting", label: "South China" },
+  { href: "#process-design", label: "Process architecture" },
+  { href: "#balances", label: "Mass + energy" },
+  { href: "#certification", label: "Certification" },
   { href: "#economics", label: "RMB economics" },
-  { href: "#policy", label: "Policy + qualification" },
-  { href: "#development", label: "Risks + gates" },
-  { href: "#report", label: "Report + sources" },
+  { href: "#decision", label: "Final position" },
+  { href: "#report", label: "V3 report" },
 ] as const;
 
 export function TowngasLocalNav() {
