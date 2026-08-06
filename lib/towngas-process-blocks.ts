@@ -110,7 +110,7 @@ const diagramLabels: Record<TowngasProcessStageId, string> = {
   B8: "Residue qualification",
 };
 
-const qualificationStages = new Set<TowngasProcessStageId>(["B1", "B2", "B3", "B5", "B6", "B7", "B8"]);
+const newUseStages = new Set<TowngasProcessStageId>(["B1", "B2", "B3", "B7", "B8"]);
 
 function toStreamRows(streams: DiagramStream[]): StreamRow[] {
   return streams.map((stream) => ({ ...stream }));
@@ -118,6 +118,7 @@ function toStreamRows(streams: DiagramStream[]): StreamRow[] {
 
 export const towngasCurrentProcessBlocks: ProcessBlock[] = towngasProcessStages.map((stage) => {
   const stageTopology = topology[stage.id];
+  const isNewUse = newUseStages.has(stage.id);
   return {
     id: stage.id,
     name: stage.name,
@@ -129,15 +130,14 @@ export const towngasCurrentProcessBlocks: ProcessBlock[] = towngasProcessStages.
       value: condition.value,
       basis: condition.basis,
     })),
-    needsValidation: qualificationStages.has(stage.id),
-    function: [stage.purpose, stage.mechanism],
+    needsValidation: isNewUse,
+    function: [stage.purpose, stage.mechanism, ...(isNewUse ? [`Testing focus: ${stage.validation}`] : [])],
     sourceNote: stage.source,
     inlet: toStreamRows(stageTopology.inlet),
     outlet: toStreamRows(stageTopology.outlet),
     flags: [
       { kind: "note", title: "Main equipment", body: stage.equipment.join("; ") },
       { kind: "warning", title: "Critical design risk", body: stage.risk },
-      { kind: "needs-validation", title: "Evidence required to retire it", body: stage.validation },
     ],
   };
 });

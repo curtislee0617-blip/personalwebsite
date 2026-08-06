@@ -34,9 +34,7 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
             </h3>
           </div>
           {block.needsValidation ? (
-            <span className="rounded-full border border-clay/40 bg-clay/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.1em] text-clay">
-              {scwgUi.process.needsValidationBadge}
-            </span>
+            <span className="text-sm font-medium text-clay">(needs testing)</span>
           ) : null}
         </div>
 
@@ -48,7 +46,7 @@ export function ScwgProcessBlock({ block }: { block: ProcessBlock }) {
                 <dd>{condition.value}</dd>
                 {condition.basis ? (
                   <small className={`scwg-process-condition-basis scwg-process-condition-basis--${basisSlug(condition.basis)}`}>
-                    {condition.basis}
+                    {condition.basis === "requires pilot validation" ? "(needs testing)" : condition.basis}
                   </small>
                 ) : null}
               </div>

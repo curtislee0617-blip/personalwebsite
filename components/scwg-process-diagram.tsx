@@ -134,9 +134,6 @@ export const ScwgProcessDiagram = forwardRef<SVGSVGElement, Props>(function Scwg
                 x={box.x}
                 y={box.y}
               />
-              {block.needsValidation ? (
-                <circle cx={box.x + box.w - 15} cy={box.y + 15} fill="rgb(var(--color-clay))" r="5" />
-              ) : null}
               {/* glyph on the left */}
               <g className="text-ink" transform={`translate(${box.x + 8}, ${box.y + 18})`}>
                 <BlockGlyph h={84} symbol={block.symbol} w={96} />

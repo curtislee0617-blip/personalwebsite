@@ -15,6 +15,9 @@ function evidenceSlug(basis: TowngasEvidenceBasis) {
 }
 
 function EvidenceTag({ basis }: { basis: TowngasEvidenceBasis }) {
+  if (basis === "requires pilot validation") {
+    return <span className="towngas-testing-note">(needs testing)</span>;
+  }
   return <span className={`towngas-evidence towngas-evidence--${evidenceSlug(basis)}`}>{basis}</span>;
 }
 
@@ -317,7 +320,23 @@ export function TowngasCaseStudy() {
 
           <div className="towngas-scenario-grid">
             {data.economicScenarios.map((scenario, index) => (
-              <article className={`is-${scenario.tone}`} key={scenario.id}><header><span>Scenario {index + 1}</span><h3>{scenario.name}</h3></header><p className="towngas-scenario-npv"><span>20-year NPV</span><strong>{scenario.npv > 0 ? "+" : "−"}RMB {Math.abs(scenario.npv).toFixed(1)}m</strong></p><dl><div><dt>Olefin</dt><dd>{scenario.production.toFixed(2)} kt/y</dd></div><div><dt>Revenue</dt><dd>RMB {scenario.revenue.toFixed(1)}m/y</dd></div><div><dt>EBITDA</dt><dd>RMB {scenario.ebitda.toFixed(1)}m/y</dd></div><div><dt>IRR / payback</dt><dd>{scenario.irr} · {scenario.payback}</dd></div></dl></article>
+              <article className={`is-${scenario.tone}`} key={scenario.id}>
+                <header><span>Scenario {index + 1}</span><h3>{scenario.name}</h3></header>
+                <p className="towngas-scenario-question">{scenario.question}</p>
+                <p className="towngas-scenario-npv"><span>20-year NPV</span><strong>{scenario.npv > 0 ? "+" : "−"}RMB {Math.abs(scenario.npv).toFixed(1)}m</strong></p>
+                <dl>
+                  <div><dt>Olefin</dt><dd>{scenario.production.toFixed(2)} kt/y</dd></div>
+                  <div><dt>Revenue</dt><dd>RMB {scenario.revenue.toFixed(1)}m/y</dd></div>
+                  <div><dt>Cash OPEX</dt><dd>RMB {scenario.opex.toFixed(0)}m/y</dd></div>
+                  <div><dt>EBITDA</dt><dd>RMB {scenario.ebitda.toFixed(1)}m/y</dd></div>
+                  <div><dt>IRR / payback</dt><dd>{scenario.irr} · {scenario.payback}</dd></div>
+                </dl>
+                <div className="towngas-scenario-explanation">
+                  <div><strong>What changes</strong><p>{scenario.changes}</p></div>
+                  <div><strong>Assumption set</strong><p>{scenario.assumptions}</p></div>
+                  <div><strong>How to read it</strong><p>{scenario.interpretation}</p></div>
+                </div>
+              </article>
             ))}
           </div>
 

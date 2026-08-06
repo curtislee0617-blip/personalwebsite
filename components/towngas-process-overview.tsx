@@ -17,7 +17,6 @@ export function TowngasProcessOverview() {
             <span className="towngas-process-legend-motion">Animated flow direction</span>
             <span className="towngas-process-legend-static">Arrowhead flow direction</span>
           </li>
-          <li><span aria-hidden="true" className="towngas-process-legend-alert" />Requires qualification</li>
         </ul>
       </div>
 
