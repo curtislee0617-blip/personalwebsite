@@ -3,10 +3,16 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { ScwgSitingMap } from "@/components/scwg-siting-map";
+import { TowngasLogoAccess } from "@/components/towngas-logo-access";
 import { TowngasLocalNav } from "@/components/towngas-local-nav";
 import { TowngasProcessOverview } from "@/components/towngas-process-overview";
 import { scwgAffiliation } from "@/lib/scwg-meta";
 import { towngasCaseStudy, type TowngasEvidenceBasis } from "@/lib/towngas-case-study";
+import {
+  towngasConfidentialOpex,
+  towngasConfidentialSources,
+  towngasMethanolReferenceCosts,
+} from "@/lib/towngas-confidential";
 import towngasLogo from "@/public/logos/scwg-towngas.png";
 import venexLogo from "@/public/logos/scwg-venex.png";
 
@@ -31,15 +37,19 @@ function SectionHeading({ eyebrow, title, lede }: { eyebrow: string; title: stri
   );
 }
 
-function ReportActions({ compact = false }: { compact?: boolean }) {
-  const { reportDownloads, processAnchor } = towngasCaseStudy.meta;
+function ReportActions({ hasPrivateAccess }: { hasPrivateAccess: boolean }) {
+  const { privateReportHref, processAnchor, publicReportHref } = towngasCaseStudy.meta;
+  const reportHref = hasPrivateAccess ? privateReportHref : publicReportHref;
   return (
-    <div className={compact ? "towngas-actions towngas-actions--compact" : "towngas-actions"}>
-      <a className="towngas-button towngas-button--primary" download href={reportDownloads.docx}>
-        <span>Download V3 report</span><span aria-hidden="true">↓</span>
+    <div className="towngas-actions">
+      <a className="towngas-button towngas-button--primary" download href={reportHref}>
+        <span>{hasPrivateAccess ? "Download private report" : "Download public report"}</span><span aria-hidden="true">↓</span>
       </a>
       <a className="towngas-button towngas-button--secondary" href={processAnchor}>
         <span>Explore process</span><span aria-hidden="true">↘</span>
+      </a>
+      <a className="towngas-button towngas-button--secondary" href="#report">
+        <span>Publication note</span><span aria-hidden="true">↓</span>
       </a>
     </div>
   );
@@ -49,11 +59,12 @@ function Bar({ value, max }: { value: number; max: number }) {
   return <i aria-hidden="true" style={{ "--bar": `${Math.max(2, (value / max) * 100)}%` } as CSSProperties}><b /></i>;
 }
 
-export function TowngasCaseStudy() {
+export function TowngasCaseStudy({ hasPrivateAccess }: { hasPrivateAccess: boolean }) {
   const data = towngasCaseStudy;
   const maxMassOutput = Math.max(...data.massBalance.outputs.map((item) => item.value));
   const maxCapex = Math.max(...data.capex.map((item) => item.value));
-  const maxOpex = Math.max(...data.opex.map((item) => item.value));
+  const maxPublicOpex = Math.max(...data.opexDrivers.map((item) => item.weight));
+  const maxConfidentialOpex = Math.max(...towngasConfidentialOpex.map((item) => item.value));
 
   return (
     <article className="scwg-page towngas-page" id="top">
@@ -62,7 +73,7 @@ export function TowngasCaseStudy() {
         <div className="towngas-shell towngas-hero-inner">
           <div className="towngas-hero-topline">
             <HistoryBackButton fallbackHref="/projects" />
-            <p><span>Third edition</span><span aria-hidden="true">·</span><span>{data.meta.reportDate}</span></p>
+            <p><span>Project synthesis</span><span aria-hidden="true">·</span><span>{data.meta.reportDate}</span>{hasPrivateAccess ? <><span aria-hidden="true">·</span><span>Private detail unlocked</span></> : null}</p>
           </div>
 
           <div className="towngas-hero-grid">
@@ -80,16 +91,16 @@ export function TowngasCaseStudy() {
                   {data.technologyLabels.map((label) => <li key={label}>{label}</li>)}
                 </ul>
               </div>
-              <ReportActions />
+              <ReportActions hasPrivateAccess={hasPrivateAccess} />
             </div>
 
-            <aside aria-label="Third-edition design basis" className="towngas-hero-basis">
+            <aside aria-label="Commercial design basis" className="towngas-hero-basis">
               <p className="eyebrow">Commercial design basis</p>
               <div className="towngas-hero-basis-number"><strong>10 × 300</strong><span>t/day isolatable hydrothermal trains</span></div>
               <div className="towngas-hero-basis-number"><strong>42.35 → 55.45</strong><span>kt/year light-olefin envelope</span></div>
               <dl>
                 <div><dt>Central feed</dt><dd>B1 balanced regional blend</dd></div>
-                <div><dt>TCI</dt><dd>RMB 2.814 billion</dd></div>
+                <div><dt>TCI</dt><dd>≈ RMB 2.8 billion</dd></div>
                 <div><dt>Commercial frame</dt><dd>Waste service + certified carbon</dd></div>
               </dl>
               <p className="towngas-hero-warning">Screening calculations and targets—not measured commercial performance or guaranteed product claims.</p>
@@ -97,10 +108,10 @@ export function TowngasCaseStudy() {
           </div>
 
           <div className="towngas-affiliation">
-            <div aria-label="Project affiliations" className="towngas-affiliation-logos">
+            <TowngasLogoAccess initiallyAuthenticated={hasPrivateAccess}>
               <Image alt="Towngas logo" src={towngasLogo} />
               <Image alt="VENEX Power logo" src={venexLogo} />
-            </div>
+            </TowngasLogoAccess>
             <p>{scwgAffiliation.note} {scwgAffiliation.disclaimer} The context image shows the affiliated Jungar Banner green-methanol facility, not the proposed SCWG complex.</p>
           </div>
         </div>
@@ -206,7 +217,7 @@ export function TowngasCaseStudy() {
           <div className="towngas-feed-controls">
             <details open>
               <summary>Compatible regional co-feeds</summary>
-              <div className="towngas-table-wrap"><table><thead><tr><th>Feed</th><th>V3 dose / role</th><th>Function</th><th>Binding constraint</th></tr></thead><tbody>{data.compatibleCoFeeds.map((feed) => <tr key={feed.name}><th>{feed.name}</th><td>{feed.dose}</td><td>{feed.function}</td><td>{feed.constraint}</td></tr>)}</tbody></table></div>
+              <div className="towngas-table-wrap"><table><thead><tr><th>Feed</th><th>Design dose / role</th><th>Function</th><th>Binding constraint</th></tr></thead><tbody>{data.compatibleCoFeeds.map((feed) => <tr key={feed.name}><th>{feed.name}</th><td>{feed.dose}</td><td>{feed.function}</td><td>{feed.constraint}</td></tr>)}</tbody></table></div>
             </details>
             <details>
               <summary>Feed acceptance envelope</summary>
@@ -251,6 +262,21 @@ export function TowngasCaseStudy() {
           </div>
 
           <TowngasProcessOverview />
+
+          <div className="towngas-figure-heading">
+            <div><p className="eyebrow">Operating windows</p><h3>How each train enters, changes, recovers, and leaves service</h3></div>
+            <p>{data.availability.target}. {data.availability.basis}</p>
+          </div>
+          <div className="towngas-cert-grid">
+            {data.operatingTransitions.map((transition, index) => (
+              <article key={transition.id}>
+                <header><span>{String(index + 1).padStart(2, "0")}</span><h3>{transition.title}</h3></header>
+                <p>{transition.action}</p>
+                <div><strong>Release condition</strong><p>{transition.release}</p></div>
+              </article>
+            ))}
+          </div>
+          <p className="towngas-efficiency-proof"><strong>Common-mode warning:</strong> {data.availability.warning}</p>
 
           <figure className="towngas-chemistry-strip">
             <div className="towngas-figure-heading"><div><p className="eyebrow">Chemistry in practical terms</p><h3>Why the methane-rich gas still needs B6</h3></div><p>Three process transformations; the full licensed kinetics remain a vendor and pilot workstream.</p></div>
@@ -311,11 +337,15 @@ export function TowngasCaseStudy() {
             lede={<p>The high-pressure and salt-resistant plant is sized by 999,000 t/year of slurry, but its saleable olefin output is only 42.35–55.45 kt/year. Commercial success therefore requires a stack of operational and contractual improvements.</p>}
           />
 
-          <div className="towngas-capital-dilution"><p className="eyebrow">Main cost driver</p><h3>RMB 2.814bn TCI</h3><p>Ten high-pressure feed, reactor, heat-recovery, and salt-separation trains process almost one million tonnes of watery slurry each year.</p><div><span>Class 4 range</span><strong>RMB 2.2–4.0bn</strong><span>Cash OPEX</span><strong>RMB 267m/year</strong></div></div>
+          <div className="towngas-capital-dilution"><p className="eyebrow">Main cost driver</p><h3>≈ RMB 2.8bn TCI</h3><p>Ten high-pressure feed, reactor, heat-recovery, and salt-separation trains process almost one million tonnes of watery slurry each year.</p><div><span>Class 4 range</span><strong>≈ RMB 2.2–4.0bn</strong><span>Central cash OPEX</span><strong>≈ RMB 215m/year</strong></div></div>
 
           <div className="towngas-cost-split">
             <figure><h3>CAPEX by area <span>RMB million</span></h3><ol>{data.capex.map((item) => <li key={item.label}><span>{item.label}</span><Bar max={maxCapex} value={item.value} /><strong>{item.value}</strong></li>)}</ol><figcaption>Table 1. China Class 4 screening estimate. B2 alone represents RMB 880m.</figcaption></figure>
-            <figure><h3>Cash OPEX <span>RMB million/year</span></h3><ol>{data.opex.map((item) => <li key={item.label}><span>{item.label}</span><Bar max={maxOpex} value={item.value} /><strong>{item.value}</strong></li>)}</ol><figcaption>Table 2. Central annual cash OPEX totals RMB 267m.</figcaption></figure>
+            {hasPrivateAccess ? (
+              <figure><h3>Cash OPEX <span>RMB million/year · private detail</span></h3><ol>{towngasConfidentialOpex.map((item) => <li key={item.label}><span>{item.label}</span><Bar max={maxConfidentialOpex} value={item.value} /><strong>{item.value.toFixed(1)}</strong></li>)}</ol><figcaption>Table 2. Exact project line items are visible because the Towngas project session is verified. Central cash OPEX totals RMB 215.5m/year at the 55% product case.</figcaption></figure>
+            ) : (
+              <figure><h3>Cash OPEX drivers <span>approximate public ranges</span></h3><ol>{data.opexDrivers.map((item) => <li key={item.label} title={item.note}><span>{item.label}</span><Bar max={maxPublicOpex} value={item.weight} /><strong>{item.display}</strong></li>)}</ol><figcaption>Table 2. Public ranges preserve the design cost structure while obscuring precise reference-derived inputs. Central project OPEX is approximately RMB 215m/year.</figcaption></figure>
+            )}
           </div>
 
           <section className="towngas-efficiency-bridge" aria-labelledby="towngas-efficiency-title">
@@ -356,9 +386,10 @@ export function TowngasCaseStudy() {
                 <dl>
                   <div><dt>Olefin</dt><dd>{scenario.production.toFixed(2)} kt/y</dd></div>
                   <div><dt>Revenue</dt><dd>RMB {scenario.revenue.toFixed(1)}m/y</dd></div>
-                  <div><dt>Cash OPEX</dt><dd>RMB {scenario.opex.toFixed(0)}m/y</dd></div>
+                  <div><dt>Cash OPEX</dt><dd>RMB {scenario.opex.toFixed(1)}m/y</dd></div>
                   <div><dt>EBITDA</dt><dd>RMB {scenario.ebitda.toFixed(1)}m/y</dd></div>
                   <div><dt>IRR / payback</dt><dd>{scenario.irr} · {scenario.payback}</dd></div>
+                  <div><dt>NPV after 70% / 90% ramp</dt><dd>{scenario.rampNpv > 0 ? "+" : "−"}RMB {Math.abs(scenario.rampNpv).toFixed(1)}m</dd></div>
                 </dl>
                 <div className="towngas-scenario-explanation">
                   <div><strong>What changes</strong><p>{scenario.changes}</p></div>
@@ -373,6 +404,54 @@ export function TowngasCaseStudy() {
             <figure className="towngas-table-wrap"><table><caption>Table 4. Premium and conversion thresholds</caption><thead><tr><th>Premium</th><th>Netback RMB/t</th><th>Break-even product</th><th>Break-even C efficiency</th><th>NPV at 55%</th></tr></thead><tbody>{data.breakEven.map((row) => <tr key={row.premium}><th>{row.premium}</th><td>{row.netback}</td><td>{row.product.toFixed(2)} kt/y</td><td>{row.efficiency.toFixed(1)}%</td><td>+RMB {row.npv55}m</td></tr>)}</tbody></table></figure>
             <div className="towngas-economic-risk-list">{data.economicRisks.map((risk) => <article key={risk.change}><div><h3>{risk.change}</h3><strong>{risk.impact}</strong></div><p>{risk.meaning}</p></article>)}</div>
           </div>
+
+          <div className="towngas-figure-heading">
+            <div><p className="eyebrow">Route decision</p><h3>OXZEO, methanol, or renewable methane</h3></div>
+            <p>The design includes two fallback routes. They are complete battery-limit alternatives, not shortcuts that automatically remove the hydrothermal or gas-cleanup systems.</p>
+          </div>
+          <div className="towngas-cert-grid">
+            {data.routeAlternatives.map((route, index) => (
+              <article key={route.id}>
+                <header><span>{String(index + 1).padStart(2, "0")}</span><h3>{route.route}</h3></header>
+                <p>{route.configuration}</p>
+                <p><strong>{route.scale}</strong></p>
+                <div><strong>Commercial strength</strong><p>{route.strength}</p></div>
+                <div><strong>Principal weakness</strong><p>{route.weakness}</p></div>
+              </article>
+            ))}
+          </div>
+
+          {hasPrivateAccess ? (
+            <section aria-labelledby="towngas-private-cost-title" className="towngas-efficiency-bridge">
+              <div className="towngas-figure-heading">
+                <div><p className="eyebrow">Private project annex</p><h3 id="towngas-private-cost-title">Exact reference-derived cost inputs</h3></div>
+                <p>This server-rendered annex is included only when the HTTP-only Towngas project session is valid.</p>
+              </div>
+              <div className="towngas-economic-tables">
+                <figure className="towngas-table-wrap">
+                  <table>
+                    <caption>Exact proposed-plant OPEX line items</caption>
+                    <thead><tr><th>Line item</th><th>RMB million/year</th><th>Calculation basis</th></tr></thead>
+                    <tbody>{towngasConfidentialOpex.map((item) => <tr key={item.label}><th>{item.label}</th><td>{item.value.toFixed(1)}</td><td>{item.basis}</td></tr>)}</tbody>
+                  </table>
+                </figure>
+                <figure className="towngas-table-wrap">
+                  <table>
+                    <caption>Reference 300 kt/year methanol cash-cost breakdown</caption>
+                    <thead><tr><th>Reference item</th><th>Consumption</th><th>Unit price</th><th>RMB/t</th><th>RMB m/y</th></tr></thead>
+                    <tbody>{towngasMethanolReferenceCosts.map((item) => <tr key={item.item}><th>{item.item}</th><td>{item.consumption}</td><td>{item.unitPrice}</td><td>{item.perTonne.toFixed(1)}</td><td>{item.annual.toFixed(2)}</td></tr>)}</tbody>
+                  </table>
+                </figure>
+              </div>
+              <p className="towngas-efficiency-proof"><strong>Scope limit:</strong> the disclosed methanol subtotal excludes raw feed, labour, depreciation, and fixed investment; it is a comparator, not a Towngas vendor quote.</p>
+            </section>
+          ) : (
+            <aside className="towngas-feed-rule">
+              <p className="eyebrow">Detailed cost inputs</p>
+              <h3>Exact line items are lightly obscured.</h3>
+              <p>The public page keeps the cost categories, approximate ranges, total project result, and scenario conclusions. The hidden Towngas project login reveals the precise reference rates and complete methanol cost table.</p>
+            </aside>
+          )}
         </div>
       </section>
 
@@ -391,9 +470,9 @@ export function TowngasCaseStudy() {
         <div className="towngas-decision-ledger">{data.decisions.map((item) => <article key={item.topic}><h3>{item.topic}</h3><p>{item.position}</p></article>)}</div>
 
         <figure className="towngas-open-evidence">
-          <div className="towngas-figure-heading"><div><p className="eyebrow">Next decision gate</p><h3>Six load-bearing claims to retire</h3></div><p>Commercial FEED follows representative evidence and contracts; it is not the current project status.</p></div>
+          <div className="towngas-figure-heading"><div><p className="eyebrow">Next decision gate</p><h3>Load-bearing claims to retire</h3></div><p>Commercial FEED follows representative evidence and contracts; it is not the current project status.</p></div>
           <ol>{data.openEvidence.map((item) => <li key={item.id}><span>{item.id}</span><div><strong>{item.claim}</strong><p>{item.evidence}</p></div></li>)}</ol>
-          <figcaption>Table 4. Condensed assumption-and-evidence register from V3 Appendix B.</figcaption>
+          <figcaption>Table 4. Condensed assumption-and-evidence register from the project appendix.</figcaption>
         </figure>
       </section>
 
@@ -401,16 +480,28 @@ export function TowngasCaseStudy() {
         <div className="towngas-shell">
           <div className="towngas-report-card">
             <div>
-              <p className="eyebrow">Third-edition report</p>
-              <h2>Complete process-design rewrite</h2>
-              <p>The source document contains the complete ten-train design, supplier and feed logic, process datasheets, balances, materials and safety basis, certification ledger, 20-year RMB economics, calculation audit, and evidence register.</p>
-              <ReportActions compact />
-              <a className="towngas-pdf-link" href={data.meta.reportDownloads.pdf} target="_blank">Open PDF review copy <span aria-hidden="true">↗</span></a>
+              <h2>Financing depends on conversion, contracts, and capital discipline</h2>
+              <p>The design is capital-intensive and cannot rely on commodity product sales alone. A credible financing case emerges only when higher verified carbon conversion, dependable plant availability, contracted waste-service income, and certified product value are delivered together.</p>
+              <p>The weaker configuration struggles to recover the infrastructure investment, while the improved configuration can support an investable case. Even then, the project has limited tolerance for construction overruns, slow ramp-up, unreliable salt handling, or a product premium that is not secured by contract.</p>
+              <p>Public cost information is presented as rounded planning ranges so readers can understand the scale and principal cost drivers without exposing detailed reference-plant inputs.</p>
+              <p>{data.meta.publicationNote}</p>
             </div>
-            <aside><span>Document status</span><strong>{data.meta.status}</strong><span>Throughput</span><strong>999,000 t/year</strong><span>Economic horizon</span><strong>20 operating years</strong></aside>
+            <aside><span>Capital character</span><strong>High-pressure, capital-intensive infrastructure</strong><span>Commercial foundation</span><strong>Waste service plus verified product value</strong><span>Financeability</span><strong>Conditional on conversion, availability, and contracts</strong></aside>
           </div>
 
           <div className="towngas-references"><div><p className="eyebrow">Source basis</p><h2>Report sections used on this page</h2></div><ol>{data.references.map((reference, index) => <li key={reference.id}><span>{String(index + 1).padStart(2, "0")}</span><p><strong>{reference.title}</strong><small>{reference.detail}</small></p></li>)}</ol></div>
+
+          {hasPrivateAccess ? (
+            <div className="towngas-references">
+              <div><p className="eyebrow">Private source register</p><h2>References 36–46</h2></div>
+              <ol>{towngasConfidentialSources.map((reference) => <li key={reference.id}><span>{reference.id}</span><p><strong>Restricted project source</strong><small>{reference.description}</small></p></li>)}</ol>
+            </div>
+          ) : (
+            <details className="towngas-evidence-key">
+              <summary>Restricted source register</summary>
+              <div><p><span>References 36–46 comprise project cost correspondence, industrial material-balance and operating documents, air-separation and water-system records, greenhouse-gas guidance, and permit material. Their exact identities and detailed descriptions appear after the Towngas project login.</span></p></div>
+            </details>
+          )}
 
           <footer className="towngas-page-footer"><p>Screening / pre-FEED case study · {data.meta.reportDate}</p><div><Link href="/projects">All projects</Link><a href="#top">Back to top ↑</a></div></footer>
         </div>

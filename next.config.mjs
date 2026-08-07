@@ -60,6 +60,9 @@ function rootMediaFallbackRewrite() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingIncludes: {
+    "/api/towngas-report/private": ["./private/towngas/*.docx"],
+  },
   experimental: {
     // Default is 1mb; the recipe admin form uploads several photos per submission.
     serverActions: { bodySizeLimit: "25mb" },

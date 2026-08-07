@@ -20,9 +20,10 @@ function readEnv() {
   }));
 }
 
-const apiKey = readEnv().GOOGLE_PLACES_API_KEY;
+const loadedEnv = readEnv();
+const apiKey = loadedEnv.GOOGLE_PLACES_API_KEY ?? loadedEnv.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 if (!apiKey) {
-  console.error("GOOGLE_PLACES_API_KEY is missing from .env.local");
+  console.error("GOOGLE_PLACES_API_KEY or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is missing from .env.local");
   process.exit(1);
 }
 

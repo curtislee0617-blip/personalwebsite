@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { TowngasCaseStudy } from "@/components/towngas-case-study";
+import { isTowngasAccessAuthenticated } from "@/lib/towngas-access-auth";
 
 const title = "Towngas SCWG–OXZEO integrated waste process design";
 const description =
-  "Third-edition screening design for ten modular SCWG trains converting a douzha-led regional feed while conditioning bauxite residue, with interactive process architecture, closed balances, certification logic, and China-specific RMB economics.";
+  "Public-safe screening design for ten modular SCWG trains converting a douzha-led regional feed while conditioning bauxite residue, with interactive process architecture, operating transitions, closed balances, certification logic, route alternatives, and revised China RMB economics.";
 const canonicalPath = "/projects/supercritical-water-gasification";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title,
@@ -34,6 +37,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SupercriticalWaterGasificationPage() {
-  return <TowngasCaseStudy />;
+export default async function SupercriticalWaterGasificationPage() {
+  const hasPrivateAccess = await isTowngasAccessAuthenticated();
+  return <TowngasCaseStudy hasPrivateAccess={hasPrivateAccess} />;
 }

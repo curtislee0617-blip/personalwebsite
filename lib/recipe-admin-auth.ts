@@ -5,9 +5,7 @@ import { RECIPE_ADMIN_COOKIE, recipeAdminSessionToken } from "@/lib/recipe-admin
 export { RECIPE_ADMIN_COOKIE, recipeAdminSessionToken } from "@/lib/recipe-admin-token";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 
-export async function isRecipeAdminAuthenticated() {
-  if (process.env.NODE_ENV === "development") return true;
-
+export async function isRecipeAdminSessionAuthenticated() {
   const adminPassword = process.env.RECIPE_ADMIN_PASSWORD;
   if (!adminPassword) return false;
   const cookieStore = await cookies();
@@ -17,6 +15,11 @@ export async function isRecipeAdminAuthenticated() {
   const a = Buffer.from(cookieValue);
   const b = Buffer.from(expected);
   return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+export async function isRecipeAdminAuthenticated() {
+  if (process.env.NODE_ENV === "development") return true;
+  return isRecipeAdminSessionAuthenticated();
 }
 
 export async function setRecipeAdminCookie(password: string) {

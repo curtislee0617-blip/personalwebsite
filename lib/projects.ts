@@ -51,15 +51,9 @@ export const projects: ProjectEntry[] = [
     ],
     documents: [
       {
-        href: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_Integrated_Feed_Strategy.docx",
-        label: "Download final engineering report",
-        description: "5 August 2026 screening/pre-FEED report with the integrated regional feed strategy, in DOCX format.",
-        viewer: "external",
-      },
-      {
-        href: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_Integrated_Feed_Strategy.pdf",
-        label: "Open report PDF",
-        description: "PDF review copy of the updated engineering report and regional co-feed strategy.",
+        href: "/downloads/Towngas-SCWG-OXZEO-Public-Project-Report.pdf",
+        label: "Download public project report",
+        description: "Public screening/pre-FEED report with restricted commercial source details removed.",
         viewer: "external",
       },
     ],

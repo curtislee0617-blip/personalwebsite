@@ -1,4 +1,6 @@
-// Website data distilled from the August 2026 third-edition process-design report.
+// Public-safe website data distilled from the confidential August 2026
+// project master. Exact reference-plant balances, equipment powers, internal
+// cost components, and permit-specific data are intentionally excluded.
 // The page intentionally follows the report's decision sequence: wastes → feed
 // envelope → siting → architecture → balances → claims → commercial decision.
 
@@ -52,16 +54,16 @@ export const towngasEvidenceLegend = [
 ] as const satisfies readonly { basis: TowngasEvidenceBasis; description: string }[];
 
 export const towngasCaseStudyMeta = {
-  eyebrow: "Towngas · third-edition process design",
+  eyebrow: "Towngas · Public-safe project synthesis",
   title: "Two waste problems, one integrated process",
   subtitle: "Supercritical-water gasification and OXZEO light-olefin synthesis from a douzha-led regional feed portfolio and deliberately conditioned bauxite residue",
-  summary: "This third-edition design starts with the wastes rather than the reactor. Douzha supplies wet renewable carbon; bauxite residue is treated as an alkaline mineral feed that must leave through a controlled dealkalization and qualification route. Ten isolatable hydrothermal trains convert a balanced regional blend, then merge only clean gas into shared Rectisol, bi-reforming, and OXZEO units. The process is technically coherent, but its commercial case depends on carbon conversion, contracted waste-service income, certified product value, and high availability—not commodity olefin sales alone.",
-  status: "Third-edition screening / pre-FEED design — not an investment-grade FEED package",
+  summary: "The design starts with the wastes rather than the reactor. Douzha supplies wet renewable carbon; bauxite residue is an alkaline treatment feed that must leave through controlled dealkalization and qualification. Ten isolatable hydrothermal trains merge only accepted gas into shared Rectisol, bi-reforming, and OXZEO units. The physical design basis is stable, while the corrected China utility basis strengthens the economics: current conversion remains fragile after ramp-up, but sustained 55% carbon efficiency plus contracted service value produces a materially stronger case.",
+  status: "Screening / pre-FEED synthesis — public page sanitised from a confidential project master",
   reportDate: "August 2026",
-  reportDownloads: {
-    docx: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_V3.docx",
-    pdf: "/downloads/Towngas_SCWG_OXZEO_Process_Design_FEED_Final_RMB_China_V3.pdf",
-  },
+  reportVersion: "Current design",
+  publicationNote: "The public view withholds the reference methanol cost breakdown, exact reference-derived electricity, water, biomass-fuel, maintenance, catalyst and operating-tax figures, and the identities and detailed descriptions of References 36–46. The dedicated Towngas project login reveals that restricted annex.",
+  publicReportHref: "/downloads/Towngas-SCWG-OXZEO-Public-Project-Report.pdf",
+  privateReportHref: "/api/towngas-report/private",
   processAnchor: "#process-design",
 } as const;
 
@@ -80,7 +82,7 @@ export const towngasDesignMetrics = [
   { id: "throughput", label: "Commercial throughput", value: "3,000", unit: "t/day gross slurry", basis: "calculated result", note: "999,000 t/year at 333 operating days." },
   { id: "feed", label: "Central blend", value: "B1", unit: "balanced regional feed", basis: "design basis", note: "20.80 wt% solids and 25.947 t C/day per train." },
   { id: "product", label: "Light-olefin envelope", value: "42.35–55.45", unit: "kt/year", basis: "screening assumption", note: "42% current case to 55% financeability target." },
-  { id: "capital", label: "China Class 4 TCI", value: "2.814", unit: "RMB billion", basis: "screening assumption", note: "Screening range RMB 2.2–4.0 billion." },
+  { id: "capital", label: "China Class 4 TCI", value: "≈2.8", unit: "RMB billion", basis: "screening assumption", note: "Screening range approximately RMB 2.2–4.0 billion." },
   { id: "energy", label: "Purchased-energy equivalent", value: "260", unit: "GJ/day per train", basis: "calculated result", note: "After internal heat recovery and purge-fuel credit." },
 ] as const satisfies readonly { id: string; label: string; value: string; unit: string; basis: TowngasEvidenceBasis; note: string }[];
 
@@ -145,121 +147,121 @@ export const towngasProcessStages: TowngasProcessStage[] = [
     purpose: "Make a traceable, carbon-controlled slurry that can restart after settling and reach reactor pressure without bridging or excessive wear.",
     mechanism: "Segregated receipt, fine milling, high-shear blending, batch release, and two 100% positive-displacement pumps per train.",
     conditions: [
-      { label: "Normal feed", value: "300 t/day · 12.5 t/hour", basis: "design basis", source: "V3 §5.1 and Appendix D.1" },
-      { label: "Total solids", value: "20.80 wt% B1 · 18–22 wt% envelope", basis: "requires pilot validation", source: "V3 Table 2.5" },
-      { label: "Discharge", value: "25 MPa plus line losses", basis: "design basis", source: "V3 Appendix D.1" },
+      { label: "Normal feed", value: "300 t/day · 12.5 t/hour", basis: "design basis", source: "§5.1 and Appendix D.1" },
+      { label: "Total solids", value: "20.80 wt% B1 · 18–22 wt% envelope", basis: "requires pilot validation", source: "Table 2.4 and Appendix D.1" },
+      { label: "Discharge", value: "25 MPa plus line losses", basis: "design basis", source: "Appendix D.1" },
     ],
     equipment: ["Segregated shared receiving and train day tanks", "Fibre mill and grit removal", "High-shear blend/restart loop", "20 total P-101 A/B high-pressure pumps"],
     inputs: ["Douzha", "Approved wet co-feeds", "Milled straw", "Bauxite residue", "Water"],
     outputs: ["Released high-pressure B1 slurry"],
     risk: "Fibre bridging, starch gelation, grit wear, mineral settling, and a failed restart after hold.",
     validation: "Full-scale cold and hot pump/restart loop using seasonal supplier blends.",
-    source: "V3 §5.1, Tables 2.4–2.5, Appendix D.1",
+    source: "§5.1, Tables 2.3–2.4, Appendix D.1",
   },
   {
     id: "B2", order: 2, name: "Supercritical-water gasification",
     purpose: "Convert wet organic carbon to methane-rich raw gas while exposing bauxite residue to hydrothermal conditioning.",
     mechanism: "Rapid near-critical heat-up and 30–90 second residence promote hydrolysis and gasification. Methane suppression remains an optimisation—not a basis for deleting B6.",
     conditions: [
-      { label: "Temperature", value: "625 °C", basis: "requires pilot validation", source: "V3 Table 1.1" },
-      { label: "Pressure", value: "25 MPa", basis: "requires pilot validation", source: "V3 Table 1.1" },
-      { label: "Residence screen", value: "30–90 seconds", basis: "requires pilot validation", source: "V3 §5.2" },
+      { label: "Temperature", value: "625 °C", basis: "requires pilot validation", source: "Table 1.1" },
+      { label: "Pressure", value: "25 MPa", basis: "requires pilot validation", source: "Table 1.1" },
+      { label: "Residence screen", value: "30–90 seconds", basis: "requires pilot validation", source: "§5.2" },
     ],
     equipment: ["R-201 externally heated reactor", "H-101 dirty-service feed/effluent exchanger", "Trim heater and water quench", "Online gas analysis and full liquid/solid sampling"],
     inputs: ["High-pressure B1 slurry"], outputs: ["Gas, supercritical water, salts, and mineral solids"],
     risk: "Char, wall deposition, corrosion, heat-flux excursions, and uncertain mixed-feed carbon-to-gas efficiency.",
     validation: "Continuous carbon closure across gas, water, and solids, followed by an integrated 1,000-hour mixed-feed campaign.",
-    source: "V3 §5.2 and Appendix D.1",
+    source: "§5.2 and Appendix D.1",
   },
   {
     id: "B3", order: 3, name: "Purposeful hot-salt precipitation and separation",
     purpose: "Make salts leave through a controlled underflow instead of attaching to the reactor, heat exchanger, or pressure boundary.",
     mechanism: "Twin lead/lag hot separators use controlled nucleation, continuous dense-underflow withdrawal, switch-over, and flush recovery.",
     conditions: [
-      { label: "Configuration", value: "Twin lead/lag per train", basis: "design basis", source: "V3 §5.3" },
-      { label: "Service", value: "Hot, high-pressure, before H-101", basis: "design basis", source: "V3 Figure 4.1" },
-      { label: "Annual concentrate", value: "10,656 t/year site", basis: "calculated result", source: "V3 Table 6.8" },
+      { label: "Configuration", value: "Twin lead/lag per train", basis: "design basis", source: "§5.3" },
+      { label: "Service", value: "Hot, high-pressure, before H-101", basis: "design basis", source: "Figure 4.1" },
+      { label: "Annual concentrate", value: "10,656 t/year site", basis: "calculated result", source: "Table 6.7" },
     ],
     equipment: ["Twin continuous hot separators", "Underflow cooling and flash", "Flush and switch-over system", "Concentrate quarantine and release tanks"],
     inputs: ["B2 effluent with precipitating Na/K/P/S/Cl species"], outputs: ["Salt-depleted effluent", "Controlled B3 concentrate"],
     risk: "A salt bridge or ineffective underflow forces a train outage and erodes the commercial availability case.",
     validation: "Mixed-feed hot loop proving underflow mass, wall deposition, pressure-drop recovery, and repeated separator switching.",
-    source: "V3 §5.3, Tables 5.1 and B-03",
+    source: "§5.3, Table 5.2 and Appendix B-03",
   },
   {
     id: "B4", order: 4, name: "Heat recovery, letdown, and three-phase separation",
     purpose: "Recover sensible heat, reduce pressure safely, and separate accepted gas from aqueous and mineral outlets before trains merge.",
     mechanism: "H-101 transfers heat to incoming slurry, staged sacrificial trims reduce pressure, then primary/secondary vessels split gas, water, and solids. Ammonia recovery and controlled purge prevent indefinite nitrogen and chloride recycle.",
     conditions: [
-      { label: "Heat recovery", value: "555 GJ/day per train", basis: "screening assumption", source: "V3 Table 7.3" },
-      { label: "Raw gas", value: "55.80 t/day per train", basis: "calculated result", source: "V3 Table 6.2" },
-      { label: "Aqueous stream", value: "233.75 t/day per train", basis: "calculated result", source: "V3 Table 6.2" },
+      { label: "Heat recovery", value: "555 GJ/day per train", basis: "screening assumption", source: "Tables 7.1–7.2" },
+      { label: "Raw gas", value: "55.80 t/day per train", basis: "calculated result", source: "Table 6.2" },
+      { label: "Aqueous stream", value: "233.75 t/day per train", basis: "calculated result", source: "Table 6.2" },
     ],
     equipment: ["Modular H-101 exchanger", "Staged hard-faced letdown trims", "Primary and secondary separators", "Ammonia recovery, water polishing, and chloride purge"],
     inputs: ["Salt-depleted B3 effluent"], outputs: ["Accepted wet raw gas to the common header", "Aqueous treatment stream", "Washed-solids route to B8"],
     risk: "Residual fines can foul H-101; two-phase letdown can erode trims; liquid carryover can contaminate the common gas island.",
     validation: "Demonstrate clean train isolation, H-101 cleanability, letdown wear life, and gas-header acceptance through transients.",
-    source: "V3 §5.4 and Tables 6.2, 7.3",
+    source: "§5.4 and Tables 6.2, 7.1–7.2",
   },
   {
     id: "B5", order: 5, name: "Shared acid-gas removal and catalyst protection",
     purpose: "Remove sulfur and control carbon-dioxide routing before reforming and OXZEO synthesis.",
     mechanism: "A shared Rectisol system removes bulk acid gas and water; hydrolysis/COS management and a ZnO guard protect downstream catalysts.",
     conditions: [
-      { label: "Feed", value: "Up to 558 t/day wet raw-gas screen", basis: "screening assumption", source: "V3 Appendix D.2" },
-      { label: "Sulfur guard target", value: "<0.1 ppmv total S screen", basis: "screening assumption", source: "V3 Appendix D.2" },
-      { label: "Architecture", value: "Shared · N+1 critical auxiliaries", basis: "design basis", source: "V3 §4.3" },
+      { label: "Feed", value: "Up to 558 t/day wet raw-gas screen", basis: "screening assumption", source: "Appendix D.2" },
+      { label: "Sulfur guard target", value: "<0.1 ppmv total S screen", basis: "screening assumption", source: "Appendix D.2" },
+      { label: "Architecture", value: "Shared · N+1 critical auxiliaries", basis: "design basis", source: "§4.3" },
     ],
     equipment: ["Common gas header with train acceptance", "Rectisol absorption/regeneration", "COS hydrolysis as required", "Duty/standby ZnO guard beds"],
     inputs: ["Accepted B4 raw gas from ten trains"], outputs: ["Clean methane-rich gas", "Controlled CO2 split", "Recovered sulfur stream"],
     risk: "One wet or sulfur-rich train can contaminate the shared conversion island.",
     validation: "Licensed real-gas design with train-acceptance limits, solvent balance, refrigeration duty, and ZnO breakthrough guarantee.",
-    source: "V3 §5.5 and Appendix D.2",
+    source: "§5.5 and Appendix D.2",
   },
   {
     id: "B6", order: 6, name: "Shared steam/CO₂ bi-reforming",
     purpose: "Convert methane-rich SCWG gas into the CO/H₂ ratio required by the OXZEO island.",
     mechanism: "Steam and dry reforming are combined in a fired tubular reactor. The step is strongly endothermic and remains necessary because the B2 gas is methane-rich.",
     conditions: [
-      { label: "Outlet screen", value: "≈850 °C", basis: "screening assumption", source: "V3 Table 1.1" },
-      { label: "Pressure", value: "≈2.8 MPa", basis: "design basis", source: "V3 Table 1.1" },
-      { label: "Duty", value: "290 GJ/day per train equivalent", basis: "screening assumption", source: "V3 Table 7.2" },
+      { label: "Outlet screen", value: "≈850 °C", basis: "screening assumption", source: "Table 1.1" },
+      { label: "Pressure", value: "≈2.8 MPa", basis: "design basis", source: "Table 1.1" },
+      { label: "Duty", value: "290 GJ/day per train equivalent", basis: "screening assumption", source: "Tables 7.1 and D.2" },
     ],
     equipment: ["Fired tubular bi-reformer", "Steam and CO2 ratio control", "Syngas waste-heat boiler", "Flue-gas heat recovery"],
     inputs: ["Clean methane-rich gas", "Steam", "Controlled CO2"], outputs: ["Ratio-controlled CO/H2 synthesis gas"],
     risk: "The methane round-trip consumes high-grade heat and exposes tubes/catalyst to real-gas impurities and carbon formation.",
     validation: "Vendor equilibrium, tube-life, fuel/steam balance, catalyst-life, and turndown guarantees on representative clean gas.",
-    source: "V3 §5.6, §7.3 and Appendix D.2",
+    source: "§5.6, §7.3 and Appendix D.2",
   },
   {
     id: "B7", order: 7, name: "Shared OXZEO synthesis and product recovery",
     purpose: "Convert conditioned synthesis gas into C₂–C₄ light olefins and separate product, recycle, and purge.",
     mechanism: "Oxygenate synthesis and zeolite conversion are represented as cooled fixed beds with recycle and staged condensation/fractionation; website chemistry is intentionally simplified.",
     conditions: [
-      { label: "Temperature screen", value: "≈400 °C", basis: "requires pilot validation", source: "V3 Table 1.1" },
-      { label: "Pressure", value: "2–3 MPa", basis: "design basis", source: "V3 Table 1.1" },
-      { label: "Carbon efficiency", value: "42% current · 55% target", basis: "requires pilot validation", source: "V3 Table 10.4" },
+      { label: "Temperature screen", value: "≈400 °C", basis: "requires pilot validation", source: "Table 1.1" },
+      { label: "Pressure", value: "2–3 MPa", basis: "design basis", source: "Table 1.1" },
+      { label: "Carbon efficiency", value: "42% current · 55% target", basis: "requires pilot validation", source: "Tables 6.3 and 10.5" },
     ],
     equipment: ["Cooled OXZEO reactor beds", "Interstage heat removal", "Recycle compressor and purge", "Condensation and C2–C4 product separation"],
     inputs: ["B6 ratio-controlled synthesis gas", "Qualified recycle"], outputs: ["Light olefins", "Recycle gas", "Water/oxygenates", "Controlled purge fuel"],
     risk: "Real-gas catalyst life, hot spots, selectivity, and product-recovery losses directly control financeability.",
     validation: "Licensed real-gas conversion, selectivity, life, regeneration, turndown, and product-separation guarantees.",
-    source: "V3 §5.7, Tables 6.4 and 10.4",
+    source: "§5.7, Tables 6.3–6.4 and 10.5",
   },
   {
     id: "B8", order: 8, name: "Residue washing, qualification, and retreatment",
     purpose: "Create a defensible outlet for the mineral phase without claiming that one pass always makes a saleable product.",
     mechanism: "Counter-current washing lowers soluble alkali and chloride. Each batch is released to a destination specification or sent to a second wash/controlled retreatment.",
     conditions: [
-      { label: "Annual wet-screen solids", value: "24,143 t/year", basis: "calculated result", source: "V3 Table 6.8" },
-      { label: "Release basis", value: "Destination-specific Na/Cl, leaching, XRF/XRD", basis: "contractual requirement", source: "V3 Appendix D.3" },
-      { label: "Recycle policy", value: "No indefinite mineral recycle", basis: "design basis", source: "V3 §5.8" },
+      { label: "Annual wet-screen solids", value: "24,143 t/year", basis: "calculated result", source: "Tables 6.7 and D.3" },
+      { label: "Release basis", value: "Destination-specific Na/Cl, leaching, XRF/XRD", basis: "contractual requirement", source: "Appendix D.3" },
+      { label: "Recycle policy", value: "No indefinite mineral recycle", basis: "design basis", source: "§5.8" },
     ],
     equipment: ["Counter-current wash/filtration", "Product and quarantine storage", "XRF/XRD and leach testing", "Second-wash/retreatment route"],
     inputs: ["Separated mineral solids from B4"], outputs: ["Qualified conditioned residue", "Off-spec material to retreatment", "Wash water to controlled treatment"],
     risk: "Residue composition is source-dependent; overclaiming product status creates environmental and commercial liability.",
     validation: "Representative B8 wash trials plus buyer-specific performance, Na/Cl, leaching, phase, and legal-status qualification.",
-    source: "V3 §5.8, Table B-04 and Appendix D.3",
+    source: "§5.8, Appendix B-04 and Appendix D.3",
   },
 ];
 
@@ -268,6 +270,39 @@ export const towngasChemistry = [
   { step: "02", label: "Bi-reforming", reaction: "CH₄ + H₂O/CO₂ + heat → CO + H₂", note: "B6 spends high-grade heat to create the synthesis-gas ratio OXZEO needs." },
   { step: "03", label: "OXZEO", reaction: "CO + H₂ → oxygenate intermediate → C₂–C₄ olefins", note: "B7 performance is expressed as integrated feed-carbon-to-olefin efficiency." },
 ] as const;
+
+export const towngasOperatingTransitions = [
+  {
+    id: "startup",
+    title: "Start on clean water",
+    action: "Establish pump pressure, heat the circuit through the critical region, and prove both B3 separator paths before introducing organics, residue, or dry fibre.",
+    release: "Train gas stays outside the shared header until B4 carryover, B5 inlet composition, and sulfur are within specification.",
+  },
+  {
+    id: "recipe",
+    title: "Move recipes at constant gross flow",
+    action: "Correct wet-feed variability with trim water first, then adjust qualified carbon co-feed only inside solids, rheology, nitrogen, ash, salt, and chloride limits.",
+    release: "A complete batch certificate prevents alternating supplier slugs from reaching B2.",
+  },
+  {
+    id: "separator",
+    title: "Recover a fouling separator without losing the train",
+    action: "Increase B3 underflow, reduce organic/mineral feed while maintaining water, pressure-match the standby vessel, then isolate and flush the fouled separator.",
+    release: "Restart requires recovered baseline differential pressure and a confirmed open underflow—not completion of a timed wash.",
+  },
+  {
+    id: "shutdown",
+    title: "Remove feed before heat and pressure",
+    action: "Isolate B7 fresh syngas, cool on recycle, retain B6 steam, then remove bauxite residue, fibre, and wet organics in that order while clean water sweeps the train.",
+    release: "Unverified transient gas never enters the common OXZEO loop.",
+  },
+] as const;
+
+export const towngasAvailability = {
+  target: "≈9 active train-equivalents",
+  basis: "Ten independent hydrothermal modules averaging 90% uncorrelated availability; the shared back end must remain stable at eight-train turndown.",
+  warning: "Supplier, recycle-water, or shared-control failures can correlate outages. Segregated feed tanks, traceable water, and independent permissives are economic safeguards.",
+} as const;
 
 export const towngasMassBalance = {
   basis: "One B1 train · 300 t/day",
@@ -357,14 +392,15 @@ export const towngasCapex = [
   { label: "Buildings / EPCM / owner", value: 154 },
 ] as const;
 
-export const towngasOpex = [
-  { label: "Electricity", value: 28 },
-  { label: "Thermal energy", value: 75 },
-  { label: "Maintenance + inspection", value: 70 },
-  { label: "Labour + site services", value: 32 },
-  { label: "Catalysts + chemicals", value: 32 },
-  { label: "Water + disposal", value: 15 },
-  { label: "Administration + certification", value: 15 },
+export const towngasOpexDrivers = [
+  { label: "Electricity", weight: 20, display: "RMB 15–25m/y", note: "Exact consumption and reference tariff are available in the admin annex." },
+  { label: "Biomass thermal energy", weight: 32.5, display: "RMB 25–40m/y", note: "Public range obscures the precise pellet price, heating value, and efficiency calculation." },
+  { label: "Maintenance and inspection", weight: 70, display: "RMB 60–80m/y", note: "High-pressure trains, salt separators, reformer tubes, and refrigeration dominate this allowance." },
+  { label: "Labour and site services", weight: 32, display: "RMB 32m/y", note: "Project headcount and site-service allowance." },
+  { label: "Catalysts and process chemicals", weight: 32.5, display: "RMB 25–40m/y", note: "OXZEO and reformer catalysts, ZnO, Rectisol make-up, and treatment chemicals." },
+  { label: "Water, purge treatment and disposal", weight: 15, display: "RMB 10–20m/y", note: "The precise source-water rate and reference consumption are held in the admin annex." },
+  { label: "Administration and certification", weight: 15, display: "RMB 15m/y", note: "Owner cost, assurance, and routine audits." },
+  { label: "Operating tax", weight: 1.7, display: "<RMB 2m/y", note: "The precise per-tonne convention is available through the Towngas project login." },
 ] as const;
 
 export const towngasEconomicScenarios = [
@@ -374,30 +410,32 @@ export const towngasEconomicScenarios = [
     question: "Can the present technical case work as an ordinary commodity-olefin plant?",
     changes: "Nothing is upgraded. This is the reference case against which the other three scenarios are compared.",
     assumptions: "42% feed-carbon-to-olefin efficiency; 42.35 kt/year product; RMB 7,500/t commodity netback; base waste-service fees; no certified EU premium.",
-    interpretation: "The plant produces positive annual EBITDA, but not enough to repay the RMB 2.814bn capital base within the project horizon. This is the report's clearest evidence that commodity olefins alone are not the business model.",
+    interpretation: "The plant produces positive annual EBITDA, but not enough to repay the roughly RMB 2.8bn capital base within the project horizon. This is the report's clearest evidence that commodity olefins alone are not the business model.",
     production: 42.35,
     revenue: 406.2,
-    opex: 267,
-    ebitda: 139.2,
-    npv: -1628.6,
-    irr: "−0.1%",
-    payback: "20.2 y",
+    opex: 215.1,
+    ebitda: 191.1,
+    npv: -1187.0,
+    rampNpv: -1296.5,
+    irr: "3.1%",
+    payback: "14.7 y",
     tone: "negative",
   },
   {
     id: "current-premium",
     name: "Current performance + EU 20%",
-    question: "Can certification and a 20% EU price premium rescue current conversion performance?",
-    changes: "Technical performance stays at 42%; the model adds the report's certified-premium case and the associated operating/certification allowance.",
-    assumptions: "42.35 kt/year product; 20% premium scenario; current conversion and availability; no benefit from reaching the 55% carbon-efficiency target.",
-    interpretation: "The premium closes most of the gap, but NPV remains negative and IRR stays below the 10% screening hurdle. Market positioning helps, but cannot replace process improvement—and the premium is not bankable until written into an offtake contract.",
+    question: "Can stronger service contracts and a 20% EU premium rescue current conversion performance?",
+    changes: "Technical performance stays at 42%; annual service fees increase from the base to the contracted portfolio, and the model adds a certified 20% price premium plus its export/compliance allowance.",
+    assumptions: "42.35 kt/year product; contracted circular-service fees of RMB 203.5m/year; RMB 9,000/t netback; source-aligned utilities; no benefit from reaching the 55% target.",
+    interpretation: "The level annual case crosses zero, but its NPV falls to only about RMB 20m after a 70%/90% two-year ramp. Commercial rescue at current conversion is therefore possible but fragile, with little tolerance for capital overrun or lost availability.",
     production: 42.35,
     revenue: 589.6,
-    opex: 289,
-    ebitda: 300.6,
-    npv: -254.5,
-    irr: "8.7%",
-    payback: "9.4 y",
+    opex: 237.1,
+    ebitda: 352.5,
+    npv: 187.1,
+    rampNpv: 20.2,
+    irr: "11.0%",
+    payback: "8.0 y",
     tone: "caution",
   },
   {
@@ -406,14 +444,15 @@ export const towngasEconomicScenarios = [
     question: "Can better carbon conversion and contracted waste-service income work without a green premium?",
     changes: "Carbon efficiency rises from 42% to 55%, while eligible waste streams move onto contracted circular-service fees. Product remains at the commodity netback.",
     assumptions: "55.45 kt/year product; RMB 7,500/t netback; improved integrated conversion; contracted circular fees; no EU premium or speculative carbon/scandium credit.",
-    interpretation: "This is the first scenario that crosses zero NPV. It shows that technical yield and binding supplier contracts—not premium marketing by itself—form the minimum credible commercial bridge.",
+    interpretation: "This is a more robust commercial bridge than Scenario B. It remains positive after the two-year ramp and shows that sustained carbon recovery plus binding supplier contracts matter more than premium marketing alone.",
     production: 55.45,
     revenue: 624.4,
-    opex: 267,
-    ebitda: 357.4,
-    npv: 228.9,
-    irr: "11.2%",
-    payback: "7.9 y",
+    opex: 215.5,
+    ebitda: 408.9,
+    npv: 667.1,
+    rampNpv: 480.3,
+    irr: "13.3%",
+    payback: "6.9 y",
     tone: "positive",
   },
   {
@@ -425,20 +464,21 @@ export const towngasEconomicScenarios = [
     interpretation: "This is the strongest central upside case, not the base forecast. It offers the best return, but only if the plant, suppliers, certifier, and product buyer all deliver their respective parts of the value stack.",
     production: 55.45,
     revenue: 707.6,
-    opex: 289,
-    ebitda: 418.6,
-    npv: 749.8,
-    irr: "13.7%",
-    payback: "6.7 y",
+    opex: 237.5,
+    ebitda: 470.1,
+    npv: 1188.0,
+    rampNpv: 979.4,
+    irr: "15.8%",
+    payback: "6.0 y",
     tone: "positive",
   },
 ] as const;
 
 export const towngasBreakEven = [
-  { premium: "0%", netback: "7,500", product: 51.87, efficiency: 51.4, npv55: 229 },
-  { premium: "10%", netback: "8,250", product: 49.58, efficiency: 49.2, npv55: 413 },
-  { premium: "20%", netback: "9,000", product: 45.67, efficiency: 45.3, npv55: 750 },
-  { premium: "30%", netback: "9,750", product: 42.46, efficiency: 42.1, npv55: 1078 },
+  { premium: "0%", netback: "7,500", product: 44.96, efficiency: 44.6, npv55: 667 },
+  { premium: "10%", netback: "8,250", product: 43.29, efficiency: 42.9, npv55: 851 },
+  { premium: "20%", netback: "9,000", product: 39.90, efficiency: 39.6, npv55: 1188 },
+  { premium: "30%", netback: "9,750", product: 37.13, efficiency: 36.8, npv55: 1517 },
 ] as const;
 
 export const towngasEconomicRisks = [
@@ -446,6 +486,34 @@ export const towngasEconomicRisks = [
   { change: "Availability falls 10%", impact: "≈−RMB 0.5–0.7bn NPV", meaning: "Salt separation and train turnaround are commercial variables." },
   { change: "Netback falls RMB 1,000/t", impact: "≈−RMB 472m NPV", meaning: "Offtake quality and market positioning matter at 55.45 kt/year." },
   { change: "Waste fee falls RMB 100/t", impact: "≈−RMB 680m NPV", meaning: "The waste-service contract is more valuable than a cosmetic by-product credit." },
+  { change: "Qualified ammonium sulfate adds RMB 30m/y net", impact: "+RMB 255m NPV", meaning: "Useful upside after product qualification, but insufficient to rescue the 42% commodity case alone." },
+] as const;
+
+export const towngasRouteAlternatives = [
+  {
+    id: "oxzeo",
+    route: "OXZEO light olefins",
+    configuration: "Retain B1–B6 and the full B7 synthesis, recycle, and C₂–C₄ recovery island.",
+    scale: "55.45 kt/year at the 55% feed-carbon target",
+    strength: "Highest screened product value and strongest differentiation for certified chemical markets.",
+    weakness: "Highest catalyst, scale-up, reformer-duty, and product-separation risk.",
+  },
+  {
+    id: "methanol",
+    route: "Renewable methanol",
+    configuration: "Retain B1–B6, replace OXZEO and deep olefin fractionation with a mature methanol loop and distillation.",
+    scale: "138.2 kt/year screen at 60% carbon efficiency on the same B1 feed",
+    strength: "Mature synthesis, liquid storage, and established chemical/marine logistics.",
+    weakness: "Lower value density; B6 usually remains because B2 gas is methane-rich. Vendor battery-limit economics are still required.",
+  },
+  {
+    id: "methane",
+    route: "Renewable methane",
+    configuration: "Retain B1–B5, then replace most of B6/B7 with CO₂ removal, drying, compression, and grid or LNG conditioning.",
+    scale: "Capacity depends on measured B2 gas composition and methane recovery",
+    strength: "Lowest downstream complexity and avoids the endothermic methane round-trip.",
+    weakness: "Requires a firm gas offtake or premium; methane slip becomes a critical greenhouse-gas control.",
+  },
 ] as const;
 
 export const towngasDecisionLedger = [
@@ -457,7 +525,8 @@ export const towngasDecisionLedger = [
   { topic: "Nitrogen + chloride", position: "Recover ammonia after qualification and maintain explicit supplier limits, wash, recycle-water monitoring, and controlled purge." },
   { topic: "Bi-reforming", position: "Retain B6 because central SCWG gas is methane-rich. Treat methane suppression as an optimisation rather than a design assumption." },
   { topic: "Certification", position: "Keep PCF, ISCC, waste treatment, and product claims separate. Treat EU premium as contractual and take no CBAM credit." },
-  { topic: "Economics", position: "The 42% commodity case is not financeable. The project crosses zero only with roughly 50–55% conversion plus contracted service value and/or certified premium." },
+  { topic: "Economics", position: "The 42% commodity case remains negative. At current conversion, contracts plus a 20% premium are only marginally positive after ramp-up; 55% conversion with contracted service value is materially more robust." },
+  { topic: "Fallback route", position: "If salt availability, carbon conversion, or offtake cannot be demonstrated, compare complete methanol and renewable-methane packages on the same feed and contract basis rather than adding more slurry capacity." },
 ] as const;
 
 export const towngasOpenEvidence = [
@@ -465,16 +534,23 @@ export const towngasOpenEvidence = [
   { id: "B-02", claim: "90% of feed carbon reaches B4 raw gas.", evidence: "Continuous carbon closure including gas, water, solids, and purge." },
   { id: "B-03", claim: "B3 withdraws salt continuously.", evidence: "Representative mixed-feed hot loop with underflow, wall-deposition, switch, and flush recovery." },
   { id: "B-04", claim: "B8 residue meets a destination specification.", evidence: "Wash trials, XRF/XRD, Na/Cl, leaching, legal status, and customer performance." },
-  { id: "B-05", claim: "The OXZEO island can reach 50–55% integrated carbon efficiency.", evidence: "Licensed real-gas conversion, selectivity, catalyst-life, and product-recovery guarantee." },
-  { id: "B-06", claim: "Service fees and premium support financing.", evidence: "Binding supplier and offtake contracts with audited certification allocation." },
+  { id: "B-05", claim: "B4 can recover 75% of feed nitrogen.", evidence: "Real-liquor removal, acid demand, impurity profile, and ammonium-sulfate product registration." },
+  { id: "B-06", claim: "B5 can hold total sulfur below 0.1 ppmv.", evidence: "Rectisol/ZnO licensor guarantee across start-up, train switching, and off-spec transients." },
+  { id: "B-07", claim: "B6 can meet the 290 GJ/day-per-train-equivalent duty screen.", evidence: "Rigorous real-gas equilibrium plus vendor furnace, tube-life, steam, and decoking balance." },
+  { id: "B-08", claim: "The integrated plant can sustain 42–55% feed-carbon efficiency.", evidence: "Long-duration B7 real-gas balance including recycle, purge, catalyst cycle, and product recovery." },
+  { id: "B-09", claim: "Total capital can remain near RMB 2.8 billion.", evidence: "Chinese vendor budget quotations and project-specific construction and contingency factors." },
+  { id: "B-10", claim: "The contracted organic service-fee case is available.", evidence: "Binding supplier terms after logistics, moisture/carbon adjustment, contamination liability, and competing-use review." },
+  { id: "B-11", claim: "A certified 10–30% product premium is bankable.", evidence: "Binding certified-volume offtake and delivered-cost schedule." },
+  { id: "B-12", claim: "The twenty-year operating convention is realistic.", evidence: "Ramp-up, catalyst cycle, major-turnaround, correlated-outage, and asset-life plan." },
 ] as const;
 
 export const towngasReferences = [
-  { id: "report", title: "Towngas SCWG–OXZEO Process Design — Third Edition", detail: "Complete rewrite; ten-train B1 basis; August 2026" },
-  { id: "mass", title: "Closed mass, carbon, and production balances", detail: "V3 §6 and Tables 6.1–6.8" },
-  { id: "energy", title: "Energy balance and heat recovery", detail: "V3 §7 and Tables 7.1–7.7" },
-  { id: "cert", title: "Certification and market positioning", detail: "V3 §9 and Tables 9.1–9.5" },
-  { id: "economics", title: "China CAPEX, OPEX, and 20-year evaluation", detail: "V3 §10 and Tables 10.1–10.7" },
+  { id: "report", title: "Towngas SCWG–OXZEO Process Design — confidential project master", detail: "Public page follows its sanitised website hierarchy; August 2026" },
+  { id: "operations", title: "Operating windows and train management", detail: "§5.10 and Table 5.6" },
+  { id: "mass", title: "Closed mass, carbon, and production balances", detail: "§6 and Tables 6.1–6.8" },
+  { id: "energy", title: "Energy balance and heat recovery", detail: "§7 and public-safe proposed-plant calculations" },
+  { id: "cert", title: "Certification and market positioning", detail: "§9; source-plant confidential data excluded" },
+  { id: "economics", title: "China CAPEX, OPEX, route comparisons, and 20-year evaluation", detail: "§10 and Tables 10.1–10.10; confidential source-cost detail excluded" },
 ] as const;
 
 export const towngasCaseStudy = {
@@ -491,16 +567,19 @@ export const towngasCaseStudy = {
   sitingLogic: towngasSitingLogic,
   processStages: towngasProcessStages,
   chemistry: towngasChemistry,
+  operatingTransitions: towngasOperatingTransitions,
+  availability: towngasAvailability,
   massBalance: towngasMassBalance,
   carbonCases: towngasCarbonCases,
   carbonEfficiencyBridge: towngasCarbonEfficiencyBridge,
   energyCascade: towngasEnergyCascade,
   certification: towngasCertification,
   capex: towngasCapex,
-  opex: towngasOpex,
+  opexDrivers: towngasOpexDrivers,
   economicScenarios: towngasEconomicScenarios,
   breakEven: towngasBreakEven,
   economicRisks: towngasEconomicRisks,
+  routeAlternatives: towngasRouteAlternatives,
   decisions: towngasDecisionLedger,
   openEvidence: towngasOpenEvidence,
   references: towngasReferences,

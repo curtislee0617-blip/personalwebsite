@@ -4,23 +4,27 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { loginAction, logoutAction } from "@/app/recipes/admin/actions";
 
-export function FooterAdminLogin() {
+export function FooterAdminLogin({ label, strict = false }: { label?: string; strict?: boolean }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const [pending, setPending] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const [configured, setConfigured] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
-      .then((response) => response.json() as Promise<{ authenticated: boolean }>)
-      .then((result) => setAuthenticated(result.authenticated))
+    fetch(strict ? "/api/recipe-admin/session?strict=1" : "/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+      .then((response) => response.json() as Promise<{ authenticated: boolean; configured?: boolean }>)
+      .then((result) => {
+        setAuthenticated(result.authenticated);
+        setConfigured(result.configured ?? true);
+      })
       .catch(() => undefined);
     return () => controller.abort();
-  }, []);
+  }, [strict]);
 
   useEffect(() => {
     if (!open) return;
@@ -64,7 +68,7 @@ export function FooterAdminLogin() {
   return (
     <div className="relative" ref={wrapperRef}>
       <button className="text-left hover:text-ink" onClick={() => setOpen((v) => !v)} type="button">
-        © {new Date().getFullYear()} Curtis Lee.
+        {label ?? `© ${new Date().getFullYear()} Curtis Lee.`}
       </button>
 
       {open && (
@@ -74,7 +78,7 @@ export function FooterAdminLogin() {
               <p className="text-xs font-semibold text-ink/60">Signed in</p>
               <button className="text-xs font-semibold text-clay hover:text-ink" onClick={handleLogout} type="button">Sign out</button>
             </div>
-          ) : (
+          ) : configured ? (
             <form className="flex flex-col gap-2" onSubmit={handleLogin}>
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-ink/40">Admin login</p>
               <input
@@ -93,6 +97,8 @@ export function FooterAdminLogin() {
               </button>
               {error && <p className="text-xs text-clay">Wrong password.</p>}
             </form>
+          ) : (
+            <p className="text-xs leading-relaxed text-ink/60">Admin login is not configured for this environment.</p>
           )}
         </div>
       )}

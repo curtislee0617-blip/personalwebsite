@@ -12,7 +12,7 @@ const sections = [
   { href: "#certification", label: "Certification" },
   { href: "#economics", label: "RMB economics" },
   { href: "#decision", label: "Final position" },
-  { href: "#report", label: "V3 report" },
+  { href: "#report", label: "Publication note" },
 ] as const;
 
 export function TowngasLocalNav() {
