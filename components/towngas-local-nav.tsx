@@ -9,10 +9,11 @@ const sections = [
   { href: "#siting", label: "South China" },
   { href: "#process-design", label: "Process architecture" },
   { href: "#balances", label: "Mass + energy" },
+  { href: "#assurance", label: "Equipment + safety" },
   { href: "#certification", label: "Certification" },
   { href: "#economics", label: "RMB economics" },
   { href: "#decision", label: "Final position" },
-  { href: "#report", label: "Publication note" },
+  { href: "#report", label: "Public report basis" },
 ] as const;
 
 export function TowngasLocalNav() {

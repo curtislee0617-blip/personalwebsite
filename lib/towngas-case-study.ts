@@ -1,6 +1,7 @@
-// Public-safe website data distilled from the confidential August 2026
-// project master. Exact reference-plant balances, equipment powers, internal
-// cost components, and permit-specific data are intentionally excluded.
+// Website data follows the August 2026 public project report. Its published
+// technical and commercial planning values are intentionally available on the
+// public page. Only the private methanol comparator breakdown and the source
+// identities behind references 36–46 remain outside this file.
 // The page intentionally follows the report's decision sequence: wastes → feed
 // envelope → siting → architecture → balances → claims → commercial decision.
 
@@ -54,14 +55,14 @@ export const towngasEvidenceLegend = [
 ] as const satisfies readonly { basis: TowngasEvidenceBasis; description: string }[];
 
 export const towngasCaseStudyMeta = {
-  eyebrow: "Towngas · Public-safe project synthesis",
+  eyebrow: "Towngas · Public project synthesis",
   title: "Two waste problems, one integrated process",
   subtitle: "Supercritical-water gasification and OXZEO light-olefin synthesis from a douzha-led regional feed portfolio and deliberately conditioned bauxite residue",
   summary: "The design starts with the wastes rather than the reactor. Douzha supplies wet renewable carbon; bauxite residue is an alkaline treatment feed that must leave through controlled dealkalization and qualification. Ten isolatable hydrothermal trains merge only accepted gas into shared Rectisol, bi-reforming, and OXZEO units. The physical design basis is stable, while the corrected China utility basis strengthens the economics: current conversion remains fragile after ramp-up, but sustained 55% carbon efficiency plus contracted service value produces a materially stronger case.",
-  status: "Screening / pre-FEED synthesis — public page sanitised from a confidential project master",
+  status: "Screening / pre-FEED synthesis — public project report",
   reportDate: "August 2026",
   reportVersion: "Current design",
-  publicationNote: "The public view withholds the reference methanol cost breakdown, exact reference-derived electricity, water, biomass-fuel, maintenance, catalyst and operating-tax figures, and the identities and detailed descriptions of References 36–46. The dedicated Towngas project login reveals that restricted annex.",
+  publicationNote: "The public website may reproduce every technical and commercial planning value stated in the downloadable public report. Only the private reference-plant methanol cost breakdown and the underlying identities and detailed descriptions of References 36–46 remain available through the dedicated Towngas project login.",
   publicReportHref: "/downloads/Towngas-SCWG-OXZEO-Public-Project-Report.pdf",
   privateReportHref: "/api/towngas-report/private",
   processAnchor: "#process-design",
@@ -123,6 +124,8 @@ export const towngasCompatibleCoFeeds = [
   { name: "Fruit + vegetable pulp", dose: "20 t/day B1", function: "Flexible sugar/pectin/cellulose feed", constraint: "Packaging, grit, chloride, rapid acidification" },
   { name: "Organic liquor", dose: "10 t/day B1", function: "Dissolved carbon replacing dilution water", constraint: "Cleaning chemicals, conductivity, sulfur, refractory COD" },
   { name: "Milled straw", dose: "12 t/day B1", function: "Dry carbon and C/N trim", constraint: "Rheology, bridging, char, erosion" },
+  { name: "Bagasse or cane trash", dose: "Alternate dry-fibre lane", function: "Regional lignocellulosic carbon after milling", constraint: "Silica, seasonal storage, fibrous rheology" },
+  { name: "Brewery / distillery residues", dose: "Alternate liquor or wet-pulp lane", function: "Wet carbohydrate and soluble-organic carbon", constraint: "Sulfate, cleaning chemicals, variable alcohol or acid" },
   { name: "Manure cake", dose: "B3 only", function: "Potential treatment-service revenue", constraint: "Separate qualification for N, P, ash, chloride, pathogens" },
 ] as const;
 
@@ -373,6 +376,56 @@ export const towngasEnergyCascade = {
   ],
 } as const;
 
+export const towngasPublicPlanningInputs = [
+  { input: "Electricity", quantity: "≈50.9 GWh/year", basis: "RMB 0.40/kWh", annual: "RMB 20.4m/year" },
+  { input: "Biomass thermal energy", quantity: "≈682,650 GJ/year", basis: "RMB 650/t pellets · 16.5 GJ/t LHV · 80% useful heat", annual: "RMB 33.6m/year" },
+  { input: "Purchased water", quantity: "Closed by the site water balance", basis: "RMB 20/t", annual: "Included in the water OPEX line" },
+  { input: "Provisional operating tax", quantity: "Saleable light-olefin output", basis: "RMB 35/t product", annual: "RMB 1.9m/year at 55% conversion" },
+] as const;
+
+export const towngasMajorEquipment = [
+  { area: "B1 receiving trains", quantity: "Shared receipt + train day tanks", duty: "3,000 t/day complex", confirmation: "Supplier variability, storage, odour and metering" },
+  { area: "P-101 A/B high-pressure pumps", quantity: "20 total", duty: "12.5 t/hour per duty pump", confirmation: "Wear, check-valve life and restart on the B1 slurry" },
+  { area: "H-101 feed / effluent recovery", quantity: "10 modular train systems", duty: "555 GJ/day per train", confirmation: "Deposit control, thermal stress, cleanability and tube-failure isolation" },
+  { area: "R-201 SCWG reactors", quantity: "10", duty: "≈2.3 m³ gross per train screen", confirmation: "Residence time, heat flux, alloy, fatigue and char behaviour" },
+  { area: "V-301 A/B hot-salt separators", quantity: "20", duty: "≈10 m³ gross each screen", confirmation: "Mixed-salt settling, wall adhesion and continuous underflow" },
+  { area: "B5 Rectisol / ZnO", quantity: "1 shared train with spared pumps and beds", duty: "558 t/day wet raw-gas screen", confirmation: "Gas load, refrigeration and sulfur speciation" },
+  { area: "B6 reformer", quantity: "1 shared system in multiple boxes", duty: "≈2,900 GJ/day gross equivalent", confirmation: "Tube metallurgy, catalyst, firing and decoking" },
+  { area: "B7 OXZEO", quantity: "Licensed multi-bed system", duty: "42–55 kt/year olefin envelope", confirmation: "Real-gas performance, catalyst life and product specification" },
+  { area: "B8 + nitrogen recovery", quantity: "Shared and source-traceable", duty: "72.5 t/day solids · 2,337.5 t/day aqueous", confirmation: "Product quality and water / chloride closure" },
+] as const;
+
+export const towngasChlorideControls = [
+  { location: "Supplier unloading", measurement: "Chloride, conductivity, Na/K and source history", response: "Reject, segregate or allocate prewash" },
+  { location: "B1 final blend", measurement: "Batch chloride and conductivity", response: "Prevent high-pressure-feed release above the campaign limit" },
+  { location: "B3 underflow", measurement: "Chloride mass and mineral / salt phase", response: "Confirm that the intended salt-removal route is working" },
+  { location: "B4 recycle water", measurement: "Continuous conductivity plus frequent ion chromatography", response: "Increase controlled purge or stop recycle" },
+  { location: "B8 product and wash", measurement: "Soluble and total chloride", response: "Second wash or alternate destination" },
+  { location: "Corrosion coupons", measurement: "Metal loss, pitting and cracking evidence", response: "Revise the chemistry limit, alloy or inspection interval" },
+] as const;
+
+export const towngasHazop = [
+  { deviation: "Low B1 flow with heat", consequence: "Wall overheating, char and a pressure / temperature excursion", safeguard: "Independent flow trip cuts firing and organics, maintains water and uses local blowdown" },
+  { deviation: "High B3 differential pressure", consequence: "Reactor backpressure and a blocked outlet", safeguard: "Twin-separator switch, feed reduction, water flush and independent relief" },
+  { deviation: "Letdown erosion or failure", consequence: "Loss of containment or downstream high level", safeguard: "Staged sacrificial trims, condition monitoring and a closed receiver" },
+  { deviation: "Liquid carryover to the gas header", consequence: "Rectisol / reformer upset and common-mode contamination", safeguard: "Independent high-high level closes double block; knockout and coalescer remain in service" },
+  { deviation: "Sulfur breakthrough", consequence: "B6 / B7 catalyst poisoning", safeguard: "Lead / lag beds, analyser voting and immediate off-spec diversion" },
+  { deviation: "Low B6 steam-to-carbon ratio", consequence: "Reformer coking and tube overheating", safeguard: "Hard permissive, feed cut, steam purge and decoking provision" },
+  { deviation: "High B7 temperature", consequence: "Selectivity loss, catalyst damage and pressure rise", safeguard: "Multipoint temperature trip, fresh-gas cut and recycle / inert cooling" },
+  { deviation: "Methanol release", consequence: "Fire, toxicity and environmental release", safeguard: "Closed drains, detection, bunding, classified equipment and remote isolation" },
+  { deviation: "High chloride inventory", consequence: "Pitting, stress-corrosion cracking and off-spec residue", safeguard: "Inventory alarm, stop recycle, increase purge and quarantine the source" },
+] as const;
+
+export const towngasAnalyticalPlan = [
+  { location: "Supplier + B1", online: "Mass, density, pH, conductivity and tank temperature", laboratory: "Total solids, rheology, particle size, CHNS, ash, ions, metals and excluded contaminants" },
+  { location: "B2 outlet", online: "Temperature, pressure, flow and H₂ / CH₄ / CO / CO₂ GC", laboratory: "Aqueous TOC, solid carbon and full C / N / S / mineral closure" },
+  { location: "B3", online: "Differential pressure, underflow flow / density and wall temperature", laboratory: "Ion balance, crystal / mineral phase, organics and leachability" },
+  { location: "B4", online: "Levels, water carryover, conductivity and ammonia proxy", laboratory: "NH₃ / NH₄⁺, TOC / COD, ions, metals and purge / recycle release" },
+  { location: "B5 + B6", online: "Total sulfur, H₂S / COS, water, gas composition and tube skin", laboratory: "Methanol carryover, catalyst poisons and carbon deposition" },
+  { location: "B7", online: "Bed temperature / pressure drop, conversion, selectivity and recycle flow", laboratory: "Full product specification, oxygenates, catalyst deposition and activity trend" },
+  { location: "B8", online: "Moisture and process pH", laboratory: "XRF / XRD, Na / Cl, carbon, metals, leachability and destination performance" },
+] as const;
+
 export const towngasCertification = [
   { id: "pcf", title: "ISO 14067 product carbon footprint", claim: "Meter utilities, logistics, conversion losses, gas, water, solids, and product by accounting period.", limit: "Waste status does not automatically create a zero footprint.", basis: "contractual requirement" },
   { id: "iscc", title: "ISCC PLUS chain of custody", claim: "Track supplier, point of origin, wet/dry mass, eligible category, conversion factor, losses, and outgoing attribution.", limit: "Mass balance does not mean every product molecule is physically traced to one waste batch.", basis: "contractual requirement" },
@@ -393,14 +446,14 @@ export const towngasCapex = [
 ] as const;
 
 export const towngasOpexDrivers = [
-  { label: "Electricity", weight: 20, display: "RMB 15–25m/y", note: "Exact consumption and reference tariff are available in the admin annex." },
-  { label: "Biomass thermal energy", weight: 32.5, display: "RMB 25–40m/y", note: "Public range obscures the precise pellet price, heating value, and efficiency calculation." },
-  { label: "Maintenance and inspection", weight: 70, display: "RMB 60–80m/y", note: "High-pressure trains, salt separators, reformer tubes, and refrigeration dominate this allowance." },
-  { label: "Labour and site services", weight: 32, display: "RMB 32m/y", note: "Project headcount and site-service allowance." },
-  { label: "Catalysts and process chemicals", weight: 32.5, display: "RMB 25–40m/y", note: "OXZEO and reformer catalysts, ZnO, Rectisol make-up, and treatment chemicals." },
-  { label: "Water, purge treatment and disposal", weight: 15, display: "RMB 10–20m/y", note: "The precise source-water rate and reference consumption are held in the admin annex." },
-  { label: "Administration and certification", weight: 15, display: "RMB 15m/y", note: "Owner cost, assurance, and routine audits." },
-  { label: "Operating tax", weight: 1.7, display: "<RMB 2m/y", note: "The precise per-tonne convention is available through the Towngas project login." },
+  { label: "Electricity", value: 20.4, display: "RMB 20.4m/y", note: "≈50.9 GWh/year at the public RMB 0.40/kWh planning assumption." },
+  { label: "Biomass thermal energy", value: 33.6, display: "RMB 33.6m/y", note: "≈682,650 GJ/year at RMB 650/t pellets, 16.5 GJ/t LHV and 80% useful heat." },
+  { label: "Maintenance and inspection", value: 70, display: "RMB 70.0m/y", note: "Public Towngas allowance for the high-pressure, salt, cold and reformer systems." },
+  { label: "Labour and site services", value: 32, display: "RMB 32.0m/y", note: "Public project headcount and site-service allowance." },
+  { label: "Catalysts, ZnO, methanol and chemicals", value: 32, display: "RMB 32.0m/y", note: "Public project allowance pending vendor guarantees." },
+  { label: "Water, purge treatment and disposal", value: 15, display: "RMB 15.0m/y", note: "Purchased water, treatment and concentrate-disposal allowance." },
+  { label: "Insurance, administration and certification", value: 15, display: "RMB 15.0m/y", note: "Owner cost, assurance and routine audits." },
+  { label: "Operating tax at 55% product case", value: 1.9, display: "RMB 1.9m/y", note: "Public-model provisional allowance of RMB 35/t product." },
 ] as const;
 
 export const towngasEconomicScenarios = [
@@ -413,12 +466,12 @@ export const towngasEconomicScenarios = [
     interpretation: "The plant produces positive annual EBITDA, but not enough to repay the roughly RMB 2.8bn capital base within the project horizon. This is the report's clearest evidence that commodity olefins alone are not the business model.",
     production: 42.35,
     revenue: 406.2,
-    opex: 215.1,
-    ebitda: 191.1,
-    npv: -1187.0,
-    rampNpv: -1296.5,
-    irr: "3.1%",
-    payback: "14.7 y",
+    opex: 219.5,
+    ebitda: 186.8,
+    npv: -1223.8,
+    rampNpv: -1331.8,
+    irr: "2.9%",
+    payback: "15.1 y",
     tone: "negative",
   },
   {
@@ -427,15 +480,15 @@ export const towngasEconomicScenarios = [
     question: "Can stronger service contracts and a 20% EU premium rescue current conversion performance?",
     changes: "Technical performance stays at 42%; annual service fees increase from the base to the contracted portfolio, and the model adds a certified 20% price premium plus its export/compliance allowance.",
     assumptions: "42.35 kt/year product; contracted circular-service fees of RMB 203.5m/year; RMB 9,000/t netback; source-aligned utilities; no benefit from reaching the 55% target.",
-    interpretation: "The level annual case crosses zero, but its NPV falls to only about RMB 20m after a 70%/90% two-year ramp. Commercial rescue at current conversion is therefore possible but fragile, with little tolerance for capital overrun or lost availability.",
+    interpretation: "The level annual case crosses zero, but its NPV becomes slightly negative after a 70%/90% two-year ramp. Commercial rescue at current conversion is therefore possible only narrowly, with little tolerance for capital overrun or lost availability.",
     production: 42.35,
     revenue: 589.6,
-    opex: 237.1,
-    ebitda: 352.5,
-    npv: 187.1,
-    rampNpv: 20.2,
-    irr: "11.0%",
-    payback: "8.0 y",
+    opex: 241.5,
+    ebitda: 348.2,
+    npv: 150.2,
+    rampNpv: -15.1,
+    irr: "10.8%",
+    payback: "8.1 y",
     tone: "caution",
   },
   {
@@ -447,12 +500,12 @@ export const towngasEconomicScenarios = [
     interpretation: "This is a more robust commercial bridge than Scenario B. It remains positive after the two-year ramp and shows that sustained carbon recovery plus binding supplier contracts matter more than premium marketing alone.",
     production: 55.45,
     revenue: 624.4,
-    opex: 215.5,
-    ebitda: 408.9,
-    npv: 667.1,
-    rampNpv: 480.3,
-    irr: "13.3%",
-    payback: "6.9 y",
+    opex: 219.9,
+    ebitda: 404.5,
+    npv: 629.8,
+    rampNpv: 444.4,
+    irr: "13.2%",
+    payback: "7.0 y",
     tone: "positive",
   },
   {
@@ -464,21 +517,21 @@ export const towngasEconomicScenarios = [
     interpretation: "This is the strongest central upside case, not the base forecast. It offers the best return, but only if the plant, suppliers, certifier, and product buyer all deliver their respective parts of the value stack.",
     production: 55.45,
     revenue: 707.6,
-    opex: 237.5,
-    ebitda: 470.1,
-    npv: 1188.0,
-    rampNpv: 979.4,
-    irr: "15.8%",
+    opex: 241.9,
+    ebitda: 465.7,
+    npv: 1150.6,
+    rampNpv: 943.5,
+    irr: "15.6%",
     payback: "6.0 y",
     tone: "positive",
   },
 ] as const;
 
 export const towngasBreakEven = [
-  { premium: "0%", netback: "7,500", product: 44.96, efficiency: 44.6, npv55: 667 },
-  { premium: "10%", netback: "8,250", product: 43.29, efficiency: 42.9, npv55: 851 },
-  { premium: "20%", netback: "9,000", product: 39.90, efficiency: 39.6, npv55: 1188 },
-  { premium: "30%", netback: "9,750", product: 37.13, efficiency: 36.8, npv55: 1517 },
+  { premium: "0%", netback: "7,500", product: 45.54, efficiency: 45.2, npv55: 630 },
+  { premium: "10%", netback: "8,250", product: 43.82, efficiency: 43.5, npv55: 814 },
+  { premium: "20%", netback: "9,000", product: 40.38, efficiency: 40.0, npv55: 1151 },
+  { premium: "30%", netback: "9,750", product: 37.57, efficiency: 37.3, npv55: 1479 },
 ] as const;
 
 export const towngasEconomicRisks = [
@@ -545,13 +598,20 @@ export const towngasOpenEvidence = [
 ] as const;
 
 export const towngasReferences = [
-  { id: "report", title: "Towngas SCWG–OXZEO Process Design — confidential project master", detail: "Public page follows its sanitised website hierarchy; August 2026" },
+  { id: "report", title: "Towngas SCWG–OXZEO Process Design — public project report", detail: "Authoritative disclosure boundary for this public website; August 2026" },
   { id: "operations", title: "Operating windows and train management", detail: "§5.10 and Table 5.6" },
   { id: "mass", title: "Closed mass, carbon, and production balances", detail: "§6 and Tables 6.1–6.8" },
-  { id: "energy", title: "Energy balance and heat recovery", detail: "§7 and public-safe proposed-plant calculations" },
-  { id: "cert", title: "Certification and market positioning", detail: "§9; source-plant confidential data excluded" },
-  { id: "economics", title: "China CAPEX, OPEX, route comparisons, and 20-year evaluation", detail: "§10 and Tables 10.1–10.10; confidential source-cost detail excluded" },
+  { id: "energy", title: "Energy balance and heat recovery", detail: "§7 and Tables 7.1–7.4" },
+  { id: "assurance", title: "Equipment, materials, chloride control, safety, and analysis", detail: "§8 and Tables 8.1–8.6" },
+  { id: "cert", title: "Certification and market positioning", detail: "§9 and public claim-control ledger" },
+  { id: "economics", title: "China CAPEX, OPEX, route comparisons, and 20-year evaluation", detail: "§10 and Tables 10.1–10.12; private methanol component breakdown omitted" },
 ] as const;
+
+export const towngasPublicRestrictedSources = Array.from({ length: 11 }, (_, index) => ({
+  id: String(index + 36),
+  title: index === 0 ? "Restricted commercial benchmark" : `Industrial technical reference ${String.fromCharCode(96 + index)}`,
+  detail: "Source identity, original document title, facility attribution, and detailed source description are withheld from the public edition. Technical values are reproduced only where authorised.",
+})) as readonly { id: string; title: string; detail: string }[];
 
 export const towngasCaseStudy = {
   meta: towngasCaseStudyMeta,
@@ -573,6 +633,11 @@ export const towngasCaseStudy = {
   carbonCases: towngasCarbonCases,
   carbonEfficiencyBridge: towngasCarbonEfficiencyBridge,
   energyCascade: towngasEnergyCascade,
+  publicPlanningInputs: towngasPublicPlanningInputs,
+  majorEquipment: towngasMajorEquipment,
+  chlorideControls: towngasChlorideControls,
+  hazop: towngasHazop,
+  analyticalPlan: towngasAnalyticalPlan,
   certification: towngasCertification,
   capex: towngasCapex,
   opexDrivers: towngasOpexDrivers,
@@ -583,4 +648,5 @@ export const towngasCaseStudy = {
   decisions: towngasDecisionLedger,
   openEvidence: towngasOpenEvidence,
   references: towngasReferences,
+  publicRestrictedSources: towngasPublicRestrictedSources,
 } as const;

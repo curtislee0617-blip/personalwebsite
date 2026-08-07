@@ -8559,6 +8559,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 .towngas-page figcaption { margin-top: 1.1rem; padding-top: 0.85rem; border-top: 1px solid currentColor; border-color: rgb(var(--color-ink) / 0.13); color: rgb(var(--color-ink) / 0.48); font-size: 0.61rem; line-height: 1.6; }
 
 .towngas-feed-controls { display: grid; margin-top: 1rem; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.towngas-assurance-controls { grid-template-columns: minmax(0, 1fr); }
 .towngas-feed-controls details,
 .towngas-economic-inputs,
 .towngas-more-risks { min-width: 0; border: 1px solid rgb(var(--color-ink) / 0.15); background: rgb(var(--color-surface) / 0.68); }
