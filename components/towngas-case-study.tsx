@@ -318,6 +318,35 @@ export function TowngasCaseStudy() {
             <figure><h3>Cash OPEX <span>RMB million/year</span></h3><ol>{data.opex.map((item) => <li key={item.label}><span>{item.label}</span><Bar max={maxOpex} value={item.value} /><strong>{item.value}</strong></li>)}</ol><figcaption>Table 2. Central annual cash OPEX totals RMB 267m.</figcaption></figure>
           </div>
 
+          <section className="towngas-efficiency-bridge" aria-labelledby="towngas-efficiency-title">
+            <div className="towngas-figure-heading">
+              <div><p className="eyebrow">42% → 55% carbon efficiency</p><h3 id="towngas-efficiency-title">Where the additional olefin carbon comes from</h3></div>
+              <p>Efficiency is olefin carbon divided by the {data.carbonEfficiencyBridge.feedCarbon.toFixed(3)} t C/day entering one B1 train.</p>
+            </div>
+
+            <div className="towngas-efficiency-layout">
+              <div className="towngas-table-wrap">
+                <table>
+                  <caption>Table 3. One-train carbon bridge, t C/day</caption>
+                  <thead><tr><th>Carbon destination</th><th>42% case</th><th>55% target</th><th>Change</th></tr></thead>
+                  <tbody>{data.carbonEfficiencyBridge.rows.map((row) => <tr className={`is-${row.role}`} key={row.destination}><th>{row.destination}</th><td>{row.current.toFixed(3)}</td><td>{row.target.toFixed(3)}</td><td>{row.change === 0 ? "—" : `${row.change > 0 ? "+" : "−"}${Math.abs(row.change).toFixed(3)}`}</td></tr>)}</tbody>
+                </table>
+              </div>
+              <aside>
+                <p className="eyebrow">What the model assumes</p>
+                <strong>3.37 t C/day per train moves from purge into olefins.</strong>
+                <p>{data.carbonEfficiencyBridge.conclusion}</p>
+                <p className="towngas-testing-note">(needs testing)</p>
+              </aside>
+            </div>
+
+            <div className="towngas-efficiency-areas">
+              {data.carbonEfficiencyBridge.areas.map((area) => <article key={area.stage}><header><span>{area.stage}</span><div><p>{area.priority}</p><h4>{area.title}</h4></div></header><p>{area.action}</p></article>)}
+            </div>
+
+            <p className="towngas-efficiency-proof"><strong>Evidence required:</strong> {data.carbonEfficiencyBridge.testing}</p>
+          </section>
+
           <div className="towngas-scenario-grid">
             {data.economicScenarios.map((scenario, index) => (
               <article className={`is-${scenario.tone}`} key={scenario.id}>
@@ -341,7 +370,7 @@ export function TowngasCaseStudy() {
           </div>
 
           <div className="towngas-economic-tables">
-            <figure className="towngas-table-wrap"><table><caption>Table 3. Premium and conversion thresholds</caption><thead><tr><th>Premium</th><th>Netback RMB/t</th><th>Break-even product</th><th>Break-even C efficiency</th><th>NPV at 55%</th></tr></thead><tbody>{data.breakEven.map((row) => <tr key={row.premium}><th>{row.premium}</th><td>{row.netback}</td><td>{row.product.toFixed(2)} kt/y</td><td>{row.efficiency.toFixed(1)}%</td><td>+RMB {row.npv55}m</td></tr>)}</tbody></table></figure>
+            <figure className="towngas-table-wrap"><table><caption>Table 4. Premium and conversion thresholds</caption><thead><tr><th>Premium</th><th>Netback RMB/t</th><th>Break-even product</th><th>Break-even C efficiency</th><th>NPV at 55%</th></tr></thead><tbody>{data.breakEven.map((row) => <tr key={row.premium}><th>{row.premium}</th><td>{row.netback}</td><td>{row.product.toFixed(2)} kt/y</td><td>{row.efficiency.toFixed(1)}%</td><td>+RMB {row.npv55}m</td></tr>)}</tbody></table></figure>
             <div className="towngas-economic-risk-list">{data.economicRisks.map((risk) => <article key={risk.change}><div><h3>{risk.change}</h3><strong>{risk.impact}</strong></div><p>{risk.meaning}</p></article>)}</div>
           </div>
         </div>

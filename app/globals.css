@@ -10077,6 +10077,28 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 .towngas-cost-split li span { color: rgb(var(--color-ink) / 0.6); font-size: 0.61rem; line-height: 1.4; }
 .towngas-cost-split li strong { color: var(--tg-navy); font-family: var(--font-code); font-size: 0.61rem; font-weight: 500; text-align: right; }
 
+.towngas-efficiency-bridge { margin-top: clamp(3rem, 5vw, 4.5rem); padding: clamp(1.2rem, 2.8vw, 2.2rem); border: 1px solid rgb(0 115 54 / 0.25); border-radius: 1.5rem; background: rgb(var(--color-surface) / 0.82); box-shadow: 0 14px 38px rgb(var(--color-ink) / 0.04); }
+.towngas-efficiency-layout { display: grid; margin-top: 1.25rem; align-items: stretch; gap: 1rem; grid-template-columns: minmax(0, 1.25fr) minmax(15rem, 0.75fr); }
+.towngas-efficiency-layout > .towngas-table-wrap { border: 1px solid var(--tg-line); }
+.towngas-efficiency-layout table { min-width: 36rem; }
+.towngas-efficiency-layout tbody td { font-family: var(--font-code); font-variant-numeric: tabular-nums; }
+.towngas-efficiency-layout tbody tr.is-value :is(th, td) { color: var(--tg-green); font-weight: 700; }
+.towngas-efficiency-layout tbody tr.is-lever :is(th, td) { color: var(--tg-orange); font-weight: 700; }
+.towngas-efficiency-layout > aside { display: flex; padding: 1.25rem; flex-direction: column; border-left: 0.25rem solid var(--tg-green); background: rgb(0 115 54 / 0.055); }
+.towngas-efficiency-layout > aside > strong { margin-top: 0.8rem; color: var(--tg-navy); font-family: var(--font-code); font-size: clamp(1.05rem, 1.8vw, 1.35rem); font-weight: 550; line-height: 1.45; }
+.towngas-efficiency-layout > aside > p:not(.eyebrow, .towngas-testing-note) { margin-top: 0.8rem; color: rgb(var(--color-ink) / 0.65); font-size: 0.71rem; line-height: 1.62; }
+.towngas-efficiency-layout > aside .towngas-testing-note { margin-top: auto; padding-top: 1rem; }
+.towngas-efficiency-areas { display: grid; margin-top: 1rem; gap: 0.65rem; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.towngas-efficiency-areas article { padding: 1rem; border: 1px solid var(--tg-line); background: rgb(var(--color-surface) / 0.68); grid-column: span 2; }
+.towngas-efficiency-areas article:nth-child(4), .towngas-efficiency-areas article:nth-child(5) { grid-column: span 3; }
+.towngas-efficiency-areas header { display: grid; align-items: start; gap: 0.7rem; grid-template-columns: 2.4rem minmax(0, 1fr); }
+.towngas-efficiency-areas header > span { display: grid; min-width: 2.4rem; height: 2.4rem; padding-inline: 0.35rem; place-items: center; background: var(--tg-navy); color: white; font-family: var(--font-code); font-size: 0.57rem; }
+.towngas-efficiency-areas header p { color: var(--tg-green); font-size: 0.52rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+.towngas-efficiency-areas h4 { margin-top: 0.25rem; color: var(--tg-navy); font-size: 0.74rem; line-height: 1.4; }
+.towngas-efficiency-areas article > p { margin-top: 0.8rem; color: rgb(var(--color-ink) / 0.62); font-size: 0.65rem; line-height: 1.55; }
+.towngas-efficiency-proof { margin-top: 1rem; padding: 0.9rem 1rem; border-left: 2px solid var(--tg-orange); background: rgb(185 90 47 / 0.04); color: rgb(var(--color-ink) / 0.64); font-size: 0.67rem; line-height: 1.58; }
+.towngas-efficiency-proof strong { color: var(--tg-orange); }
+
 .towngas-scenario-grid { display: grid; margin-top: clamp(3rem, 5vw, 4.5rem); gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .towngas-scenario-grid article { padding: clamp(1.15rem, 2vw, 1.6rem); border: 1px solid var(--tg-line); border-top: 0.22rem solid var(--tg-red); border-radius: 1.25rem; background: rgb(var(--color-surface) / 0.78); box-shadow: 0 10px 30px rgb(var(--color-ink) / 0.035); }
 .towngas-scenario-grid article.is-caution { border-top-color: var(--tg-orange); }
@@ -10132,7 +10154,8 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .towngas-reasoning-path > li { grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 1fr); }
   .towngas-reasoning-path > li > div:last-child { grid-column: 2 / -1; }
   .towngas-recipe-layout,
-  .towngas-economic-tables { grid-template-columns: 1fr; }
+  .towngas-economic-tables,
+  .towngas-efficiency-layout { grid-template-columns: 1fr; }
   .towngas-blend-grid,
   .towngas-scenario-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .towngas-architecture-note { grid-template-columns: 1fr; }
@@ -10148,6 +10171,10 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .towngas-waste-pair,
   .towngas-cert-grid,
   .towngas-carbon-cases { grid-template-columns: 1fr; }
+  .towngas-efficiency-areas { grid-template-columns: 1fr; }
+  .towngas-efficiency-areas article,
+  .towngas-efficiency-areas article:nth-child(4),
+  .towngas-efficiency-areas article:nth-child(5) { grid-column: auto; }
   .towngas-waste-pair dl > div { grid-template-columns: 1fr; }
   .towngas-siting-logic,
   .towngas-chemistry-strip ol,

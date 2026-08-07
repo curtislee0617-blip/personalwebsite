@@ -296,6 +296,26 @@ export const towngasCarbonCases = [
   { id: "target", label: "Financeability target", efficiency: 55, olefinCarbon: 14.271, purgeCarbon: 4.024, production: 55.45 },
 ] as const;
 
+export const towngasCarbonEfficiencyBridge = {
+  feedCarbon: 25.947,
+  rows: [
+    { destination: "Olefin product", current: 10.898, target: 14.271, change: 3.373, role: "value" },
+    { destination: "Synthesis-loop purge", current: 7.398, target: 4.024, change: -3.374, role: "lever" },
+    { destination: "Aqueous organic loss", current: 1.297, target: 1.297, change: 0, role: "fixed" },
+    { destination: "Solid / char loss", current: 1.297, target: 1.297, change: 0, role: "fixed" },
+    { destination: "CO₂ loss", current: 5.057, target: 5.057, change: 0, role: "fixed" },
+  ],
+  areas: [
+    { stage: "B7", priority: "Primary lever", title: "OXZEO conversion, recycle, and recovery", action: "Increase single-pass conversion and olefin selectivity, recover more unconverted CO/H₂, separate recycle gas more cleanly, and reduce the minimum stable purge without accumulating inerts." },
+    { stage: "B6", priority: "Primary lever", title: "Bi-reformer conversion and ratio control", action: "Convert more methane, reduce CH₄ slip, and hold the CO/H₂ ratio inside the B7 catalyst window so carbon reaches the synthesis loop in a usable form." },
+    { stage: "B2", priority: "Secondary opportunity", title: "SCWG gas yield", action: "Reduce char and aqueous-organic formation while maintaining 90% carbon transfer to raw gas. This could improve beyond the report's 55% case, which holds upstream losses constant." },
+    { stage: "B4–B5", priority: "Carbon protection", title: "Separation and clean-gas recovery", action: "Limit hydrocarbon carry-under into water, liquid carryover, Rectisol co-absorption losses, and off-spec gas rejection while still protecting the reformer and OXZEO catalysts." },
+    { stage: "B1–B3", priority: "Operability enabler", title: "Stable feed and salt management", action: "Keep carbon density, pumpability, residence time, and separator availability stable. These sections protect achieved efficiency but do not create the modelled 42%→55% increase directly." },
+  ],
+  conclusion: "In the report's economic bridge, the entire 13-point efficiency gain is modelled as carbon moving from synthesis purge to olefin product. B6 and B7 therefore carry the direct performance burden.",
+  testing: "The 55% value is a financeability target, not measured performance. Confirm it with real-gas reformer/OXZEO trials, catalyst-life and recycle-loop modelling, product-recovery tests, and a continuous full-plant carbon balance.",
+} as const;
+
 export const towngasEnergyCascade = {
   gross: [
     { label: "Slurry heating", value: 690 },
@@ -473,6 +493,7 @@ export const towngasCaseStudy = {
   chemistry: towngasChemistry,
   massBalance: towngasMassBalance,
   carbonCases: towngasCarbonCases,
+  carbonEfficiencyBridge: towngasCarbonEfficiencyBridge,
   energyCascade: towngasEnergyCascade,
   certification: towngasCertification,
   capex: towngasCapex,
