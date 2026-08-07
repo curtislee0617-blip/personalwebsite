@@ -75,7 +75,7 @@ const experience: TimelineItem[] = [
     dates: "Summer 2026",
     role: "Process Engineering Intern",
     organisation: "The Hong Kong and China Gas Company (Towngas) - Green Fuels & Chemicals",
-    detail: "Authored a ten-section screening/pre-FEED design converting bauxite residue and soybean-processing waste into light olefins through supercritical water gasification, bi-reforming and OXZEO synthesis. I closed mass and carbon balances to 100% on a 300 t/d train and sized a five-train, 19.3 kt/y complex; built its 20-year techno-economic model (RMB 1.9 billion capital and RMB 160 million/year operating cost), which identified waste gate fees as the decisive commercial lever after commodity olefin value produced no positive IRR; and designed heat integration recovering 637 GJ/d per train, cutting net purchased energy to 207 GJ/d. I also specified a Rectisol wash for 0.1 ppm sulfur and supported engineering work on a new US$30 million green-fuels plant in Foshan, using the operating Jungar Banner green-methanol plant as a reference case.",
+    detail: "Authored a ten-section screening/pre-FEED design converting a douzha-led food-processing-waste portfolio and conditioned bauxite residue into light olefins through supercritical water gasification, bi-reforming and OXZEO synthesis. I defined ten independently isolatable 300 t/day hydrothermal trains feeding shared gas-cleaning and conversion units, closed the mass and carbon balances for a 3,000 t/day complex, and screened annual production of 42.35–55.45 kt. I built a four-scenario, 20-year China techno-economic model that showed commodity conversion alone was insufficient and that sustained 55% carbon efficiency plus contracted waste-service income materially strengthened financeability. I also developed the feed-acceptance, siting, HAZOP, analytical, certification, salt and chloride-control plans; designed an energy cascade reducing purchased-energy equivalent to 260 GJ/day per train; and supported engineering for a new US$30 million green-fuels plant in Foshan using Towngas's operating Jungar Banner green-methanol plant as a reference case.",
     logo: { src: "/logos/towngas.png", alt: "Towngas logo", fallback: "TG", fitClassName: "h-11 w-[3.25rem]", alignClassName: "object-center", frameClassName: "bg-white" },
     projectHref: "/projects/supercritical-water-gasification",
     projectLabel: "Read the Towngas SCWG-OXZEO case study",
@@ -146,7 +146,7 @@ const featuredWork = [
     href: "/projects/supercritical-water-gasification",
     type: "Process engineering",
     title: "Towngas SCWG-OXZEO waste-to-olefins study",
-    summary: "A ten-section screening/pre-FEED design with closed mass, carbon and energy balances, five-train scale-up and China-specific techno-economics.",
+    summary: "A public screening/pre-FEED design for ten 300 t/day hydrothermal trains, closed balances, a 42.35–55.45 kt/year light-olefin envelope and four 20-year commercial scenarios.",
   },
   {
     href: "/projects/biodiesel-from-used-cooking-oil",
@@ -283,23 +283,27 @@ export default function AboutPage() {
             </section>
 
             <section className="about-section about-section--skills scroll-mt-24" data-reveal id="about-skills" style={{ "--reveal-delay": "320ms" } as CSSProperties}>
-              <h2 className="about-section-heading eyebrow">Consulting &amp; technical skills</h2>
+              <h2 className="about-section-heading eyebrow">Technical skills</h2>
               <dl className="about-aside-copy mt-5 space-y-4 text-sm leading-6 text-ink/60">
                 <div>
-                  <dt className="font-semibold text-ink">Leadership &amp; delivery</dt>
-                  <dd>Team leadership, mentoring, project ownership and cross-functional collaboration.</dd>
+                  <dt className="font-semibold text-ink">Software &amp; web</dt>
+                  <dd>Python, JavaScript/TypeScript and React/Next.js.</dd>
                 </div>
                 <div>
-                  <dt className="font-semibold text-ink">Strategy &amp; analysis</dt>
-                  <dd>Structured problem-solving, commercial analysis, financial and techno-economic modelling.</dd>
+                  <dt className="font-semibold text-ink">NLP &amp; finance</dt>
+                  <dd>FinBERT natural-language processing and factor modelling.</dd>
                 </div>
                 <div>
-                  <dt className="font-semibold text-ink">Engineering &amp; data</dt>
-                  <dd>Python, process modelling, DWSIM and experimental design.</dd>
+                  <dt className="font-semibold text-ink">Process engineering</dt>
+                  <dd>Process design, techno-economic and mass/energy balance modelling, and DWSIM.</dd>
                 </div>
                 <div>
                   <dt className="font-semibold text-ink">Laboratory</dt>
-                  <dd>NMR, IR and mass spectrometry.</dd>
+                  <dd>NMR, IR, mass spectrometry, Texture Profile Analysis, cell culture and CVD.</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold text-ink">Tools built</dt>
+                  <dd>VLE simulator, property calculators, and NMR/IR spectrum processors.</dd>
                 </div>
               </dl>
             </section>
