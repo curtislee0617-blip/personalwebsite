@@ -71,6 +71,54 @@ export default function ProjectsPage() {
                 <Link className="back-link-bubble website-project-link" href="/">Visit the front page</Link>
               </div>
             </article>
+            <section aria-labelledby="personal-reading-title" className="personal-reading" id="personal-reading">
+              <div className="personal-reading-heading">
+                <div>
+                  <p className="eyebrow">Personal library</p>
+                  <h3 id="personal-reading-title">Personal reading</h3>
+                </div>
+                <p>Books and essays I&apos;m keeping close. Uploaded copies and notes will appear here over time.</p>
+              </div>
+              <div className="personal-reading-columns">
+                <div>
+                  <h4>Books</h4>
+                  <ul>
+                    <li>
+                      <a href="https://www.anand.ly/winners-take-all" rel="noreferrer" target="_blank">
+                        <span>
+                          <strong>Winners Take All: The Elite Charade of Changing the World</strong>
+                          <small>Anand Giridharadas</small>
+                        </span>
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    </li>
+                    <li>
+                      <div>
+                        <span>
+                          <strong>Introduction to Probability Theory</strong>
+                          <small>Paul G. Hoel, Sidney C. Port &amp; Charles J. Stone</small>
+                        </span>
+                        <em>Upload pending</em>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>Articles</h4>
+                  <ul>
+                    <li>
+                      <a href="https://theamericanscholar.org/the-disadvantages-of-an-elite-education/" rel="noreferrer" target="_blank">
+                        <span>
+                          <strong>The Disadvantages of an Elite Education</strong>
+                          <small>William Deresiewicz · The American Scholar</small>
+                        </span>
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </section>
             <ContactCityTimeline />
           </div>
           <span aria-hidden="true" id="pixel-art-cities" />
