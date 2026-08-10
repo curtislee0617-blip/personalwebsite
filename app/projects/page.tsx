@@ -103,6 +103,17 @@ export default function ProjectsPage() {
                     <li>
                       <div>
                         <span>
+                          <strong>You Can Just Do Things</strong>
+                          <small>
+                            By <a href="https://www.harpercollins.com/blogs/authors/cate-hall-89578" rel="noreferrer" target="_blank">Cate Hall</a> &amp; <a href="https://www.harpercollins.com/blogs/authors/sasha-chapin-89579" rel="noreferrer" target="_blank">Sasha Chapin</a>
+                          </small>
+                        </span>
+                        <em>Upload pending</em>
+                      </div>
+                    </li>
+                    <li>
+                      <div>
+                        <span>
                           <strong>Introduction to Probability Theory</strong>
                           <small>Paul G. Hoel, Sidney C. Port &amp; Charles J. Stone</small>
                         </span>
