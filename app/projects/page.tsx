@@ -71,6 +71,14 @@ export default function ProjectsPage() {
                 <Link className="back-link-bubble website-project-link" href="/">Visit the front page</Link>
               </div>
             </article>
+            <article className="fusion-project-bubble" data-reveal data-spotlight>
+              <div>
+                <p className="eyebrow">Creative tool</p>
+                <h3>Autodesk Fusion</h3>
+              </div>
+              <p>Design work and experiments in CAD, collected here as they take shape.</p>
+              <span aria-label="Project details coming soon">Coming soon</span>
+            </article>
             <section aria-labelledby="personal-reading-title" className="personal-reading" id="personal-reading">
               <div className="personal-reading-heading">
                 <div>

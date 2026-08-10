@@ -2390,6 +2390,11 @@ body.has-page-cursor * { cursor: inherit; }
 .website-project-toolkit li[data-status="ready"] small,
 .website-project-toolkit li[data-status="native"] small { color: rgb(var(--color-moss) / 0.78); }
 .website-project-link { margin-top: 1.25rem; }
+.fusion-project-bubble { display: grid; padding: clamp(1.25rem, 2.5vw, 2rem); align-items: end; gap: 1rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 999px; background: linear-gradient(135deg, rgb(var(--color-mist) / 0.74), rgb(var(--color-surface) / 0.8)); grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.9fr) auto; transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease; }
+.fusion-project-bubble:hover { border-color: rgb(var(--color-ink) / 0.22); transform: translateY(-0.15rem); box-shadow: 0 14px 30px rgb(var(--color-ink) / 0.08); }
+.fusion-project-bubble h3 { margin-top: 0.35rem; font-size: clamp(1.3rem, 2.5vw, 1.9rem); font-weight: 600; letter-spacing: -0.045em; }
+.fusion-project-bubble > p { color: rgb(var(--color-ink) / 0.56); font-size: 0.72rem; line-height: 1.55; }
+.fusion-project-bubble > span { padding: 0.42rem 0.62rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 999px; color: rgb(var(--color-ink) / 0.5); font-size: 0.55rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
 .personal-reading { padding: clamp(1.35rem, 2.5vw, 2.25rem); border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1.5rem; background: rgb(var(--color-surface) / 0.52); }
 .personal-reading-heading { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; }
 .personal-reading-heading h3 { margin-top: 0.35rem; font-size: clamp(1.45rem, 2.5vw, 2.1rem); font-weight: 600; letter-spacing: -0.04em; }
@@ -5321,6 +5326,9 @@ div.restaurant-results-limit {
   .website-project-facts strong { font-size: 0.55rem; }
   .website-project-facts span { font-size: 0.58rem; line-height: 1.45; }
   .website-project-link { margin-top: 0.8rem; }
+  .fusion-project-bubble { display: grid; padding: 1rem 1.1rem; border-radius: 1.35rem; align-items: start; gap: 0.65rem; grid-template-columns: 1fr auto; }
+  .fusion-project-bubble > p { grid-column: 1 / -1; font-size: 0.63rem; }
+  .fusion-project-bubble > span { font-size: 0.49rem; }
   .personal-reading { padding: 1rem; border-radius: 1.15rem; }
   .personal-reading-heading { display: grid; align-items: start; gap: 0.5rem; }
   .personal-reading-heading h3 { font-size: 1.28rem; }
