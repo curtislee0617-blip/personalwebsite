@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { unstable_cache } from "next/cache";
 import type { WishlistEntry } from "@/lib/recipes";
 import {
   cookbookWishlistImageHref,
@@ -17,7 +18,7 @@ type RecipeWishlistRow = {
   created_at: string;
 };
 
-export async function getRecipeWishlistEntries(): Promise<WishlistEntry[]> {
+const getCachedRecipeWishlistEntries = unstable_cache(async (): Promise<WishlistEntry[]> => {
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase
@@ -47,6 +48,10 @@ export async function getRecipeWishlistEntries(): Promise<WishlistEntry[]> {
   } catch {
     return [];
   }
+}, ["recipe-wishlist-entries"], { revalidate: 300, tags: ["recipe-wishlist-entries"] });
+
+export async function getRecipeWishlistEntries() {
+  return getCachedRecipeWishlistEntries();
 }
 
 export async function getCookbookWishlistEntry(cookbookId: string, recipeId: string) {
