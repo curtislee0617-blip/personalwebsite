@@ -10,7 +10,7 @@ import { SectionRail } from "@/components/section-rail";
 import { SnapCarousel } from "@/components/snap-carousel";
 import { CookbookAccessGate } from "@/components/cookbook-access-gate";
 import { recipeEntries, recipeSections, wishlistEntries, type WishlistEntry } from "@/lib/recipes";
-import { getInstagramSavedRecipeCards, getPersonalRecipeCards, getYouTubeSavedRecipeCards } from "@/lib/personal-recipes";
+import { getInstagramSavedRecipeCount, getPersonalRecipeCards, getYouTubeSavedRecipeCount } from "@/lib/personal-recipes";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
@@ -33,8 +33,6 @@ const recipePageSections = [
 
 function buildRecipeSearchPreview(
   personalRecipes: RecipeCardEntry[],
-  instagramRecipes: RecipeCardEntry[],
-  youtubeRecipes: RecipeCardEntry[],
   wishlistRecipes: WishlistEntry[],
 ): RecipeSearchItem[] {
   const siteEntries: RecipeSearchItem[] = recipeEntries
@@ -53,25 +51,6 @@ function buildRecipeSearchPreview(
     href: `/recipes#recipe-${entry.slug}`,
     searchText: [
       entry.description,
-      ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),
-      ...(entry.methodGroups?.flatMap((group) => [group.title, ...group.steps]) ?? []),
-    ].join(" "),
-  }));
-  const instagramEntries: RecipeSearchItem[] = instagramRecipes.map((entry) => ({
-    title: entry.title,
-    context: "Media saved recipes · Instagram",
-    kind: "Media saved",
-    href: `/recipes/instagram-saved#recipe-${entry.slug}`,
-    searchText: [entry.description, ...(entry.categories ?? []), ...(entry.ingredientGroups?.flatMap((group) => group.items) ?? [])].join(" "),
-  }));
-  const youtubeEntries: RecipeSearchItem[] = youtubeRecipes.map((entry) => ({
-    title: entry.title,
-    context: `Media saved recipes · ${entry.sourceLabel ?? "YouTube"}`,
-    kind: "Media saved",
-    href: `/recipes/youtube-saved#recipe-${entry.slug}`,
-    searchText: [
-      entry.description,
-      ...(entry.categories ?? []),
       ...(entry.ingredientGroups?.flatMap((group) => [group.title, ...group.items]) ?? []),
       ...(entry.methodGroups?.flatMap((group) => [group.title, ...group.steps]) ?? []),
     ].join(" "),
@@ -158,8 +137,6 @@ function buildRecipeSearchPreview(
     })),
     ...siteEntries,
     ...personalEntries,
-    ...instagramEntries,
-    ...youtubeEntries,
     ...publicWishlistEntries,
   ];
 }
@@ -167,9 +144,9 @@ function buildRecipeSearchPreview(
 const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string; mark: string; tone: string }> = {
   "sourdough-guide": {
     srcs: [
-      "/sourdough-step-1.png",
-      "/sourdough-step-2.png",
-      "/sourdough-step-3.png",
+      "/recipes/home-guides/sourdough-step-1.webp",
+      "/recipes/home-guides/sourdough-step-2.webp",
+      "/recipes/home-guides/sourdough-step-3.webp",
     ],
     alt: "Three sourdough loaves and crumb views",
     mark: "SD",
@@ -193,22 +170,22 @@ const guideVisuals: Record<string, { src?: string; srcs?: string[]; alt: string;
   "core-basics": { alt: "Core cooking fundamentals graphic", mark: "CORE", tone: "core" },
   "viennoiserie-guide": {
     srcs: [
-      "/recipes/viennoiserie/Croissants1.jpeg",
-      "/recipes/viennoiserie/Croissant4.jpeg",
-      "/recipes/viennoiserie/Croissants2.jpeg",
+      "/recipes/home-guides/Croissants1.webp",
+      "/recipes/home-guides/Croissant4.webp",
+      "/recipes/home-guides/Croissants2.webp",
     ],
     alt: "Croissants and laminated pastries",
     mark: "LAM",
     tone: "pastry",
   },
   "pasta-guide": {
-    srcs: ["/recipes/pasta/Capelliti.jpeg", "/recipes/pasta/Stuffedpasta.jpeg", "/recipes/pasta/DSC_6482.jpeg"],
+    srcs: ["/recipes/home-guides/Capelliti.webp", "/recipes/home-guides/Stuffedpasta.webp", "/recipes/home-guides/DSC_6482.webp"],
     alt: "Fresh cappelletti, stuffed pasta, and handmade noodles",
     mark: "PASTA",
     tone: "pasta",
   },
   "sushi-guide": {
-    srcs: ["/recipes/sushi/IMG_2842.jpeg", "/recipes/sushi/IMG_1653.jpeg"],
+    srcs: ["/recipes/home-guides/IMG_2842.webp", "/recipes/home-guides/IMG_1653.webp"],
     alt: "Sushi chefs and nigiri",
     mark: "SUSHI",
     tone: "sushi",
@@ -388,12 +365,12 @@ function GuideVisual({ slug }: { slug: string }) {
         <div className="recipe-guide-photo-grid">
           {visual.srcs.map((src, index) => (
             <div className="relative" key={src}>
-              <Image alt={`${visual.alt}, image ${index + 1}`} className="object-cover" fill sizes="(max-width: 640px) 24vw, 8rem" src={src} />
+              <Image alt={`${visual.alt}, image ${index + 1}`} className="object-cover" fill sizes="(max-width: 640px) 24vw, 8rem" src={src} unoptimized />
             </div>
           ))}
         </div>
       ) : visual.src ? (
-        <Image alt={visual.alt} className="object-cover" fill sizes="(max-width: 640px) 70vw, 24rem" src={visual.src} />
+        <Image alt={visual.alt} className="object-cover" fill sizes="(max-width: 640px) 70vw, 24rem" src={visual.src} unoptimized />
       ) : (
         <div className="recipe-guide-generated" aria-label={visual.alt} role="img">
           <i /><b /><span>{visual.mark}</span>
@@ -405,10 +382,10 @@ function GuideVisual({ slug }: { slug: string }) {
 
 export default async function RecipesPage() {
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
-  const [recipes, instagramRecipes, youtubeRecipes, savedCookbookRecipes] = await Promise.all([
+  const [recipes, instagramRecipeCount, youtubeRecipeCount, savedCookbookRecipes] = await Promise.all([
     getPersonalRecipeCards(),
-    getInstagramSavedRecipeCards(),
-    getYouTubeSavedRecipeCards(),
+    getInstagramSavedRecipeCount(),
+    getYouTubeSavedRecipeCount(),
     getRecipeWishlistEntries(),
   ]);
   const recipeByKey = new Map(recipes.map((entry) => [entry.recipeKey, entry]));
@@ -420,7 +397,7 @@ export default async function RecipesPage() {
     isCookbookAuthenticated(),
   ]);
   const privateLibraryAccess = authenticated || cookbookAuthenticated;
-  const searchPreview = buildRecipeSearchPreview(recipes, instagramRecipes, youtubeRecipes, wishlist)
+  const searchPreview = buildRecipeSearchPreview(recipes, wishlist)
     .filter((item) => privateLibraryAccess || !isPrivateCookbookHref(item.href));
   const chronologicalRecipes = [...recipes].sort((a, b) => {
     if (a.date && b.date) return b.date.localeCompare(a.date) || a.title.localeCompare(b.title);
@@ -596,14 +573,14 @@ export default async function RecipesPage() {
                 <p className="eyebrow">Instagram</p>
                 <h3 className="mt-4 text-xl font-semibold tracking-tight">Instagram saved recipes</h3>
                 <p className="mt-3 text-sm leading-7 text-ink/65">
-                  {instagramRecipes.length} saved posts, with recipe details transcribed from captions, on-screen text, and reels where available.
+                  {instagramRecipeCount} saved posts, with recipe details transcribed from captions, on-screen text, and reels where available.
                 </p>
               </Link>
               <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" data-reveal data-spotlight href="/recipes/youtube-saved" style={{ "--reveal-delay": "90ms" } as CSSProperties}>
                 <p className="eyebrow">YouTube</p>
                 <h3 className="mt-4 text-xl font-semibold tracking-tight">YouTube saved recipes</h3>
                 <p className="mt-3 text-sm leading-7 text-ink/65">
-                  {youtubeRecipes.length} playlist videos, with recipes organized from descriptions, linked sources, transcripts, and on-screen details where available.
+                  {youtubeRecipeCount} playlist videos, with recipes organized from descriptions, linked sources, transcripts, and on-screen details where available.
                 </p>
               </Link>
             </div>

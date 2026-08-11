@@ -20,28 +20,8 @@ const publicSiteMediaPrefixes = [
   "project-previews",
 ];
 
-function storageRedirects(bucket, prefixes) {
-  if (!publicStorageBase || process.env.NODE_ENV !== "production") return [];
-
-  return prefixes.map((prefix) => ({
-    source: `/${prefix}/:path+`,
-    destination: `${publicStorageBase}/${bucket}/${prefix}/:path+`,
-    permanent: false,
-  }));
-}
-
-function rootMediaRedirect() {
-  if (!publicStorageBase || process.env.NODE_ENV !== "production") return [];
-
-  return [{
-    source: "/:file([^/]+\\.(?:avif|gif|jpe?g|mp4|pdf|png|svg|webm|webp))",
-    destination: `${publicStorageBase}/site-media/root/:file`,
-    permanent: false,
-  }];
-}
-
 function storageFallbackRewrites(bucket, prefixes) {
-  if (!publicStorageBase || process.env.NODE_ENV === "production") return [];
+  if (!publicStorageBase) return [];
 
   return prefixes.map((prefix) => ({
     source: `/${prefix}/:path+`,
@@ -50,7 +30,7 @@ function storageFallbackRewrites(bucket, prefixes) {
 }
 
 function rootMediaFallbackRewrite() {
-  if (!publicStorageBase || process.env.NODE_ENV === "production") return [];
+  if (!publicStorageBase) return [];
 
   return [{
     source: "/:file([^/]+\\.(?:avif|gif|jpe?g|mp4|pdf|png|svg|webm|webp))",
@@ -68,11 +48,7 @@ const nextConfig = {
     serverActions: { bodySizeLimit: "25mb" },
   },
   async redirects() {
-    return [
-      ...storageRedirects("recipe-media", publicRecipeMediaPrefixes),
-      ...storageRedirects("site-media", publicSiteMediaPrefixes),
-      ...rootMediaRedirect(),
-    ];
+    return [];
   },
   async rewrites() {
     return {

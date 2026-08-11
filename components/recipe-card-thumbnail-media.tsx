@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRef } from "react";
+import { isSupabaseStorageImage, supabaseImageLoader } from "@/lib/supabase-image-loader";
 
 export function RecipeCardThumbnailMedia({
   colorAsVideo = false,
@@ -24,7 +25,7 @@ export function RecipeCardThumbnailMedia({
   const isVideo = /\.(?:mp4|m4v|mov)(?:\?.*)?$/i.test(src);
 
   if (!isVideo) {
-    return <Image alt="" className={colorAsVideo ? "recipe-thumbnail-video-poster object-cover" : "object-cover"} fill sizes="(max-width: 768px) 50vw, 22vw" src={src} style={{ objectPosition: position, transform: `scale(${zoom * scale})`, transformOrigin: position }} />;
+    return <Image alt="" className={colorAsVideo ? "recipe-thumbnail-video-poster object-cover" : "object-cover"} fill loader={isSupabaseStorageImage(src) ? supabaseImageLoader : undefined} sizes="(max-width: 768px) 50vw, 22vw" src={src} style={{ objectPosition: position, transform: `scale(${zoom * scale})`, transformOrigin: position }} />;
   }
 
   return (

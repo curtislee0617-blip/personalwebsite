@@ -58,6 +58,9 @@ const legacyImportedRecipeTitles: Record<string, readonly string[]> = {
   "personal-phoschool": ["phoschool"],
 };
 
+export const getInstagramSavedRecipeCount = () => instagramSavedRecipes.length;
+export const getYouTubeSavedRecipeCount = () => youtubeSavedRecipes.length;
+
 function isRecord(value: Json): value is { [key: string]: Json | undefined } {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }

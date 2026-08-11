@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import type { RecipeMediaItem } from "@/lib/recipe-card-types";
+import { isSupabaseStorageImage, supabaseImageLoader } from "@/lib/supabase-image-loader";
 
 function RecipeVideo({ item, title }: { item: RecipeMediaItem; title: string }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -95,6 +96,7 @@ export function RecipeMediaGallery({ media, title }: { media: RecipeMediaItem[];
                 alt={item.alt ?? `${title}, image ${index + 1}`}
                 className="object-cover"
                 fill
+                loader={isSupabaseStorageImage(item.src) ? supabaseImageLoader : undefined}
                 sizes="(max-width: 640px) 44vw, 11rem"
                 src={item.src}
                 style={{ objectPosition: item.position ?? "50% 50%", transform: `scale(${item.zoom ?? 1})`, transformOrigin: item.position ?? "50% 50%" }}
