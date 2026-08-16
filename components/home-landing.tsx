@@ -84,6 +84,34 @@ export function HomeLanding({ photos }: { photos: string[] }) {
   const [entryMode, setEntryMode] = useState<"pending" | "center" | "mobile-return">("pending");
   const [mobileActiveIndex, setMobileActiveIndex] = useState(mobileInitialIndex);
   const [isDark, setIsDark] = useState(false);
+  const [isRecipeAdmin, setIsRecipeAdmin] = useState(false);
+
+  // The command centre is admin-only, so its entry point only exists once the
+  // admin session does. Checked from the client rather than the server because
+  // reading the cookie in the layout would opt the whole site out of static
+  // rendering; starting false means visitors never see it flash into view.
+  useEffect(() => {
+    const controller = new AbortController();
+    const syncAdminSession = () => {
+      void fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+        .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
+        .then((result) => setIsRecipeAdmin(result.authenticated === true))
+        .catch(() => undefined);
+    };
+
+    syncAdminSession();
+    window.addEventListener("recipe-admin-session-changed", syncAdminSession);
+    return () => {
+      controller.abort();
+      window.removeEventListener("recipe-admin-session-changed", syncAdminSession);
+    };
+  }, []);
+
+  const mobileLinks = useMemo(
+    () => (isRecipeAdmin ? mobileHomeLinks : mobileHomeLinks.filter((item) => item.href !== scheduleLink.href)),
+    [isRecipeAdmin],
+  );
+
   const linkCursors = useMemo(() => new Map([...homeLinks, scheduleLink].map((item) => {
     const match = pageCursors.find((entry) => entry.match(item.href));
     return [item.href, match ? cursorCss(match, isDark) : undefined];
@@ -272,14 +300,14 @@ export function HomeLanding({ photos }: { photos: string[] }) {
   }
 
   return (
-    <section id="top" className={`home-landing home-entry-${entryMode} home-mobile-focus-${mobileHomeLinks[mobileActiveIndex]?.href.slice(1) ?? "contact"}`}>
+    <section id="top" className={`home-landing home-entry-${entryMode} home-mobile-focus-${mobileLinks[mobileActiveIndex]?.href.slice(1) ?? "contact"}`}>
       {showHomePhotoGrid && <ScrollingPhotoBackground photos={photos} />}
 
       <div className="home-mobile-stage">
         <nav className="home-mobile-nav" aria-label="Explore the website" onScroll={updateMobileCarousel} ref={mobileNavRef}>
           <h1 className="sr-only">Curtis Lee</h1>
           <ol className="home-mobile-nav-list">
-            {mobileHomeLinks.map((item, index) => {
+            {mobileLinks.map((item, index) => {
               const icon = navIconForPath(item.href);
 
               return (
@@ -311,17 +339,19 @@ export function HomeLanding({ photos }: { photos: string[] }) {
           <div>
             <p className="eyebrow">Dashboard</p>
             <h1>Quick access</h1>
-            <Link
-              className="home-dashboard-schedule"
-              href={scheduleLink.href}
-              onPointerEnter={() => prefetchRoute(scheduleLink.href)}
-              style={{ cursor: linkCursors.get(scheduleLink.href) }}
-            >
-              {navIconForPath(scheduleLink.href) && (
-                <img alt="" aria-hidden="true" src={navIconForPath(scheduleLink.href) ?? undefined} />
-              )}
-              <span>{scheduleLink.label}</span>
-            </Link>
+            {isRecipeAdmin && (
+              <Link
+                className="home-dashboard-schedule"
+                href={scheduleLink.href}
+                onPointerEnter={() => prefetchRoute(scheduleLink.href)}
+                style={{ cursor: linkCursors.get(scheduleLink.href) }}
+              >
+                {navIconForPath(scheduleLink.href) && (
+                  <img alt="" aria-hidden="true" src={navIconForPath(scheduleLink.href) ?? undefined} />
+                )}
+                <span>{scheduleLink.label}</span>
+              </Link>
+            )}
           </div>
           <div className="home-dashboard-pixel-art">
             <ContactPresenceProvider readOnly>

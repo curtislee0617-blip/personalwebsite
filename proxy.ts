@@ -49,10 +49,13 @@ async function hasValidAdminSession(request: NextRequest) {
 
 /**
  * The command center shows a calendar, Drive files and travel plans on a public
- * domain, so it must never be world-readable. HTTP Basic Auth is the right
- * amount of machinery for a single-user page: no session store, no login UI,
- * and iOS remembers it after the first prompt so the home-screen icon opens
- * straight in. Its tile proxy is covered too, since that spends the TomTom key.
+ * domain, so it must never be world-readable. It rides on the same admin
+ * session as the rest of the site rather than a second password: sign in once
+ * from the footer and the dashboard opens, sign out and it disappears. Its tile
+ * proxy is covered too, since that spends the TomTom key.
+ *
+ * Unauthenticated requests get a flat 404 rather than a challenge — the entry
+ * point is hidden from visitors, so the route may as well not exist for them.
  */
 function isCommandCenterPathname(pathname: string) {
   return (
@@ -62,43 +65,14 @@ function isCommandCenterPathname(pathname: string) {
   );
 }
 
-function commandCenterAuthResponse(request: NextRequest) {
-  const user = process.env.CC_USER;
-  const password = process.env.CC_PASSWORD;
-
-  // Fail closed. An unconfigured deployment serves nothing rather than
-  // publishing a calendar to anyone who guesses the URL.
-  if (!user || !password) {
-    return new NextResponse("Command center auth is not configured.", { status: 503 });
-  }
-
-  const header = request.headers.get("authorization");
-  if (header?.startsWith("Basic ")) {
-    const decoded = atob(header.slice(6));
-    const separator = decoded.indexOf(":");
-    // Split on the first colon only, so passwords may contain colons.
-    const suppliedUser = separator === -1 ? decoded : decoded.slice(0, separator);
-    const suppliedPassword = separator === -1 ? "" : decoded.slice(separator + 1);
-    if (
-      timingSafeStringEqual(suppliedUser, user) &&
-      timingSafeStringEqual(suppliedPassword, password)
-    ) {
-      return null;
-    }
-  }
-
-  return new NextResponse("Authentication required", {
-    status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="Command Center", charset="UTF-8"' },
-  });
-}
-
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   if (isCommandCenterPathname(pathname)) {
-    const denied = commandCenterAuthResponse(request);
-    return denied ?? NextResponse.next();
+    // Fails closed: with no RECIPE_ADMIN_PASSWORD set there is no valid
+    // session, so nothing is served.
+    if (await hasValidAdminSession(request)) return NextResponse.next();
+    return new NextResponse(null, { status: 404 });
   }
 
   const protectsCookbookMedia = isPrivateCookbookMediaPathname(pathname);

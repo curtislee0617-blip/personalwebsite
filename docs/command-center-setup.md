@@ -1,9 +1,10 @@
 # Command center setup
 
 `/command-center` is a private, server-rendered morning dashboard: schedule,
-trip map, recent Drive files and Vercel deployments. It is reachable from the
-Schedule button on the home page, gated by HTTP Basic Auth, and installable to
-an iOS home screen.
+trip map, recent Drive files and Vercel deployments. It rides on the site's
+existing admin session — sign in from the footer and the Schedule button appears
+on the home page; sign out and both the button and the route disappear. It is
+installable to an iOS home screen.
 
 Everything below is server-side. No API key or OAuth token ever reaches the
 browser.
@@ -63,15 +64,27 @@ Copy the command-center block from `.env.example` into **Vercel → Settings →
 Environment Variables** for both Production and Preview, and into `.env.local`
 for local work.
 
-`CC_USER` and `CC_PASSWORD` gate the route. **If either is unset the route
-returns 503 rather than serving a calendar publicly** — it fails closed on
-purpose, so an unconfigured preview deployment exposes nothing.
+Access is the site's admin session, so `RECIPE_ADMIN_PASSWORD` is what opens the
+dashboard — there is no separate command-center password. **With no admin
+password set there is no valid session, so the route 404s** rather than serving
+a calendar publicly; it fails closed, and an unconfigured preview deployment
+exposes nothing.
 
 ## Install on the phone
 
-Open `https://<your-domain>/command-center`, enter the password once (Safari
-remembers it), then **Share → Add to Home Screen**. It launches standalone with
-no browser chrome.
+Sign in as admin from the site footer first, then open
+`https://<your-domain>/command-center` and **Share → Add to Home Screen**. It
+launches standalone with no browser chrome. The admin cookie lasts 30 days, so
+the home-screen icon keeps opening straight in until it expires or you sign out.
+
+## Staying current
+
+Every load fetches the calendar fresh — the route is `force-dynamic` and each
+connector uses `cache: "no-store"`, so nothing is cached between requests.
+`AutoRefresh.tsx` covers the other case, a dashboard left open on a phone: it
+re-runs the server render every five minutes and immediately when the tab
+returns to the foreground, and skips the tick entirely while hidden so a
+backgrounded tab does not spend Google and TomTom quota all day.
 
 ## Notes for future edits
 

@@ -8,6 +8,7 @@
 import { listEvents, listRecentFiles, type CalEvent } from "@/lib/command-center/google";
 import { listDeployments } from "@/lib/command-center/vercel";
 import { buildTrip, bearing, compass, type Stop, type Trip } from "@/lib/command-center/trip";
+import AutoRefresh from "./AutoRefresh";
 import TripMap from "./TripMap";
 import "./command-center.css";
 
@@ -70,6 +71,7 @@ export default async function CommandCenter() {
 
   return (
     <main className="cc">
+      <AutoRefresh />
       <header className="cc-head">
         <h1>{greeting}, Curtis</h1>
         <p>
