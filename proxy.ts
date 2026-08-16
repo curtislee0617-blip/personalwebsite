@@ -47,8 +47,60 @@ async function hasValidAdminSession(request: NextRequest) {
   return timingSafeStringEqual(expected, cookieValue);
 }
 
+/**
+ * The command center shows a calendar, Drive files and travel plans on a public
+ * domain, so it must never be world-readable. HTTP Basic Auth is the right
+ * amount of machinery for a single-user page: no session store, no login UI,
+ * and iOS remembers it after the first prompt so the home-screen icon opens
+ * straight in. Its tile proxy is covered too, since that spends the TomTom key.
+ */
+function isCommandCenterPathname(pathname: string) {
+  return (
+    pathname === "/command-center" ||
+    pathname.startsWith("/command-center/") ||
+    pathname.startsWith("/api/tiles/")
+  );
+}
+
+function commandCenterAuthResponse(request: NextRequest) {
+  const user = process.env.CC_USER;
+  const password = process.env.CC_PASSWORD;
+
+  // Fail closed. An unconfigured deployment serves nothing rather than
+  // publishing a calendar to anyone who guesses the URL.
+  if (!user || !password) {
+    return new NextResponse("Command center auth is not configured.", { status: 503 });
+  }
+
+  const header = request.headers.get("authorization");
+  if (header?.startsWith("Basic ")) {
+    const decoded = atob(header.slice(6));
+    const separator = decoded.indexOf(":");
+    // Split on the first colon only, so passwords may contain colons.
+    const suppliedUser = separator === -1 ? decoded : decoded.slice(0, separator);
+    const suppliedPassword = separator === -1 ? "" : decoded.slice(separator + 1);
+    if (
+      timingSafeStringEqual(suppliedUser, user) &&
+      timingSafeStringEqual(suppliedPassword, password)
+    ) {
+      return null;
+    }
+  }
+
+  return new NextResponse("Authentication required", {
+    status: 401,
+    headers: { "WWW-Authenticate": 'Basic realm="Command Center", charset="UTF-8"' },
+  });
+}
+
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  if (isCommandCenterPathname(pathname)) {
+    const denied = commandCenterAuthResponse(request);
+    return denied ?? NextResponse.next();
+  }
+
   const protectsCookbookMedia = isPrivateCookbookMediaPathname(pathname);
   const protectsCookbookPage = isPrivateCookbookPathname(pathname);
 
@@ -88,6 +140,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/command-center",
+    "/command-center/:path*",
+    "/api/tiles/:path*",
     "/recipes/:path*",
     "/bachour/:path*",
     "/benu/:path*",
