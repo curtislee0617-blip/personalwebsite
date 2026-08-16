@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import "./coffee-guide.css";
 import { CoffeeGuide } from "@/components/coffee-guide";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { SectionRail } from "@/components/section-rail";
 
 export const metadata: Metadata = { title: "The science of coffee" };
@@ -15,7 +17,11 @@ const sections = [
   { id: "coffee-brewing", label: "How it is brewed" },
 ] as const;
 
-export default function CoffeeGuidePage() {
+// Still in development: visitors see the entry blurred elsewhere on the site,
+// but the route itself stays shut rather than being reachable by typing the URL.
+export default async function CoffeeGuidePage() {
+  if (!(await isRecipeAdminAuthenticated())) notFound();
+
   return (
     <div className="guide-page coffee-guide-page">
       <PageIntro

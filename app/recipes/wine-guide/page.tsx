@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import "./wine-guide.css";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { WineGuide } from "@/components/wine-guide";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const metadata: Metadata = {
   title: "The world of wine",
@@ -10,7 +12,11 @@ export const metadata: Metadata = {
     "A comprehensive guide to wine chemistry, viticulture, world regions, grape varieties, winemaking, sparkling wine and fortified wine.",
 };
 
-export default function WineGuidePage() {
+// Still in development: visitors see the entry blurred elsewhere on the site,
+// but the route itself stays shut rather than being reachable by typing the URL.
+export default async function WineGuidePage() {
+  if (!(await isRecipeAdminAuthenticated())) notFound();
+
   return (
     <div className="guide-page wine-guide-page">
       <PageIntro

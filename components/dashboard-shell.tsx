@@ -19,6 +19,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { SectionLoading, type SectionLoadingVariant } from "@/components/section-loading";
 import { recipeCategories } from "@/data/recipe-categories";
 import { navIconForPath } from "@/lib/page-cursors";
+import { isUnpublishedGuideHref, UNPUBLISHED_GUIDE_LABEL } from "@/lib/unpublished-guides";
 
 type DashboardTreeNode = {
   href: string;
@@ -264,6 +265,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
   const [dashboardRecipes, setDashboardRecipes] = useState<DashboardRecipeItem[]>([]);
   const [hasCookbookAccess, setHasCookbookAccess] = useState(false);
+  const [isRecipeAdmin, setIsRecipeAdmin] = useState(false);
   const [routeLoading, setRouteLoading] = useState<DashboardRouteLoading | null>(null);
   const routeLoadingStartedRef = useRef(0);
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
@@ -357,6 +359,26 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     return () => {
       controller.abort();
       window.removeEventListener("cookbook-access-session-changed", syncCookbookSession);
+    };
+  }, []);
+
+  // Unfinished guides stay listed but inert unless the admin is signed in. The
+  // check is client-side on purpose: reading the cookie in the root layout would
+  // opt every route on the site out of static rendering.
+  useEffect(() => {
+    const controller = new AbortController();
+    const syncAdminSession = () => {
+      void fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+        .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
+        .then((result) => setIsRecipeAdmin(result.authenticated === true))
+        .catch(() => undefined);
+    };
+
+    syncAdminSession();
+    window.addEventListener("recipe-admin-session-changed", syncAdminSession);
+    return () => {
+      controller.abort();
+      window.removeEventListener("recipe-admin-session-changed", syncAdminSession);
     };
   }, []);
 
@@ -474,6 +496,17 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     const isActive = pathname === nodePath && !node.href.includes("#");
 
     if (children.length === 0) {
+      // A draft guide keeps its place in the tree but stops being a link, so
+      // there is nothing to click and nothing to tab onto.
+      if (isUnpublishedGuideHref(node.href) && !isRecipeAdmin) {
+        return (
+          <span className="dashboard-sidebar-unpublished" key={nodeKey}>
+            <span className="dashboard-sidebar-unpublished-label">{node.label}</span>
+            <span className="dashboard-sidebar-unpublished-badge">{UNPUBLISHED_GUIDE_LABEL}</span>
+          </span>
+        );
+      }
+
       return (
         <Link
           className={isActive ? "is-active" : ""}

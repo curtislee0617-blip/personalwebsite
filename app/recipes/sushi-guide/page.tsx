@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import "./sushi-guide.css";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { SectionRail } from "@/components/section-rail";
 import { SushiIngredientAtlas } from "@/components/sushi-ingredient-atlas";
@@ -209,7 +211,11 @@ function TunaCutMap() {
   );
 }
 
-export default function SushiGuidePage() {
+// Still in development: visitors see the entry blurred elsewhere on the site,
+// but the route itself stays shut rather than being reachable by typing the URL.
+export default async function SushiGuidePage() {
+  if (!(await isRecipeAdminAuthenticated())) notFound();
+
   return (
     <div className="guide-page sushi-guide-page">
       <PageIntro

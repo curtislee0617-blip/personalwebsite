@@ -14,6 +14,7 @@ import { getInstagramSavedRecipeCount, getPersonalRecipeCards, getYouTubeSavedRe
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
 import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
+import { isUnpublishedGuideHref, UNPUBLISHED_GUIDE_LABEL } from "@/lib/unpublished-guides";
 import { importedCookbooks, importedCookbookSearchEntries } from "@/lib/imported-cookbooks";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
@@ -446,18 +447,45 @@ export default async function RecipesPage() {
             </div>
 
             <SnapCarousel className="recipe-guide-carousel mobile-snap-carousel -mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0" repeatEdges={false}>
-              {guides.map((entry) => (
-                <Link className="recipe-guide-card swipe-bubble-card w-[20rem] shrink-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" data-spotlight href={entry.href} id={entry.slug} key={entry.slug}>
-                  <GuideVisual slug={entry.slug} />
-                  <div className="recipe-guide-copy swipe-bubble-copy">
-                    <p className="eyebrow">Guide</p>
-                    <div className="recipe-guide-title-row">
-                      <h3>{entry.title}</h3>
+              {guides.map((entry) => {
+                const body = (
+                  <>
+                    <GuideVisual slug={entry.slug} />
+                    <div className="recipe-guide-copy swipe-bubble-copy">
+                      <p className="eyebrow">Guide</p>
+                      <div className="recipe-guide-title-row">
+                        <h3>{entry.title}</h3>
+                      </div>
+                      <p className="recipe-guide-description">{entry.description}</p>
                     </div>
-                    <p className="recipe-guide-description">{entry.description}</p>
-                  </div>
-                </Link>
-              ))}
+                  </>
+                );
+
+                // Drafts stay on the shelf so the run of guides reads honestly,
+                // but they are a div rather than a link: nothing to tab to and
+                // nothing to click. The badge sits outside the blurred content
+                // so it stays legible.
+                if (isUnpublishedGuideHref(entry.href) && !authenticated) {
+                  return (
+                    <div
+                      aria-label={`${entry.title} — ${UNPUBLISHED_GUIDE_LABEL}`}
+                      className="recipe-guide-card recipe-guide-card-unpublished swipe-bubble-card w-[20rem] shrink-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 sm:w-[24rem]"
+                      id={entry.slug}
+                      key={entry.slug}
+                      role="group"
+                    >
+                      <div aria-hidden="true" className="recipe-guide-unpublished-content">{body}</div>
+                      <span className="recipe-guide-unpublished-badge">{UNPUBLISHED_GUIDE_LABEL}</span>
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link className="recipe-guide-card swipe-bubble-card w-[20rem] shrink-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" data-spotlight href={entry.href} id={entry.slug} key={entry.slug}>
+                    {body}
+                  </Link>
+                );
+              })}
             </SnapCarousel>
           </section>
 

@@ -52,7 +52,7 @@ export const recipeEntries: RecipeEntry[] = [
     title: "The science of coffee",
     description:
       "An unfinished guide to coffee botany, processing, roasting, flavour chemistry, terroir, extraction, crema, and water.",
-    status: "published",
+    status: "coming-soon",
     href: "/recipes/coffee-guide",
   },
   {
@@ -61,7 +61,7 @@ export const recipeEntries: RecipeEntry[] = [
     title: "The world of wine",
     description:
       "A comprehensive wine guide covering grape chemistry, vineyards, world regions, varieties, winemaking, still styles, sparkling wine and fortified wine.",
-    status: "published",
+    status: "coming-soon",
     href: "/recipes/wine-guide",
   },
   {

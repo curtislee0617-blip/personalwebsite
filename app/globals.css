@@ -10397,3 +10397,72 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
     transform: translate(-50%, -50%);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Unpublished guides
+
+   Drafts keep their place so the shelf and the nav read honestly about what is
+   coming, but they are rendered as plain elements rather than links: nothing to
+   click, nothing to tab onto. The content is blurred and inert; the badge sits
+   above the blur so the reason stays legible.
+   --------------------------------------------------------------------------- */
+.recipe-guide-card-unpublished { position: relative; cursor: default; }
+
+.recipe-guide-unpublished-content {
+  filter: blur(3.5px) saturate(0.72);
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+}
+
+.recipe-guide-unpublished-badge {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  padding: 0.44rem 0.95rem;
+  border: 1px solid rgb(var(--color-ink) / 0.16);
+  border-radius: 9999px;
+  background: rgb(var(--color-paper) / 0.86);
+  box-shadow: 0 10px 30px rgb(var(--color-ink) / 0.16);
+  color: rgb(var(--color-ink) / 0.72);
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 750;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  -webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+}
+
+/* The sidebar is narrow, so the badge stacks under the label rather than
+   sitting beside it and squeezing the title into an ellipsis. */
+.dashboard-sidebar-unpublished {
+  display: grid;
+  min-width: 0;
+  padding: 0.34rem 0.45rem 0.38rem 0.72rem;
+  gap: 0.1rem;
+  border-left: 1px solid rgb(var(--color-ink) / 0.1);
+  cursor: default;
+}
+
+.dashboard-sidebar-unpublished-label {
+  min-width: 0;
+  overflow: hidden;
+  color: rgb(var(--color-ink) / 0.45);
+  font-size: 0.68rem;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  filter: blur(2px);
+  opacity: 0.75;
+  user-select: none;
+}
+
+.dashboard-sidebar-unpublished-badge {
+  color: rgb(var(--color-ink) / 0.42);
+  font-size: 0.48rem;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
