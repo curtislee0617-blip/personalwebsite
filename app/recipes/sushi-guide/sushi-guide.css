@@ -656,7 +656,7 @@
   border-radius: 0.7rem;
   background: rgb(var(--color-surface) / 0.92);
   box-shadow: 0 0.4rem 1rem rgb(var(--color-ink) / 0.12);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--glass-blur-sm));
 }
 
 .sushi-card-counter-view .sushi-prepared-image {

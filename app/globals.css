@@ -43,7 +43,22 @@
   --shadow-lift: 0 20px 50px rgb(var(--color-ink) / 0.1);
   --motion-fast: 180ms;
   --motion-standard: 280ms;
+  --motion-press: 100ms;
   --ease-standard: cubic-bezier(.22, 1, .36, 1);
+  --ease-emphasis: cubic-bezier(.2, .8, .2, 1);
+  --press-scale: 0.97;
+  --press-scale-card: 0.99;
+  /* Glass. Saturation is what separates a lens from a lid: without it the blur
+     only greys out whatever sits behind the surface. Both fills were set by
+     comparing against the photo grid rather than by eye on a static panel. */
+  --glass-blur-sm: 8px;
+  --glass-blur-md: 14px;
+  --glass-blur-lg: 20px;
+  --glass-saturate: 180%;
+  --glass-fill-top: rgb(var(--color-surface) / 0.62);
+  --glass-fill-bottom: rgb(var(--color-paper) / 0.70);
+  --glass-specular: rgb(255 255 255 / 0.5);
+  --glass-floor: rgb(var(--color-ink) / 0.06);
   --dashboard-sidebar-width: 20.125rem;
   --dashboard-rail-gutter: 2.8rem;
   --color-paper: 250 249 246;
@@ -72,6 +87,12 @@
   --color-map-industrial: 122 176 226;
   --color-map-context: 178 152 224;
   --color-map-port: 224 168 82;
+  /* Dark can afford a thinner fill: light text over a dark panel keeps its
+     contrast as more of the photo grid comes through. */
+  --glass-fill-top: rgb(var(--color-surface) / 0.52);
+  --glass-fill-bottom: rgb(var(--color-paper) / 0.64);
+  --glass-specular: rgb(255 255 255 / 0.16);
+  --glass-floor: rgb(0 0 0 / 0.22);
 }
 
 html { scroll-behavior: smooth; }
@@ -130,15 +151,17 @@ html { scroll-behavior: smooth; }
   padding: 1.1rem 0.85rem 0.9rem;
   flex-direction: column;
   border-right: 1px solid rgb(var(--color-ink) / 0.11);
-  background: rgb(var(--color-paper) / 0.95);
-  box-shadow: 18px 0 55px rgb(var(--color-ink) / 0.06);
+  /* Heavier than the dashboard panel on purpose: this surface carries the small
+     nav type, so it trades some of the photo bleed for legibility. */
+  background: rgb(var(--color-paper) / 0.88);
+  box-shadow: 18px 0 55px rgb(var(--color-ink) / 0.06), inset -1px 0 0 var(--glass-specular);
   opacity: 0;
   pointer-events: none;
   transform: translateX(-102%);
   visibility: hidden;
   transition: transform 520ms cubic-bezier(.16, 1, .3, 1), opacity 320ms ease, visibility 0s linear 520ms;
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
 }
 
 .dashboard-sidebar-profile { min-width: 0; padding: 0.45rem 0.55rem 0.85rem; }
@@ -336,11 +359,14 @@ body {
     gap: 1.2rem;
     border: 1px solid rgb(var(--color-ink) / 0.13);
     border-radius: 1.5rem;
-    background: rgb(var(--color-paper) / 0.86);
-    box-shadow: 0 24px 70px rgb(var(--color-ink) / 0.16);
+    background: linear-gradient(160deg, var(--glass-fill-top), var(--glass-fill-bottom));
+    box-shadow:
+      0 24px 70px rgb(var(--color-ink) / 0.16),
+      inset 0 1px 0 var(--glass-specular),
+      inset 0 -1px 0 var(--glass-floor);
     animation: dashboard-panel-arrive 520ms 80ms cubic-bezier(.16, 1, .3, 1) both;
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
   }
   .home-dashboard-heading { display: grid; align-items: end; gap: 1.5rem; grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem); }
   .home-dashboard-heading > div:first-child { align-self: center; justify-self: start; padding-top: 0.75rem; text-align: left; }
@@ -391,7 +417,7 @@ body {
   transform: translateY(-1px);
 }
 
-.home-dashboard-schedule:active { transform: translateY(-1px) scale(0.97); }
+.home-dashboard-schedule:active { transform: translateY(-1px) scale(var(--press-scale)); }
 
 @media (prefers-reduced-motion: reduce) {
   .home-dashboard-schedule { transition: none; }
@@ -794,8 +820,8 @@ body.has-page-cursor * { cursor: inherit; }
   padding: clamp(0.65rem, 2vw, 1.5rem);
   place-items: center;
   background: rgb(8 10 12 / 0.82);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(var(--glass-blur-md));
+  backdrop-filter: blur(var(--glass-blur-md));
 }
 
 .recipe-image-viewer-dialog {
@@ -1618,12 +1644,12 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-hollywood-beam-center { width: 3.4%; height: 34%; transform: translate(4%, -22%) rotate(-6deg); opacity: 0.74; animation: hollywoodSpotlightCenter 4.8s ease-in-out infinite alternate; }
 .contact-hollywood-glow { position: absolute; left: 76.2%; top: 48.7%; width: 12.5%; height: 10%; border-radius: 9999px; background: radial-gradient(circle, rgb(255 246 194 / 0.46), rgb(255 235 151 / 0.16) 44%, transparent 72%); filter: blur(1px); opacity: 0.7; animation: hollywoodSignGlow 3.6s ease-in-out infinite alternate; }
 .contact-presence-controls { position: absolute; right: clamp(0.7rem, 3.2%, 1rem); top: clamp(0.7rem, 4%, 1rem); z-index: 30; display: flex; align-items: flex-start; justify-content: flex-end; gap: 0.42rem; pointer-events: none; }
-.contact-presence-public-note { max-width: min(16rem, 52vw); overflow: hidden; padding: 0.34rem 0.55rem; border-radius: 0.58rem; background: rgb(var(--color-paper) / 0.72); box-shadow: 0 4px 16px rgb(8 18 31 / 0.1); color: rgb(var(--color-ink) / 0.72); font-family: var(--font-ui); font-size: clamp(0.48rem, 0.78vw, 0.58rem); font-weight: 650; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; backdrop-filter: blur(7px); pointer-events: auto; }
-.contact-presence-edit-button { display: grid; width: 1.72rem; aspect-ratio: 1; flex: none; place-items: center; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 50%; background: rgb(var(--color-paper) / 0.8); box-shadow: 0 4px 14px rgb(8 18 31 / 0.1); color: rgb(var(--color-ink) / 0.58); backdrop-filter: blur(7px); pointer-events: auto; transition: border-color 160ms ease, color 160ms ease, transform 160ms ease; }
+.contact-presence-public-note { max-width: min(16rem, 52vw); overflow: hidden; padding: 0.34rem 0.55rem; border-radius: 0.58rem; background: rgb(var(--color-paper) / 0.72); box-shadow: 0 4px 16px rgb(8 18 31 / 0.1); color: rgb(var(--color-ink) / 0.72); font-family: var(--font-ui); font-size: clamp(0.48rem, 0.78vw, 0.58rem); font-weight: 650; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; backdrop-filter: blur(var(--glass-blur-sm)); pointer-events: auto; }
+.contact-presence-edit-button { display: grid; width: 1.72rem; aspect-ratio: 1; flex: none; place-items: center; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 50%; background: rgb(var(--color-paper) / 0.8); box-shadow: 0 4px 14px rgb(8 18 31 / 0.1); color: rgb(var(--color-ink) / 0.58); backdrop-filter: blur(var(--glass-blur-sm)); pointer-events: auto; transition: border-color 160ms ease, color 160ms ease, transform 160ms ease; }
 .contact-presence-edit-button:hover,
 .contact-presence-edit-button[aria-expanded="true"] { border-color: rgb(224 169 44 / 0.72); color: #b27613; transform: translateY(-1px); }
 .contact-presence-edit-button svg { width: 0.88rem; }
-.contact-presence-editor { position: absolute; right: 0; top: calc(100% + 0.46rem); width: min(17rem, calc(100vw - 3rem)); padding: 0.78rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 0.9rem; background: rgb(var(--color-surface) / 0.97); box-shadow: 0 18px 45px rgb(7 15 26 / 0.22); color: rgb(var(--color-ink)); font-family: var(--font-ui); pointer-events: auto; backdrop-filter: blur(14px); }
+.contact-presence-editor { position: absolute; right: 0; top: calc(100% + 0.46rem); width: min(17rem, calc(100vw - 3rem)); padding: 0.78rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 0.9rem; background: rgb(var(--color-surface) / 0.97); box-shadow: 0 18px 45px rgb(7 15 26 / 0.22); color: rgb(var(--color-ink)); font-family: var(--font-ui); pointer-events: auto; backdrop-filter: blur(var(--glass-blur-md)); }
 .contact-presence-editor-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .contact-presence-editor-heading > div { display: grid; gap: 0.1rem; }
 .contact-presence-editor-heading span,
@@ -1661,8 +1687,8 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-presence-city-targets[data-editing="true"] .contact-presence-travel-target[aria-pressed="true"] { border-color: rgb(255 197 45 / 0.98); background: rgb(255 213 83 / 0.13); }
 .contact-presence-travel-target span { position: absolute; right: 0.3rem; top: 0.3rem; padding: 0.18rem 0.38rem; border-radius: 9999px; background: rgb(29 32 35 / 0.78); color: #fff3bf; font-family: var(--font-ui); font-size: 0.48rem; font-weight: 700; letter-spacing: 0.015em; text-rendering: geometricPrecision; white-space: nowrap; -webkit-font-smoothing: antialiased; }
 .contact-travelling-presence { position: absolute; right: clamp(0.75rem, 4.5%, 1.55rem); top: clamp(0.8rem, 6%, 1.2rem); z-index: 8; display: grid; width: clamp(0.78rem, 1.5vw, 0.945rem); justify-items: center; pointer-events: none; }
-.contact-travelling-presence-person { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 2px rgb(54 34 0 / 0.2)); image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.contact-travelling-presence-location { position: absolute; right: 0; left: auto; top: calc(100% + 0.18rem); display: block; width: max-content; max-width: min(10rem, calc(100vw - 2rem)); padding: 0; overflow: hidden; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--travelling-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 0.72; text-align: right; text-overflow: ellipsis; text-rendering: geometricPrecision; text-shadow: 0 1px 2px var(--travelling-label-shadow); text-transform: uppercase; transform: none; white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-travelling-presence-person { display: block; width: 100%; height: auto; filter: drop-shadow(0 2px 2px rgb(54 34 0 / 0.2)); image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms var(--ease-emphasis) both; }
+.contact-travelling-presence-location { position: absolute; right: 0; left: auto; top: calc(100% + 0.18rem); display: block; width: max-content; max-width: min(10rem, calc(100vw - 2rem)); padding: 0; overflow: hidden; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--travelling-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 0.72; text-align: right; text-overflow: ellipsis; text-rendering: geometricPrecision; text-shadow: 0 1px 2px var(--travelling-label-shadow); text-transform: uppercase; transform: none; white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms var(--ease-emphasis) both; }
 .contact-city-time-row { --contact-clock-scale: 1; position: absolute; inset: auto 0 5.2% 0; z-index: 8; height: 2.8rem; color: rgb(var(--color-ink)); pointer-events: none; }
 .contact-city-clock { position: absolute; top: 0; left: var(--contact-clock-x); min-width: 0; text-shadow: none; transform: translateX(-50%) scale(var(--contact-clock-scale)); transform-origin: top center; }
 .contact-city-clock-hk { --contact-clock-x: 83.4%; top: 0.31rem; display: grid; justify-items: center; color: var(--hk-clock-color); text-shadow: 0 0 7px rgb(104 173 255 / calc(0.22 * var(--hk-night))); }
@@ -1699,8 +1725,8 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-clock-la > .contact-city-presence { left: 76%; }
 .contact-city-clock-hk > .contact-city-presence { left: 25%; }
 .contact-city-clock-copy > .contact-city-presence { left: 50%; bottom: calc(100% - 0.5rem); width: clamp(2.9rem, 5.62vw, 3.45rem); transform: translateX(-50%) rotate(-1.5deg); }
-.contact-city-presence-person { display: block; width: 100%; height: auto; image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.contact-city-presence-sign { position: absolute; left: 42%; bottom: 63%; display: grid; min-width: 2.16rem; min-height: 0.9rem; padding: 0.144rem 0.234rem; place-items: center; border: 1.8px solid rgb(149 105 26 / 0.88); border-radius: 0.324rem; background: #fff0b4; box-shadow: 0 1.8px 3.6px rgb(92 59 4 / 0.22), 1.8px 1.8px 0 rgb(182 124 22 / 0.72); color: #49320b; font-family: var(--font-ui); font-size: 0.54rem; font-weight: 800; letter-spacing: 0; line-height: 1; text-rendering: geometricPrecision; text-shadow: none; transform: translateX(-50%) rotate(-2deg); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.contact-city-presence-person { display: block; width: 100%; height: auto; image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms var(--ease-emphasis) both; }
+.contact-city-presence-sign { position: absolute; left: 42%; bottom: 63%; display: grid; min-width: 2.16rem; min-height: 0.9rem; padding: 0.144rem 0.234rem; place-items: center; border: 1.8px solid rgb(149 105 26 / 0.88); border-radius: 0.324rem; background: #fff0b4; box-shadow: 0 1.8px 3.6px rgb(92 59 4 / 0.22), 1.8px 1.8px 0 rgb(182 124 22 / 0.72); color: #49320b; font-family: var(--font-ui); font-size: 0.54rem; font-weight: 800; letter-spacing: 0; line-height: 1; text-rendering: geometricPrecision; text-shadow: none; transform: translateX(-50%) rotate(-2deg); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms var(--ease-emphasis) both; }
 .contact-city-presence-sign::after { content: ""; position: absolute; left: 52%; top: 100%; width: 1.8px; height: 0.414rem; background: #95691a; transform: translateX(-50%); }
 
 .section-loading {
@@ -1725,7 +1751,7 @@ body.has-page-cursor * { cursor: inherit; }
   background: linear-gradient(145deg, rgb(var(--color-surface) / 0.78), rgb(var(--color-surface) / 0.48));
   padding: clamp(1.2rem, 4vw, 2rem);
   box-shadow: 0 24px 70px rgb(var(--color-ink) / 0.1);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(var(--glass-blur-md));
 }
 
 .dark .section-loading-card {
@@ -2376,7 +2402,7 @@ body.has-page-cursor * { cursor: inherit; }
 @media (hover: hover) {
   .project-card:hover { transform: translate3d(0, -2px, 0); }
 }
-.project-card-number { position: absolute; left: 0.8rem; top: 0.8rem; display: grid; min-width: 2rem; height: 2rem; padding: 0 0.5rem; place-items: center; border-radius: 9999px; background: rgb(var(--color-paper) / 0.9); box-shadow: 0 8px 24px rgb(var(--color-ink) / 0.13); color: rgb(var(--color-ink) / 0.56); font-size: 0.62rem; font-weight: 700; backdrop-filter: blur(8px); }
+.project-card-number { position: absolute; left: 0.8rem; top: 0.8rem; display: grid; min-width: 2rem; height: 2rem; padding: 0 0.5rem; place-items: center; border-radius: 9999px; background: rgb(var(--color-paper) / 0.9); box-shadow: 0 8px 24px rgb(var(--color-ink) / 0.13); color: rgb(var(--color-ink) / 0.56); font-size: 0.62rem; font-weight: 700; backdrop-filter: blur(var(--glass-blur-sm)); }
 .project-card-copy { padding: 1.25rem; }
 .project-card-copy h2 { font-size: 1.2rem; font-weight: 600; line-height: 1.18; letter-spacing: -0.025em; }
 .project-card-copy div > span { flex: none; color: rgb(var(--color-moss)); font-size: 0.85rem; }
@@ -2904,10 +2930,10 @@ html.dashboard-mode .section-rail {
 .recipe-media-organizer-preview video {
   filter: saturate(1.22) contrast(1.04);
 }
-.recipe-media-video > button { position: absolute; right: 0.55rem; bottom: 0.55rem; padding: 0.38rem 0.65rem; border: 1px solid rgb(var(--color-paper) / 0.45); border-radius: 9999px; background: rgb(var(--color-ink) / 0.76); color: rgb(var(--color-paper)); font-size: 0.58rem; font-weight: 750; backdrop-filter: blur(8px); }
-.recipe-media-trim-label { position: absolute; z-index: 2; top: 0.5rem; right: 0.5rem; padding: 0.28rem 0.48rem; border-radius: 9999px; background: rgb(var(--color-ink) / 0.72); color: rgb(var(--color-paper)); font-size: 0.48rem; font-weight: 750; backdrop-filter: blur(8px); }
+.recipe-media-video > button { position: absolute; right: 0.55rem; bottom: 0.55rem; padding: 0.38rem 0.65rem; border: 1px solid rgb(var(--color-paper) / 0.45); border-radius: 9999px; background: rgb(var(--color-ink) / 0.76); color: rgb(var(--color-paper)); font-size: 0.58rem; font-weight: 750; backdrop-filter: blur(var(--glass-blur-sm)); }
+.recipe-media-trim-label { position: absolute; z-index: 2; top: 0.5rem; right: 0.5rem; padding: 0.28rem 0.48rem; border-radius: 9999px; background: rgb(var(--color-ink) / 0.72); color: rgb(var(--color-paper)); font-size: 0.48rem; font-weight: 750; backdrop-filter: blur(var(--glass-blur-sm)); }
 .recipe-media-caption,
-.recipe-media-video figcaption { position: absolute; z-index: 2; left: 0.6rem; bottom: 0.6rem; max-width: calc(100% - 5.5rem); padding: 0.34rem 0.55rem; border-radius: 0.55rem; background: rgb(var(--color-ink) / 0.68); color: rgb(var(--color-paper)); font-size: 0.56rem; font-weight: 650; line-height: 1.35; text-align: left; text-shadow: 0 1px 4px rgb(0 0 0 / 0.35); backdrop-filter: blur(8px); }
+.recipe-media-video figcaption { position: absolute; z-index: 2; left: 0.6rem; bottom: 0.6rem; max-width: calc(100% - 5.5rem); padding: 0.34rem 0.55rem; border-radius: 0.55rem; background: rgb(var(--color-ink) / 0.68); color: rgb(var(--color-paper)); font-size: 0.56rem; font-weight: 650; line-height: 1.35; text-align: left; text-shadow: 0 1px 4px rgb(0 0 0 / 0.35); backdrop-filter: blur(var(--glass-blur-sm)); }
 .recipe-card-structured-content,
 .recipe-card-nested-content { display: grid; gap: 1.25rem; }
 @media (min-width: 768px) {
@@ -3139,7 +3165,7 @@ html.dashboard-mode .section-rail {
 .recipe-link-picker-options small { display: -webkit-box; overflow: hidden; color: rgb(var(--color-ink) / 0.43); font-size: 0.52rem; line-height: 1.35; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .recipe-link-picker-options input { width: 0.9rem; height: 0.9rem; accent-color: rgb(var(--color-moss)); }
 .recipe-link-picker-options > p { padding: 1rem; color: rgb(var(--color-ink) / 0.42); font-size: 0.65rem; }
-.recipe-editor-savebar { position: sticky; bottom: 0.75rem; z-index: 5; display: flex; padding: 0.7rem 0.8rem; align-items: center; justify-content: space-between; gap: 1rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 1rem; background: rgb(var(--color-paper) / 0.88); box-shadow: 0 12px 34px rgb(var(--color-ink) / 0.12); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.recipe-editor-savebar { position: sticky; bottom: 0.75rem; z-index: 5; display: flex; padding: 0.7rem 0.8rem; align-items: center; justify-content: space-between; gap: 1rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 1rem; background: rgb(var(--color-paper) / 0.88); box-shadow: 0 12px 34px rgb(var(--color-ink) / 0.12); -webkit-backdrop-filter: blur(var(--glass-blur-md)); backdrop-filter: blur(var(--glass-blur-md)); }
 .recipe-editor-savebar p { color: rgb(var(--color-ink) / 0.42); font-size: 0.58rem; }
 .recipe-editor-savebar button { padding: 0.65rem 1rem; border-radius: 9999px; background: rgb(var(--color-ink)); color: rgb(var(--color-paper)); font-size: 0.66rem; font-weight: 750; transition: background-color 180ms ease, transform 180ms ease; }
 .recipe-editor-savebar button:hover { background: rgb(var(--color-moss)); transform: translateY(-1px); }
@@ -3496,9 +3522,9 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   pointer-events: none;
   transform: scale(0.82);
   transform-origin: calc(100% - 1.5rem) 1.5rem;
-  transition: opacity 220ms ease, transform 320ms cubic-bezier(.2, .8, .2, 1);
-  -webkit-backdrop-filter: blur(18px);
-  backdrop-filter: blur(18px);
+  transition: opacity 220ms ease, transform 320ms var(--ease-emphasis);
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+  backdrop-filter: blur(var(--glass-blur-lg));
 }
 
 .site-menu-panel.is-open {
@@ -3806,7 +3832,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   padding: 2rem;
   background: rgb(var(--color-mist) / 0.88);
   text-align: center;
-  backdrop-filter: blur(7px);
+  backdrop-filter: blur(var(--glass-blur-sm));
 }
 
 .restaurant-map-message > span {
@@ -3864,7 +3890,7 @@ html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index
   border-radius: 1.25rem;
   background: rgb(var(--color-paper) / 0.9);
   box-shadow: 0 16px 42px rgb(var(--color-ink) / 0.17);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--glass-blur-md));
 }
 
 .restaurant-card-emoji {
@@ -4902,12 +4928,19 @@ div.restaurant-results-limit {
     gap: clamp(0.75rem, 1.8vw, 1rem);
     border: 1px solid rgb(var(--color-ink) / 0.13);
     border-radius: 1.3rem;
-    background: rgb(var(--color-paper) / 0.88);
-    box-shadow: 0 20px 58px rgb(var(--color-ink) / 0.15);
+    background: linear-gradient(160deg, var(--glass-fill-top), var(--glass-fill-bottom));
+    box-shadow:
+      0 20px 58px rgb(var(--color-ink) / 0.15),
+      inset 0 1px 0 var(--glass-specular),
+      inset 0 -1px 0 var(--glass-floor);
     animation: dashboard-panel-arrive 520ms 80ms cubic-bezier(.16, 1, .3, 1) both;
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
   }
+
+  /* This breakpoint lifts cards 1px where desktop lifts 2px; the press
+     composition below reads the value rather than assuming one. */
+  .home-dashboard-grid > a { --card-lift: -1px; }
 
   .home-dashboard-heading {
     display: grid;
@@ -5159,8 +5192,8 @@ div.restaurant-results-limit {
     transform-origin: center;
     filter: blur(var(--mobile-bubble-blur, 0.28px));
     transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(var(--glass-blur-md));
+    backdrop-filter: blur(var(--glass-blur-md));
     will-change: transform, opacity, filter;
   }
   .home-mobile-link[data-active="true"] {
@@ -6056,7 +6089,7 @@ details.modernist-original-layout > summary::-webkit-details-marker {
   border-radius: 1.2rem;
   background: rgb(var(--color-surface) / 0.98);
   box-shadow: 0 18px 50px rgb(var(--color-ink) / 0.14);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(var(--glass-blur-lg));
 }
 
 .recipe-library-search-status {
@@ -8425,7 +8458,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   border-radius: 1.35rem;
   background: rgb(4 17 52 / 0.78);
   box-shadow: 0 24px 65px rgb(0 0 0 / 0.25);
-  backdrop-filter: blur(13px);
+  backdrop-filter: blur(var(--glass-blur-md));
 }
 
 .towngas-hero-basis-number {
@@ -8493,7 +8526,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   z-index: 50;
   border-bottom: 1px solid var(--tg-line);
   background: rgb(250 249 246 / 0.93);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(var(--glass-blur-lg));
 }
 
 .towngas-local-nav .towngas-shell {
@@ -10260,4 +10293,107 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .towngas-recipe-figure li > span { grid-template-columns: minmax(0, 1fr) 3.8rem; }
   .towngas-cost-split li { grid-template-columns: minmax(7rem, 1fr) 2.4rem; }
   .towngas-cost-split li i { display: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Glass fallback
+
+   The dashboard fills sit low enough now that a browser without backdrop-filter
+   would render washed-out transparency over the photo grid instead of a panel.
+   Those browsers get an opaque surface. Declared late so it wins on ties.
+   --------------------------------------------------------------------------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html.dashboard-mode .home-dashboard-panel,
+  .home-dashboard-panel,
+  .dashboard-sidebar,
+  .site-menu-panel {
+    background: rgb(var(--color-paper) / 0.97);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Press feedback
+
+   Hover answers a mouse, but touch had no acknowledgement at all: a tap did
+   nothing until the next page painted. Controls now dip briefly under a press.
+
+   Anything that already owns a transform composes it here rather than being
+   overwritten — the sidebar disclosure keeps its rotation, hover-lifted cards
+   keep the lift, and the mobile bubbles keep the scroll-driven arc that JS
+   feeds through --mobile-arc-x and --mobile-bubble-scale.
+   --------------------------------------------------------------------------- */
+
+/* These had no transform in their transition, so the existing properties are
+   restated with transform added rather than replaced. */
+.footer-link { transition: color var(--motion-fast) ease, transform var(--motion-press) var(--ease-standard); }
+.site-menu-button { transition: transform var(--motion-press) var(--ease-standard); }
+.dashboard-sidebar-row > a,
+.dashboard-sidebar-group-row > a { transition: color 160ms ease, transform var(--motion-press) var(--ease-standard); }
+.dashboard-sidebar-group-row > button,
+.dashboard-sidebar-tree-row > button { transition: background-color 160ms ease, color 160ms ease, transform var(--motion-press) var(--ease-standard); }
+.dashboard-sidebar-leaves a { transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease, transform var(--motion-press) var(--ease-standard); }
+
+.footer-link:active,
+.site-menu-button:active,
+.dashboard-sidebar-row > a:active,
+.dashboard-sidebar-group-row > a:active,
+.dashboard-sidebar-group-row > button:active,
+.dashboard-sidebar-tree-row > button:active,
+.dashboard-sidebar-leaves a:active {
+  transform: scale(var(--press-scale));
+}
+
+/* Wide surfaces dip less — a full 0.97 across a card reads as a lurch. The lift
+   comes from --card-lift so each breakpoint keeps its own value. */
+.home-dashboard-grid > a:active,
+.project-card:active { transform: translate3d(0, 0, 0) scale(var(--press-scale-card)); }
+.home-dashboard-grid > a:hover:active { transform: translateY(var(--card-lift, -2px)) scale(var(--press-scale-card)); }
+.project-card:hover:active { transform: translate3d(0, -2px, 0) scale(var(--press-scale-card)); }
+
+/* The disclosure chevron rotates while its section is open; keep it turned. */
+.dashboard-sidebar-row > button:active { transform: scale(var(--press-scale)); }
+.dashboard-sidebar-row > button[aria-expanded="true"]:active { transform: rotate(180deg) scale(var(--press-scale)); }
+
+/* The theme toggle declares its hover transform with !important. */
+.dashboard-theme-toggle:active { transform: translateY(-1px) scale(var(--press-scale)) !important; }
+
+/* The bubble's transform is scroll-driven, so the press multiplies into the
+   carousel's own scale instead of replacing it. Deliberately no transform
+   transition: one would smear the per-frame arc update. */
+.home-mobile-link:active {
+  transform:
+    translate3d(calc(-50% + var(--mobile-arc-x, -2.4rem)), 0, 0)
+    scale(calc(var(--mobile-bubble-scale, 0.9) * var(--press-scale)));
+}
+
+/* One switch retires every press dip above, including any added later. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --press-scale: 1; --press-scale-card: 1; }
+}
+
+/* ---------------------------------------------------------------------------
+   Touch targets
+
+   The disclosure chevrons render at 21–27px and the footer links at 24px, well
+   under the 44px comfortable minimum. The glyphs keep their size; only the hit
+   area grows, and only where the pointer is actually coarse, so the desktop
+   footer stays compact.
+   --------------------------------------------------------------------------- */
+@media (hover: none) and (pointer: coarse) {
+  .footer-link { min-height: 2.75rem; }
+  .dashboard-sidebar-row { min-height: 2.75rem; }
+  .dashboard-sidebar-row > button,
+  .dashboard-sidebar-group-row > button,
+  .dashboard-sidebar-tree-row > button { position: relative; }
+  .dashboard-sidebar-row > button::after,
+  .dashboard-sidebar-group-row > button::after,
+  .dashboard-sidebar-tree-row > button::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    transform: translate(-50%, -50%);
+  }
 }

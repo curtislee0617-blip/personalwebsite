@@ -61,7 +61,7 @@
   border-radius: 0.65rem;
   background: rgb(250 247 239 / 0.78);
   color: rgb(62 47 36 / 0.66);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--glass-blur-sm));
   pointer-events: none;
 }
 
@@ -734,7 +734,7 @@
   border-radius: 0.48rem;
   background: rgb(249 247 240 / 0.92);
   box-shadow: 0 0.18rem 0.6rem rgb(18 26 22 / 0.18);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--glass-blur-sm));
   text-align: left;
 }
 
@@ -899,7 +899,7 @@
   padding: 0.32rem 0.48rem;
   color: rgb(var(--color-ink) / 0.58);
   box-shadow: 0 0.18rem 0.62rem rgb(18 26 22 / 0.16);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(var(--glass-blur-sm));
   font-size: 0.48rem;
   line-height: 1.4;
   pointer-events: none;
