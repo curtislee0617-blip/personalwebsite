@@ -22,6 +22,11 @@ const homeLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+// The command centre is private, so it stays out of homeLinks — and therefore out of the
+// public nav — and is added to the two home surfaces on its own. Appended last so the
+// existing indices, and the Contact bubble that mobileInitialIndex centres, do not shift.
+const scheduleLink = { href: "/command-center", label: "Schedule" };
+
 const mobileHomeLinks = [
   homeLinks[0],
   homeLinks[1],
@@ -29,6 +34,7 @@ const mobileHomeLinks = [
   homeLinks[2],
   homeLinks[4],
   homeLinks[3],
+  scheduleLink,
 ];
 
 const mobileInitialIndex = 2;
@@ -78,7 +84,7 @@ export function HomeLanding({ photos }: { photos: string[] }) {
   const [entryMode, setEntryMode] = useState<"pending" | "center" | "mobile-return">("pending");
   const [mobileActiveIndex, setMobileActiveIndex] = useState(mobileInitialIndex);
   const [isDark, setIsDark] = useState(false);
-  const linkCursors = useMemo(() => new Map(homeLinks.map((item) => {
+  const linkCursors = useMemo(() => new Map([...homeLinks, scheduleLink].map((item) => {
     const match = pageCursors.find((entry) => entry.match(item.href));
     return [item.href, match ? cursorCss(match, isDark) : undefined];
   })), [isDark]);
@@ -305,6 +311,17 @@ export function HomeLanding({ photos }: { photos: string[] }) {
           <div>
             <p className="eyebrow">Dashboard</p>
             <h1>Quick access</h1>
+            <Link
+              className="home-dashboard-schedule"
+              href={scheduleLink.href}
+              onPointerEnter={() => prefetchRoute(scheduleLink.href)}
+              style={{ cursor: linkCursors.get(scheduleLink.href) }}
+            >
+              {navIconForPath(scheduleLink.href) && (
+                <img alt="" aria-hidden="true" src={navIconForPath(scheduleLink.href) ?? undefined} />
+              )}
+              <span>{scheduleLink.label}</span>
+            </Link>
           </div>
           <div className="home-dashboard-pixel-art">
             <ContactPresenceProvider readOnly>

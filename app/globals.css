@@ -360,6 +360,45 @@ body {
   .home-dashboard-pixel-art > .home-dashboard-pixel-artwork { min-height: 0; }
 }
 
+/* Command centre entry point. Defined outside the dashboard media queries because the panel
+   that holds it is only rendered on tablet and desktop anyway; phones reach the same route
+   through the Schedule bubble in the mobile carousel. */
+.home-dashboard-schedule {
+  display: inline-flex;
+  margin-top: 0.7rem;
+  padding: 0.4rem 0.85rem 0.4rem 0.6rem;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgb(var(--color-moss) / 0.38);
+  border-radius: 9999px;
+  background: rgb(var(--color-moss) / 0.1);
+  color: rgb(var(--color-moss));
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1;
+  transition:
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+.home-dashboard-schedule img { width: 0.85rem; height: 0.85rem; flex: none; object-fit: contain; }
+
+.home-dashboard-schedule:hover {
+  border-color: rgb(var(--color-moss) / 0.6);
+  background: rgb(var(--color-moss) / 0.16);
+  transform: translateY(-1px);
+}
+
+.home-dashboard-schedule:active { transform: translateY(-1px) scale(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .home-dashboard-schedule { transition: none; }
+  .home-dashboard-schedule:hover,
+  .home-dashboard-schedule:active { transform: none; }
+}
+
 @keyframes dashboard-panel-arrive {
   from { opacity: 0; transform: translateY(1rem) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }

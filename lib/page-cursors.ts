@@ -32,6 +32,20 @@ function magnifier(ring: string, handle: string, glass: string) {
   );
 }
 
+// Clock face — the command centre. Drawn upright rather than leaning, since a tilted clock
+// reads as a broken one.
+function clock(ring: string, face: string, hands: string) {
+  return icon(
+    `
+    <circle cx='14' cy='14' r='10' fill='${face}' stroke='${ring}' stroke-width='2'/>
+    <line x1='14' y1='14' x2='14' y2='7.8' stroke='${hands}' stroke-width='2.2' stroke-linecap='round'/>
+    <line x1='14' y1='14' x2='18.4' y2='16.2' stroke='${hands}' stroke-width='2.2' stroke-linecap='round'/>
+  `,
+    28,
+    24,
+  );
+}
+
 export const pageCursors: PageCursorConfig[] = [
   {
     // Compass — home (needle points at the top-left contact point; light face + halo so it
@@ -94,6 +108,13 @@ export const pageCursors: PageCursorConfig[] = [
     svg: magnifier("#9ba1a8", "#000000", "none"),
     svgDark: magnifier("#eaf1f6", "#cfd6dd", "rgba(255,255,255,0.08)"),
     hotspot: [5, 3],
+  },
+  {
+    // Clock — the private command centre.
+    match: (path) => path.startsWith("/command-center"),
+    svg: clock("#5b636c", "#f2f3f4", "#3a3f45"),
+    svgDark: clock("#cfd6dd", "rgba(255,255,255,0.10)", "#eaf1f6"),
+    hotspot: [7, 7],
   },
 ];
 
