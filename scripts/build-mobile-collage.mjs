@@ -5,13 +5,15 @@ import sharp from "sharp";
 const root = process.cwd();
 const photosDirectory = path.join(root, "public", "photos");
 const outputPath = path.join(root, "public", "mobile-photo-collage.webp");
+const mobilePixelArtOutputPath = path.join(root, "public", "contact-cities-pixel-art-mobile.webp");
+const pixelArtSourcePath = path.join(root, "public", "contact-cities-pixel-art-v2.png");
 const manifestPath = path.join(root, "data", "home-photos.json");
 const logoPath = path.join(root, "public", "logos", "caltech-collage-orange.png");
 const supportedImage = /\.(avif|gif|jpe?g|png|webp)$/i;
-const columns = 18;
-const rows = 5;
-const tileWidth = 96;
-const tileHeight = 128;
+const columns = 24;
+const rows = 10;
+const tileWidth = 56;
+const tileHeight = 64;
 
 function score(name) {
   let hash = 2166136261;
@@ -41,7 +43,7 @@ const composites = await Promise.all(
     const input = await sharp(source)
       .rotate()
       .resize(tileWidth, tileHeight, { fit: "cover", position: "centre" })
-      .webp({ quality: 58, effort: 4, smartSubsample: true })
+      .webp({ quality: 46, effort: 5, smartSubsample: true })
       .toBuffer();
 
     return {
@@ -61,7 +63,13 @@ await sharp({
   },
 })
   .composite(composites)
-  .webp({ quality: 58, effort: 6, smartSubsample: true })
+  .webp({ quality: 46, effort: 6, smartSubsample: true })
   .toFile(outputPath);
 
-console.log(`Created ${path.relative(root, outputPath)} (${columns} × ${rows} tiles).`);
+await sharp(pixelArtSourcePath)
+  .resize(640, 274, { fit: "fill" })
+  .webp({ quality: 54, effort: 6, smartSubsample: true })
+  .toFile(mobilePixelArtOutputPath);
+
+console.log(`Created ${path.relative(root, outputPath)} (${columns} × ${rows} low-resolution tiles).`);
+console.log(`Created ${path.relative(root, mobilePixelArtOutputPath)} for the mobile dashboard screen.`);

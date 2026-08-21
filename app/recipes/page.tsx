@@ -330,7 +330,7 @@ const importedRecipeBookGroups: Record<string, RecipeBookGroupId> = {
 function RecipeBookCard({ book }: { book: RecipeBookCardData }) {
   return (
     <Link
-      className="design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
+      className="recipe-book-card design-card group overflow-hidden rounded-[2rem] border border-ink/10 bg-surface/55 p-3"
       data-reveal
       data-spotlight
       href={book.href}

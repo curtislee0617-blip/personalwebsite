@@ -62,7 +62,7 @@ type DashboardRouteLoading = {
 
 export const dashboardSections: readonly DashboardSection[] = [
   {
-    href: "/about", label: "CV", subtitle: "Education, experience, interests, and life beyond the lab.",
+    href: "/about", label: "CV", subtitle: "I think the title is self explanatory",
     groups: [
       { href: "/about#about-education", label: "Background", items: [{ href: "/about#about-education", label: "Education" }, { href: "/about#about-experience", label: "Experience" }] },
       { href: "/about#about-awards", label: "Profile", items: [{ href: "/about#about-awards", label: "Awards" }, { href: "/about#about-beyond", label: "Beyond the lab" }, { href: "/about#about-languages", label: "Languages" }, { href: "/about#about-skills", label: "Skills" }] },
@@ -70,14 +70,14 @@ export const dashboardSections: readonly DashboardSection[] = [
     ],
   },
   {
-    href: "/projects", label: "Projects", subtitle: "Engineering, research, writing, and creative work.",
+    href: "/projects", label: "Projects", subtitle: "Engineering, research and creative stuff",
     groups: [
       { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/supercritical-water-gasification", label: "SCWG-OXZEO gasification" }, { href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
       { href: "/projects#creative-projects-title", label: "Creative & enterprise", items: [{ href: "/projects/cook-enterprise", label: "cook.enterprise" }, { href: "/projects#creative-projects-title", label: "Website" }, { href: "/projects#pixel-art-cities", label: "Pixel-art cities" }] },
     ],
   },
   {
-    href: "/tools", label: "Tools", subtitle: "Calculators and utilities for school—and perhaps more later.",
+    href: "/tools", label: "Tools", subtitle: "Utilities for school, and more coming soon :)",
     groups: [
       { href: "/tools", label: "Planning", items: [{ href: "/tools/course-planner", label: "Course planner" }] },
       { href: "/tools", label: "Chemistry", items: [{ href: "/tools/ir-spectrum", label: "IR spectrum plotter" }, { href: "/tools/nmr-spectrum", label: "NMR spectrum processor" }] },
@@ -182,7 +182,7 @@ export const dashboardSections: readonly DashboardSection[] = [
     ],
   },
   {
-    href: "/contact", label: "Contact", subtitle: "Say hello, send feedback, or see where I am.",
+    href: "/contact", label: "Contact", subtitle: "Do reach out!",
     groups: [
       { href: "/contact#contact-cities", label: "Where I am", items: [{ href: "/contact#contact-cities", label: "Cities & local time" }] },
       { href: "/contact#contact-links", label: "Reach me", items: [{ href: "/contact#contact-links", label: "Email & social links" }, { href: "/recipes/feedback", label: "Website feedback" }] },
