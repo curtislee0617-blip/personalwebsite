@@ -108,7 +108,7 @@ export function SiteHeader() {
       </button>
 
       <div id="site-menu-panel" className={`site-menu-panel ${open ? "is-open" : ""}`} aria-hidden={!open} ref={panelRef}>
-        <div className="mb-5 flex items-center justify-between border-b border-ink/10 pb-4">
+        <div className="site-menu-titlebar mb-5 flex items-center justify-between border-b border-ink/10 pb-4">
           <Link
             href="/"
             className="font-serif text-xl"
@@ -120,7 +120,7 @@ export function SiteHeader() {
           </Link>
           <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-ink/40">Explore</span>
         </div>
-        <nav className="grid grid-cols-2 gap-2" aria-label="Primary navigation">
+        <nav className="site-menu-nav grid grid-cols-2 gap-2" aria-label="Primary navigation">
           {links.map(([href, label]) => {
             const icon = navIconForPath(href);
             return (
@@ -131,7 +131,7 @@ export function SiteHeader() {
                 onFocus={() => prefetchRoute(href)}
                 onPointerEnter={() => prefetchRoute(href)}
                 tabIndex={open ? 0 : -1}
-                className={`flex items-center gap-2 rounded-2xl px-4 py-3 text-sm transition ${pathname === href ? "bg-ink text-paper" : "bg-ink/[0.04] text-ink/65 hover:bg-ink/[0.08] hover:text-ink"}`}
+                className={`site-menu-link flex items-center gap-2 rounded-2xl px-4 py-3 text-sm ${pathname === href ? "is-active" : ""}`}
               >
                 {icon && <img alt="" aria-hidden="true" className="h-4 w-4 shrink-0 object-contain" src={icon} />}
                 {label}

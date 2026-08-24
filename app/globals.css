@@ -3194,47 +3194,53 @@ html.dashboard-mode .section-rail {
 .tool-planner-grid .is-filled { background: rgb(var(--color-moss) / 0.22); color: rgb(var(--color-ink) / 0.62); }
 .tool-planner-grid .is-accent { background: rgb(var(--color-clay) / 0.28); color: rgb(var(--color-ink) / 0.64); }
 
-::view-transition-group(root),
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
+/* Theme changes transition real surfaces instead of full-page snapshots.
+   Snapshotting backdrop-filtered panels causes the brief refresh/flicker seen
+   on glass surfaces, especially on iOS and Chromium mobile emulation. */
+html[data-theme-transition="active"] :where(
+  body,
+  .site-app-shell,
+  .site-app-shell > div,
+  main,
+  header,
+  footer,
+  .dashboard-sidebar,
+  .home-dashboard-panel,
+  .home-dashboard-grid > a,
+  .home-dashboard-pixel-art,
+  .site-menu-button,
+  .site-menu-panel,
+  .site-menu-link,
+  .theme-toggle,
+  .design-panel,
+  .design-card,
+  .project-card,
+  .recipe-card,
+  .recipe-guide-card,
+  .tool-card,
+  input,
+  select,
+  textarea
+) {
+  transition-property: color, background-color, border-color, outline-color, fill, stroke, box-shadow, opacity, filter !important;
+  transition-duration: 560ms !important;
+  transition-timing-function: cubic-bezier(.16, 1, .3, 1) !important;
 }
 
-::view-transition-image-pair(root) {
-  isolation: isolate;
+.theme-transition-halo {
+  position: fixed;
+  z-index: 140;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid rgb(var(--color-moss) / 0.28);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(var(--color-moss) / 0.22), rgb(var(--color-paper) / 0.08) 48%, transparent 72%);
+  box-shadow: 0 0 2rem rgb(var(--color-moss) / 0.18);
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.2);
+  transform-origin: center;
+  will-change: transform, opacity;
 }
-
-html[data-theme-transition],
-html[data-theme-transition] body,
-html[data-theme-transition] *,
-html[data-theme-transition] *::before,
-html[data-theme-transition] *::after {
-  transition-property: none !important;
-}
-
-html[data-theme-transition] body *,
-html[data-theme-transition] body *::before,
-html[data-theme-transition] body *::after {
-  animation-play-state: paused !important;
-}
-
-html[data-theme-color-transition] body,
-html[data-theme-color-transition] body *,
-html[data-theme-color-transition] body *::before,
-html[data-theme-color-transition] body *::after {
-  transition-property: color, background-color, border-color, outline-color, fill, stroke, box-shadow !important;
-  transition-duration: 760ms !important;
-  transition-timing-function: cubic-bezier(.22, 1, .36, 1) !important;
-}
-
-::view-transition-old(root) { z-index: 1; }
-::view-transition-new(root) { z-index: 2; }
-
-/* When entering dark mode, keep the light snapshot above the new dark page so
-   it visibly retracts into the moon button. */
-html[data-theme-transition="light-to-dark"]::view-transition-old(root) { z-index: 2; }
-html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index: 1; }
 
 .home-landing {
   position: relative;
@@ -4838,19 +4844,6 @@ div.restaurant-results-limit {
   .contact-city-clock-copy > .contact-city-presence { left: 50%; bottom: calc(100% - 0.18rem); width: 1.72rem; }
   .contact-city-presence-sign { left: 42%; bottom: 64%; min-width: 1.08rem; min-height: 0.46rem; padding: 0.07rem 0.11rem; border-width: 1px; border-radius: 0.18rem; box-shadow: 0 1px 2px rgb(92 59 4 / 0.22), 1px 1px 0 rgb(182 124 22 / 0.72); font-size: 0.27rem; }
   .contact-city-presence-sign::after { width: 1px; height: 0.23rem; }
-  .site-menu-panel {
-    background: rgb(var(--color-paper));
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-  html[data-theme-transition] .site-menu-panel.is-open,
-  html[data-theme-color-transition] .site-menu-panel.is-open {
-    background: rgb(var(--color-paper)) !important;
-    opacity: 1 !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-  }
-
   body :is(
     input:not([type="button"]):not([type="checkbox"]):not([type="color"]):not([type="file"]):not([type="hidden"]):not([type="image"]):not([type="radio"]):not([type="range"]):not([type="reset"]):not([type="submit"]),
     select,
@@ -5110,7 +5103,7 @@ div.restaurant-results-limit {
     width: auto;
     height: 100%;
     aspect-ratio: 5.4 / 1;
-    background-image: url("/mobile-photo-collage.webp?v=2");
+    background-image: url("/mobile-photo-collage.webp?v=4");
     background-position: 0 50%;
     background-repeat: repeat-x;
     background-size: 50% 100%;
@@ -5219,7 +5212,7 @@ div.restaurant-results-limit {
   }
   .mobile-photo-collage {
     aspect-ratio: 4.2 / 1;
-    background-image: url("/mobile-photo-collage.webp?v=3");
+    background-image: url("/mobile-photo-collage.webp?v=4");
   }
 
   /* Give the live city scene enough height for the person and all three clocks
@@ -10489,4 +10482,246 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
     box-shadow: none !important;
     transform: none !important;
   }
+}
+
+/* Desktop home and section navigation are two arrangements of the same six
+   controls. The temporary clones morph between those arrangements while the
+   App Router swaps the page underneath. */
+.dashboard-transition-bubble {
+  position: fixed !important;
+  z-index: 110 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  transform-origin: top left;
+  transition: none !important;
+  will-change: height, transform, width;
+  contain: layout paint;
+}
+
+.dashboard-transition-surface,
+.dashboard-transition-layer {
+  position: absolute !important;
+  inset: 0;
+  margin: 0 !important;
+  pointer-events: none !important;
+}
+
+.dashboard-transition-surface { z-index: 0; }
+.dashboard-transition-layer {
+  z-index: 1;
+  box-sizing: border-box;
+  overflow: hidden !important;
+  transform: none !important;
+}
+
+@media (min-width: 1200px) and (hover: hover) and (pointer: fine) {
+  html.dashboard-mode.dashboard-home-route:not(.dashboard-target-preview) .dashboard-sidebar {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-102%);
+    visibility: hidden;
+    transition-delay: 0s, 0s, 520ms;
+  }
+
+  html.dashboard-mode.dashboard-home-route .site-app-shell {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  html.dashboard-mode.dashboard-home-route .home-landing > .theme-toggle {
+    display: grid;
+  }
+
+  html.dashboard-navigation-animating .dashboard-sidebar {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    transition: none !important;
+  }
+
+  html.dashboard-navigation-animating .site-app-shell {
+    will-change: width, margin-left, opacity;
+  }
+
+  /* Switch the route first, while the source controls remain as fixed clones.
+     The destination is then measured in its final expanded layout before any
+     clone begins moving. */
+  html.dashboard-navigation-animating.dashboard-route-swapping:not(.dashboard-route-ready) .site-app-shell {
+    opacity: 0;
+    transition: opacity 90ms ease-out !important;
+  }
+
+  html.dashboard-navigation-animating.dashboard-route-ready .site-app-shell {
+    opacity: 1;
+    transition: opacity 150ms ease-out !important;
+  }
+
+  html.dashboard-docking .home-dashboard-button,
+  html.dashboard-undocking .home-dashboard-button {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  html.dashboard-undocking .home-dashboard-panel { animation: none; }
+  html.dashboard-undocking :is(.home-dashboard-heading, .home-dashboard-group > h2) {
+    animation: dashboard-home-content-return 560ms 120ms cubic-bezier(.16, 1, .3, 1) both;
+  }
+
+  .home-dashboard-grid > a {
+    transition-property: border-color, background-color, transform, box-shadow, opacity;
+  }
+
+  html.dashboard-undocking .home-entry-pending::after,
+  html.dashboard-undocking .home-entry-center::after,
+  .home-entry-settled::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+@keyframes dashboard-home-content-return {
+  from { opacity: 0; transform: translateY(0.65rem) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Shared Liquid Glass language for navigation and control layers. Content
+   cards remain solid/translucent surfaces so nested glass never turns muddy. */
+:root {
+  --glass-fill: rgb(255 254 251 / 0.58);
+  --glass-fill-strong: rgb(255 254 251 / 0.72);
+  --glass-control-fill: rgb(255 255 255 / 0.34);
+  --glass-highlight: rgb(255 255 255 / 0.7);
+  --glass-border: rgb(255 255 255 / 0.52);
+  --glass-edge: rgb(var(--color-ink) / 0.12);
+  --glass-shadow: 0 22px 60px rgb(19 28 23 / 0.16), inset 0 1px 0 rgb(255 255 255 / 0.62);
+  --glass-control-shadow: 0 12px 32px rgb(19 28 23 / 0.14), inset 0 1px 0 rgb(255 255 255 / 0.58);
+  --glass-blur: 24px;
+  --glass-saturation: 1.35;
+}
+
+.dark {
+  --glass-fill: rgb(31 34 27 / 0.62);
+  --glass-fill-strong: rgb(31 34 27 / 0.76);
+  --glass-control-fill: rgb(255 255 255 / 0.075);
+  --glass-highlight: rgb(255 255 255 / 0.12);
+  --glass-border: rgb(255 255 255 / 0.13);
+  --glass-edge: rgb(255 255 255 / 0.09);
+  --glass-shadow: 0 24px 68px rgb(0 0 0 / 0.34), inset 0 1px 0 rgb(255 255 255 / 0.11);
+  --glass-control-shadow: 0 14px 38px rgb(0 0 0 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.1);
+}
+
+.dashboard-sidebar,
+.home-dashboard-panel,
+.site-menu-panel {
+  border-color: var(--glass-border);
+  background:
+    linear-gradient(145deg, var(--glass-highlight), transparent 38%),
+    var(--glass-fill);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+}
+
+.site-menu-button,
+.theme-toggle,
+.dashboard-theme-toggle {
+  border: 1px solid var(--glass-border) !important;
+  background:
+    linear-gradient(145deg, var(--glass-highlight), transparent 46%),
+    var(--glass-control-fill) !important;
+  box-shadow: var(--glass-control-shadow) !important;
+  color: rgb(var(--color-ink)) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(var(--glass-saturation));
+  backdrop-filter: blur(18px) saturate(var(--glass-saturation));
+}
+
+.site-menu-button span { background: rgb(var(--color-ink)); }
+.site-menu-panel { isolation: isolate; }
+.site-menu-titlebar { border-color: var(--glass-edge); }
+
+.site-menu-link {
+  position: relative;
+  min-height: 2.75rem;
+  border: 1px solid transparent;
+  background: rgb(var(--color-surface) / 0.2);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+  color: rgb(var(--color-ink) / 0.68);
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 220ms var(--ease-standard), color 180ms ease, transform 220ms var(--ease-standard);
+}
+
+.site-menu-link:is(:hover, :focus-visible) {
+  border-color: var(--glass-border);
+  background: rgb(var(--color-surface) / 0.42);
+  box-shadow: 0 8px 22px rgb(var(--color-ink) / 0.08), inset 0 1px 0 var(--glass-highlight);
+  color: rgb(var(--color-ink));
+  transform: translateY(-1px);
+}
+
+.site-menu-link.is-active {
+  border-color: rgb(var(--color-moss) / 0.32);
+  background: rgb(var(--color-moss) / 0.16);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  color: rgb(var(--color-ink));
+}
+
+.site-menu-theme-toggle { width: 100%; }
+.site-menu-button[data-theme-animating="true"],
+.theme-toggle[data-theme-animating="true"] { pointer-events: none; }
+
+@media (max-width: 899px), (max-width: 1366px) and (pointer: coarse) and (hover: none) {
+  .site-menu-panel {
+    background:
+      linear-gradient(145deg, var(--glass-highlight), transparent 34%),
+      var(--glass-fill-strong);
+    -webkit-backdrop-filter: blur(28px) saturate(1.42);
+    backdrop-filter: blur(28px) saturate(1.42);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .dashboard-sidebar,
+  .home-dashboard-panel,
+  .site-menu-panel {
+    background: rgb(var(--color-paper) / 0.96);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .site-menu-button,
+  .theme-toggle,
+  .dashboard-theme-toggle {
+    background: rgb(var(--color-paper) / 0.96) !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .dashboard-sidebar,
+  .home-dashboard-panel,
+  .site-menu-panel,
+  .site-menu-button,
+  .theme-toggle,
+  .dashboard-theme-toggle {
+    border-color: rgb(var(--color-ink) / 0.36) !important;
+  }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .dashboard-sidebar,
+  .home-dashboard-panel,
+  .site-menu-panel {
+    background: rgb(var(--color-paper) / 0.94);
+  }
+  .site-menu-button,
+  .theme-toggle,
+  .dashboard-theme-toggle {
+    background: rgb(var(--color-paper) / 0.94) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-transition-bubble,
+  .theme-transition-halo { display: none !important; }
 }

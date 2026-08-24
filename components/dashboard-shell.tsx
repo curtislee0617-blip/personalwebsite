@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   useEffect,
   useMemo,
@@ -18,6 +18,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SectionLoading, type SectionLoadingVariant } from "@/components/section-loading";
 import { recipeCategories } from "@/data/recipe-categories";
+import { runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
 import { navIconForPath } from "@/lib/page-cursors";
 
 type DashboardTreeNode = {
@@ -258,6 +259,7 @@ function loadingDetailsForPath(path: string): Pick<DashboardRouteLoading, "title
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isDashboard, setIsDashboard] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
@@ -269,6 +271,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
   const sidebarResizerRef = useRef<HTMLDivElement>(null);
   const resizingPointerRef = useRef<number | null>(null);
+  const homeTransitionRef = useRef(false);
 
   useEffect(() => {
     const desktop = window.matchMedia(DASHBOARD_MEDIA_QUERY);
@@ -298,6 +301,23 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     sync();
     desktop.addEventListener("change", sync);
     return () => desktop.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dashboard-home-route", pathname === "/");
+  }, [pathname]);
+
+  useEffect(() => () => {
+    document.documentElement.classList.remove(
+      "dashboard-home-route",
+      "dashboard-navigation-animating",
+      "dashboard-target-preview",
+      "dashboard-docking",
+      "dashboard-undocking",
+      "dashboard-route-swapping",
+      "dashboard-route-ready",
+      "dashboard-transition-settled",
+    );
   }, []);
 
   useEffect(() => {
@@ -440,12 +460,39 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
 
     const destination = new URL(anchor.href, window.location.href);
-    if (destination.origin !== window.location.origin || destination.pathname === pathname) return;
+    if (
+      destination.origin !== window.location.origin
+      || destination.pathname === pathname
+      || destination.pathname === "/"
+    ) return;
 
     routeLoadingStartedRef.current = performance.now();
     setRouteLoading({
       fromPath: pathname,
       ...loadingDetailsForPath(destination.pathname),
+    });
+  }
+
+  function returnToHome(event: ReactMouseEvent<HTMLAnchorElement>) {
+    if (
+      event.button !== 0
+      || event.metaKey
+      || event.ctrlKey
+      || event.shiftKey
+      || event.altKey
+    ) return;
+
+    event.preventDefault();
+    if (pathname === "/" || homeTransitionRef.current) return;
+
+    homeTransitionRef.current = true;
+    setRouteLoading(null);
+    void runDashboardBubbleTransition({
+      direction: "undock",
+      href: "/",
+      router,
+    }).finally(() => {
+      homeTransitionRef.current = false;
     });
   }
 
@@ -512,14 +559,14 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   return (
     <>
       <aside
-        aria-hidden={!isDashboard}
+        aria-hidden={!isDashboard || pathname === "/"}
         className="dashboard-sidebar"
         onClickCapture={beginDashboardNavigation}
         onWheel={scrollDashboardNavigation}
       >
         <div className="dashboard-sidebar-profile">
           <div>
-            <Link className="dashboard-sidebar-name" href="/">Curtis Lee</Link>
+            <Link className="dashboard-sidebar-name" href="/" onClick={returnToHome}>Curtis Lee</Link>
             <p>School, work and life</p>
           </div>
         </div>

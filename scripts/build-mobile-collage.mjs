@@ -10,10 +10,10 @@ const pixelArtSourcePath = path.join(root, "public", "contact-cities-pixel-art-v
 const manifestPath = path.join(root, "data", "home-photos.json");
 const logoPath = path.join(root, "public", "logos", "caltech-collage-orange.png");
 const supportedImage = /\.(avif|gif|jpe?g|png|webp)$/i;
-const columns = 24;
-const rows = 10;
-const tileWidth = 56;
-const tileHeight = 64;
+const columns = 34;
+const rows = 14;
+const tileWidth = 39;
+const tileHeight = 45;
 
 function score(name) {
   let hash = 2166136261;

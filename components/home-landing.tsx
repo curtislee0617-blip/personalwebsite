@@ -8,6 +8,7 @@ import { ContactPresenceProvider } from "@/components/contact-presence";
 import { dashboardSections } from "@/components/dashboard-shell";
 import { ScrollingPhotoBackground } from "@/components/scrolling-photo-background";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
 import { navIconForPath } from "@/lib/page-cursors";
 import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
@@ -19,12 +20,13 @@ const quickAccessGroups = [
 export function HomeLanding({ photos }: { photos: string[] }) {
   const router = useRouter();
   const isLeaving = useRef(false);
-  const [entryMode, setEntryMode] = useState<"pending" | "center">("pending");
+  const [entryMode, setEntryMode] = useState<"pending" | "center" | "settled">("pending");
 
   useEffect(() => {
+    const returningFromDashboard = document.documentElement.classList.contains("dashboard-undocking");
     const frame = window.requestAnimationFrame(() => {
       window.sessionStorage.removeItem("home-entry");
-      setEntryMode("center");
+      setEntryMode(returningFromDashboard ? "settled" : "center");
     });
 
     return () => window.cancelAnimationFrame(frame);
@@ -47,6 +49,15 @@ export function HomeLanding({ photos }: { photos: string[] }) {
       .filter((link) => link.offsetParent !== null);
     const photoGrid = document.querySelector<HTMLElement>(".home-photo-grid");
     const themeToggle = document.querySelector<HTMLElement>(".theme-toggle");
+
+    if (window.matchMedia("(min-width: 1200px) and (hover: hover) and (pointer: fine)").matches) {
+      await runDashboardBubbleTransition({
+        direction: "dock",
+        href,
+        router,
+      });
+      return;
+    }
 
     await runRouteBubbleTransition({
       href,
@@ -86,6 +97,7 @@ export function HomeLanding({ photos }: { photos: string[] }) {
                   return (
                     <Link
                       className="home-dashboard-button"
+                      data-dashboard-href={section.href}
                       data-spotlight
                       href={section.href}
                       key={section.href}

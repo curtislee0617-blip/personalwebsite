@@ -3,14 +3,8 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
 
-type ViewTransition = { ready: Promise<void>; finished: Promise<void> };
-type DocumentWithViewTransitions = Document & {
-  startViewTransition?: (callback: () => void) => ViewTransition;
-};
-
-const LIGHT_TO_DARK_MS = 1240;
-const CONTRACT_EASING = "cubic-bezier(0.45, 0, 0.2, 1)";
-const FALLBACK_TRANSITION_MS = 760;
+const THEME_TRANSITION_MS = 560;
+const THEME_TRANSITION_EASING = "cubic-bezier(.16, 1, .3, 1)";
 
 function SunIcon() {
   return (
@@ -46,12 +40,14 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
   const { mounted, isDark } = state;
 
   function toggle(event: MouseEvent<HTMLButtonElement>) {
+    if (transitionInProgress.current) return;
+
     const next = !isDark;
+    const button = event.currentTarget;
     const bounds = event.currentTarget.getBoundingClientRect();
     const iconBounds = event.currentTarget.querySelector("svg")?.getBoundingClientRect();
     const x = iconBounds ? iconBounds.left + iconBounds.width / 2 : bounds.left + bounds.width / 2;
     const y = iconBounds ? iconBounds.top + iconBounds.height / 2 : bounds.top + bounds.height / 2;
-    const sourceMoss = window.getComputedStyle(document.documentElement).getPropertyValue("--color-moss").trim();
     const flip = () => {
       applyTheme(next);
       flushSync(() => {
@@ -59,7 +55,6 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       });
     };
 
-    const doc = document as DocumentWithViewTransitions;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (reducedMotion) {
@@ -67,73 +62,60 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       return;
     }
 
-    if (transitionInProgress.current) return;
     transitionInProgress.current = true;
+    const root = document.documentElement;
+    const radius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    );
+    const halo = document.createElement("span");
+    halo.className = "theme-transition-halo";
+    halo.style.left = `${x}px`;
+    halo.style.top = `${y}px`;
+    document.body.append(halo);
 
-    if (typeof doc.startViewTransition !== "function") {
-      document.documentElement.dataset.themeColorTransition = "true";
-      document.documentElement.getBoundingClientRect();
+    root.dataset.themeTransition = "active";
+    button.dataset.themeAnimating = "true";
+    root.getBoundingClientRect();
+
+    window.requestAnimationFrame(() => {
       flip();
-      window.setTimeout(() => {
-        delete document.documentElement.dataset.themeColorTransition;
+
+      const haloScale = Math.max(1, radius / 24);
+      const haloAnimation = halo.animate(
+        [
+          { opacity: 0.44, transform: "translate(-50%, -50%) scale(0.2)" },
+          { offset: 0.5, opacity: 0.2, transform: `translate(-50%, -50%) scale(${haloScale * 0.56})` },
+          { opacity: 0, transform: `translate(-50%, -50%) scale(${haloScale})` },
+        ],
+        {
+          duration: THEME_TRANSITION_MS,
+          easing: THEME_TRANSITION_EASING,
+          fill: "forwards",
+        },
+      );
+      const icon = button.querySelector("svg");
+      const iconAnimation = icon?.animate(
+        [
+          { opacity: 0.72, transform: `rotate(${next ? -22 : 22}deg) scale(0.82)` },
+          { opacity: 1, transform: "rotate(0deg) scale(1)" },
+        ],
+        {
+          duration: 420,
+          easing: THEME_TRANSITION_EASING,
+        },
+      );
+
+      Promise.all([
+        haloAnimation.finished.catch(() => undefined),
+        iconAnimation?.finished.catch(() => undefined) ?? Promise.resolve(),
+      ]).finally(() => {
+        halo.remove();
+        delete button.dataset.themeAnimating;
+        delete root.dataset.themeTransition;
         transitionInProgress.current = false;
-      }, FALLBACK_TRANSITION_MS);
-      return;
-    }
-
-    document.documentElement.dataset.themeTransition = next ? "light-to-dark" : "dark-to-light";
-    const transition = doc.startViewTransition(flip);
-    const transitionAnimations: Animation[] = [];
-    transition.ready
-      .then(() => {
-        const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
-        const buttonRadius = Math.max(iconBounds?.width ?? bounds.width, iconBounds?.height ?? bounds.height) / 2;
-        const isMobileTransition = window.matchMedia("(max-width: 899px), (pointer: coarse)").matches;
-        const moss = next ? window.getComputedStyle(document.documentElement).getPropertyValue("--color-moss").trim() : sourceMoss;
-        const edgeColor = `rgb(${moss} / 0.42)`;
-        const opacity = (desktopOpacity: number) => isMobileTransition ? 1 : desktopOpacity;
-        const edge = (desktopBlur: number) => `drop-shadow(0 0 ${isMobileTransition ? Math.min(desktopBlur, 4) : desktopBlur}px ${edgeColor})`;
-        const keyframes: Keyframe[] = [
-          { clipPath: `circle(${radius}px at ${x}px ${y}px)`, filter: edge(0), opacity: 1 },
-          { clipPath: `circle(${radius * 0.42}px at ${x}px ${y}px)`, filter: edge(12), offset: 0.64, opacity: opacity(0.92) },
-          { clipPath: `circle(${buttonRadius * 1.8}px at ${x}px ${y}px)`, filter: edge(7), offset: 0.9, opacity: opacity(0.56) },
-          { clipPath: `circle(0px at ${x}px ${y}px)`, filter: edge(0), opacity: opacity(0) },
-        ];
-        const animatedKeyframes = next
-          ? keyframes
-          : keyframes.map((keyframe) => ({ ...keyframe, opacity: 1 }));
-
-        if (!next) {
-          transitionAnimations.push(document.documentElement.animate(
-            [{ opacity: 1 }, { opacity: 1 }],
-            {
-              duration: LIGHT_TO_DARK_MS,
-              easing: "linear",
-              fill: "forwards",
-              pseudoElement: "::view-transition-old(root)",
-            },
-          ));
-        }
-
-        transitionAnimations.push(document.documentElement.animate(
-          animatedKeyframes,
-          {
-            duration: LIGHT_TO_DARK_MS,
-            direction: next ? "normal" : "reverse",
-            easing: CONTRACT_EASING,
-            fill: "forwards",
-            pseudoElement: next ? "::view-transition-old(root)" : "::view-transition-new(root)",
-          },
-        ));
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        transition.finished.finally(() => {
-          transitionAnimations.forEach((animation) => animation.cancel());
-          delete document.documentElement.dataset.themeTransition;
-          transitionInProgress.current = false;
-        });
       });
+    });
   }
 
   if (!mounted) return null;
@@ -142,7 +124,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     return (
       <button
         aria-label="Toggle dark mode"
-        className="theme-toggle-menu-row col-span-2 flex items-center justify-between rounded-2xl bg-ink/[0.04] px-4 py-3 text-sm text-ink/65 transition hover:bg-ink/[0.08] hover:text-ink"
+        className="theme-toggle-menu-row site-menu-link site-menu-theme-toggle col-span-2 flex items-center justify-between rounded-2xl px-4 py-3 text-sm"
         onClick={toggle}
         type="button"
       >

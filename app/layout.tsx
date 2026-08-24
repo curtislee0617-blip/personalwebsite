@@ -12,7 +12,7 @@ import "@fontsource/roboto/700.css";
 import "./globals.css";
 
 const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");var dark=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(dark)document.documentElement.classList.add("dark");}catch(e){}})();`;
-const DASHBOARD_INIT_SCRIPT = `(function(){try{var w=parseInt(localStorage.getItem("dashboard-sidebar-width")||"",10);if(Number.isFinite(w))document.documentElement.style.setProperty("--dashboard-sidebar-width",Math.min(420,Math.max(220,w))+"px");if(window.matchMedia("(min-width:1200px) and (hover:hover) and (pointer:fine)").matches)document.documentElement.classList.add("dashboard-mode");}catch(e){}})();`;
+const DASHBOARD_INIT_SCRIPT = `(function(){try{var w=parseInt(localStorage.getItem("dashboard-sidebar-width")||"",10);if(Number.isFinite(w))document.documentElement.style.setProperty("--dashboard-sidebar-width",Math.min(420,Math.max(220,w))+"px");if(window.matchMedia("(min-width:1200px) and (hover:hover) and (pointer:fine)").matches){document.documentElement.classList.add("dashboard-mode");if(location.pathname==="/")document.documentElement.classList.add("dashboard-home-route");}}catch(e){}})();`;
 const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
