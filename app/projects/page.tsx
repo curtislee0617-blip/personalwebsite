@@ -34,7 +34,7 @@ export default function ProjectsPage() {
                   fill
                   priority
                   sizes="(max-width: 899px) 94vw, 52vw"
-                  src="/project-previews/website-homepage.jpg"
+                  src="/project-previews/website-homepage-20260824.jpg"
                 />
               </div>
               <div className="website-project-copy creative-project-copy">
