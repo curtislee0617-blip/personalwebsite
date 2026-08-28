@@ -5103,7 +5103,7 @@ div.restaurant-results-limit {
     width: auto;
     height: 100%;
     aspect-ratio: 5.4 / 1;
-    background-image: url("/mobile-photo-collage.webp?v=4");
+    background-image: url("/mobile-photo-collage-v5.webp");
     background-position: 0 50%;
     background-repeat: repeat-x;
     background-size: 50% 100%;
@@ -5212,7 +5212,7 @@ div.restaurant-results-limit {
   }
   .mobile-photo-collage {
     aspect-ratio: 4.2 / 1;
-    background-image: url("/mobile-photo-collage.webp?v=4");
+    background-image: url("/mobile-photo-collage-v5.webp");
   }
 
   /* Give the live city scene enough height for the person and all three clocks
@@ -10724,4 +10724,55 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 @media (prefers-reduced-motion: reduce) {
   .dashboard-transition-bubble,
   .theme-transition-halo { display: none !important; }
+}
+
+/* Final mobile spacing pass: keep recipe imagery tall enough to read while
+   giving each title and description a little breathing room. */
+@media (max-width: 640px) {
+  .recipe-library-page #recipe-guides .recipe-guide-media {
+    height: 7.1rem;
+  }
+
+  .recipe-library-page #recipe-guides .recipe-guide-copy {
+    padding-top: 0.72rem;
+    padding-bottom: 0.32rem;
+  }
+
+  .recipe-library-page #recipe-guides .recipe-guide-title-row {
+    margin-top: 0.34rem;
+  }
+
+  .recipe-library-page #recipe-guides .recipe-guide-description {
+    margin-top: 0.3rem;
+    line-height: 1.35;
+  }
+
+  .recipe-library-page .recipe-shelf-card:not([open]) .recipe-card-summary {
+    min-height: 11.2rem;
+  }
+
+  .recipe-library-page .recipe-shelf-card:not([open]) .recipe-card-thumbnail {
+    height: 6.9rem;
+  }
+
+  .recipe-library-page .recipe-shelf-card:not([open]) .recipe-card-copy {
+    min-height: 4.3rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.22rem;
+  }
+
+  .recipe-library-page .recipe-shelf-card:not([open]) .recipe-card-copy h3 {
+    margin-top: 0.2rem;
+  }
+
+  .recipe-library-page .recipe-shelf-card:not([open]) .recipe-card-description {
+    margin-top: 0.3rem;
+    line-height: 1.3 !important;
+  }
+
+  .contact-page .contact-composition {
+    justify-self: center;
+    margin-right: auto;
+    margin-left: auto;
+  }
 }

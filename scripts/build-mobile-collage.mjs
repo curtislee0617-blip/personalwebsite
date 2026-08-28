@@ -4,14 +4,14 @@ import sharp from "sharp";
 
 const root = process.cwd();
 const photosDirectory = path.join(root, "public", "photos");
-const outputPath = path.join(root, "public", "mobile-photo-collage.webp");
+const outputPath = path.join(root, "public", "mobile-photo-collage-v5.webp");
 const mobilePixelArtOutputPath = path.join(root, "public", "contact-cities-pixel-art-mobile.webp");
 const pixelArtSourcePath = path.join(root, "public", "contact-cities-pixel-art-v2.png");
 const manifestPath = path.join(root, "data", "home-photos.json");
 const logoPath = path.join(root, "public", "logos", "caltech-collage-orange.png");
 const supportedImage = /\.(avif|gif|jpe?g|png|webp)$/i;
-const columns = 34;
-const rows = 14;
+const columns = 51;
+const rows = 21;
 const tileWidth = 39;
 const tileHeight = 45;
 
