@@ -8,9 +8,10 @@ type DocumentWithViewTransitions = Document & {
   startViewTransition?: (callback: () => void) => ViewTransition;
 };
 
-const THEME_TRANSITION_MS = 760;
+const THEME_TRANSITION_MS = 1240;
 const FALLBACK_TRANSITION_MS = 560;
 const THEME_TRANSITION_EASING = "cubic-bezier(.16, 1, .3, 1)";
+const RADIAL_TRANSITION_EASING = "cubic-bezier(.45, 0, .2, 1)";
 
 function SunIcon() {
   return (
@@ -73,6 +74,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       Math.max(x, window.innerWidth - x),
       Math.max(y, window.innerHeight - y),
     ) + 2;
+    const buttonRadius = Math.max(iconBounds?.width ?? bounds.width, iconBounds?.height ?? bounds.height) / 2;
     const animateIcon = () => button.querySelector("svg")?.animate(
       [
         { opacity: 0.72, transform: `rotate(${next ? -22 : 22}deg) scale(0.82)` },
@@ -94,7 +96,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     const doc = document as DocumentWithViewTransitions;
 
     if (typeof doc.startViewTransition === "function") {
-      root.dataset.themeTransition = "radial";
+      root.dataset.themeTransition = next ? "light-to-dark" : "dark-to-light";
 
       let transition: ViewTransition;
       try {
@@ -110,16 +112,17 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         .then(() => {
           animations.push(root.animate(
             [
-              { clipPath: `circle(0px at ${x}px ${y}px)` },
-              { clipPath: `circle(${radius * 0.18}px at ${x}px ${y}px)`, offset: 0.22 },
-              { clipPath: `circle(${radius * 0.58}px at ${x}px ${y}px)`, offset: 0.62 },
               { clipPath: `circle(${radius}px at ${x}px ${y}px)` },
+              { clipPath: `circle(${radius * 0.42}px at ${x}px ${y}px)`, offset: 0.64 },
+              { clipPath: `circle(${buttonRadius * 1.8}px at ${x}px ${y}px)`, offset: 0.9 },
+              { clipPath: `circle(0px at ${x}px ${y}px)` },
             ],
             {
               duration: THEME_TRANSITION_MS,
-              easing: THEME_TRANSITION_EASING,
+              direction: next ? "normal" : "reverse",
+              easing: RADIAL_TRANSITION_EASING,
               fill: "forwards",
-              pseudoElement: "::view-transition-new(root)",
+              pseudoElement: next ? "::view-transition-old(root)" : "::view-transition-new(root)",
             },
           ));
 

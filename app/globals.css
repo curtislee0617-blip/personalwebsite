@@ -3197,30 +3197,32 @@ html.dashboard-mode .section-rail {
 .tool-planner-grid .is-filled { background: rgb(var(--color-moss) / 0.22); color: rgb(var(--color-ink) / 0.62); }
 .tool-planner-grid .is-accent { background: rgb(var(--color-clay) / 0.28); color: rgb(var(--color-ink) / 0.64); }
 
-/* Theme changes reveal the new page snapshot from the pressed control. The
-   old page remains still underneath, avoiding the default snapshot crossfade
-   that reads as a refresh on glass surfaces. */
-html[data-theme-transition="radial"]::view-transition-group(root),
-html[data-theme-transition="radial"]::view-transition-old(root),
-html[data-theme-transition="radial"]::view-transition-new(root) {
+/* The original directional theme transition: light contracts into the
+   pressed mode button; light expands back out from that button. The static
+   opposite snapshot prevents the browser's default refresh-like crossfade. */
+html[data-theme-transition]::view-transition-group(root),
+html[data-theme-transition]::view-transition-old(root),
+html[data-theme-transition]::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-html[data-theme-transition="radial"]::view-transition-image-pair(root) { isolation: isolate; }
-html[data-theme-transition="radial"]::view-transition-old(root) { z-index: 1; }
-html[data-theme-transition="radial"]::view-transition-new(root) { z-index: 2; }
+html[data-theme-transition]::view-transition-image-pair(root) { isolation: isolate; }
+html[data-theme-transition]::view-transition-old(root) { z-index: 1; }
+html[data-theme-transition]::view-transition-new(root) { z-index: 2; }
+html[data-theme-transition="light-to-dark"]::view-transition-old(root) { z-index: 2; }
+html[data-theme-transition="light-to-dark"]::view-transition-new(root) { z-index: 1; }
 
-html[data-theme-transition="radial"],
-html[data-theme-transition="radial"] *,
-html[data-theme-transition="radial"] *::before,
-html[data-theme-transition="radial"] *::after {
+html[data-theme-transition],
+html[data-theme-transition] *,
+html[data-theme-transition] *::before,
+html[data-theme-transition] *::after {
   transition-property: none !important;
 }
 
-html[data-theme-transition="radial"] body *,
-html[data-theme-transition="radial"] body *::before,
-html[data-theme-transition="radial"] body *::after {
+html[data-theme-transition] body *,
+html[data-theme-transition] body *::before,
+html[data-theme-transition] body *::after {
   animation-play-state: paused !important;
 }
 
