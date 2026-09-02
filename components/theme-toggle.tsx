@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
 
-const THEME_TRANSITION_MS = 560;
+type ViewTransition = { ready: Promise<void>; finished: Promise<void> };
+type DocumentWithViewTransitions = Document & {
+  startViewTransition?: (callback: () => void) => ViewTransition;
+};
+
+const THEME_TRANSITION_MS = 760;
+const FALLBACK_TRANSITION_MS = 560;
 const THEME_TRANSITION_EASING = "cubic-bezier(.16, 1, .3, 1)";
 
 function SunIcon() {
@@ -54,7 +60,6 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         setState((prev) => ({ ...prev, isDark: next }));
       });
     };
-
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (reducedMotion) {
@@ -67,15 +72,76 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     const radius = Math.hypot(
       Math.max(x, window.innerWidth - x),
       Math.max(y, window.innerHeight - y),
+    ) + 2;
+    const animateIcon = () => button.querySelector("svg")?.animate(
+      [
+        { opacity: 0.72, transform: `rotate(${next ? -22 : 22}deg) scale(0.82)` },
+        { opacity: 1, transform: "rotate(0deg) scale(1)" },
+      ],
+      {
+        duration: 420,
+        easing: THEME_TRANSITION_EASING,
+      },
     );
+    const cleanup = () => {
+      delete button.dataset.themeAnimating;
+      delete root.dataset.themeTransition;
+      delete root.dataset.themeColorTransition;
+      transitionInProgress.current = false;
+    };
+
+    button.dataset.themeAnimating = "true";
+    const doc = document as DocumentWithViewTransitions;
+
+    if (typeof doc.startViewTransition === "function") {
+      root.dataset.themeTransition = "radial";
+
+      let transition: ViewTransition;
+      try {
+        transition = doc.startViewTransition(flip);
+      } catch {
+        cleanup();
+        flip();
+        return;
+      }
+
+      const animations: Animation[] = [];
+      transition.ready
+        .then(() => {
+          animations.push(root.animate(
+            [
+              { clipPath: `circle(0px at ${x}px ${y}px)` },
+              { clipPath: `circle(${radius * 0.18}px at ${x}px ${y}px)`, offset: 0.22 },
+              { clipPath: `circle(${radius * 0.58}px at ${x}px ${y}px)`, offset: 0.62 },
+              { clipPath: `circle(${radius}px at ${x}px ${y}px)` },
+            ],
+            {
+              duration: THEME_TRANSITION_MS,
+              easing: THEME_TRANSITION_EASING,
+              fill: "forwards",
+              pseudoElement: "::view-transition-new(root)",
+            },
+          ));
+
+          const iconAnimation = animateIcon();
+          if (iconAnimation) animations.push(iconAnimation);
+        })
+        .catch(() => undefined);
+
+      const finishTransition = () => {
+        animations.forEach((animation) => animation.cancel());
+        cleanup();
+      };
+      transition.finished.then(finishTransition, finishTransition);
+      return;
+    }
+
+    root.dataset.themeColorTransition = "active";
     const halo = document.createElement("span");
     halo.className = "theme-transition-halo";
     halo.style.left = `${x}px`;
     halo.style.top = `${y}px`;
     document.body.append(halo);
-
-    root.dataset.themeTransition = "active";
-    button.dataset.themeAnimating = "true";
     root.getBoundingClientRect();
 
     window.requestAnimationFrame(() => {
@@ -89,31 +155,19 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
           { opacity: 0, transform: `translate(-50%, -50%) scale(${haloScale})` },
         ],
         {
-          duration: THEME_TRANSITION_MS,
+          duration: FALLBACK_TRANSITION_MS,
           easing: THEME_TRANSITION_EASING,
           fill: "forwards",
         },
       );
-      const icon = button.querySelector("svg");
-      const iconAnimation = icon?.animate(
-        [
-          { opacity: 0.72, transform: `rotate(${next ? -22 : 22}deg) scale(0.82)` },
-          { opacity: 1, transform: "rotate(0deg) scale(1)" },
-        ],
-        {
-          duration: 420,
-          easing: THEME_TRANSITION_EASING,
-        },
-      );
+      const iconAnimation = animateIcon();
 
       Promise.all([
         haloAnimation.finished.catch(() => undefined),
         iconAnimation?.finished.catch(() => undefined) ?? Promise.resolve(),
       ]).finally(() => {
         halo.remove();
-        delete button.dataset.themeAnimating;
-        delete root.dataset.themeTransition;
-        transitionInProgress.current = false;
+        cleanup();
       });
     });
   }
@@ -150,11 +204,13 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
 
   return (
     <button
-      aria-label="Toggle dark mode"
-      className="theme-toggle fixed bottom-5 right-5 z-20 grid h-12 w-12 place-items-center rounded-full bg-ink text-paper shadow-[0_12px_30px_rgba(32,35,31,0.2)] transition hover:scale-105"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="theme-toggle home-theme-toggle"
       onClick={toggle}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       type="button"
     >
+      <span className="home-theme-toggle-label">{isDark ? "Light mode" : "Dark mode"}</span>
       {isDark ? <SunIcon /> : <MoonIcon />}
     </button>
   );

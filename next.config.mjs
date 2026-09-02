@@ -40,6 +40,13 @@ function rootMediaFallbackRewrite() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    // Keep image delivery off Vercel's transformation pipeline. Supabase
+    // Storage images use the custom loader's render endpoint; other images
+    // are served directly from their source URL.
+    loader: "custom",
+    loaderFile: "./lib/supabase-image-loader.ts",
+  },
   outputFileTracingIncludes: {
     "/api/towngas-report/private": ["./private/towngas/*.docx"],
   },

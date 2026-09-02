@@ -18,3 +18,5 @@ export function supabaseImageLoader({ quality, src, width }: ImageLoaderProps) {
   query.set("resize", "contain");
   return `${base.replace(STORAGE_OBJECT_PATH, STORAGE_RENDER_PATH)}?${query.toString()}`;
 }
+
+export default supabaseImageLoader;

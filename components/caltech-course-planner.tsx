@@ -552,7 +552,7 @@ function ClassCard({ cls, templateById, categories, allTemplates, owners, isPick
       role="button"
       tabIndex={0}
     >
-      <div className="flex items-start gap-2">
+      <div className="course-class-main flex items-start gap-2">
         <input checked={cls.done} className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-moss" onChange={() => onToggleDone(cls.id)} onClick={(event) => event.stopPropagation()} type="checkbox" />
         <div className="min-w-0 flex-1">
           <AutoGrowLabel done={cls.done} onChange={(label) => onRename(cls.id, label)} onClick={(event) => event.stopPropagation()} value={cls.label} />
@@ -591,7 +591,7 @@ function ClassCard({ cls, templateById, categories, allTemplates, owners, isPick
       </label>
 
       {cls.requirementIds.length > 0 && (
-        <div className="mt-1.5 flex flex-wrap gap-1 pl-[1.375rem]">
+        <div className="course-class-requirement-tags mt-1.5 flex flex-wrap gap-1 pl-[1.375rem]">
           {cls.requirementIds.map((rid) => {
             const template = templateById.get(rid);
             if (!template) return null;
@@ -612,13 +612,13 @@ function ClassCard({ cls, templateById, categories, allTemplates, owners, isPick
       )}
 
       {needsReassignment && (
-        <p className="mt-1.5 pl-[1.375rem] text-[0.62rem] font-semibold leading-4 text-clay">
+        <p className="course-class-reassignment mt-1.5 pl-[1.375rem] text-[0.62rem] font-semibold leading-4 text-clay">
           Reassign this completed class to a current requirement.
         </p>
       )}
 
       <button
-        className="mt-1.5 ml-[1.375rem] text-[0.62rem] font-semibold text-moss hover:text-ink"
+        className="course-class-tag-toggle mt-1.5 ml-[1.375rem] text-[0.62rem] font-semibold text-moss hover:text-ink"
         onClick={(event) => {
           event.stopPropagation();
           onTogglePicker(cls.id);

@@ -1353,6 +1353,9 @@ body.has-page-cursor * { cursor: inherit; }
    (near: tuned 8 points toward LA; far: equivalent to 91.3%/97.3% on the
    near curve, tuned 5.5 points toward London). */
 .contact-cities-picture[data-light-direction="left"] {
+  /* Fractional cqw rounding can expose a one-pixel gap between the two
+     lighting panels on narrow/high-DPR screens. Keep a tiny shared overlap. */
+  --contact-panel-seam-overlap: 0.5px;
   --contact-transition-curve: ellipse 69.35194cqw 180cqw at 0cqw calc(50% - 12.8549061cqw);
   --contact-far-curve: ellipse 69.35194cqw 180cqw at 30.376cqw calc(50% - 12.8549061cqw);
   --contact-near-end: 47.5%;
@@ -1403,12 +1406,12 @@ body.has-page-cursor * { cursor: inherit; }
   background: linear-gradient(180deg, rgb(2 22 55) 0%, rgb(3 24 58) 46%, rgb(4 22 50) 100%);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::before {
-  clip-path: inset(0 40cqw 0 0);
+  clip-path: inset(0 calc(40cqw - var(--contact-panel-seam-overlap)) 0 0);
   -webkit-mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
   mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::after {
-  clip-path: inset(0 0 0 60cqw);
+  clip-path: inset(0 0 0 calc(60cqw - var(--contact-panel-seam-overlap)));
   -webkit-mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
   mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
 }
@@ -1516,10 +1519,10 @@ body.has-page-cursor * { cursor: inherit; }
   inset: 0;
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::before {
-  clip-path: inset(0 40cqw 0 0);
+  clip-path: inset(0 calc(40cqw - var(--contact-panel-seam-overlap)) 0 0);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::after {
-  clip-path: inset(0 0 0 60cqw);
+  clip-path: inset(0 0 0 calc(60cqw - var(--contact-panel-seam-overlap)));
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue::before {
   background: radial-gradient(var(--contact-transition-curve), rgb(45 54 93 / calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night))) 0% var(--contact-near-end), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) var(--contact-middle-start) 148%);
@@ -3194,10 +3197,35 @@ html.dashboard-mode .section-rail {
 .tool-planner-grid .is-filled { background: rgb(var(--color-moss) / 0.22); color: rgb(var(--color-ink) / 0.62); }
 .tool-planner-grid .is-accent { background: rgb(var(--color-clay) / 0.28); color: rgb(var(--color-ink) / 0.64); }
 
-/* Theme changes transition real surfaces instead of full-page snapshots.
-   Snapshotting backdrop-filtered panels causes the brief refresh/flicker seen
-   on glass surfaces, especially on iOS and Chromium mobile emulation. */
-html[data-theme-transition="active"] :where(
+/* Theme changes reveal the new page snapshot from the pressed control. The
+   old page remains still underneath, avoiding the default snapshot crossfade
+   that reads as a refresh on glass surfaces. */
+html[data-theme-transition="radial"]::view-transition-group(root),
+html[data-theme-transition="radial"]::view-transition-old(root),
+html[data-theme-transition="radial"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme-transition="radial"]::view-transition-image-pair(root) { isolation: isolate; }
+html[data-theme-transition="radial"]::view-transition-old(root) { z-index: 1; }
+html[data-theme-transition="radial"]::view-transition-new(root) { z-index: 2; }
+
+html[data-theme-transition="radial"],
+html[data-theme-transition="radial"] *,
+html[data-theme-transition="radial"] *::before,
+html[data-theme-transition="radial"] *::after {
+  transition-property: none !important;
+}
+
+html[data-theme-transition="radial"] body *,
+html[data-theme-transition="radial"] body *::before,
+html[data-theme-transition="radial"] body *::after {
+  animation-play-state: paused !important;
+}
+
+/* Browsers without page snapshots retain a gentle color/halo fallback. */
+html[data-theme-color-transition="active"] :where(
   body,
   .site-app-shell,
   .site-app-shell > div,
@@ -4864,7 +4892,7 @@ div.restaurant-results-limit {
    sidebar. The panel is scaled independently so it stays comfortable in both
    portrait and landscape orientations. */
 @media (min-width: 640px) and (max-width: 1199px),
-       (min-width: 640px) and (max-width: 1366px) and (hover: none) and (pointer: coarse) {
+       (min-width: 640px) and (hover: none) and (pointer: coarse) {
   .home-landing {
     padding: 1rem;
   }
@@ -5023,11 +5051,48 @@ div.restaurant-results-limit {
   }
   body { font-size: 0.78rem; }
   .section-rail { left: max(0.08rem, env(safe-area-inset-left)); }
-  .course-plan-mobile .course-plan-class-card { padding: 0.38rem 0.45rem; border-radius: 0.65rem; box-shadow: none; }
-  .course-plan-mobile .course-plan-class-card textarea { line-height: 1.1rem; }
+  .course-plan-mobile .course-plan-class-card {
+    display: grid;
+    padding: 0.23rem 0.28rem;
+    gap: 0.14rem 0.32rem;
+    border-radius: 0.5rem;
+    box-shadow: none;
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+  .course-plan-mobile .course-class-main { grid-column: 1 / -1; gap: 0.35rem; }
+  .course-plan-mobile .course-class-main > input { width: 0.75rem; height: 0.75rem; margin-top: 0.16rem; }
+  .course-plan-mobile .course-plan-class-card textarea { line-height: 1rem; }
+  .course-plan-mobile .course-class-units {
+    margin: 0 0 0 1.05rem;
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 0.46rem;
+  }
+  .course-plan-mobile .course-class-units input { width: 2rem; height: 1.12rem; padding: 0 0.12rem 0 0.28rem; }
+  .course-plan-mobile .course-class-units span { padding-right: 0.3rem; }
+  .course-plan-mobile .course-class-tag-toggle {
+    min-width: 0;
+    min-height: 1.25rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    align-self: center;
+    overflow: hidden;
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 0.5rem;
+    line-height: 1;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .course-plan-mobile :is(.course-class-requirement-tags, .course-class-reassignment, .course-requirement-picker) { grid-column: 1 / -1; }
+  .course-plan-mobile .course-class-requirement-tags { margin-top: 0.12rem; padding-left: 1.05rem; gap: 0.2rem; }
+  .course-plan-mobile .course-class-requirement-tags > span { padding: 0.08rem 0.32rem; gap: 0.22rem; font-size: 0.46rem; }
+  .course-plan-mobile .course-class-requirement-tags > span > span { width: 0.28rem; height: 0.28rem; }
+  .course-plan-mobile .course-class-reassignment { margin-top: 0.12rem; padding-left: 1.05rem; font-size: 0.5rem; line-height: 0.75rem; }
   .course-plan-mobile-terms > div { scrollbar-width: none; }
   .course-plan-mobile-terms > div::-webkit-scrollbar { display: none; }
-  .course-plan-mobile .course-class-units input { width: 2.65rem; }
   .course-planner-shell { row-gap: 1.35rem; }
   .course-planner-setup-card { padding: 0.72rem; border-radius: 1rem; }
   .course-planner-setup-card > div,
@@ -5121,7 +5186,7 @@ div.restaurant-results-limit {
     width: min(92vw, 48rem);
     align-self: center;
     justify-self: center;
-    margin: 1rem 0 2rem;
+    margin: 1rem 0 3.5rem;
     padding: 1rem;
     gap: 0.9rem;
     border: 1px solid rgb(var(--color-ink) / 0.13);
@@ -10635,6 +10700,44 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   color: rgb(var(--color-ink)) !important;
   -webkit-backdrop-filter: blur(18px) saturate(var(--glass-saturation));
   backdrop-filter: blur(18px) saturate(var(--glass-saturation));
+}
+
+.home-theme-toggle {
+  position: fixed;
+  right: 1.25rem;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  z-index: 72;
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  border-radius: 9999px !important;
+  transition: transform 180ms var(--ease-standard);
+}
+
+.home-theme-toggle:hover { transform: scale(1.05); }
+.home-theme-toggle-label { display: none; }
+
+@media (max-width: 639px) {
+  .home-theme-toggle {
+    position: absolute;
+    left: 50%;
+    right: auto;
+    bottom: max(0.7rem, env(safe-area-inset-bottom));
+    width: auto;
+    min-width: 7.2rem;
+    height: 2.55rem;
+    padding: 0 0.85rem;
+    grid-auto-flow: column;
+    gap: 0.45rem;
+    font-size: 0.62rem;
+    font-weight: 750;
+    letter-spacing: 0.02em;
+    transform: translateX(-50%);
+  }
+
+  .home-theme-toggle:hover { transform: translateX(-50%); }
+  .home-theme-toggle-label { display: inline; }
 }
 
 .site-menu-button span { background: rgb(var(--color-ink)); }
