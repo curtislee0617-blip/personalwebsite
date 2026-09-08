@@ -5134,27 +5134,21 @@ html[data-theme-color-transition="active"] :where(
 .beli-profile-link:hover { border-color: rgb(var(--color-ink)); color: rgb(var(--color-ink)); }
 .beli-profile-link span { font-size: 0.9rem; }
 
-.restaurant-filter-panel {
+.restaurant-map-toolbar {
   display: grid;
   align-items: end;
   gap: 0.7rem;
-  grid-template-columns:
-    minmax(12rem, 1.45fr)
-    minmax(7rem, 0.58fr)
-    minmax(9rem, 0.8fr)
-    minmax(10rem, 0.95fr)
-    minmax(9rem, 0.8fr)
-    auto;
+  grid-template-columns: minmax(12rem, 1fr) auto;
 }
 
-.restaurant-filter-panel label,
+.restaurant-map-toolbar label,
 .restaurant-search,
 .restaurant-recommendations label {
   display: grid;
   gap: 0.3rem;
 }
 
-.restaurant-filter-panel label > span,
+.restaurant-map-toolbar label > span,
 .restaurant-recommendations label > span {
   color: rgb(var(--color-ink) / 0.52);
   font-size: 0.64rem;
@@ -5163,8 +5157,7 @@ html[data-theme-color-transition="active"] :where(
   text-transform: uppercase;
 }
 
-.restaurant-filter-panel input,
-.restaurant-filter-panel select,
+.restaurant-map-toolbar input,
 .restaurant-recommendations input,
 .restaurant-recommendations textarea {
   width: 100%;
@@ -5176,8 +5169,7 @@ html[data-theme-color-transition="active"] :where(
   font-size: 0.78rem;
 }
 
-.restaurant-filter-panel input,
-.restaurant-filter-panel select { height: 2.5rem; padding: 0 0.75rem; }
+.restaurant-map-toolbar input { height: 2.5rem; padding: 0 0.75rem; }
 
 .restaurant-search-control {
   display: grid;
@@ -5236,8 +5228,7 @@ html[data-theme-color-transition="active"] :where(
   color: rgb(var(--color-ink));
 }
 
-.restaurant-filter-panel input:focus,
-.restaurant-filter-panel select:focus,
+.restaurant-map-toolbar input:focus,
 .restaurant-recommendations input:focus,
 .restaurant-recommendations textarea:focus { border-color: rgb(var(--color-ink) / 0.5); box-shadow: 0 0 0 3px rgb(var(--color-mist) / 0.8); }
 
@@ -5264,35 +5255,6 @@ html[data-theme-color-transition="active"] :where(
   margin-top: -0.65rem;
   color: rgb(var(--color-ink) / 0.44);
   font-size: 0.65rem;
-}
-
-.restaurant-filter-row {
-  display: flex;
-  overflow-x: auto;
-  gap: 0.55rem;
-  padding-bottom: 0.25rem;
-  scrollbar-width: none;
-}
-
-.restaurant-filter-row::-webkit-scrollbar { display: none; }
-
-.restaurant-filter {
-  flex: none;
-  padding: 0.5rem 0.82rem;
-  border: 1px solid rgb(var(--color-ink) / 0.15);
-  border-radius: 9999px;
-  background: rgb(var(--color-surface) / 0.3);
-  color: rgb(var(--color-ink) / 0.64);
-  font-size: 0.75rem;
-  font-weight: 600;
-  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
-}
-
-.restaurant-filter:hover,
-.restaurant-filter.is-active {
-  border-color: rgb(var(--color-ink));
-  background: rgb(var(--color-ink));
-  color: rgb(var(--color-paper));
 }
 
 .restaurant-map-layout {
@@ -6431,8 +6393,7 @@ div.restaurant-results-limit {
 }
 
 @media (max-width: 1099px), (max-width: 1366px) and (pointer: coarse) and (hover: none) {
-  .restaurant-filter-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .restaurant-search { grid-column: 1 / -1; }
+  .restaurant-map-toolbar { grid-template-columns: minmax(0, 1fr) auto; }
   .restaurant-map-layout { min-height: 0; grid-template-columns: 1fr; }
   .restaurant-map-shell,
   .restaurant-map { min-height: min(70svh, 36rem); }
@@ -7505,12 +7466,11 @@ div.restaurant-results-limit {
   .restaurant-beli-row { margin-top: 0.5rem !important; }
   .restaurant-page-section { padding-top: 0.6rem !important; }
   .restaurant-explorer { gap: 0.55rem; }
-  .restaurant-filter-panel { gap: 0.42rem; }
-  .restaurant-filter-panel label,
+  .restaurant-map-toolbar { gap: 0.42rem; }
+  .restaurant-map-toolbar label,
   .restaurant-search { gap: 0.18rem; }
-  .restaurant-filter-panel label > span { font-size: 0.5rem; letter-spacing: 0.07em; }
-  .restaurant-filter-panel input,
-  .restaurant-filter-panel select {
+  .restaurant-map-toolbar label > span { font-size: 0.5rem; letter-spacing: 0.07em; }
+  .restaurant-map-toolbar input {
     height: 2.05rem;
     padding: 0 0.55rem;
     border-radius: 0.65rem;
@@ -7529,18 +7489,12 @@ div.restaurant-results-limit {
     border-radius: 0.65rem;
     font-size: 0.56rem;
   }
-  .restaurant-filter-row { gap: 0.3rem; padding-bottom: 0.12rem; }
-  .restaurant-filter {
-    padding: 0.3rem 0.52rem;
-    font-size: 0.58rem;
-  }
   .restaurant-export-note { margin-top: -0.35rem; font-size: 0.52rem; line-height: 1.35; }
   .restaurant-map-shell,
   .restaurant-map { min-height: 65svh; }
   .restaurant-map-card { left: 0.65rem; bottom: 0.65rem; width: calc(100% - 1.3rem); padding: 0.8rem; }
   .restaurant-card-emoji { width: 2.35rem; height: 2.35rem; font-size: 1.1rem; }
-  .restaurant-filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .restaurant-search { grid-column: auto; }
+  .restaurant-map-toolbar { grid-template-columns: minmax(0, 1fr) auto; }
   .restaurant-export { min-width: 0; }
   .restaurant-recommendations { padding: 1.25rem; border-radius: 1.4rem; }
   .restaurant-recommendations form { grid-template-columns: 1fr; }
