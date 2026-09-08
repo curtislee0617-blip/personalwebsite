@@ -50,6 +50,24 @@ function parseTimeRange(segment: string) {
   return { start, end };
 }
 
+function rangesForWeekday(
+  weekdayDescriptions: string[],
+  dayName: string,
+) {
+  const matchingDay = weekdayDescriptions.find((line) =>
+    line.toLocaleLowerCase("en").startsWith(dayName.toLocaleLowerCase("en"))
+  );
+  if (!matchingDay || /closed/i.test(matchingDay)) return [];
+
+  const schedule = matchingDay.split(":").slice(1).join(":").trim();
+  if (!schedule) return [];
+
+  return schedule
+    .split(",")
+    .map((segment) => parseTimeRange(segment.trim()))
+    .filter((range): range is { start: number; end: number } => Boolean(range));
+}
+
 function isOpenFromStructuredPeriods(restaurant: Restaurant, targetDateTime: Date) {
   const periods = restaurant.openingHours?.periods ?? [];
   if (!periods.length) return null;
@@ -91,29 +109,54 @@ export function isRestaurantOpenAtDateTime(restaurant: Restaurant, targetDateTim
   previousDay.setDate(previousDay.getDate() - 1);
   const previousWeekdayName = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(previousDay);
 
-  function rangesForDay(dayName: string) {
-    const matchingDay = weekdayDescriptions.find((line) =>
-      line.toLocaleLowerCase("en").startsWith(dayName.toLocaleLowerCase("en"))
-    );
-    if (!matchingDay || /closed/i.test(matchingDay)) return [];
-    const schedule = matchingDay.split(":").slice(1).join(":").trim();
-    if (!schedule) return [];
-    return schedule
-      .split(",")
-      .map((segment) => parseTimeRange(segment.trim()))
-      .filter((range): range is { start: number; end: number } => Boolean(range));
-  }
-
-  const todayMatch = rangesForDay(weekdayName).some(({ start, end }) => {
+  const todayMatch = rangesForWeekday(weekdayDescriptions, weekdayName).some(({ start, end }) => {
     if (start === end) return true;
     if (start < end) return targetMinutes >= start && targetMinutes < end;
-    return targetMinutes >= start || targetMinutes < end;
+    return targetMinutes >= start;
   });
 
   if (todayMatch) return true;
 
-  return rangesForDay(previousWeekdayName).some(({ start, end }) =>
+  return rangesForWeekday(weekdayDescriptions, previousWeekdayName).some(({ start, end }) =>
     start > end && targetMinutes < end
+  );
+}
+
+export function isRestaurantOpenOnDate(restaurant: Restaurant, targetDate: Date) {
+  const periods = restaurant.openingHours?.periods ?? [];
+  if (periods.length) {
+    const minutesPerDay = 24 * 60;
+    const minutesPerWeek = 7 * minutesPerDay;
+    const targetStart = targetDate.getDay() * minutesPerDay;
+    const targetEnd = targetStart + minutesPerDay;
+
+    return periods.some((period) => {
+      const openMinutes = period.open.day * minutesPerDay + period.open.hour * 60 + period.open.minute;
+      if (!period.close) return true;
+
+      let closeMinutes = period.close.day * minutesPerDay + period.close.hour * 60 + period.close.minute;
+      if (closeMinutes <= openMinutes) closeMinutes += minutesPerWeek;
+
+      return [-minutesPerWeek, 0, minutesPerWeek].some((weekOffset) => {
+        const shiftedOpen = openMinutes + weekOffset;
+        const shiftedClose = closeMinutes + weekOffset;
+        return shiftedOpen < targetEnd && shiftedClose > targetStart;
+      });
+    });
+  }
+
+  const weekdayDescriptions = restaurant.openingHours?.weekdayDescriptions ?? [];
+  if (!weekdayDescriptions.length) return false;
+
+  const weekdayName = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(targetDate);
+  if (rangesForWeekday(weekdayDescriptions, weekdayName).length > 0) return true;
+
+  const previousDay = new Date(targetDate);
+  previousDay.setDate(previousDay.getDate() - 1);
+  const previousWeekdayName = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(previousDay);
+
+  return rangesForWeekday(weekdayDescriptions, previousWeekdayName).some(({ start, end }) =>
+    start > end && end > 0
   );
 }
 

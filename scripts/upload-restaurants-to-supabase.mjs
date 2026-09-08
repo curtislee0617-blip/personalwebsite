@@ -156,8 +156,6 @@ const rows = Array.from(merged.values()).map((item) => ({
   latitude: item.position.latitude,
   longitude: item.position.longitude,
   google_maps_url: item.googleMapsUrl,
-  opening_hours: null,
-  hours_updated_at: null,
   business_status: item.businessStatus ?? "OPERATIONAL",
   is_published: true,
   updated_at: new Date().toISOString(),
@@ -169,7 +167,10 @@ const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SECRET_
 
 for (let start = 0; start < rows.length; start += 100) {
   const batch = rows.slice(start, start + 100);
-  const { error } = await supabase.from("restaurants").upsert(batch, { onConflict: "place_id" });
+  const { error } = await supabase.from("restaurants").upsert(batch, {
+    onConflict: "place_id",
+    defaultToNull: false,
+  });
   if (error) throw new Error(`Upload failed near row ${start + 1}: ${error.message}`);
   console.log(`Uploaded ${Math.min(start + batch.length, rows.length)}/${rows.length}`);
 }

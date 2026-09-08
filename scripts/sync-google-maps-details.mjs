@@ -6,6 +6,8 @@ import { analyzeRestaurantCategories, categoryEmojis } from "./restaurant-classi
 const args = process.argv.slice(2);
 const applyChanges = args.includes("--apply");
 const applyCategories = args.includes("--apply-categories");
+const missingHoursOnly = args.includes("--missing-hours-only");
+const countOnly = args.includes("--count-only");
 const concurrency = Math.max(1, Math.min(8, Number(args.find((arg) => arg.startsWith("--concurrency="))?.split("=")[1] ?? 4)));
 const limit = Math.max(0, Number(args.find((arg) => arg.startsWith("--limit="))?.split("=")[1] ?? 0));
 const outputPath = args.find((arg) => arg.startsWith("--output="))?.split("=").slice(1).join("=")
@@ -65,10 +67,21 @@ function buildOpeningHours(payload) {
   };
 }
 
+function hasWeeklyOpeningHours(openingHours) {
+  return Boolean(
+    openingHours?.weekdayDescriptions?.length
+    || openingHours?.periods?.length,
+  );
+}
+
 const env = readEnv();
 const googlePlacesApiKey = env.GOOGLE_PLACES_API_KEY ?? env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-if (!googlePlacesApiKey || !env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
-  console.error("GOOGLE_PLACES_API_KEY (or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY), NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY are required in .env.local");
+if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
+  console.error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY are required in .env.local");
+  process.exit(1);
+}
+if (!countOnly && !googlePlacesApiKey) {
+  console.error("GOOGLE_PLACES_API_KEY (or NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) is required in .env.local");
   process.exit(1);
 }
 
@@ -90,7 +103,20 @@ for (let start = 0; ; start += 1000) {
   if (data.length < 1000) break;
 }
 
-const candidates = limit > 0 ? restaurants.slice(0, limit) : restaurants;
+const eligibleRestaurants = missingHoursOnly
+  ? restaurants.filter((restaurant) => !hasWeeklyOpeningHours(restaurant.opening_hours))
+  : restaurants;
+const candidates = limit > 0 ? eligibleRestaurants.slice(0, limit) : eligibleRestaurants;
+
+if (countOnly) {
+  console.log(JSON.stringify({
+    publishedPlacesWithGoogleId: restaurants.length,
+    eligiblePlaces: eligibleRestaurants.length,
+    selectedPlaces: candidates.length,
+    missingHoursOnly,
+  }, null, 2));
+  process.exit(0);
+}
 
 async function fetchPlaceDetails(restaurant) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
@@ -167,14 +193,19 @@ async function worker() {
         latitude: place.location?.latitude ?? restaurant.latitude,
         longitude: place.location?.longitude ?? restaurant.longitude,
         price_level: mappedPriceLevel ?? restaurant.price_level,
-        opening_hours: openingHours,
-        hours_updated_at: openingHours?.updatedAt ?? null,
         business_status: place.businessStatus ?? restaurant.business_status ?? "OPERATIONAL",
         is_published: place.businessStatus === "CLOSED_PERMANENTLY" ? false : true,
         tags: analysis.tags,
         emoji: shouldSuggestCategoryChange && applyCategories ? suggestedEmoji : (categoryEmojis[restaurant.category] ?? restaurant.emoji),
         updated_at: new Date().toISOString(),
       };
+
+      // A temporary or incomplete Places response must not erase a schedule
+      // that was successfully synced earlier.
+      if (openingHours) {
+        updates.opening_hours = openingHours;
+        updates.hours_updated_at = openingHours.updatedAt;
+      }
 
       if (shouldSuggestCategoryChange && applyCategories) {
         updates.category = suggestedCategory;
@@ -205,7 +236,7 @@ async function worker() {
         suggestedEmoji,
         secondaryCategories: analysis.secondaryCategories,
         businessStatus: place.businessStatus ?? "UNKNOWN",
-        hasOpeningHours: Boolean(openingHours?.weekdayDescriptions?.length),
+        hasOpeningHours: hasWeeklyOpeningHours(openingHours),
         weekdayDescriptions: openingHours?.weekdayDescriptions ?? [],
         priceLevel: mappedPriceLevel,
         primaryType: place.primaryType ?? null,
@@ -243,6 +274,7 @@ const payload = {
   generatedAt: new Date().toISOString(),
   applyChanges,
   applyCategories,
+  missingHoursOnly,
   summary: {
     checked: audit.length,
     reviewRequired: reviewRequired.length,

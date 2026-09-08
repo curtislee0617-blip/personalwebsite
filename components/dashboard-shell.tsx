@@ -81,6 +81,7 @@ export const dashboardSections: readonly DashboardSection[] = [
     href: "/tools", label: "Tools", subtitle: "Utilities for school, and more coming soon :)",
     groups: [
       { href: "/tools", label: "Planning", items: [{ href: "/tools/course-planner", label: "Course planner" }] },
+      { href: "/tools", label: "UI/UX brainstorming", items: [{ href: "/tools/clicks", label: "Clicks" }] },
       { href: "/tools", label: "Chemistry", items: [{ href: "/tools/ir-spectrum", label: "IR spectrum plotter" }, { href: "/tools/nmr-spectrum", label: "NMR spectrum processor" }] },
       { href: "/tools", label: "Thermodynamics", items: [{ href: "/tools/water-properties", label: "Water properties" }, { href: "/tools/compound-properties", label: "Compound properties" }, { href: "/tools/vle", label: "VLE simulator" }] },
     ],

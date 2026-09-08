@@ -18,6 +18,7 @@ registerHooks({
 const {
   isRestaurantOpenAtDateTime,
   isRestaurantOpenNow,
+  isRestaurantOpenOnDate,
   restaurantLocalNow,
 } = await import("../lib/restaurant-hours.ts");
 
@@ -72,6 +73,52 @@ test("overnight schedules stay open after midnight and close at the exact end ti
   assert.equal(isRestaurantOpenAtDateTime(restaurant, new Date(2026, 6, 31, 23, 30)), true);
   assert.equal(isRestaurantOpenAtDateTime(restaurant, new Date(2026, 7, 1, 1, 30)), true);
   assert.equal(isRestaurantOpenAtDateTime(restaurant, new Date(2026, 7, 1, 2, 0)), false);
+});
+
+test("day filters match a normal opening day but not a closed day", () => {
+  const restaurant = restaurantWithHours({
+    openNow: false,
+    weekdayDescriptions: [],
+    periods: [{
+      open: { day: 2, hour: 11, minute: 30 },
+      close: { day: 2, hour: 14, minute: 0 },
+    }],
+    utcOffsetMinutes: 480,
+    updatedAt: "",
+  });
+
+  assert.equal(isRestaurantOpenOnDate(restaurant, new Date(2026, 6, 28)), true);
+  assert.equal(isRestaurantOpenOnDate(restaurant, new Date(2026, 6, 29)), false);
+});
+
+test("day filters include the after-midnight portion of an overnight schedule", () => {
+  const restaurant = restaurantWithHours({
+    openNow: false,
+    weekdayDescriptions: [
+      "Friday: 6:00 PM–2:00 AM",
+      "Saturday: Closed",
+    ],
+    periods: [],
+    utcOffsetMinutes: 0,
+    updatedAt: "",
+  });
+
+  assert.equal(isRestaurantOpenOnDate(restaurant, new Date(2026, 6, 31)), true);
+  assert.equal(isRestaurantOpenOnDate(restaurant, new Date(2026, 7, 1)), true);
+  assert.equal(isRestaurantOpenAtDateTime(restaurant, new Date(2026, 6, 31, 1, 0)), false);
+  assert.equal(isRestaurantOpenAtDateTime(restaurant, new Date(2026, 7, 1, 1, 0)), true);
+});
+
+test("day filters recognize an always-open schedule", () => {
+  const restaurant = restaurantWithHours({
+    openNow: true,
+    weekdayDescriptions: ["Tuesday: Open 24 hours"],
+    periods: [],
+    utcOffsetMinutes: 480,
+    updatedAt: "",
+  });
+
+  assert.equal(isRestaurantOpenOnDate(restaurant, new Date(2026, 6, 28)), true);
 });
 
 test("open now uses the restaurant timezone rather than the visitor timezone", () => {

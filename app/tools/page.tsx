@@ -8,7 +8,7 @@ import { SnapCarousel } from "@/components/snap-carousel";
 
 export const metadata: Metadata = { title: "Tools" };
 
-type ToolKind = "water" | "compound" | "vle" | "ir" | "nmr" | "planner";
+type ToolKind = "water" | "compound" | "vle" | "ir" | "nmr" | "planner" | "clicks";
 type Tool = { href: string; title: string; description: string; kind: ToolKind };
 type ToolSection = { title: string; tools: Tool[] };
 
@@ -77,6 +77,12 @@ const toolSections: ToolSection[] = [
     ],
   },
   {
+    title: "UI/UX brainstorming",
+    tools: [
+      { href: "/tools/clicks", title: "Clicks", description: "One hundred interactive button directions to test, compare, and refine for future pages across the website.", kind: "clicks" },
+    ],
+  },
+  {
     title: "Chemistry",
     tools: [
       { href: "/tools/ir-spectrum", title: "IR spectrum plotter", description: "Upload, compare, convert, and automatically label peaks in up to ten infrared spectra.", kind: "ir" },
@@ -115,6 +121,17 @@ function CycleValue({ values, variant = "steady" }: { values: readonly string[];
 function ToolThumbnail({ kind }: { kind: ToolKind }) {
   if (kind === "planner") {
     return <CoursePlannerThumbnail />;
+  }
+
+  if (kind === "clicks") {
+    return (
+      <div className="tool-thumbnail tool-thumbnail-clicks swipe-bubble-media" aria-hidden="true">
+        <span>Button</span>
+        <span>Button</span>
+        <span>Button</span>
+        <span>Button</span>
+      </div>
+    );
   }
 
   if (kind === "water") {

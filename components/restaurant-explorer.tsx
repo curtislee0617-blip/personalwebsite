@@ -6,6 +6,7 @@ import type { Restaurant } from "@/data/restaurants";
 import {
   isRestaurantOpenAtDateTime,
   isRestaurantOpenNow,
+  isRestaurantOpenOnDate,
 } from "@/lib/restaurant-hours";
 import {
   configureGoogleMaps,
@@ -20,7 +21,7 @@ type RestaurantExplorerProps = {
 
 type MapStatus = "idle" | "loading" | "ready" | "error";
 type MapBounds = { north: number; south: number; east: number; west: number };
-type HoursFilter = "All" | "OpenNow" | "OpenAtDateTime";
+type HoursFilter = "All" | "OpenNow" | "OpenOnDate" | "OpenAtDateTime";
 type Position = { lat: number; lng: number };
 type GeocodeSuggestion = {
   id: string;
@@ -215,13 +216,14 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         .map(([category]) => category),
     ];
   }, [restaurants]);
-  const hasOpeningHoursData = useMemo(
-    () => restaurants.some((restaurant) => Boolean(
+  const openingHoursRestaurantCount = useMemo(
+    () => restaurants.filter((restaurant) => Boolean(
       restaurant.openingHours?.periods?.length
       || restaurant.openingHours?.weekdayDescriptions.length,
-    )),
+    )).length,
     [restaurants],
   );
+  const hasOpeningHoursData = openingHoursRestaurantCount > 0;
   const filteredRestaurants = useMemo(() => {
     const targetDateTime = parseDateTimeInput(hoursDate, hoursTime);
     return restaurants.filter((restaurant) => {
@@ -232,6 +234,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       const matchesHours =
         activeHours === "All"
         || (activeHours === "OpenNow" && restaurant.businessStatus !== "CLOSED_TEMPORARILY" && isRestaurantOpenNow(restaurant))
+        || (activeHours === "OpenOnDate" && restaurant.businessStatus !== "CLOSED_TEMPORARILY" && isRestaurantOpenOnDate(restaurant, targetDateTime))
         || (activeHours === "OpenAtDateTime" && restaurant.businessStatus !== "CLOSED_TEMPORARILY" && isRestaurantOpenAtDateTime(restaurant, targetDateTime));
       return matchesCategory && matchesPrice && matchesHours;
     });
@@ -653,15 +656,25 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
       return null;
     }
 
+    const checkingSelectedDay = activeHours === "OpenOnDate";
     const checkingSelectedTime = activeHours === "OpenAtDateTime";
-    const open = checkingSelectedTime
-      ? isRestaurantOpenAtDateTime(restaurant, selectedHoursDateTime)
-      : isRestaurantOpenNow(restaurant);
+    const open = checkingSelectedDay
+      ? isRestaurantOpenOnDate(restaurant, selectedHoursDateTime)
+      : checkingSelectedTime
+        ? isRestaurantOpenAtDateTime(restaurant, selectedHoursDateTime)
+        : isRestaurantOpenNow(restaurant);
+    const selectedDayLabel = new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    }).format(selectedHoursDateTime);
 
     return {
-      label: checkingSelectedTime
-        ? `${open ? "Open" : "Closed"} at ${new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(selectedHoursDateTime)}`
-        : open ? "Open now" : "Closed now",
+      label: checkingSelectedDay
+        ? `${open ? "Open" : "Closed"} on ${selectedDayLabel}`
+        : checkingSelectedTime
+          ? `${open ? "Open" : "Closed"} at ${new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(selectedHoursDateTime)}`
+          : open ? "Open now" : "Closed now",
       className: open ? "is-open" : "",
     };
   }
@@ -670,12 +683,13 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
     const weekdayDescriptions = restaurant.openingHours?.weekdayDescriptions ?? [];
     if (!weekdayDescriptions.length) return "";
 
-    const targetDate = activeHours === "OpenAtDateTime" ? selectedHoursDateTime : new Date();
+    const checkingSelectedDate = activeHours === "OpenOnDate" || activeHours === "OpenAtDateTime";
+    const targetDate = checkingSelectedDate ? selectedHoursDateTime : new Date();
     const weekdayName = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(targetDate);
     const matchingDay = weekdayDescriptions.find((line) => line.toLocaleLowerCase("en").startsWith(weekdayName.toLocaleLowerCase("en")));
     if (!matchingDay) return "";
 
-    const dayLabel = activeHours === "OpenAtDateTime"
+    const dayLabel = checkingSelectedDate
       ? new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric" }).format(targetDate)
       : "Today";
     const hours = matchingDay.split(":").slice(1).join(":").trim();
@@ -798,14 +812,19 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
           >
             <option value="All">{hasOpeningHoursData ? "All hours" : "Live hours on Google Maps"}</option>
             {hasOpeningHoursData ? <option value="OpenNow">Open now</option> : null}
-            {hasOpeningHoursData ? <option value="OpenAtDateTime">Open at a specific date & time</option> : null}
+            {hasOpeningHoursData ? <option value="OpenOnDate">Open on selected day</option> : null}
+            {hasOpeningHoursData ? <option value="OpenAtDateTime">Open at selected day & time</option> : null}
           </select>
         </label>
         <label>
           <span>Choose day</span>
           <select
-            disabled={activeHours !== "OpenAtDateTime"}
-            onChange={(event) => setHoursDate(event.target.value)}
+            aria-describedby={!hasOpeningHoursData ? "restaurant-hours-note" : undefined}
+            disabled={!hasOpeningHoursData}
+            onChange={(event) => {
+              setHoursDate(event.target.value);
+              setActiveHours((current) => current === "OpenAtDateTime" ? current : "OpenOnDate");
+            }}
             value={hoursDate}
           >
             {dateOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
@@ -814,8 +833,12 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
         <label>
           <span>Choose time</span>
           <select
-            disabled={activeHours !== "OpenAtDateTime"}
-            onChange={(event) => setHoursTime(event.target.value)}
+            aria-describedby={!hasOpeningHoursData ? "restaurant-hours-note" : undefined}
+            disabled={!hasOpeningHoursData}
+            onChange={(event) => {
+              setHoursTime(event.target.value);
+              setActiveHours("OpenAtDateTime");
+            }}
             value={hoursTime}
           >
             {timeOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
@@ -841,7 +864,7 @@ export function RestaurantExplorer({ apiKey, mapId, restaurants }: RestaurantExp
 
       <p className="restaurant-export-note" id="restaurant-hours-note">
         The downloaded CSV can be imported into Google My Maps. Google limits each imported layer to 2,000 rows. {hasOpeningHoursData
-          ? "Opening-hours filters use the latest Google hours synced into this site, including specific date-and-time checks."
+          ? `Opening-hours filters use the latest Google hours synced into this site. Hours are available for ${openingHoursRestaurantCount.toLocaleString()} of ${restaurants.length.toLocaleString()} saved places; places without stored hours are excluded when an hours filter is active.`
           : "Opening hours are not stored in this list yet; use each restaurant’s Google Maps link for its current live hours."}
       </p>
 
