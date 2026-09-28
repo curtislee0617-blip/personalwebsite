@@ -48,6 +48,7 @@ function LogoBadge({ logo }: { logo?: LogoMeta }) {
             className={`object-contain ${logo.imageClassName ?? "mix-blend-multiply"} ${logo.alignClassName ?? "object-center"} ${logo.fitClassName ?? "h-9 w-9"}`}
             height={56}
             src={logo.src}
+            unoptimized
             width={56}
           />
         </div>
@@ -65,7 +66,7 @@ function OrganisationWordmark({ src, alt, fallback }: { src?: string; alt: strin
 
   return (
     <span className="relative mx-[0.04em] inline-flex h-[0.95em] w-[3.95em] translate-y-[0.06em] align-baseline">
-      <Image alt={alt} className="object-contain object-left" fill sizes="74px" src={src} />
+      <Image alt={alt} className="object-contain object-left" fill sizes="74px" src={src} unoptimized />
     </span>
   );
 }
