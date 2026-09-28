@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useSyncExternalStore, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
 
-type ViewTransition = { ready: Promise<void>; finished: Promise<void> };
+type ViewTransition = {
+  ready: Promise<void>;
+  finished: Promise<void>;
+  updateCallbackDone: Promise<void>;
+  skipTransition: () => void;
+};
 type DocumentWithViewTransitions = Document & {
   startViewTransition?: (callback: () => void) => ViewTransition;
 };
 
 const THEME_TRANSITION_MS = 1240;
 const FALLBACK_TRANSITION_MS = 560;
-const THEME_TRANSITION_EASING = "cubic-bezier(.16, 1, .3, 1)";
 const RADIAL_TRANSITION_EASING = "cubic-bezier(.45, 0, .2, 1)";
 
 function SunIcon() {
@@ -30,157 +34,105 @@ function MoonIcon() {
   );
 }
 
+// Every mounted toggle reads the same theme, including the hidden desktop
+// sidebar and mobile menu. Local component state drifted when switching layouts.
+function subscribeTheme(onChange: () => void) {
+  window.addEventListener("site-theme-change", onChange);
+  return () => window.removeEventListener("site-theme-change", onChange);
+}
+
+function readTheme() {
+  return document.documentElement.classList.contains("dark");
+}
+
+function readServerTheme() {
+  return false;
+}
+
 function applyTheme(isDark: boolean) {
-  document.documentElement.classList.toggle("dark", isDark);
-  window.localStorage.setItem("theme", isDark ? "dark" : "light");
+  flushSync(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+    window.dispatchEvent(new Event("site-theme-change"));
+  });
+  try {
+    window.localStorage.setItem("theme", isDark ? "dark" : "light");
+  } catch {
+    // Blocked/full storage must not prevent switching themes this session.
+  }
 }
 
 export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "menu-row" | "dashboard" }) {
-  const [state, setState] = useState({ mounted: false, isDark: false });
-  const transitionInProgress = useRef(false);
+  const isDark = useSyncExternalStore(subscribeTheme, readTheme, readServerTheme);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of the dark-mode class the pre-hydration theme-init script already set on <html>
-    setState({ mounted: true, isDark: document.documentElement.classList.contains("dark") });
-  }, []);
+  async function toggle(event: MouseEvent<HTMLButtonElement>) {
+    const root = document.documentElement;
+    // A document can run only one theme transition, even with several toggles.
+    if (root.dataset.themeTransition || root.dataset.themeColorTransition) return;
 
-  const { mounted, isDark } = state;
-
-  function toggle(event: MouseEvent<HTMLButtonElement>) {
-    if (transitionInProgress.current) return;
-
-    const next = !isDark;
+    const next = !readTheme();
     const button = event.currentTarget;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const iconBounds = event.currentTarget.querySelector("svg")?.getBoundingClientRect();
-    const x = iconBounds ? iconBounds.left + iconBounds.width / 2 : bounds.left + bounds.width / 2;
-    const y = iconBounds ? iconBounds.top + iconBounds.height / 2 : bounds.top + bounds.height / 2;
-    const flip = () => {
-      applyTheme(next);
-      flushSync(() => {
-        setState((prev) => ({ ...prev, isDark: next }));
-      });
-    };
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const bounds = button.getBoundingClientRect();
+    const x = bounds.left + bounds.width / 2;
+    const y = bounds.top + bounds.height / 2;
+    const flip = () => applyTheme(next);
+    const doc = document as DocumentWithViewTransitions;
 
-    if (reducedMotion) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       flip();
       return;
     }
 
-    transitionInProgress.current = true;
-    const root = document.documentElement;
+    if (typeof doc.startViewTransition !== "function") {
+      root.dataset.themeColorTransition = "active";
+      // Establish the fallback styles before changing the palette.
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+      flip();
+      window.setTimeout(() => delete root.dataset.themeColorTransition, FALLBACK_TRANSITION_MS);
+      return;
+    }
+
     const radius = Math.hypot(
       Math.max(x, window.innerWidth - x),
       Math.max(y, window.innerHeight - y),
     ) + 2;
-    const buttonRadius = Math.max(iconBounds?.width ?? bounds.width, iconBounds?.height ?? bounds.height) / 2;
-    const animateIcon = () => button.querySelector("svg")?.animate(
-      [
-        { opacity: 0.72, transform: `rotate(${next ? -22 : 22}deg) scale(0.82)` },
-        { opacity: 1, transform: "rotate(0deg) scale(1)" },
-      ],
-      {
-        duration: 420,
-        easing: THEME_TRANSITION_EASING,
-      },
-    );
-    const cleanup = () => {
-      delete button.dataset.themeAnimating;
-      delete root.dataset.themeTransition;
-      delete root.dataset.themeColorTransition;
-      transitionInProgress.current = false;
-    };
-
+    const circle = (r: number) => `circle(${r}px at ${x}px ${y}px)`;
+    let transition: ViewTransition | undefined;
+    let animation: Animation | undefined;
+    root.dataset.themeTransition = next ? "light-to-dark" : "dark-to-light";
     button.dataset.themeAnimating = "true";
-    const doc = document as DocumentWithViewTransitions;
 
-    if (typeof doc.startViewTransition === "function") {
-      root.dataset.themeTransition = next ? "light-to-dark" : "dark-to-light";
-
-      let transition: ViewTransition;
-      try {
-        transition = doc.startViewTransition(flip);
-      } catch {
-        cleanup();
-        flip();
-        return;
-      }
-
-      const animations: Animation[] = [];
-      transition.ready
-        .then(() => {
-          animations.push(root.animate(
-            [
-              { clipPath: `circle(${radius}px at ${x}px ${y}px)` },
-              { clipPath: `circle(${radius * 0.42}px at ${x}px ${y}px)`, offset: 0.64 },
-              { clipPath: `circle(${buttonRadius * 1.8}px at ${x}px ${y}px)`, offset: 0.9 },
-              { clipPath: `circle(0px at ${x}px ${y}px)` },
-            ],
-            {
-              duration: THEME_TRANSITION_MS,
-              direction: next ? "normal" : "reverse",
-              easing: RADIAL_TRANSITION_EASING,
-              fill: "forwards",
-              pseudoElement: next ? "::view-transition-old(root)" : "::view-transition-new(root)",
-            },
-          ));
-
-          const iconAnimation = animateIcon();
-          if (iconAnimation) animations.push(iconAnimation);
-        })
-        .catch(() => undefined);
-
-      const finishTransition = () => {
-        animations.forEach((animation) => animation.cancel());
-        cleanup();
-      };
-      transition.finished.then(finishTransition, finishTransition);
-      return;
-    }
-
-    root.dataset.themeColorTransition = "active";
-    const halo = document.createElement("span");
-    halo.className = "theme-transition-halo";
-    halo.style.left = `${x}px`;
-    halo.style.top = `${y}px`;
-    document.body.append(halo);
-    root.getBoundingClientRect();
-
-    window.requestAnimationFrame(() => {
-      flip();
-
-      const haloScale = Math.max(1, radius / 24);
-      const haloAnimation = halo.animate(
-        [
-          { opacity: 0.44, transform: "translate(-50%, -50%) scale(0.2)" },
-          { offset: 0.5, opacity: 0.2, transform: `translate(-50%, -50%) scale(${haloScale * 0.56})` },
-          { opacity: 0, transform: `translate(-50%, -50%) scale(${haloScale})` },
-        ],
+    try {
+      transition = doc.startViewTransition(flip);
+      // Observe both promises immediately, including browsers that skip capture.
+      const finished = transition.finished.catch(() => undefined);
+      const updated = transition.updateCallbackDone.catch(() => undefined);
+      await transition.ready;
+      animation = root.animate(
+        { clipPath: next ? [circle(radius), circle(0)] : [circle(0), circle(radius)] },
         {
-          duration: FALLBACK_TRANSITION_MS,
-          easing: THEME_TRANSITION_EASING,
-          fill: "forwards",
+          duration: THEME_TRANSITION_MS,
+          easing: RADIAL_TRANSITION_EASING,
+          fill: "both",
+          pseudoElement: next ? "::view-transition-old(root)" : "::view-transition-new(root)",
         },
       );
-      const iconAnimation = animateIcon();
-
-      Promise.all([
-        haloAnimation.finished.catch(() => undefined),
-        iconAnimation?.finished.catch(() => undefined) ?? Promise.resolve(),
-      ]).finally(() => {
-        halo.remove();
-        cleanup();
-      });
-    });
+      await Promise.all([finished, updated]);
+    } catch {
+      // Unsupported capture/animation should still apply exactly one theme flip.
+      transition?.skipTransition();
+      if (transition) await transition.updateCallbackDone.catch(() => undefined);
+      if (readTheme() !== next) flip();
+    } finally {
+      animation?.cancel();
+      delete button.dataset.themeAnimating;
+      delete root.dataset.themeTransition;
+    }
   }
-
-  if (!mounted) return null;
 
   if (variant === "menu-row") {
     return (
       <button
-        aria-label="Toggle dark mode"
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         className="theme-toggle-menu-row site-menu-link site-menu-theme-toggle col-span-2 flex items-center justify-between rounded-2xl px-4 py-3 text-sm"
         onClick={toggle}
         type="button"
@@ -194,7 +146,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
   if (variant === "dashboard") {
     return (
       <button
-        aria-label="Toggle dark mode"
+        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         className="theme-toggle dashboard-theme-toggle"
         onClick={toggle}
         title={isDark ? "Switch to light mode" : "Switch to dark mode"}

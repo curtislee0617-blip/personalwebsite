@@ -7,7 +7,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { navIconForPath } from "@/lib/page-cursors";
-import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
 const links = [
   ["/", "Home"], ["/about", "CV"], ["/projects", "Projects"],
@@ -18,7 +17,7 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const shellRef = useRef<HTMLElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const router = useRouter();
   const isProjectViewer = pathname.startsWith("/projects/");
@@ -32,45 +31,12 @@ export function SiteHeader() {
   }
 
   function navigateFromMenu(event: MouseEvent<HTMLAnchorElement>, href: string) {
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
-    event.preventDefault();
-    if (pathname === href) {
-      setOpen(false);
-      return;
-    }
-
-    if (href === "/") {
-      setOpen(false);
-      if (window.matchMedia("(max-width: 639px)").matches) {
-        window.sessionStorage.setItem("home-entry", "mobile-return");
-      } else {
-        window.sessionStorage.removeItem("home-entry");
-      }
-      router.push(href);
-      return;
-    }
-
-    const panel = panelRef.current;
-    void runRouteBubbleTransition({
-      href,
-      router,
-      source: event.currentTarget,
-      mode: "expand",
-      variant: "menu",
-      beforeNavigate: () => setOpen(false),
-      fadeOut: [panel],
-    });
+    setOpen(false);
+    if (pathname === href) event.preventDefault();
+    // Let Next Link perform client navigation without a full-page blank overlay.
   }
-
-  useEffect(() => {
-    if (pathname !== "/") window.sessionStorage.removeItem("home-entry");
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!open) return;
-    panelRef.current?.getAnimations().forEach((animation) => animation.cancel());
-  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -82,7 +48,9 @@ export function SiteHeader() {
     }
 
     function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      buttonRef.current?.focus({ preventScroll: true });
     }
 
     document.addEventListener("pointerdown", closeOnOutsidePointer);
@@ -98,8 +66,10 @@ export function SiteHeader() {
   return (
     <header id="top" className={`site-menu-shell ${isProjectViewer ? "site-menu-shell-project-viewer" : ""}`} ref={shellRef}>
       <button
+        ref={buttonRef}
+        type="button"
         className={`site-menu-button ${open ? "is-open" : ""}`}
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
         aria-controls="site-menu-panel"
         aria-label={open ? "Close navigation" : "Open navigation"}
@@ -107,7 +77,7 @@ export function SiteHeader() {
         <span /><span /><span />
       </button>
 
-      <div id="site-menu-panel" className={`site-menu-panel ${open ? "is-open" : ""}`} aria-hidden={!open} ref={panelRef}>
+      <div id="site-menu-panel" className={`site-menu-panel ${open ? "is-open" : ""}`} aria-hidden={!open} inert={!open}>
         <div className="site-menu-titlebar mb-5 flex items-center justify-between border-b border-ink/10 pb-4">
           <Link
             href="/"
