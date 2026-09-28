@@ -5,11 +5,12 @@ import { RecipeCard } from "@/components/recipe-card";
 import { recipeCategories } from "@/data/recipe-categories";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 
-const PAGE_SIZE = 12;
+const INITIAL_PAGE_SIZE = 12;
+const SHOW_MORE_SIZE = 20;
 
 export function RecipeCollection({ recipes, authenticated }: { recipes: RecipeCardEntry[]; authenticated: boolean }) {
   const [category, setCategory] = useState("all");
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_PAGE_SIZE);
   const [targetId, setTargetId] = useState<{ id: string } | null>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
   const byKey = useMemo(() => new Map(recipes.map((recipe) => [recipe.recipeKey, recipe])), [recipes]);
@@ -33,7 +34,7 @@ export function RecipeCollection({ recipes, authenticated }: { recipes: RecipeCa
       const categoryId = hash.replace(/^recipe-category-/, "");
       if (hash.startsWith("recipe-category-") && recipeCategories.some((item) => item.id === categoryId)) {
         setCategory(categoryId);
-        setVisibleCount(PAGE_SIZE);
+        setVisibleCount(INITIAL_PAGE_SIZE);
         setTargetId(null);
         return;
       }
@@ -42,7 +43,9 @@ export function RecipeCollection({ recipes, authenticated }: { recipes: RecipeCa
       const index = recipes.findIndex((recipe) => `recipe-${recipe.slug}` === id);
       if (index < 0) return;
       setCategory("all");
-      setVisibleCount(Math.ceil((index + 1) / PAGE_SIZE) * PAGE_SIZE);
+      setVisibleCount(index < INITIAL_PAGE_SIZE
+        ? INITIAL_PAGE_SIZE
+        : INITIAL_PAGE_SIZE + Math.ceil((index + 1 - INITIAL_PAGE_SIZE) / SHOW_MORE_SIZE) * SHOW_MORE_SIZE);
       setTargetId({ id });
     };
     const onNavigation = () => followHash();
@@ -80,11 +83,11 @@ export function RecipeCollection({ recipes, authenticated }: { recipes: RecipeCa
   return (
     <div className="recipe-browser">
       <div aria-label="Filter recipes by category" className="recipe-filter-list" ref={filtersRef} role="group">
-        <button aria-pressed={category === "all"} onClick={() => { setCategory("all"); setVisibleCount(PAGE_SIZE); setTargetId(null); }} type="button">All recipes <span>{recipes.length}</span></button>
+        <button aria-pressed={category === "all"} onClick={() => { setCategory("all"); setVisibleCount(INITIAL_PAGE_SIZE); setTargetId(null); }} type="button">All recipes <span>{recipes.length}</span></button>
         {recipeCategories.map((item) => {
           const count = recipes.filter((recipe) => matches(recipe, item.id)).length;
           return (
-            <button aria-pressed={category === item.id} id={`recipe-category-${item.id}`} key={item.id} onClick={() => { setCategory(item.id); setVisibleCount(PAGE_SIZE); setTargetId(null); }} type="button">
+            <button aria-pressed={category === item.id} id={`recipe-category-${item.id}`} key={item.id} onClick={() => { setCategory(item.id); setVisibleCount(INITIAL_PAGE_SIZE); setTargetId(null); }} type="button">
               {item.title} <span>{count}</span>
             </button>
           );
@@ -105,7 +108,7 @@ export function RecipeCollection({ recipes, authenticated }: { recipes: RecipeCa
       </ul>
       {filtered.length === 0 && <p className="recipe-browser-empty">No recipes in this category yet.</p>}
       {visibleCount < filtered.length && (
-        <button className="recipe-show-more" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)} type="button">
+        <button className="recipe-show-more" onClick={() => setVisibleCount((count) => count + SHOW_MORE_SIZE)} type="button">
           Show more recipes <span>{filtered.length - visibleCount} remaining</span>
         </button>
       )}

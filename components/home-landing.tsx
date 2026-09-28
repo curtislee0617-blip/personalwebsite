@@ -10,7 +10,6 @@ import { ScrollingPhotoBackground } from "@/components/scrolling-photo-backgroun
 import { ThemeToggle } from "@/components/theme-toggle";
 import { runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
 import { navIconForPath } from "@/lib/page-cursors";
-import { runRouteBubbleTransition } from "@/lib/route-bubble-transition";
 
 const quickAccessGroups = [
   { label: "Personal", sections: [dashboardSections[3], dashboardSections[4], dashboardSections[2]] },
@@ -39,36 +38,11 @@ export function HomeLanding({ photos }: { photos: string[] }) {
     if (isLeaving.current) return;
     isLeaving.current = true;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      router.push(href);
-      return;
+    try {
+      await runDashboardBubbleTransition({ direction: "dock", href, router });
+    } finally {
+      isLeaving.current = false;
     }
-
-    const selectedLink = event.currentTarget;
-    const links = Array.from(document.querySelectorAll<HTMLElement>(".home-dashboard-button"))
-      .filter((link) => link.offsetParent !== null);
-    const photoGrid = document.querySelector<HTMLElement>(".home-photo-grid");
-    const themeToggle = document.querySelector<HTMLElement>(".theme-toggle");
-
-    if (window.matchMedia("(min-width: 1200px) and (hover: hover) and (pointer: fine)").matches) {
-      await runDashboardBubbleTransition({
-        direction: "dock",
-        href,
-        router,
-      });
-      return;
-    }
-
-    await runRouteBubbleTransition({
-      href,
-      router,
-      source: selectedLink,
-      fadeOut: [
-        ...links.filter((link) => link !== selectedLink),
-        photoGrid,
-        themeToggle,
-      ],
-    });
   }
 
   return (

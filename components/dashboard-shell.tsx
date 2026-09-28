@@ -696,7 +696,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <div className="site-app-shell">{children}</div>
+      <div className="site-app-shell" onClickCapture={beginDashboardNavigation}>{children}</div>
     </>
   );
 }

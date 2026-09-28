@@ -4,8 +4,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { gsap } from "gsap";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
 import { navIconForPath } from "@/lib/page-cursors";
 
 const links = [
@@ -18,9 +20,62 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const shellRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const navigatingRef = useRef(false);
+  const openingMenuRef = useRef<gsap.core.Timeline | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const isProjectViewer = pathname.startsWith("/projects/");
+
+  const closeMenu = useCallback(() => {
+    if (!open) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setOpen(false);
+      return;
+    }
+
+    const timeline = openingMenuRef.current;
+    if (timeline) timeline.timeScale(1.35).reverse();
+    else setOpen(false);
+  }, [open]);
+
+  function toggleMenu() {
+    if (navigatingRef.current) return;
+    if (open) {
+      if (openingMenuRef.current?.reversed()) openingMenuRef.current.timeScale(1).play();
+      else closeMenu();
+      return;
+    }
+    setOpen(true);
+  }
+
+  useLayoutEffect(() => {
+    if (!open) return;
+
+    const panel = document.getElementById("site-menu-panel");
+    if (!panel) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(panel, { clearProps: "all" });
+      return;
+    }
+
+    const items = gsap.utils.toArray<HTMLElement>(
+      "#site-menu-panel .site-menu-titlebar, #site-menu-panel .site-menu-link:not(.site-menu-theme-toggle), #site-menu-panel .site-menu-theme-control",
+    );
+    const timeline = gsap.timeline({ onReverseComplete: () => setOpen(false) });
+    openingMenuRef.current = timeline;
+    gsap.set(items, { autoAlpha: 0, y: 10 });
+    timeline
+      .fromTo(panel, { autoAlpha: 0, scale: 0.84 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "power3.out" })
+      .to(items, { autoAlpha: 1, y: 0, duration: 0.24, stagger: 0.025, ease: "power2.out" }, 0.08);
+
+    return () => {
+      timeline.kill();
+      openingMenuRef.current = null;
+      gsap.set([panel, ...items], { clearProps: "opacity,visibility,transform" });
+    };
+  }, [open]);
 
   function prefetchRoute(href: string) {
     try {
@@ -30,10 +85,24 @@ export function SiteHeader() {
     }
   }
 
-  function navigateFromMenu(event: MouseEvent<HTMLAnchorElement>, href: string) {
+  async function navigateFromMenu(event: MouseEvent<HTMLAnchorElement>, href: string) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
-    setOpen(false);
+    if (href === "/" && pathname !== "/") {
+      event.preventDefault();
+      if (navigatingRef.current) return;
+      navigatingRef.current = true;
+      // Preserve the menu's final arrangement until the shared transition clones it.
+      openingMenuRef.current?.progress(1).kill();
+      try {
+        await runDashboardBubbleTransition({ direction: "undock", href, router });
+      } finally {
+        setOpen(false);
+        navigatingRef.current = false;
+      }
+      return;
+    }
+    closeMenu();
     if (pathname === href) event.preventDefault();
     // Let Next Link perform client navigation without a full-page blank overlay.
   }
@@ -44,12 +113,12 @@ export function SiteHeader() {
     function closeOnOutsidePointer(event: PointerEvent) {
       const target = event.target;
       if (!(target instanceof Node) || shellRef.current?.contains(target)) return;
-      setOpen(false);
+      closeMenu();
     }
 
     function closeOnEscape(event: KeyboardEvent) {
       if (event.key !== "Escape") return;
-      setOpen(false);
+      closeMenu();
       buttonRef.current?.focus({ preventScroll: true });
     }
 
@@ -59,7 +128,7 @@ export function SiteHeader() {
       document.removeEventListener("pointerdown", closeOnOutsidePointer);
       document.removeEventListener("keydown", closeOnEscape);
     };
-  }, [open]);
+  }, [open, closeMenu]);
 
   if (pathname === "/") return null;
 
@@ -69,7 +138,7 @@ export function SiteHeader() {
         ref={buttonRef}
         type="button"
         className={`site-menu-button ${open ? "is-open" : ""}`}
-        onClick={() => setOpen((current) => !current)}
+        onClick={toggleMenu}
         aria-expanded={open}
         aria-controls="site-menu-panel"
         aria-label={open ? "Close navigation" : "Open navigation"}
@@ -97,6 +166,7 @@ export function SiteHeader() {
               <Link
                 key={href}
                 href={href}
+                data-dashboard-href={href === "/" ? undefined : href}
                 onClick={(event) => navigateFromMenu(event, href)}
                 onFocus={() => prefetchRoute(href)}
                 onPointerEnter={() => prefetchRoute(href)}
@@ -108,7 +178,9 @@ export function SiteHeader() {
               </Link>
             );
           })}
-          <ThemeToggle variant="menu-row" />
+          <div className="site-menu-theme-control col-span-2">
+            <ThemeToggle variant="menu-row" />
+          </div>
         </nav>
       </div>
     </header>

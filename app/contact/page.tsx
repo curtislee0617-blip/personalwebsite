@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Image from "next/image";
+import { ContactLink } from "@/components/contact-link";
 import { ContactCityArtwork } from "@/components/contact-city-artwork";
 import { ContactPresenceProvider } from "@/components/contact-presence";
 import { ScrollingPhotoBackground } from "@/components/scrolling-photo-background";
@@ -94,20 +95,17 @@ export default function ContactPage() {
 
         <div className="contact-link-grid scroll-mt-24" id="contact-links">
           {contactLinks.map((contact, index) => (
-            <a
-              aria-label={contact.accessibleLabel}
-              className="contact-link-card design-card"
-              data-reveal
-              data-spotlight
-              href={contact.href}
-              key={contact.icon}
-              rel={contact.external ? "noreferrer" : undefined}
-              style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}
-              target={contact.external ? "_blank" : undefined}
-            >
-              <ContactIcon icon={contact.icon} />
-              <span className="contact-link-label">{contact.label}</span>
-            </a>
+            <div key={contact.icon} data-reveal style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}>
+              <ContactLink
+                aria-label={contact.accessibleLabel}
+                href={contact.href}
+                rel={contact.external ? "noreferrer" : undefined}
+                target={contact.external ? "_blank" : undefined}
+              >
+                <ContactIcon icon={contact.icon} />
+                <span className="contact-link-label">{contact.label}</span>
+              </ContactLink>
+            </div>
           ))}
         </div>
       </div>

@@ -245,6 +245,12 @@ html.dashboard-resizing .site-app-shell { transition: none !important; }
   min-height: 100%;
 }
 
+html.dashboard-home-route .dashboard-route-loading { inset: 0; }
+
+@media (max-width: 1199px), (hover: none), (pointer: coarse) {
+  .dashboard-route-loading { inset: 0; }
+}
+
 body {
   min-height: 100vh;
   background: rgb(var(--color-paper));
@@ -1439,7 +1445,7 @@ body.has-page-cursor * { cursor: inherit; }
   content: none;
 }
 .contact-city-glow-field { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 25% 30% at 14.7% 62%, rgb(255 190 111 / calc(0.15 * var(--la-night))), transparent 76%), radial-gradient(ellipse 27% 44% at 87.2% 52%, rgb(71 161 255 / calc(0.16 * var(--hk-night))), transparent 78%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); }
-.contact-moon-phase-label { position: absolute; left: clamp(0.65rem, 3.5%, 1.1rem); top: clamp(0.55rem, 4%, 0.85rem); z-index: 12; display: inline-block; width: max-content; max-width: calc(100% - 1.3rem); margin: 0; padding: 0; overflow: hidden; background: transparent; color: #fff; mix-blend-mode: difference; font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 1; pointer-events: none; text-overflow: ellipsis; text-shadow: none; text-transform: uppercase; white-space: nowrap; }
+.contact-moon-phase-label { position: absolute; left: clamp(0.65rem, 3.5%, 1.1rem); top: clamp(0.55rem, 4%, 0.85rem); z-index: 12; display: inline-block; width: max-content; max-width: calc(100% - 1.3rem); margin: 0; padding: 0; overflow: hidden; background: transparent; color: var(--moon-phase-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 1; pointer-events: none; text-overflow: ellipsis; text-shadow: 0 1px 2px var(--moon-phase-label-shadow); text-transform: uppercase; transition: color 1s linear, text-shadow 1s linear; white-space: nowrap; }
 .contact-cities-art-composite { position: absolute; inset: 0; z-index: 0; display: block; }
 .contact-city-art-layer { position: absolute; top: 0; bottom: 0; display: block; background-repeat: no-repeat; image-rendering: crisp-edges; image-rendering: pixelated; }
 .contact-city-art-layer-day { background-image: url('/contact-cities-pixel-art-day-foreground-v1.png'); }
@@ -5085,7 +5091,7 @@ html[data-theme-color-transition="active"] :where(
   visibility: hidden;
   transform: translateZ(0) scale(0.82);
   transform-origin: calc(100% - var(--menu-button-radius, 1.5rem)) var(--menu-button-radius, 1.5rem);
-  transition: opacity 220ms ease, transform 320ms cubic-bezier(.2, .8, .2, 1), visibility 0s 320ms;
+  transition: none;
   will-change: transform, opacity;
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
@@ -7735,8 +7741,8 @@ details.modernist-original-layout > summary::-webkit-details-marker {
 .recipe-library-hero > .page-intro { max-width: none; padding: 0 !important; }
 .recipe-library-hero > .page-intro .page-intro-title { font-size: clamp(2.8rem, 4.6vw, 4.25rem); }
 .recipe-library-hero > .page-intro .page-intro-description { width: min(100%, 56rem); margin-top: 0.55rem; }
-.recipe-library-page .recipe-search-shell { padding: 0 0 0.1rem !important; }
-.recipe-library-page .recipe-search-shell .recipe-library-search { width: min(100%, 23rem); }
+.recipe-library-page .recipe-search-shell { grid-column: 1 / -1; justify-content: center; padding: 0 0 0.1rem !important; }
+.recipe-library-page .recipe-search-shell .recipe-library-search { width: min(100%, 27rem); }
 .recipe-library-page .recipe-content-section { padding-top: 0.8rem; }
 .recipe-library-page .recipe-content-section > .space-y-12 > * + * { margin-top: 2.35rem; }
 .recipe-library-page #recipe-guides .recipe-guide-carousel { margin-top: 1rem; }
@@ -12088,25 +12094,27 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   }
 }
 
-/* Desktop home and section navigation are two arrangements of the same six
+/* Home and section navigation are two arrangements of the same six
    controls. The temporary clones morph between those arrangements while the
    App Router swaps the page underneath. */
 .dashboard-transition-bubble {
   position: fixed !important;
   z-index: 110 !important;
   margin: 0 !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   pointer-events: none !important;
   transform-origin: top left;
   transition: none !important;
-  will-change: height, transform, width;
-  contain: layout paint;
+  will-change: transform;
+  contain: layout;
 }
 
 .dashboard-transition-surface,
 .dashboard-transition-layer {
   position: absolute !important;
   inset: 0;
+  transform-origin: top left;
+  will-change: transform, opacity;
   margin: 0 !important;
   pointer-events: none !important;
 }
@@ -12116,7 +12124,6 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   z-index: 1;
   box-sizing: border-box;
   overflow: hidden !important;
-  transform: none !important;
 }
 
 @media (min-width: 1200px) and (hover: hover) and (pointer: fine) {
@@ -12145,44 +12152,88 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
     transition: none !important;
   }
 
-  html.dashboard-navigation-animating .site-app-shell {
-    will-change: width, margin-left, opacity;
-  }
-
-  /* Switch the route first, while the source controls remain as fixed clones.
-     The destination is then measured in its final expanded layout before any
-     clone begins moving. */
-  html.dashboard-navigation-animating.dashboard-route-swapping:not(.dashboard-route-ready) .site-app-shell {
-    opacity: 0;
-    transition: opacity 90ms ease-out !important;
-  }
-
-  html.dashboard-navigation-animating.dashboard-route-ready .site-app-shell {
-    opacity: 1;
-    transition: opacity 150ms ease-out !important;
-  }
-
-  html.dashboard-docking .home-dashboard-button,
-  html.dashboard-undocking .home-dashboard-button {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  html.dashboard-undocking .home-dashboard-panel { animation: none; }
-  html.dashboard-undocking :is(.home-dashboard-heading, .home-dashboard-group > h2) {
-    animation: dashboard-home-content-return 560ms 120ms cubic-bezier(.16, 1, .3, 1) both;
-  }
-
   .home-dashboard-grid > a {
     transition-property: border-color, background-color, transform, box-shadow, opacity;
   }
+}
 
-  html.dashboard-undocking .home-entry-pending::after,
-  html.dashboard-undocking .home-entry-center::after,
-  .home-entry-settled::after {
-    animation: none;
-    opacity: 0;
-  }
+html.dashboard-navigation-animating .site-app-shell {
+  will-change: opacity;
+  transition: none !important;
+}
+
+/* Switch the route first, while the source controls remain as fixed clones.
+   The destination is then measured in its final expanded layout before any
+   clone begins moving. */
+html.dashboard-navigation-animating.dashboard-route-swapping:not(.dashboard-route-ready) .site-app-shell {
+  opacity: 0;
+  transition: opacity 90ms ease-out !important;
+}
+
+html.dashboard-navigation-animating.dashboard-route-ready .site-app-shell {
+  opacity: 1;
+  transition: opacity 150ms ease-out !important;
+}
+
+html.dashboard-docking .home-dashboard-button,
+html.dashboard-undocking .home-dashboard-button {
+  opacity: 0;
+  pointer-events: none;
+  transform: none !important;
+}
+
+html.dashboard-undocking .home-dashboard-panel { animation: none; }
+html.dashboard-undocking :is(.home-dashboard-heading, .home-dashboard-group > h2) {
+  animation: dashboard-home-content-return 560ms 120ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+html.dashboard-undocking .home-entry-pending::after,
+html.dashboard-undocking .home-entry-center::after,
+.home-entry-settled::after {
+  animation: none;
+  opacity: 0;
+}
+
+html.dashboard-compact-transition .site-menu-shell {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html.dashboard-docking.dashboard-transition-settled :is(.dashboard-sidebar, .site-menu-shell) {
+  opacity: 1 !important;
+  transition: opacity 100ms linear !important;
+}
+html.dashboard-undocking.dashboard-transition-settled .home-dashboard-button {
+  opacity: 1;
+  transition: opacity 100ms linear !important;
+}
+.home-entry-settled .home-dashboard-panel { animation: none; }
+
+/* Spring owns interaction scale/translation; CSS retains color and focus styles. */
+.site-menu-theme-control > button { width: 100%; }
+.contact-link-card.spring-control {
+  height: 100%;
+  transition-property: border-color, background-color, box-shadow;
+}
+.contact-link-card.spring-control:hover,
+.dashboard-theme-toggle.spring-control:hover {
+  transform: none !important;
+}
+.contact-link-card.spring-control .contact-link-icon {
+  transform: none;
+  transition: none;
+}
+.home-theme-toggle.spring-control:hover { transform: none; }
+.spring-control {
+  scale: var(--press-scale, 1);
+  translate: 0 var(--press-y, 0px);
+  touch-action: manipulation;
+}
+@media (prefers-reduced-motion: reduce) {
+  .spring-control { scale: 1; translate: none; }
+}
+@media (max-width: 639px) {
+  .home-theme-toggle.spring-control:hover { transform: translateX(-50%); }
 }
 
 @keyframes dashboard-home-content-return {

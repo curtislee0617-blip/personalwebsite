@@ -1,3 +1,6 @@
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 type DashboardRouter = {
   push: (href: string) => void;
   prefetch?: (href: string) => void;
@@ -22,17 +25,16 @@ type BubbleClone = {
 type BubbleDestination = {
   layer: HTMLElement;
   surface: HTMLElement;
-  target: HTMLElement;
+  end: DOMRect;
 };
 
 const DASHBOARD_MEDIA_QUERY = "(min-width: 1200px) and (hover: hover) and (pointer: fine)";
-const TRANSITION_EASING = "cubic-bezier(.22, .76, .28, 1)";
 const BUBBLE_DURATION = 580;
 const BUBBLE_STAGGER = 18;
 
-function wait(milliseconds: number) {
-  return new Promise<void>((resolve) => window.setTimeout(resolve, milliseconds));
-}
+gsap.registerPlugin(ScrollTrigger);
+
+let navigationInProgress = false;
 
 function nextPaint(frames = 2) {
   return new Promise<void>((resolve) => {
@@ -50,13 +52,13 @@ function waitForRoutePaint(href: string) {
   const destination = new URL(href, window.location.href);
   const startedAt = performance.now();
 
-  return new Promise<void>((resolve) => {
+  return new Promise<boolean>((resolve) => {
     const tick = () => {
       const routeMatches = window.location.pathname === destination.pathname
         && window.location.search === destination.search;
 
       if (routeMatches || performance.now() - startedAt > 1800) {
-        void nextPaint(2).then(resolve);
+        void nextPaint(2).then(() => resolve(routeMatches));
         return;
       }
 
@@ -86,9 +88,20 @@ function sidebarButtons() {
   return entries;
 }
 
-function buttonsFor(direction: DashboardBubbleDirection, phase: "source" | "target") {
-  if (phase === "source") return direction === "dock" ? homeButtons() : sidebarButtons();
-  return direction === "dock" ? sidebarButtons() : homeButtons();
+function navigationButtons(compact: boolean) {
+  if (!compact) return sidebarButtons();
+  return new Map(Array.from(document.querySelectorAll<HTMLElement>(
+    ".site-menu-link[data-dashboard-href]",
+  ), (button) => [button.dataset.dashboardHref!, button]));
+}
+
+function buttonsFor(direction: DashboardBubbleDirection, phase: "source" | "target", compact: boolean) {
+  if ((direction === "dock") === (phase === "source")) return homeButtons();
+  if (compact && phase === "target") {
+    const button = document.querySelector<HTMLElement>(".site-menu-button");
+    return button ? new Map(Array.from(navigationButtons(true).keys(), (href) => [href, button])) : new Map<string, HTMLElement>();
+  }
+  return navigationButtons(compact);
 }
 
 function removeInteractionAttributes(node: HTMLElement) {
@@ -97,6 +110,7 @@ function removeInteractionAttributes(node: HTMLElement) {
   node.removeAttribute("data-spotlight");
   node.removeAttribute("data-spotlight-active");
   node.removeAttribute("tabindex");
+  node.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
   node.querySelectorAll<HTMLElement>("a, button, input, select, textarea").forEach((element) => {
     element.removeAttribute("href");
     element.tabIndex = -1;
@@ -109,6 +123,7 @@ const COPIED_STYLE_PROPERTIES = [
   "borderRadius",
   "color",
   "display",
+  "flexDirection",
   "fontFamily",
   "fontSize",
   "fontStyle",
@@ -197,6 +212,7 @@ function createBubbleClone(href: string, source: HTMLElement): BubbleClone | nul
   shell.className = "dashboard-transition-bubble";
   shell.dataset.dashboardHref = href;
   shell.setAttribute("aria-hidden", "true");
+  shell.inert = true;
   Object.assign(shell.style, {
     height: `${start.height}px`,
     left: `${start.left}px`,
@@ -207,7 +223,7 @@ function createBubbleClone(href: string, source: HTMLElement): BubbleClone | nul
   const sourceSurface = createSurface(source, "source");
   const sourceLayer = createContentLayer(source, "source");
   shell.append(sourceSurface, sourceLayer);
-  document.body.append(shell);
+
 
   return { href, shell, sourceLayer, sourceSurface, start };
 }
@@ -215,10 +231,14 @@ function createBubbleClone(href: string, source: HTMLElement): BubbleClone | nul
 function addDestination(clone: BubbleClone, target: HTMLElement): BubbleDestination {
   const surface = createSurface(target, "target");
   const layer = createContentLayer(target, "target");
-  surface.style.opacity = "0";
-  layer.style.opacity = "0";
+  const end = target.getBoundingClientRect();
+  for (const element of [surface, layer]) {
+    element.style.width = `${end.width}px`;
+    element.style.height = `${end.height}px`;
+    element.style.opacity = "0";
+  }
   clone.shell.append(surface, layer);
-  return { layer, surface, target };
+  return { layer, surface, end };
 }
 
 function rectSignature(buttons: Map<string, HTMLElement>) {
@@ -228,21 +248,22 @@ function rectSignature(buttons: Map<string, HTMLElement>) {
   }).join("|");
 }
 
-function waitForStableTargets(direction: DashboardBubbleDirection) {
+function waitForStableTargets(direction: DashboardBubbleDirection, compact: boolean) {
   const startedAt = performance.now();
   let previousSignature = "";
   let stableFrames = 0;
 
   return new Promise<Map<string, HTMLElement>>((resolve) => {
     const tick = () => {
-      const targets = buttonsFor(direction, "target");
-      const signature = targets.size === 6 ? rectSignature(targets) : "";
+      const targets = buttonsFor(direction, "target", compact);
+      const visible = targets.size === 6 && Array.from(targets.values()).every((target) => target.getBoundingClientRect().width > 0);
+      const signature = visible ? rectSignature(targets) : "";
 
       if (signature && signature === previousSignature) stableFrames += 1;
       else stableFrames = 0;
       previousSignature = signature;
 
-      if (stableFrames >= 3 || performance.now() - startedAt > 1200) {
+      if (stableFrames >= 2 || performance.now() - startedAt > 1200) {
         resolve(targets);
         return;
       }
@@ -254,55 +275,26 @@ function waitForStableTargets(direction: DashboardBubbleDirection) {
   });
 }
 
-function finished(animation: Animation) {
-  return animation.finished.catch(() => undefined);
-}
-
-function switchToDestination(clone: BubbleClone, destination: BubbleDestination) {
-  const timing = { duration: 110, easing: "ease-out", fill: "forwards" as const };
-  return Promise.all([
-    finished(clone.sourceLayer.animate([{ opacity: 1 }, { opacity: 0 }], timing)),
-    finished(clone.sourceSurface.animate([{ opacity: 1 }, { opacity: 0 }], timing)),
-    finished(destination.layer.animate([{ opacity: 0 }, { opacity: 1 }], timing)),
-    finished(destination.surface.animate([{ opacity: 0 }, { opacity: 1 }], timing)),
-  ]);
-}
-
 function animateBubble(
+  timeline: gsap.core.Timeline,
   clone: BubbleClone,
   destination: BubbleDestination,
   index: number,
 ) {
-  const end = destination.target.getBoundingClientRect();
-  const delay = index * BUBBLE_STAGGER;
-  const translateX = end.left - clone.start.left;
-  const translateY = end.top - clone.start.top;
-  const endRadius = window.getComputedStyle(destination.target).borderRadius;
-
-  const shellAnimation = clone.shell.animate(
-    [
-      {
-        borderRadius: window.getComputedStyle(clone.sourceSurface).borderRadius,
-        height: `${clone.start.height}px`,
-        transform: "translate3d(0, 0, 0)",
-        width: `${clone.start.width}px`,
-      },
-      {
-        borderRadius: endRadius,
-        height: `${end.height}px`,
-        transform: `translate3d(${translateX}px, ${translateY}px, 0)`,
-        width: `${end.width}px`,
-      },
-    ],
-    {
-      delay,
-      duration: BUBBLE_DURATION,
-      easing: TRANSITION_EASING,
-      fill: "forwards",
-    },
-  );
-
-  return finished(shellAnimation);
+  const { end } = destination;
+  const source = [clone.sourceLayer, clone.sourceSurface];
+  const target = [destination.layer, destination.surface];
+  const startAt = index * BUBBLE_STAGGER / 1000;
+  const duration = BUBBLE_DURATION / 1000;
+  // Both appearances retain their measured dimensions. Only transforms and
+  // opacity change during flight, so text/layout is never recalculated per frame.
+  gsap.set(target, { scaleX: clone.start.width / end.width, scaleY: clone.start.height / end.height });
+  timeline
+    .to(clone.shell, { x: end.left - clone.start.left, y: end.top - clone.start.top, duration, ease: "power3.inOut" }, startAt)
+    .to(source, { scaleX: end.width / clone.start.width, scaleY: end.height / clone.start.height, duration, ease: "power3.inOut" }, startAt)
+    .to(target, { scaleX: 1, scaleY: 1, duration, ease: "power3.inOut" }, startAt)
+    .to(source, { opacity: 0, duration: duration * 0.45, ease: "sine.inOut" }, startAt + duration * 0.25)
+    .to(target, { opacity: 1, duration: duration * 0.45, ease: "sine.inOut" }, startAt + duration * 0.25);
 }
 
 function cleanupTransition(root: HTMLElement, clones: BubbleClone[]) {
@@ -315,7 +307,9 @@ function cleanupTransition(root: HTMLElement, clones: BubbleClone[]) {
     "dashboard-route-swapping",
     "dashboard-route-ready",
     "dashboard-transition-settled",
+    "dashboard-compact-transition",
   );
+  ScrollTrigger.refresh();
 }
 
 export async function runDashboardBubbleTransition({
@@ -323,67 +317,70 @@ export async function runDashboardBubbleTransition({
   href,
   router,
 }: DashboardBubbleTransitionOptions) {
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const isDesktopDashboard = window.matchMedia(DASHBOARD_MEDIA_QUERY).matches;
-
+  if (navigationInProgress) return;
+  const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const reducedMotion = motionPreference.matches;
+  const compact = !window.matchMedia(DASHBOARD_MEDIA_QUERY).matches;
   try {
     router.prefetch?.(href);
   } catch {
     // Navigation still works when prefetching is unavailable.
   }
-
-  if (reducedMotion || !isDesktopDashboard) {
+  if (reducedMotion) {
     router.push(href);
     return;
   }
 
   const root = document.documentElement;
-  const sourceButtons = buttonsFor(direction, "source");
-  const clones = Array.from(sourceButtons, ([sectionHref, source]) =>
+  const clones = Array.from(buttonsFor(direction, "source", compact), ([sectionHref, source]) =>
     createBubbleClone(sectionHref, source),
   ).filter((clone): clone is BubbleClone => clone !== null);
-
   if (clones.length !== 6) {
-    clones.forEach(({ shell }) => shell.remove());
     router.push(href);
     return;
   }
 
-  root.classList.add(
-    "dashboard-navigation-animating",
-    "dashboard-route-swapping",
-    direction === "dock" ? "dashboard-docking" : "dashboard-undocking",
-  );
-  if (direction === "dock") root.classList.add("dashboard-target-preview");
-
-  await nextPaint(1);
-  router.push(href);
-  await waitForRoutePaint(href);
-  if (direction === "undock") root.classList.add("dashboard-home-route");
-
-  const targets = await waitForStableTargets(direction);
-  if (targets.size !== 6) {
+  navigationInProgress = true;
+  let timeline: gsap.core.Timeline | undefined;
+  let cancelled = false;
+  const cancel = () => {
+    cancelled = true;
+    timeline?.progress(1);
     cleanupTransition(root, clones);
-    return;
+  };
+  window.addEventListener("resize", cancel, { once: true });
+  window.addEventListener("popstate", cancel, { once: true });
+  motionPreference.addEventListener("change", cancel, { once: true });
+  try {
+    document.body.append(...clones.map(({ shell }) => shell));
+    root.classList.add("dashboard-navigation-animating", "dashboard-route-swapping",
+      direction === "dock" ? "dashboard-docking" : "dashboard-undocking");
+    if (compact) root.classList.add("dashboard-compact-transition");
+    if (direction === "dock") root.classList.add("dashboard-target-preview");
+    router.push(href);
+    if (!await waitForRoutePaint(href) || cancelled) return;
+    if (direction === "undock") root.classList.add("dashboard-home-route");
+    const targets = await waitForStableTargets(direction, compact);
+    if (targets.size !== 6 || cancelled || Array.from(targets.values()).some((target) => {
+      const rect = target.getBoundingClientRect();
+      return !rect.width || !rect.height;
+    })) return;
+    const prepared = clones.map((clone, index) => ({
+      clone, destination: addDestination(clone, targets.get(clone.href)!), index,
+    }));
+    root.classList.add("dashboard-route-ready");
+    await new Promise<void>((resolve) => {
+      timeline = gsap.timeline({ onComplete: resolve, onInterrupt: resolve });
+      prepared.forEach(({ clone, destination, index }) => animateBubble(timeline!, clone, destination, index));
+      timeline.call(() => root.classList.add("dashboard-transition-settled"))
+        .to(clones.map(({ shell }) => shell), { opacity: 0, duration: 0.1, ease: "none" });
+    });
+  } finally {
+    timeline?.kill();
+    window.removeEventListener("resize", cancel);
+    window.removeEventListener("popstate", cancel);
+    motionPreference.removeEventListener("change", cancel);
+    cleanupTransition(root, clones);
+    navigationInProgress = false;
   }
-
-  const prepared = clones.flatMap((clone, index) => {
-    const target = targets.get(clone.href);
-    if (!target) return [];
-    return [{ clone, destination: addDestination(clone, target), index }];
-  });
-
-  root.classList.add("dashboard-route-ready");
-  await nextPaint(1);
-  await Promise.all(prepared.map(({ clone, destination }) => switchToDestination(clone, destination)));
-  await wait(35);
-
-  const animations = prepared.map(({ clone, destination, index }) =>
-    animateBubble(clone, destination, index),
-  );
-
-  await Promise.all(animations);
-  root.classList.add("dashboard-transition-settled");
-  await wait(80);
-  cleanupTransition(root, clones);
 }

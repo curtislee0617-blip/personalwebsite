@@ -33,6 +33,7 @@
     "@gsap/react": "^2.1.2",
     "@lottiefiles/dotlottie-react": "^0.19.12",
     "@observablehq/plot": "^0.6.17",
+    "@react-spring/web": "^10.1.2",
     "@react-three/fiber": "^9.7.0",
     "@rive-app/react-webgl2": "^4.30.0",
     "@supabase/ssr": "^0.12.0",

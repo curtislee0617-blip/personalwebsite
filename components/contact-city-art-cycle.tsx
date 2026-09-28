@@ -203,6 +203,7 @@ export function ContactCityArtCycle({
   ] satisfies Parameters<typeof getContactCelestial>[0];
   const sharedSun = getContactCelestial(celestialCities, 0, "sun");
   const sharedMoon = getContactCelestial(celestialCities, 1, "moon");
+  const moonLabelNight = smoothReveal((losAngeles.night - 0.5) * 2);
   const edgeOverlap = Math.min(losAngeles.daylight, hongKong.daylight)
     * (1 - london.daylight);
   const dualEdgePhase = smoothReveal((edgeOverlap - 0.04) / 0.22);
@@ -234,12 +235,12 @@ export function ContactCityArtCycle({
     "--moon-phase-label-color": blendRgb(
       [82, 74, 59],
       [218, 231, 248],
-      losAngeles.night,
+      moonLabelNight,
     ),
     "--moon-phase-label-shadow": blendRgb(
       [255, 251, 239],
       [0, 14, 38],
-      losAngeles.night,
+      moonLabelNight,
     ),
     "--travelling-label-color": blendRgb(
       [82, 74, 59],

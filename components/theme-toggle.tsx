@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
+import { animated } from "@react-spring/web";
+import { usePressSpring } from "@/components/use-press-spring";
 
 type ViewTransition = {
   ready: Promise<void>;
@@ -62,6 +64,7 @@ function applyTheme(isDark: boolean) {
 }
 
 export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "menu-row" | "dashboard" }) {
+  const spring = usePressSpring(1);
   const isDark = useSyncExternalStore(subscribeTheme, readTheme, readServerTheme);
 
   async function toggle(event: MouseEvent<HTMLButtonElement>) {
@@ -69,6 +72,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     // A document can run only one theme transition, even with several toggles.
     if (root.dataset.themeTransition || root.dataset.themeColorTransition) return;
 
+    spring.reset();
     const next = !readTheme();
     const button = event.currentTarget;
     // Menu rows are much wider than their icon. Anchor both directions to the
@@ -133,42 +137,48 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
 
   if (variant === "menu-row") {
     return (
-      <button
+      <animated.button
+        {...spring.handlers}
+        style={spring.style}
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-        className="theme-toggle-menu-row site-menu-link site-menu-theme-toggle col-span-2 flex items-center justify-between rounded-2xl px-4 py-3 text-sm"
+        className="spring-control theme-toggle-menu-row site-menu-link site-menu-theme-toggle col-span-2 flex items-center justify-between rounded-2xl px-4 py-3 text-sm"
         onClick={toggle}
         type="button"
       >
         <span>{isDark ? "Light mode" : "Dark mode"}</span>
         {isDark ? <SunIcon /> : <MoonIcon />}
-      </button>
+      </animated.button>
     );
   }
 
   if (variant === "dashboard") {
     return (
-      <button
+      <animated.button
+        {...spring.handlers}
+        style={spring.style}
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-        className="theme-toggle dashboard-theme-toggle"
+        className="spring-control theme-toggle dashboard-theme-toggle"
         onClick={toggle}
         title={isDark ? "Switch to light mode" : "Switch to dark mode"}
         type="button"
       >
         {isDark ? <SunIcon /> : <MoonIcon />}
-      </button>
+      </animated.button>
     );
   }
 
   return (
-    <button
+    <animated.button
+        {...spring.handlers}
+        style={spring.style}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="theme-toggle home-theme-toggle"
+      className="spring-control theme-toggle home-theme-toggle"
       onClick={toggle}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       type="button"
     >
       <span className="home-theme-toggle-label">{isDark ? "Light mode" : "Dark mode"}</span>
       {isDark ? <SunIcon /> : <MoonIcon />}
-    </button>
+    </animated.button>
   );
 }
