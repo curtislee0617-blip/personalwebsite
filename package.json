@@ -20,7 +20,8 @@
     "maps:sync-status": "node scripts/sync-restaurant-business-status.mjs",
     "maps:upload": "node scripts/upload-restaurants-to-supabase.mjs",
     "maps:report": "node scripts/report-google-maps-takeout.mjs",
-    "maps:review": "node scripts/export-restaurant-review.mjs"
+    "maps:review": "node scripts/export-restaurant-review.mjs",
+    "photos:guide-previews": "node --experimental-strip-types scripts/build-guide-previews.mjs"
   },
   "dependencies": {
     "@d3-maps/atlas": "^1.0.0",

@@ -55,7 +55,7 @@ const nextConfig = {
     serverActions: { bodySizeLimit: "25mb" },
   },
   async redirects() {
-    return [];
+    return [{ source: "/tools/clicks", destination: "/projects/clicks", permanent: true }];
   },
   async rewrites() {
     return {
