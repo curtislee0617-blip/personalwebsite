@@ -79,6 +79,14 @@ export default function ProjectsPage() {
               <p>Design work and experiments in CAD, collected here as they take shape.</p>
               <span aria-label="Project details coming soon">Coming soon</span>
             </article>
+            <article className="fusion-project-bubble" data-reveal data-spotlight>
+              <div>
+                <p className="eyebrow">UI/UX brainstorming</p>
+                <h3><Link href="/projects/clicks">Clicks</Link></h3>
+              </div>
+              <p>One hundred interactive button ideas to explore for future website updates.</p>
+              <Link aria-label="Explore Clicks button ideas" href="/projects/clicks">Explore ↗</Link>
+            </article>
             <section aria-labelledby="personal-reading-title" className="personal-reading" id="personal-reading">
               <div className="personal-reading-heading">
                 <div>
