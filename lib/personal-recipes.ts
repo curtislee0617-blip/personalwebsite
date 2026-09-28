@@ -438,7 +438,8 @@ const getUploadedRecipes = unstable_cache(async (): Promise<RecipeCardEntry[]> =
       .select("id,description,recipe_date,thumbnail_url,image_urls,status,categories")
       .eq("status", "published")
       .order("recipe_date", { ascending: false, nullsFirst: false })
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .abortSignal(AbortSignal.timeout(5000));
 
     if (error) return [];
     return data.map(parseUploadedRecipe);
@@ -452,7 +453,8 @@ const getRecipeOverrides = unstable_cache(async (): Promise<RecipeOverrideRow[]>
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("recipe_card_overrides")
-      .select("recipe_key,title,description,recipe_date,categories,ingredient_groups,method_groups,linked_recipe_keys,thumbnail_url,thumbnail_position,thumbnail_zoom,thumbnail_time_seconds,media_items,deleted");
+      .select("recipe_key,title,description,recipe_date,categories,ingredient_groups,method_groups,linked_recipe_keys,thumbnail_url,thumbnail_position,thumbnail_zoom,thumbnail_time_seconds,media_items,deleted")
+      .abortSignal(AbortSignal.timeout(5000));
 
     if (error) return [];
     return data;

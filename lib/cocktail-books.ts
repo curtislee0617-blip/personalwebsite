@@ -21,7 +21,8 @@ export async function getCocktailPublications(): Promise<CocktailPublication[]> 
     const { data, error } = await supabase
       .from("cocktail_recipe_publications")
       .select("source_key,book_id,recipe_id,published_at")
-      .order("published_at", { ascending: false });
+      .order("published_at", { ascending: false })
+      .abortSignal(AbortSignal.timeout(5000));
 
     if (error) return [];
     return data.map((row) => ({

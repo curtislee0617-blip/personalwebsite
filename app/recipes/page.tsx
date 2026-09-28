@@ -5,12 +5,10 @@ import Link from "next/link";
 import { guidePreviewSrc, guideVisuals } from "@/lib/recipe-guide-visuals";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeLibrarySearch } from "@/components/recipe-library-search";
-import { RecipeCard } from "@/components/recipe-card";
-import { RecipeShelf } from "@/components/recipe-shelf";
-import { SectionRail } from "@/components/section-rail";
+import { RecipeCollection } from "@/components/recipe-collection";
 import { SnapCarousel } from "@/components/snap-carousel";
 import { CookbookAccessGate } from "@/components/cookbook-access-gate";
-import { recipeEntries, recipeSections, wishlistEntries, type WishlistEntry } from "@/lib/recipes";
+import { recipeEntries, wishlistEntries, type WishlistEntry } from "@/lib/recipes";
 import { getInstagramSavedRecipeCount, getPersonalRecipeCards, getYouTubeSavedRecipeCount } from "@/lib/personal-recipes";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
@@ -337,7 +335,6 @@ export default async function RecipesPage() {
     getYouTubeSavedRecipeCount(),
     getRecipeWishlistEntries(),
   ]);
-  const recipeByKey = new Map(recipes.map((entry) => [entry.recipeKey, entry]));
   const publishedUploadTitles = new Set(recipes.filter((entry) => entry.source === "uploaded").map((entry) => entry.title.toLowerCase()));
   const wishlist = [...savedCookbookRecipes, ...wishlistEntries]
     .filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
@@ -373,8 +370,8 @@ export default async function RecipesPage() {
       <div className="recipe-library-hero page-shell">
         <PageIntro
           eyebrow="Recipes"
-          title="Guides and recipes"
-          description="Here I’ll upload recipes for dishes I’ve made that I think are worth sharing. Keep in mind that the quantities are mostly estimates of what I added, so they can vary. The guides are a little more precise, and I’ll also use them almost like a blog to dig deeper into food science, technique and culinary history."
+          title="From my kitchen"
+          description="Dishes I love to cook, practical guides, and ideas for the next meal."
         />
         <div className="recipe-search-shell">
           <RecipeLibrarySearch
@@ -383,7 +380,9 @@ export default async function RecipesPage() {
           />
         </div>
       </div>
-      <SectionRail ariaLabel="Recipe page sections" sections={recipePageSections} />
+      <nav aria-label="Recipe page sections" className="recipe-index-nav page-shell">
+        {recipePageSections.map((section) => <a href={`#${section.id}`} key={section.id}>{section.label}</a>)}
+      </nav>
 
       <section className="recipe-content-section page-section">
         <div className="space-y-12">
@@ -420,116 +419,29 @@ export default async function RecipesPage() {
               )}
             </div>
 
-            <details className="recipe-all-section design-panel group mt-6" open>
-              <summary className="recipes-section-summary">
-                <span>
-                  <span className="eyebrow">Newest to oldest</span>
-                  <h3>All recipes</h3>
-                  <small>{chronologicalRecipes.length} recipes</small>
-                </span>
-                <span className="recipe-section-expand-mark">+</span>
-              </summary>
-              <RecipeShelf label="All personal recipes, newest to oldest" layout="grid">
-                {chronologicalRecipes.map((entry) => (
-                  <RecipeCard
-                    adminEditHref={authenticated ? `/recipes/admin/edit/${encodeURIComponent(entry.recipeKey)}` : undefined}
-                    entry={entry}
-                    idPrefix="all"
-                    key={`all-${entry.recipeKey}`}
-                    linkedRecipes={(entry.linkedRecipeKeys ?? []).flatMap((key) => {
-                      const linked = recipeByKey.get(key);
-                      return linked ? [linked] : [];
-                    })}
-                    variant="shelf"
-                  />
-                ))}
-              </RecipeShelf>
-            </details>
+            <RecipeCollection authenticated={authenticated} recipes={chronologicalRecipes} />
 
-            <div className="recipe-category-heading">
-              <h3>Browse by category</h3>
-            </div>
-            <div className="recipe-category-list mt-4 space-y-8">
-              {recipeSections.map((section) => {
-                const sectionRecipes = recipes.filter((entry) => entry.categories?.includes(section.id) || entry.category === section.id);
-                const showsPrivateCocktailLibrary = privateLibraryAccess && section.id === "drinks";
-
-                return (
-                  <details className="recipe-category-section design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-5 sm:p-6" id={`recipe-category-${section.id}`} key={section.id}>
-                    <summary className="recipes-section-summary flex cursor-pointer list-none items-center justify-between gap-4 marker:hidden">
-                      <h3 className="text-2xl font-semibold tracking-tight">{section.title}</h3>
-                      <span className="grid size-10 shrink-0 place-items-center rounded-full border border-ink/10 bg-paper/80 text-lg text-ink/50 transition group-open:rotate-45">
-                        +
-                      </span>
-                    </summary>
-                    {sectionRecipes.length > 0 || showsPrivateCocktailLibrary ? (
-                      <RecipeShelf label={section.title} layout="grid">
-                        {showsPrivateCocktailLibrary && (
-                          <Link
-                            className="recipe-card recipe-shelf-card block overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20"
-                            href="/recipes/cocktail-books"
-                          >
-                            <div className="recipe-card-thumbnail relative overflow-hidden bg-black">
-                              <div className="relative h-full">
-                                <Image
-                                  alt="Cocktail Codex source cover"
-                                  className="object-cover"
-                                  fill
-                                  sizes="(max-width: 640px) 45vw, 12rem"
-                                  src="/recipes/cocktail-books/cocktail-codex/page-0001-1.webp"
-                                  unoptimized
-                                />
-                              </div>
-                            </div>
-                            <div className="recipe-card-copy">
-                              <p className="eyebrow">Private library · {cocktailBooks.length} books</p>
-                              <h3>Private cocktail library</h3>
-                              <p className="recipe-card-description">590 recipes and the saved bar-and-pantry matcher.</p>
-                            </div>
-                          </Link>
-                        )}
-                        {sectionRecipes.map((entry) => (
-                          <RecipeCard
-                            adminEditHref={authenticated ? `/recipes/admin/edit/${encodeURIComponent(entry.recipeKey)}` : undefined}
-                            entry={entry}
-                            key={entry.slug}
-                            linkedRecipes={(entry.linkedRecipeKeys ?? []).flatMap((key) => {
-                              const linked = recipeByKey.get(key);
-                              return linked ? [linked] : [];
-                            })}
-                            variant="shelf"
-                          />
-                        ))}
-                      </RecipeShelf>
-                    ) : <div className="mt-6 rounded-2xl border border-dashed border-ink/10 p-5 text-sm text-ink/40">No recipes here yet.</div>}
-                  </details>
-                );
-              })}
-            </div>
           </section>
 
           <section id="recipe-media-saved">
             <div>
-              <p className="eyebrow">Media saved recipes</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipes saved from media</h2>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Saved inspiration</h2>
               <p className="section-description mt-2 text-sm text-ink/50">
-                Recipes and ideas collected from social media, kept separate until I move individual dishes into the wishlist.
+                Ideas collected from Instagram and YouTube.
               </p>
             </div>
 
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" data-reveal data-spotlight href="/recipes/instagram-saved">
-                <p className="eyebrow">Instagram</p>
-                <h3 className="mt-4 text-xl font-semibold tracking-tight">Instagram saved recipes</h3>
+            <div className="recipe-media-links">
+              <Link className="recipe-media-link" data-reveal data-spotlight href="/recipes/instagram-saved">
+                <h3>Instagram <span aria-hidden="true">↗</span></h3>
                 <p className="mt-3 text-sm leading-7 text-ink/65">
-                  {instagramRecipeCount} saved posts, with recipe details transcribed from captions, on-screen text, and reels where available.
+                  {instagramRecipeCount} saved recipes
                 </p>
               </Link>
-              <Link className="design-panel group rounded-[2rem] border border-ink/10 bg-surface/45 p-6 transition hover:-translate-y-0.5 hover:border-ink/20 sm:p-8" data-reveal data-spotlight href="/recipes/youtube-saved" style={{ "--reveal-delay": "90ms" } as CSSProperties}>
-                <p className="eyebrow">YouTube</p>
-                <h3 className="mt-4 text-xl font-semibold tracking-tight">YouTube saved recipes</h3>
+              <Link className="recipe-media-link" data-reveal data-spotlight href="/recipes/youtube-saved" style={{ "--reveal-delay": "90ms" } as CSSProperties}>
+                <h3>YouTube <span aria-hidden="true">↗</span></h3>
                 <p className="mt-3 text-sm leading-7 text-ink/65">
-                  {youtubeRecipeCount} playlist videos, with recipes organized from descriptions, linked sources, transcripts, and on-screen details where available.
+                  {youtubeRecipeCount} saved videos
                 </p>
               </Link>
             </div>
@@ -537,8 +449,7 @@ export default async function RecipesPage() {
 
           <section id="recipe-wishlist">
             <div>
-              <p className="eyebrow">Wishlist</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipes I&apos;d like to make</h2>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">To cook next</h2>
               <p className="section-description mt-2 text-sm text-ink/50">A running list of dishes I want to cook next.</p>
             </div>
 
@@ -580,8 +491,7 @@ export default async function RecipesPage() {
           <section id="recipe-books">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p className="eyebrow">Books</p>
-                <h2 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">Recipe books</h2>
+                <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Bookshelf</h2>
                 <p className="section-description mt-2 max-w-3xl text-sm leading-6 text-ink/50">
                   These books are kept for private use because of copyright restrictions. If you would like to use them,{" "}
                   <Link className="font-semibold text-moss underline decoration-moss/25 underline-offset-2" href="/contact">
@@ -595,6 +505,7 @@ export default async function RecipesPage() {
 
             {privateLibraryAccess ? (
               <div className="mt-7 space-y-10">
+                <Link className="recipe-cocktail-link" href="/recipes/cocktail-books">Cocktail library <span>{cocktailBooks.length} books ↗</span></Link>
                 {recipeBookGroups.map((group) => {
                   const books = recipeBookCards.filter((book) => book.group === group.id);
 

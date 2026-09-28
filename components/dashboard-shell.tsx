@@ -379,9 +379,11 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
     syncCookbookSession();
     window.addEventListener("cookbook-access-session-changed", syncCookbookSession);
+    window.addEventListener("recipe-admin-session-changed", syncCookbookSession);
     return () => {
       controller.abort();
       window.removeEventListener("cookbook-access-session-changed", syncCookbookSession);
+      window.removeEventListener("recipe-admin-session-changed", syncCookbookSession);
     };
   }, []);
 

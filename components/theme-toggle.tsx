@@ -71,7 +71,9 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
 
     const next = !readTheme();
     const button = event.currentTarget;
-    const bounds = button.getBoundingClientRect();
+    // Menu rows are much wider than their icon. Anchor both directions to the
+    // sun/moon itself, including keyboard activation and clicks on the label.
+    const bounds = (button.querySelector("svg") ?? button).getBoundingClientRect();
     const x = bounds.left + bounds.width / 2;
     const y = bounds.top + bounds.height / 2;
     const flip = () => applyTheme(next);

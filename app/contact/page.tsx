@@ -10,37 +10,29 @@ export const metadata: Metadata = { title: "Contact" };
 
 const contactLinks = [
   {
-    eyebrow: "School",
-    title: "Caltech email",
-    detail: "For university, research, and academic conversations.",
-    label: "hcclee@caltech.edu",
+    label: "School",
+    accessibleLabel: "School: email hcclee@caltech.edu",
     href: "mailto:hcclee@caltech.edu",
     external: false,
     icon: "caltech",
   },
   {
-    eyebrow: "Work",
-    title: "Personal email",
-    detail: "For professional opportunities, collaborations, and everything else.",
-    label: "curtislee0000@gmail.com",
+    label: "Work",
+    accessibleLabel: "Work: email curtislee0000@gmail.com",
     href: "mailto:curtislee0000@gmail.com",
     external: false,
     icon: "email",
   },
   {
-    eyebrow: "Social",
-    title: "Instagram",
-    detail: "Food, travel, kitchens, and other bits of life.",
-    label: "@curtislee0617",
+    label: "Social",
+    accessibleLabel: "Social: Instagram (opens in a new tab)",
     href: "https://www.instagram.com/curtislee0617/",
     external: true,
     icon: "instagram",
   },
   {
-    eyebrow: "Professional",
-    title: "LinkedIn",
-    detail: "Research, education, experience, and professional updates.",
-    label: "curtislee0617",
+    label: "Professional",
+    accessibleLabel: "Professional: LinkedIn (opens in a new tab)",
     href: "https://www.linkedin.com/in/curtislee0617",
     external: true,
     icon: "linkedin",
@@ -103,24 +95,18 @@ export default function ContactPage() {
         <div className="contact-link-grid scroll-mt-24" id="contact-links">
           {contactLinks.map((contact, index) => (
             <a
-              className="contact-link-card design-card group"
+              aria-label={contact.accessibleLabel}
+              className="contact-link-card design-card"
               data-reveal
               data-spotlight
               href={contact.href}
-              key={contact.title}
+              key={contact.icon}
               rel={contact.external ? "noreferrer" : undefined}
               style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}
               target={contact.external ? "_blank" : undefined}
             >
-              <div className="contact-link-heading">
-                <div>
-                  <p className="eyebrow">{contact.eyebrow}</p>
-                  <h2>{contact.title}</h2>
-                </div>
-                <ContactIcon icon={contact.icon} />
-              </div>
-              <p className="contact-link-detail">{contact.detail}</p>
-              <p className="contact-link-label">{contact.label} ↗</p>
+              <ContactIcon icon={contact.icon} />
+              <span className="contact-link-label">{contact.label}</span>
             </a>
           ))}
         </div>

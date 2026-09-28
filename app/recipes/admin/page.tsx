@@ -163,13 +163,13 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
       <div className="recipe-admin-editable-grid">
         {editableRecipes.map((recipe) => (
           <article key={recipe.recipeKey}>
-            {recipe.thumbnail ? <img alt="" src={recipe.thumbnail} /> : <div className="recipe-admin-editable-placeholder">Recipe</div>}
+            {recipe.thumbnail ? <img alt="" loading="lazy" src={recipe.thumbnail} /> : <div className="recipe-admin-editable-placeholder">Recipe</div>}
             <div>
               <p>{recipe.date ? new Date(`${recipe.date}T00:00:00`).toLocaleDateString() : "No date"} · {recipe.source}</p>
               <h3>{recipe.title}</h3>
               <small>{(recipe.categories ?? []).map(recipeCategoryTitle).join(" · ") || "No category"}</small>
             </div>
-            <Link href={`/recipes/admin/edit/${encodeURIComponent(recipe.recipeKey)}`}>Edit</Link>
+            <Link href={`/recipes/admin/edit/${encodeURIComponent(recipe.recipeKey)}`} prefetch={false}>Edit</Link>
             <RecipeDeleteButton recipeKey={recipe.recipeKey} returnTo="/recipes/admin" title={recipe.title} />
           </article>
         ))}
@@ -180,7 +180,7 @@ export default async function RecipeAdminPage({ searchParams }: { searchParams: 
         {drafts?.map((draft) => (
           <div className="rounded-2xl border border-ink/10 bg-surface/60 p-4" key={draft.id}>
             {draft.thumbnail_url ? (
-              <img alt="" className="h-40 w-full rounded-xl object-cover" src={draft.thumbnail_url} />
+              <img alt="" className="h-40 w-full rounded-xl object-cover" loading="lazy" src={draft.thumbnail_url} />
             ) : (
               <div className="flex h-40 w-full items-center justify-center rounded-xl bg-mist text-xs font-semibold uppercase tracking-[0.14em] text-ink/35">Text-only recipe</div>
             )}

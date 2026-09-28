@@ -24,7 +24,8 @@ const getCachedRecipeWishlistEntries = unstable_cache(async (): Promise<Wishlist
     const { data, error } = await supabase
       .from("recipe_wishlist_entries")
       .select("source_key,title,note,href,image_url,cookbook_id,recipe_id,book_title,created_at")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .abortSignal(AbortSignal.timeout(5000));
 
     if (error) return [];
 

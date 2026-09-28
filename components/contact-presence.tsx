@@ -85,14 +85,20 @@ export function ContactPresenceProvider({
       })
       .catch(() => undefined);
 
+    const loadSession = () => fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
+          .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
+          .then((result) => {
+            setAuthenticated(result.authenticated === true);
+            if (!result.authenticated) {
+              setEditorOpen(false);
+              setCustomLocationDraftOpen(false);
+            }
+          })
+          .catch(() => undefined);
     const requests: Promise<unknown>[] = [loadStatus()];
     if (!readOnly) {
-      requests.push(
-        fetch("/api/recipe-admin/session", { cache: "no-store", signal: controller.signal })
-          .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
-          .then((result) => setAuthenticated(result.authenticated === true))
-          .catch(() => undefined),
-      );
+      requests.push(loadSession());
+      window.addEventListener("recipe-admin-session-changed", loadSession);
     }
     void Promise.all(requests);
 
@@ -103,6 +109,7 @@ export function ContactPresenceProvider({
     return () => {
       controller.abort();
       window.clearInterval(refreshInterval);
+      window.removeEventListener("recipe-admin-session-changed", loadSession);
     };
   }, [fallbackStatus, readOnly]);
 
@@ -143,11 +150,18 @@ export function ContactPresenceProvider({
   async function login(password: string) {
     setPending(true);
     setError("");
-    const result = await loginAction(password);
-    setPending(false);
-    setAuthenticated(result.ok);
-    if (!result.ok) setError("Wrong password.");
-    return result.ok;
+    try {
+      const result = await loginAction(password);
+      setAuthenticated(result.ok);
+      if (result.ok) window.dispatchEvent(new Event("recipe-admin-session-changed"));
+      else setError("Wrong password.");
+      return result.ok;
+    } catch {
+      setError("Unable to sign in. Please try again.");
+      return false;
+    } finally {
+      setPending(false);
+    }
   }
 
   async function selectCity(city: ContactPresenceCity) {

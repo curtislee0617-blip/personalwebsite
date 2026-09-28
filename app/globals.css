@@ -1267,28 +1267,26 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-link-card {
   display: flex;
   min-width: 0;
-  min-height: 10.5rem;
-  padding: 1rem;
-  justify-content: flex-start;
+  min-height: 8.5rem;
+  padding: 1.25rem 0.75rem;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
+  gap: 0.8rem;
+  text-align: center;
   border: 1px solid rgb(var(--color-ink) / 0.1);
   border-radius: 1.35rem;
   background: rgb(var(--color-paper) / 0.62);
   box-shadow: 0 10px 28px rgb(var(--color-ink) / 0.04);
 }
-.contact-link-heading { display: flex; min-width: 0; align-items: flex-start; justify-content: space-between; gap: 0.6rem; }
-.contact-link-heading > div { min-width: 0; }
-.contact-link-heading h2 { margin-top: 0.42rem; font-size: 0.92rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; }
-.contact-link-icon { width: 2.7rem !important; height: 2.7rem !important; border-radius: 0.9rem !important; }
-.contact-link-icon svg { width: 1.35rem; height: 1.35rem; }
-.contact-link-detail { margin-top: 0.7rem; color: rgb(var(--color-ink) / 0.52); font-size: 0.59rem; line-height: 1.45; }
+.contact-link-card:focus-visible { outline: 2px solid rgb(var(--color-moss)); outline-offset: 3px; }
+.contact-link-icon { width: 3rem !important; height: 3rem !important; border-radius: 0.95rem !important; }
+.contact-link-icon svg { width: 1.5rem; height: 1.5rem; }
 .contact-link-label {
-  margin-top: auto;
-  padding-top: 0.8rem;
-  overflow-wrap: anywhere;
-  color: rgb(var(--color-moss));
-  font-size: 0.61rem;
-  font-weight: 750;
+  color: rgb(var(--color-ink) / 0.8);
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
   line-height: 1.35;
 }
 .contact-link-card:hover .contact-link-label { color: rgb(var(--color-ink)); }
@@ -1296,7 +1294,7 @@ body.has-page-cursor * { cursor: inherit; }
 @media (max-width: 899px) {
   .contact-composition { width: min(100%, 42rem); border-radius: 1.8rem; }
   .contact-link-grid { width: min(calc(100% - 1.4rem), 34rem); padding: 0.75rem 0 0.9rem; gap: 0.6rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .contact-link-card { min-height: 8.8rem; }
+  .contact-link-card { min-height: 8rem; }
 }
 
 @media (max-width: 639px) {
@@ -1318,15 +1316,12 @@ body.has-page-cursor * { cursor: inherit; }
     width: calc(100% - 0.9rem);
     padding: 0.52rem 0 0.62rem;
     gap: 0.42rem;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .contact-link-card { min-height: 4.7rem; padding: 0.65rem 0.72rem; border-radius: 0.95rem; }
-  .contact-link-heading { align-items: center; gap: 0.4rem; }
-  .contact-link-heading h2 { margin-top: 0.28rem; font-size: 0.75rem; }
-  .contact-link-icon { width: 2.15rem !important; height: 2.15rem !important; border-radius: 0.72rem !important; }
-  .contact-link-icon svg { width: 1.05rem; height: 1.05rem; }
-  .contact-link-detail { display: none; }
-  .contact-link-label { margin-top: 0.28rem; padding-top: 0; font-size: 0.52rem; }
+  .contact-link-card { min-height: 7rem; padding: 0.9rem 0.5rem; gap: 0.65rem; border-radius: 0.95rem; }
+  .contact-link-icon { width: 2.7rem !important; height: 2.7rem !important; border-radius: 0.85rem !important; }
+  .contact-link-icon svg { width: 1.35rem; height: 1.35rem; }
+  .contact-link-label { font-size: 0.75rem; }
 }
 .contact-city-chips span { display: inline-flex; align-items: center; gap: 0.38rem; padding: 0.45rem 0.68rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 9999px; background: rgb(var(--color-paper) / 0.74); color: rgb(var(--color-ink) / 0.65); font-size: 0.66rem; font-weight: 700; }
 .contact-city-chips i { display: inline-grid; width: 1.12rem; height: 1rem; flex: none; place-items: center; font-style: normal; }
@@ -1344,6 +1339,14 @@ body.has-page-cursor * { cursor: inherit; }
   position: relative; isolation: isolate; display: grid; width: 100%; min-height: 13rem; height: 100%; place-items: center; overflow: hidden; background: var(--contact-art-edge);
   transition: --hk-blue-hour 1s linear, --hk-dawn 1s linear, --hk-daylight 1s linear, --hk-golden 1s linear, --hk-night 1s linear, --hk-stars 1s linear, --hk-sunset 1s linear, --london-blue-hour 1s linear, --london-dawn 1s linear, --london-daylight 1s linear, --london-golden 1s linear, --london-night 1s linear, --london-stars 1s linear, --london-sunset 1s linear, --la-blue-hour 1s linear, --la-dawn 1s linear, --la-daylight 1s linear, --la-golden 1s linear, --la-night 1s linear, --la-stars 1s linear, --la-sunset 1s linear;
 }
+/* Fit the scene to its frame on Home, Contact, and Projects. An inherited
+   minimum height can otherwise push the cities and clocks below the frame. */
+.contact-cities-art .contact-cities-picture { min-height: 0; }
+/* Lift the shared city illustration away from the clocks and their labels. */
+.contact-cities-art :is(.contact-cities-art-composite, .contact-harbour-group, .contact-london-planes, .contact-hollywood-spotlights) {
+  translate: 0 clamp(-0.65rem, -1.5cqw, -0.35rem);
+}
+
 /* Left-light mode (sun on the LA side, before the ~8:15am HKT flip).
    The scene is drawn as two panels that meet on a hidden seam at 60cqw,
    inside London's constant zone: the LA–London border rides the near curve,
@@ -1353,9 +1356,6 @@ body.has-page-cursor * { cursor: inherit; }
    (near: tuned 8 points toward LA; far: equivalent to 91.3%/97.3% on the
    near curve, tuned 5.5 points toward London). */
 .contact-cities-picture[data-light-direction="left"] {
-  /* Fractional cqw rounding can expose a one-pixel gap between the two
-     lighting panels on narrow/high-DPR screens. Keep a tiny shared overlap. */
-  --contact-panel-seam-overlap: 0.5px;
   --contact-transition-curve: ellipse 69.35194cqw 180cqw at 0cqw calc(50% - 12.8549061cqw);
   --contact-far-curve: ellipse 69.35194cqw 180cqw at 30.376cqw calc(50% - 12.8549061cqw);
   --contact-near-end: 47.5%;
@@ -1406,12 +1406,13 @@ body.has-page-cursor * { cursor: inherit; }
   background: linear-gradient(180deg, rgb(2 22 55) 0%, rgb(3 24 58) 46%, rgb(4 22 50) 100%);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::before {
-  clip-path: inset(0 calc(40cqw - var(--contact-panel-seam-overlap)) 0 0);
+  inset: 0 40% 0 0;
   -webkit-mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
   mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::after {
-  clip-path: inset(0 0 0 calc(60cqw - var(--contact-panel-seam-overlap)));
+  inset: 0 0 0 60%;
+  --contact-far-curve: ellipse 69.35194cqw 180cqw at -29.624cqw calc(50% - 12.8549061cqw);
   -webkit-mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
   mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
 }
@@ -1438,7 +1439,7 @@ body.has-page-cursor * { cursor: inherit; }
   content: none;
 }
 .contact-city-glow-field { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 25% 30% at 14.7% 62%, rgb(255 190 111 / calc(0.15 * var(--la-night))), transparent 76%), radial-gradient(ellipse 27% 44% at 87.2% 52%, rgb(71 161 255 / calc(0.16 * var(--hk-night))), transparent 78%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); }
-.contact-moon-phase-label { position: absolute; left: clamp(0.65rem, 3.5%, 1.1rem); top: clamp(0.55rem, 4%, 0.85rem); z-index: 12; display: inline-block; width: max-content; max-width: calc(100% - 1.3rem); margin: 0; padding: 0; overflow: hidden; background: transparent; color: var(--moon-phase-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 0.72; pointer-events: none; text-overflow: ellipsis; text-shadow: 0 1px 2px var(--moon-phase-label-shadow); text-transform: uppercase; white-space: nowrap; }
+.contact-moon-phase-label { position: absolute; left: clamp(0.65rem, 3.5%, 1.1rem); top: clamp(0.55rem, 4%, 0.85rem); z-index: 12; display: inline-block; width: max-content; max-width: calc(100% - 1.3rem); margin: 0; padding: 0; overflow: hidden; background: transparent; color: #fff; mix-blend-mode: difference; font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 1; pointer-events: none; text-overflow: ellipsis; text-shadow: none; text-transform: uppercase; white-space: nowrap; }
 .contact-cities-art-composite { position: absolute; inset: 0; z-index: 0; display: block; }
 .contact-city-art-layer { position: absolute; top: 0; bottom: 0; display: block; background-repeat: no-repeat; image-rendering: crisp-edges; image-rendering: pixelated; }
 .contact-city-art-layer-day { background-image: url('/contact-cities-pixel-art-day-foreground-v1.png'); }
@@ -1506,9 +1507,9 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-atmosphere-sunset {
   background: radial-gradient(var(--contact-transition-curve), rgb(255 122 86 / calc(0.24 * var(--hk-sunset))) 0% var(--contact-near-end), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 104 69 / calc(0.26 * var(--la-sunset))) var(--contact-far-start) 148%);
 }
-/* Left-light atmosphere tints use the same two-panel split as the night mask
-   so their borders share one curvature. Panels meet on the hidden 60cqw seam
-   inside London's constant zone; pseudo-elements carry the two gradients. */
+/* Adjacent layout boxes share one edge without painting translucent pixels
+   twice during the initial lighting fade. The right panel's gradient origin
+   is offset by its 60cqw position to preserve the scene-wide curvature. */
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span {
   background: none;
 }
@@ -1519,10 +1520,11 @@ body.has-page-cursor * { cursor: inherit; }
   inset: 0;
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::before {
-  clip-path: inset(0 calc(40cqw - var(--contact-panel-seam-overlap)) 0 0);
+  inset: 0 40% 0 0;
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::after {
-  clip-path: inset(0 0 0 calc(60cqw - var(--contact-panel-seam-overlap)));
+  inset: 0 0 0 60%;
+  --contact-far-curve: ellipse 69.35194cqw 180cqw at -29.624cqw calc(50% - 12.8549061cqw);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue::before {
   background: radial-gradient(var(--contact-transition-curve), rgb(45 54 93 / calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night))) 0% var(--contact-near-end), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) var(--contact-middle-start) 148%);
@@ -1666,6 +1668,24 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-presence-person { display: block; width: 100%; height: auto; image-rendering: auto; backface-visibility: hidden; animation: contactPresenceArrive 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .contact-city-presence-sign { position: absolute; left: 42%; bottom: 63%; display: grid; min-width: 2.16rem; min-height: 0.9rem; padding: 0.144rem 0.234rem; place-items: center; border: 1.8px solid rgb(149 105 26 / 0.88); border-radius: 0.324rem; background: #fff0b4; box-shadow: 0 1.8px 3.6px rgb(92 59 4 / 0.22), 1.8px 1.8px 0 rgb(182 124 22 / 0.72); color: #49320b; font-family: var(--font-ui); font-size: 0.54rem; font-weight: 800; letter-spacing: 0; line-height: 1; text-rendering: geometricPrecision; text-shadow: none; transform: translateX(-50%) rotate(-2deg); white-space: nowrap; -webkit-font-smoothing: antialiased; animation: contactPresenceArrive 360ms 60ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .contact-city-presence-sign::after { content: ""; position: absolute; left: 52%; top: 100%; width: 1.8px; height: 0.414rem; background: #95691a; transform: translateX(-50%); }
+
+/* Keep the shared location marker readable even with mobile artwork rules. */
+.contact-cities-art .contact-city-clock > .contact-city-presence,
+.contact-cities-art .contact-city-clock-copy > .contact-city-presence {
+  width: clamp(2.5rem, 5vw, 3.5rem);
+}
+.contact-cities-art .contact-city-presence-sign {
+  min-width: 2.6rem;
+  min-height: 1.1rem;
+  padding: 0.15rem 0.3rem;
+  border-width: 1.5px;
+  border-radius: 0.3rem;
+  font-size: 0.625rem;
+}
+.contact-cities-art .contact-city-presence-sign::after {
+  width: 1.5px;
+  height: 0.35rem;
+}
 
 .section-loading {
   display: grid;
@@ -6865,7 +6885,7 @@ div.restaurant-results-limit {
   .contact-city-chips span { padding: 0.36rem 0.55rem; font-size: 0.58rem; }
   .contact-cities-art { min-height: 10rem; overflow: hidden; padding: 0; }
   .contact-cities-picture { width: 100%; min-height: 10rem; height: 100%; overflow: hidden; }
-  .contact-moon-phase-label { left: 0.62rem; top: 0.48rem; font-size: 0.4rem; letter-spacing: 0.06em; }
+  .contact-moon-phase-label { left: 0.62rem; top: 0.48rem; font-size: 0.46rem; letter-spacing: 0.06em; }
   .contact-presence-controls { right: 0.48rem; top: 0.42rem; max-width: calc(100% - 4.3rem); gap: 0.28rem; }
   .contact-presence-public-note { max-width: 9.5rem; padding: 0.28rem 0.42rem; font-size: 0.43rem; }
   .contact-presence-edit-button { position: relative; width: 1.5rem; }
@@ -9804,7 +9824,7 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
 .contact-link-icon { transition: transform var(--motion-standard) var(--ease-standard); }
 
 @media (hover: hover) {
-  .contact-link-card:hover .contact-link-icon { transform: translateY(-3px) rotate(-4deg) scale(1.04); }
+  .contact-link-card:hover .contact-link-icon { transform: translateY(-2px); }
 }
 
 /* CV timeline logos give a small acknowledging lift when their entry is read. */
@@ -12401,4 +12421,60 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
     margin-right: auto;
     margin-left: auto;
   }
+}
+
+/* Recipe index: one collection, readable cards and lightweight navigation. */
+.recipe-index-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; padding-top: 1.3rem; padding-bottom: 1.3rem; }
+.recipe-index-nav a { padding: 0.55rem 1rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: rgb(var(--color-ink) / 0.7); }
+.recipe-index-nav a:hover { background: rgb(var(--color-ink) / 0.06); color: rgb(var(--color-ink)); }
+.recipe-library-page .recipe-content-section > .space-y-12 > * + * { margin-top: 3rem !important; padding-top: 2rem; border-top: 1px solid rgb(var(--color-ink) / 0.1); }
+.recipe-library-page #recipe-guides .recipe-guide-media { height: 9rem; }
+.recipe-library-page #recipe-guides .recipe-guide-copy { padding: 0.9rem 0.4rem; }
+.recipe-library-page #recipe-guides .recipe-guide-title-row h3 { font-size: 1rem; }
+.recipe-library-page #recipe-guides .recipe-guide-description { font-size: 0.75rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.recipe-library-page #recipe-guides .eyebrow { display: none; }
+.recipe-browser { margin-top: 1.2rem; }
+.recipe-filter-list { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.recipe-filter-list button { padding: 0.55rem 0.8rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 999px; font-size: 0.75rem; color: rgb(var(--color-ink) / 0.65); }
+.recipe-filter-list button[aria-pressed="true"] { background: rgb(var(--color-ink)); border-color: transparent; color: rgb(var(--color-paper)); }
+.recipe-filter-list button span { margin-left: 0.3rem; opacity: 0.6; font-size: 0.65rem; }
+.recipe-browser-count { margin: 1.2rem 0 0.85rem; font-size: 0.75rem; color: rgb(var(--color-ink) / 0.5); }
+.recipe-browser-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.1rem; }
+.recipe-browser-grid > li { min-width: 0; }
+.recipe-browser-grid > li:has(.recipe-card[open]) { grid-column: 1 / -1; }
+.recipe-library-page .recipe-browser-grid .recipe-card { width: 100%; max-width: none; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) { height: 100%; border: 1px solid rgb(var(--color-ink) / 0.1) !important; background: rgb(var(--color-surface) / 0.6) !important; overflow: hidden; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-summary { display: block; min-height: 0; height: auto; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-thumbnail { width: 100%; height: auto; aspect-ratio: 4 / 3; margin: 0; border: 0; border-radius: 0 !important; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-thumbnail > div { height: 100%; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-copy { min-height: 5rem; padding: 0.9rem; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-copy h3 { margin: 0; font-size: 0.95rem !important; line-height: 1.35; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-description { display: none; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-date { display: block; margin-top: 0.5rem; font-size: 0.6rem; letter-spacing: 0.03em; }
+.recipe-library-page .recipe-browser-grid .recipe-card[open] { padding: 1.25rem !important; background: rgb(var(--color-surface) / 0.75) !important; }
+.recipe-browser-empty { padding: 2rem 0; color: rgb(var(--color-ink) / 0.5); }
+.recipe-show-more { display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem auto 0; padding: 0.75rem 1.25rem; border: 1px solid rgb(var(--color-ink) / 0.15); border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+.recipe-show-more span { color: rgb(var(--color-ink) / 0.5); font-size: 0.7rem; font-weight: 400; }
+.recipe-media-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.1rem; }
+.recipe-media-link { padding: 1.25rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1rem; background: rgb(var(--color-surface) / 0.5); }
+.recipe-media-link h3, .recipe-cocktail-link { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-weight: 600; }
+.recipe-media-link h3 span, .recipe-cocktail-link span { font-size: 0.8rem; color: rgb(var(--color-ink) / 0.5); }
+.recipe-media-link p { margin-top: 0.25rem; font-size: 0.8rem; }
+.recipe-cocktail-link { padding: 1rem 0; border-bottom: 1px solid rgb(var(--color-ink) / 0.1); }
+.recipe-library-page :is(.recipe-filter-list button, .recipe-show-more, .recipe-index-nav a):focus-visible { outline: 2px solid rgb(var(--color-moss)); outline-offset: 3px; }
+@media (max-width: 1000px) { .recipe-browser-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .recipe-index-nav { gap: 0.4rem; padding-top: 1rem; padding-bottom: 0.7rem; }
+  .recipe-index-nav a { padding: 0.45rem 0.75rem; font-size: 0.7rem; }
+  .recipe-filter-list { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; padding: 0.25rem 0.2rem; }
+  .recipe-filter-list::-webkit-scrollbar { display: none; }
+  .recipe-filter-list button { flex: 0 0 auto; white-space: nowrap; }
+  .recipe-library-page #recipe-guides .recipe-guide-media { height: 7.5rem; }
+  .recipe-library-page #recipe-guides .recipe-guide-card { width: 15rem; }
+  .recipe-browser-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+  .recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-copy { padding: 0.7rem; }
+  .recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-copy h3 { font-size: 0.85rem !important; }
+  .recipe-library-page .recipe-content-section > .space-y-12 > * + * { margin-top: 2rem !important; padding-top: 1.5rem; }
+  .recipe-media-links { gap: 0.7rem; }
+  .recipe-media-link { padding: 1rem; }
 }
