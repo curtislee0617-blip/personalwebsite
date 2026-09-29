@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { AboutSectionRail } from "@/components/about-section-rail";
 import { PageIntro } from "@/components/page-intro";
+import { SpringAnchor, SpringLink } from "@/components/spring-links";
 
 export const metadata: Metadata = { title: "CV" };
 
@@ -184,12 +184,12 @@ export default function AboutPage() {
         }
         actions={
           <div className="about-resume-actions flex flex-wrap gap-3">
-            <a className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" download href="/downloads/curtis-lee-resume.pdf">
+            <SpringAnchor className="rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss" download href="/downloads/curtis-lee-resume.pdf">
               Download résumé ↓
-            </a>
-            <a className="rounded-full border border-ink/20 px-5 py-3 text-sm font-semibold transition hover:border-ink hover:bg-surface" href="https://www.linkedin.com/in/curtislee0617" rel="noreferrer" target="_blank">
+            </SpringAnchor>
+            <SpringAnchor className="rounded-full border border-ink/20 px-5 py-3 text-sm font-semibold transition hover:border-ink hover:bg-surface" href="https://www.linkedin.com/in/curtislee0617" rel="noreferrer" target="_blank">
               LinkedIn ↗
-            </a>
+            </SpringAnchor>
           </div>
         }
       />
@@ -236,12 +236,12 @@ export default function AboutPage() {
                       </p>
                       <p className="about-entry-description mt-4 max-w-2xl text-sm leading-7 text-ink/60">{item.detail}</p>
                       {item.projectHref ? (
-                        <Link
+                        <SpringLink
                           className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-moss transition hover:text-ink"
                           href={`${item.projectHref}?from=about`}
                         >
                           {item.projectLabel ?? "View the project"} <span aria-hidden="true">→</span>
-                        </Link>
+                        </SpringLink>
                       ) : null}
                     </div>
                   </div>
@@ -317,15 +317,15 @@ export default function AboutPage() {
               <p className="eyebrow">Selected work</p>
               <h2 className="section-title mt-3" id="projects-publications-title">Projects &amp; publications</h2>
             </div>
-            <Link className="text-sm font-semibold text-moss hover:text-ink" href="/projects">View all projects →</Link>
+            <SpringLink className="text-sm font-semibold text-moss hover:text-ink" href="/projects">View all projects →</SpringLink>
           </div>
           <div className="about-featured-grid mt-7 grid gap-3 sm:grid-cols-2">
             {featuredWork.map((item, index) => (
-              <Link className="about-featured-card design-card group rounded-3xl border border-ink/10 bg-surface/45 p-6" data-reveal data-spotlight href={`${item.href}?from=about`} key={item.href} style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}>
+              <SpringLink className="about-featured-card design-card group rounded-3xl border border-ink/10 bg-surface/45 p-6" data-reveal data-spotlight href={`${item.href}?from=about`} key={item.href} style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-moss">{item.type}</p>
                 <h3 className="mt-3 text-lg font-semibold group-hover:text-moss">{item.title}</h3>
                 <p className="mt-3 text-sm leading-6 text-ink/60">{item.summary}</p>
-              </Link>
+              </SpringLink>
             ))}
           </div>
         </section>
@@ -339,9 +339,9 @@ export default function AboutPage() {
                 Visit the contact page to send me a message, find my links, or see where I am.
               </p>
             </div>
-            <Link className="shrink-0 self-start rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss sm:self-auto" href="/contact">
+            <SpringLink className="shrink-0 self-start rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-moss sm:self-auto" href="/contact">
               Go to contact →
-            </Link>
+            </SpringLink>
           </div>
         </section>
       </section>

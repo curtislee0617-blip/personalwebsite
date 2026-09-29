@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState, type CSSProperties } from "react";
 import { SnapCarousel } from "@/components/snap-carousel";
+import { SpringLink } from "@/components/spring-links";
 import type { ProjectEntry } from "@/lib/projects";
 
 type ProjectCarouselProps = {
@@ -31,7 +31,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
           const preview = project.previews[0];
 
           return (
-            <Link
+            <SpringLink
               className="project-card swipe-bubble-card group overflow-hidden rounded-[1.65rem] border border-ink/10 bg-surface/55 transition hover:border-ink/20 hover:bg-surface hover:shadow-soft sm:w-auto"
               data-reveal
               data-spotlight
@@ -62,7 +62,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
                 </div>
                 <p className="project-card-description">{project.description}</p>
               </div>
-            </Link>
+            </SpringLink>
           );
         })}
       </SnapCarousel>
@@ -82,7 +82,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
             <p className="project-focus-eyebrow">{activeProject.year} · {activeProject.eyebrow}</p>
             <p className="project-focus-description">{activeProject.description}</p>
           </div>
-          <Link aria-label={`Open ${activeProject.title}`} className="project-focus-preview" href={`/projects/${activeProject.slug}`}>
+          <SpringLink aria-label={`Open ${activeProject.title}`} className="project-focus-preview" href={`/projects/${activeProject.slug}`}>
             <span className="project-focus-preview-media">
               {activePreview ? (
                 <Image alt="" fill sizes="4rem" src={activePreview.src} />
@@ -94,7 +94,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
               <small>View project</small>
               <strong>{activeProject.shortTitle ?? activeProject.title}</strong>
             </span>
-          </Link>
+          </SpringLink>
         </motion.div>
       </AnimatePresence>
     </div>

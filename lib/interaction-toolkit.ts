@@ -8,6 +8,7 @@ export type InteractionTool = {
 
 export const websiteInteractionTools = [
   { name: "Motion", capability: "React motion and layout", status: "In use" },
+  { name: "React Spring", capability: "Spring-driven navigation and button feedback", status: "In use" },
   { name: "Anime.js", capability: "SVG and timeline animation", status: "In use" },
   { name: "Rive", capability: "Interactive vector state machines", status: "Ready" },
   { name: "GSAP + ScrollTrigger", capability: "Cinematic scroll choreography", status: "In use" },

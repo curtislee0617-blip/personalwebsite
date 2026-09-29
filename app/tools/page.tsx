@@ -8,7 +8,7 @@ import { SnapCarousel } from "@/components/snap-carousel";
 
 export const metadata: Metadata = { title: "Tools" };
 
-type ToolKind = "water" | "compound" | "vle" | "ir" | "nmr" | "planner";
+type ToolKind = "water" | "compound" | "vle" | "ir" | "nmr" | "planner" | "astro";
 type Tool = { href: string; title: string; description: string; kind: ToolKind };
 type ToolSection = { title: string; tools: Tool[] };
 
@@ -71,6 +71,12 @@ const ethanolIrPath = spectrumPath({
 
 const toolSections: ToolSection[] = [
   {
+    title: "Photography",
+    tools: [
+      { href: "/tools/astronomical-darkness", title: "Astronomical darkness", description: "Find moonless dark-sky windows, twilight, moonrise and moonset, cloud forecasts, and nearby night lights.", kind: "astro" },
+    ],
+  },
+  {
     title: "Planning",
     tools: [
       { href: "/tools/course-planner", title: "Course planner", description: "Plan four years at Caltech term by term, arranging course requirements while keeping track of classes that fulfil more than one requirement.", kind: "planner" },
@@ -113,6 +119,19 @@ function CycleValue({ values, variant = "steady" }: { values: readonly string[];
 }
 
 function ToolThumbnail({ kind }: { kind: ToolKind }) {
+  if (kind === "astro") {
+    return (
+      <div className="tool-thumbnail swipe-bubble-media relative overflow-hidden rounded-2xl bg-[#101d31] p-5 text-[#edf5f4]" aria-hidden="true">
+        <div className="absolute right-10 top-4 h-11 w-11 rounded-full bg-[#f2f1df] shadow-[0_0_25px_#d1d9ec]" />
+        <div className="absolute right-6 top-4 h-11 w-11 rounded-full bg-[#101d31]" />
+        <div className="absolute bottom-0 left-0 right-0 h-12 rounded-[50%_50%_0_0] bg-[#1e3c4a]" />
+        <span className="relative z-10 text-[0.55rem] font-bold uppercase tracking-[0.16em] text-[#9ed1d2]">Tonight · Moonless</span>
+        <strong className="relative z-10 mt-8 block text-2xl tracking-tight">9:42 → 1:18</strong>
+        <div className="relative z-10 mt-4 h-2 overflow-hidden rounded-full bg-[#45617c]"><span className="ml-[28%] block h-full w-[41%] rounded-full bg-[#a5ddd0]" /></div>
+      </div>
+    );
+  }
+
   if (kind === "planner") {
     return <CoursePlannerThumbnail />;
   }

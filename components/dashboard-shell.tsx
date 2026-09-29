@@ -80,6 +80,7 @@ export const dashboardSections: readonly DashboardSection[] = [
   {
     href: "/tools", label: "Tools", subtitle: "Utilities for school, and more coming soon :)",
     groups: [
+      { href: "/tools", label: "Photography", items: [{ href: "/tools/astronomical-darkness", label: "Astronomical darkness" }] },
       { href: "/tools", label: "Planning", items: [{ href: "/tools/course-planner", label: "Course planner" }] },
       { href: "/tools", label: "Chemistry", items: [{ href: "/tools/ir-spectrum", label: "IR spectrum plotter" }, { href: "/tools/nmr-spectrum", label: "NMR spectrum processor" }] },
       { href: "/tools", label: "Thermodynamics", items: [{ href: "/tools/water-properties", label: "Water properties" }, { href: "/tools/compound-properties", label: "Compound properties" }, { href: "/tools/vle", label: "VLE simulator" }] },
@@ -465,6 +466,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
     const anchor = target.closest<HTMLAnchorElement>("a[href]");
     if (!anchor || anchor.target || anchor.hasAttribute("download")) return;
+    if (anchor.classList.contains("home-dashboard-button")) return;
 
     const destination = new URL(anchor.href, window.location.href);
     if (

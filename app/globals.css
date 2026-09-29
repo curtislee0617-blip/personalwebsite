@@ -12126,6 +12126,23 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   overflow: hidden !important;
 }
 
+.dashboard-transition-return-icon .dashboard-transition-surface {
+  border: 1px solid rgb(var(--color-ink) / 0.1);
+  border-radius: 0.7rem;
+  background: rgb(var(--color-paper) / 0.96);
+  box-shadow: 0 6px 18px rgb(var(--color-ink) / 0.12);
+}
+
+.dashboard-transition-return-icon .dashboard-transition-return-image {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
 @media (min-width: 1200px) and (hover: hover) and (pointer: fine) {
   html.dashboard-mode.dashboard-home-route:not(.dashboard-target-preview) .dashboard-sidebar {
     opacity: 0;
@@ -12167,12 +12184,22 @@ html.dashboard-navigation-animating .site-app-shell {
    clone begins moving. */
 html.dashboard-navigation-animating.dashboard-route-swapping:not(.dashboard-route-ready) .site-app-shell {
   opacity: 0;
-  transition: opacity 90ms ease-out !important;
+  transition: none !important;
 }
 
 html.dashboard-navigation-animating.dashboard-route-ready .site-app-shell {
   opacity: 1;
   transition: opacity 150ms ease-out !important;
+}
+
+html.dashboard-navigation-animating.dashboard-undocking .site-app-shell {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+html.dashboard-navigation-animating.dashboard-docking .site-app-shell {
+  opacity: var(--dashboard-route-reveal, 0) !important;
+  transition: none !important;
 }
 
 html.dashboard-docking .home-dashboard-button,
@@ -12183,9 +12210,6 @@ html.dashboard-undocking .home-dashboard-button {
 }
 
 html.dashboard-undocking .home-dashboard-panel { animation: none; }
-html.dashboard-undocking :is(.home-dashboard-heading, .home-dashboard-group > h2) {
-  animation: dashboard-home-content-return 560ms 120ms cubic-bezier(.16, 1, .3, 1) both;
-}
 
 html.dashboard-undocking .home-entry-pending::after,
 html.dashboard-undocking .home-entry-center::after,
@@ -12203,9 +12227,9 @@ html.dashboard-docking.dashboard-transition-settled :is(.dashboard-sidebar, .sit
   opacity: 1 !important;
   transition: opacity 100ms linear !important;
 }
-html.dashboard-undocking.dashboard-transition-settled .home-dashboard-button {
+html.dashboard-undocking .home-dashboard-button[data-bubble-landed] {
   opacity: 1;
-  transition: opacity 100ms linear !important;
+  transition: opacity 110ms ease-out !important;
 }
 .home-entry-settled .home-dashboard-panel { animation: none; }
 
@@ -12224,6 +12248,10 @@ html.dashboard-undocking.dashboard-transition-settled .home-dashboard-button {
   transition: none;
 }
 .home-theme-toggle.spring-control:hover { transform: none; }
+.theme-toggle-icon { display: inline-grid; place-items: center; transform-origin: center; }
+.project-card.spring-control,
+.about-featured-card.spring-control { transform: none; transition-property: border-color, background-color, box-shadow; }
+:is(.about-page, .creative-projects-section, .project-carousel-shell) .spring-control:hover { transform: none; }
 .spring-control {
   scale: var(--press-scale, 1);
   translate: 0 var(--press-y, 0px);
@@ -12234,11 +12262,6 @@ html.dashboard-undocking.dashboard-transition-settled .home-dashboard-button {
 }
 @media (max-width: 639px) {
   .home-theme-toggle.spring-control:hover { transform: translateX(-50%); }
-}
-
-@keyframes dashboard-home-content-return {
-  from { opacity: 0; transform: translateY(0.65rem) scale(0.985); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Shared Liquid Glass language for navigation and control layers. Content

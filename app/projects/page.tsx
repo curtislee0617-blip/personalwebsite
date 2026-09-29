@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { ContactCityTimeline } from "@/components/contact-city-timeline";
 import { PageIntro } from "@/components/page-intro";
 import { ProjectCarousel } from "@/components/project-carousel";
+import { SpringLink } from "@/components/spring-links";
 import { websiteInteractionTools } from "@/lib/interaction-toolkit";
 import { projects } from "@/lib/projects";
 
@@ -47,7 +47,7 @@ export default function ProjectsPage() {
                   <li>
                     <strong>Built with</strong>
                     <span>
-                      Next.js 16, React 19, TypeScript, and Tailwind CSS form the core. D3.js powers the scientific maps and data graphics; Motion, Anime.js, GSAP + ScrollTrigger, dotLottie, use-gesture, and the View Transitions API handle movement and continuity; XState coordinates explicit interface modes; and Matter.js runs the interactive coffee-bean physics.
+                      Next.js 16, React 19, TypeScript, and Tailwind CSS form the core. D3.js powers the scientific maps and data graphics; Motion, React Spring, Anime.js, GSAP + ScrollTrigger, dotLottie, use-gesture, and the View Transitions API handle movement and continuity; XState coordinates explicit interface modes; and Matter.js runs the interactive coffee-bean physics.
                     </span>
                   </li>
                   <li><strong>Hosted on</strong><span>Vercel, connected to the GitHub repository. The main branch powers production, while other branches receive preview deployments.</span></li>
@@ -68,7 +68,7 @@ export default function ProjectsPage() {
                     ))}
                   </ul>
                 </div>
-                <Link className="back-link-bubble website-project-link" href="/">Visit the front page</Link>
+                <SpringLink className="back-link-bubble website-project-link" href="/">Visit the front page</SpringLink>
               </div>
             </article>
             <article className="fusion-project-bubble" data-reveal data-spotlight>
@@ -82,10 +82,10 @@ export default function ProjectsPage() {
             <article className="fusion-project-bubble" data-reveal data-spotlight>
               <div>
                 <p className="eyebrow">UI/UX brainstorming</p>
-                <h3><Link href="/projects/clicks">Clicks</Link></h3>
+                <h3><SpringLink href="/projects/clicks">Clicks</SpringLink></h3>
               </div>
               <p>One hundred interactive button ideas to explore for future website updates.</p>
-              <Link aria-label="Explore Clicks button ideas" href="/projects/clicks">Explore ↗</Link>
+              <SpringLink aria-label="Explore Clicks button ideas" href="/projects/clicks">Explore ↗</SpringLink>
             </article>
             <section aria-labelledby="personal-reading-title" className="personal-reading" id="personal-reading">
               <div className="personal-reading-heading">

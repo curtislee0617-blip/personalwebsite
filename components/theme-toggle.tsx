@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore, type MouseEvent } from "react";
 import { flushSync } from "react-dom";
-import { animated } from "@react-spring/web";
+import { animated, useSpring } from "@react-spring/web";
 import { usePressSpring } from "@/components/use-press-spring";
 
 type ViewTransition = {
@@ -17,7 +17,7 @@ type DocumentWithViewTransitions = Document & {
 
 const THEME_TRANSITION_MS = 1240;
 const FALLBACK_TRANSITION_MS = 560;
-const RADIAL_TRANSITION_EASING = "cubic-bezier(.45, 0, .2, 1)";
+const RADIAL_TRANSITION_EASING = "cubic-bezier(.22, .92, .25, 1)";
 
 function SunIcon() {
   return (
@@ -65,7 +65,30 @@ function applyTheme(isDark: boolean) {
 
 export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "menu-row" | "dashboard" }) {
   const spring = usePressSpring(1);
+  const [iconSpring, iconApi] = useSpring(() => ({
+    rotate: 0,
+    scale: 1,
+    opacity: 1,
+    config: { mass: 0.65, tension: 330, friction: 25 },
+  }));
   const isDark = useSyncExternalStore(subscribeTheme, readTheme, readServerTheme);
+  const icon = (
+    <animated.span
+      className="theme-toggle-icon"
+      style={{
+        opacity: iconSpring.opacity,
+        scale: iconSpring.scale,
+        rotate: iconSpring.rotate.to((degrees) => `${degrees}deg`),
+      }}
+    >
+      {isDark ? <SunIcon /> : <MoonIcon />}
+    </animated.span>
+  );
+
+  function settleIcon(next: boolean) {
+    iconApi.set({ rotate: next ? -25 : 25, scale: 0.78, opacity: 0.72 });
+    void iconApi.start({ rotate: 0, scale: 1, opacity: 1 });
+  }
 
   async function toggle(event: MouseEvent<HTMLButtonElement>) {
     const root = document.documentElement;
@@ -85,6 +108,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       flip();
+      iconApi.set({ rotate: 0, scale: 1, opacity: 1 });
       return;
     }
 
@@ -93,6 +117,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       // Establish the fallback styles before changing the palette.
       await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
       flip();
+      settleIcon(next);
       window.setTimeout(() => delete root.dataset.themeColorTransition, FALLBACK_TRANSITION_MS);
       return;
     }
@@ -113,6 +138,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       const finished = transition.finished.catch(() => undefined);
       const updated = transition.updateCallbackDone.catch(() => undefined);
       await transition.ready;
+      settleIcon(next);
       animation = root.animate(
         { clipPath: next ? [circle(radius), circle(0)] : [circle(0), circle(radius)] },
         {
@@ -128,6 +154,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       transition?.skipTransition();
       if (transition) await transition.updateCallbackDone.catch(() => undefined);
       if (readTheme() !== next) flip();
+      settleIcon(next);
     } finally {
       animation?.cancel();
       delete button.dataset.themeAnimating;
@@ -146,7 +173,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         type="button"
       >
         <span>{isDark ? "Light mode" : "Dark mode"}</span>
-        {isDark ? <SunIcon /> : <MoonIcon />}
+        {icon}
       </animated.button>
     );
   }
@@ -162,7 +189,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
         title={isDark ? "Switch to light mode" : "Switch to dark mode"}
         type="button"
       >
-        {isDark ? <SunIcon /> : <MoonIcon />}
+        {icon}
       </animated.button>
     );
   }
@@ -178,7 +205,7 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
       type="button"
     >
       <span className="home-theme-toggle-label">{isDark ? "Light mode" : "Dark mode"}</span>
-      {isDark ? <SunIcon /> : <MoonIcon />}
+      {icon}
     </animated.button>
   );
 }

@@ -1,3 +1,4 @@
+import { SpringValue } from "@react-spring/web";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -26,11 +27,16 @@ type BubbleDestination = {
   layer: HTMLElement;
   surface: HTMLElement;
   end: DOMRect;
+  element: HTMLElement;
+};
+
+type ReturnDestination = {
+  end: DOMRect;
+  element: HTMLElement;
 };
 
 const DASHBOARD_MEDIA_QUERY = "(min-width: 1200px) and (hover: hover) and (pointer: fine)";
-const BUBBLE_DURATION = 580;
-const BUBBLE_STAGGER = 18;
+const BUBBLE_STAGGER = 0.026;
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -228,6 +234,41 @@ function createBubbleClone(href: string, source: HTMLElement): BubbleClone | nul
   return { href, shell, sourceLayer, sourceSurface, start };
 }
 
+function createReturnIconClone(href: string, source: HTMLElement): BubbleClone | null {
+  const sourceIcon = source.querySelector<HTMLImageElement>("img");
+  if (!sourceIcon) return null;
+  const iconRect = sourceIcon.getBoundingClientRect();
+  if (!iconRect.width || !iconRect.height) return null;
+
+  const size = 36;
+  const start = new DOMRect(
+    iconRect.left + iconRect.width / 2 - size / 2,
+    iconRect.top + iconRect.height / 2 - size / 2,
+    size,
+    size,
+  );
+  const shell = document.createElement("div");
+  shell.className = "dashboard-transition-bubble dashboard-transition-return-icon";
+  shell.dataset.dashboardHref = href;
+  shell.setAttribute("aria-hidden", "true");
+  shell.inert = true;
+  Object.assign(shell.style, {
+    height: `${size}px`,
+    left: `${start.left}px`,
+    top: `${start.top}px`,
+    width: `${size}px`,
+  });
+
+  const sourceSurface = document.createElement("div");
+  sourceSurface.className = "dashboard-transition-surface";
+  const sourceLayer = sourceIcon.cloneNode() as HTMLImageElement;
+  sourceLayer.className = "dashboard-transition-return-image";
+  sourceLayer.removeAttribute("id");
+  sourceLayer.setAttribute("aria-hidden", "true");
+  shell.append(sourceSurface, sourceLayer);
+  return { href, shell, sourceLayer, sourceSurface, start };
+}
+
 function addDestination(clone: BubbleClone, target: HTMLElement): BubbleDestination {
   const surface = createSurface(target, "target");
   const layer = createContentLayer(target, "target");
@@ -238,7 +279,12 @@ function addDestination(clone: BubbleClone, target: HTMLElement): BubbleDestinat
     element.style.opacity = "0";
   }
   clone.shell.append(surface, layer);
-  return { layer, surface, end };
+  return { layer, surface, end, element: target };
+}
+
+function returnDestination(target: HTMLElement): ReturnDestination {
+  const icon = target.querySelector<HTMLElement>(".home-dashboard-icon") ?? target;
+  return { end: icon.getBoundingClientRect(), element: target };
 }
 
 function rectSignature(buttons: Map<string, HTMLElement>) {
@@ -275,30 +321,74 @@ function waitForStableTargets(direction: DashboardBubbleDirection, compact: bool
   });
 }
 
-function animateBubble(
-  timeline: gsap.core.Timeline,
-  clone: BubbleClone,
-  destination: BubbleDestination,
-  index: number,
-) {
-  const { end } = destination;
-  const source = [clone.sourceLayer, clone.sourceSurface];
-  const target = [destination.layer, destination.surface];
-  const startAt = index * BUBBLE_STAGGER / 1000;
-  const duration = BUBBLE_DURATION / 1000;
-  // Both appearances retain their measured dimensions. Only transforms and
-  // opacity change during flight, so text/layout is never recalculated per frame.
-  gsap.set(target, { scaleX: clone.start.width / end.width, scaleY: clone.start.height / end.height });
-  timeline
-    .to(clone.shell, { x: end.left - clone.start.left, y: end.top - clone.start.top, duration, ease: "power3.inOut" }, startAt)
-    .to(source, { scaleX: end.width / clone.start.width, scaleY: end.height / clone.start.height, duration, ease: "power3.inOut" }, startAt)
-    .to(target, { scaleX: 1, scaleY: 1, duration, ease: "power3.inOut" }, startAt)
-    .to(source, { opacity: 0, duration: duration * 0.45, ease: "sine.inOut" }, startAt + duration * 0.25)
-    .to(target, { opacity: 1, duration: duration * 0.45, ease: "sine.inOut" }, startAt + duration * 0.25);
+function staggeredProgress(progress: number, index: number) {
+  const offset = index * BUBBLE_STAGGER;
+  return Math.max(0, Math.min(1, (progress - offset) / (1 - offset)));
+}
+
+function renderDockBubbles(prepared: Array<{ clone: BubbleClone; destination: BubbleDestination }>, progress: number) {
+  document.documentElement.style.setProperty(
+    "--dashboard-route-reveal",
+    String(Math.max(0, Math.min(1, (progress - 0.72) / 0.22))),
+  );
+  prepared.forEach(({ clone, destination }, index) => {
+    const p = staggeredProgress(progress, index);
+    const { start } = clone;
+    const { end } = destination;
+    const sourceScaleX = 1 + (end.width / start.width - 1) * p;
+    const sourceScaleY = 1 + (end.height / start.height - 1) * p;
+    const targetScaleX = start.width / end.width + (1 - start.width / end.width) * p;
+    const targetScaleY = start.height / end.height + (1 - start.height / end.height) * p;
+    const blend = Math.max(0, Math.min(1, (p - 0.34) / 0.36));
+
+    clone.shell.style.transform = `translate3d(${(end.left - start.left) * p}px, ${(end.top - start.top) * p}px, 0)`;
+    clone.shell.style.opacity = String(Math.max(0, Math.min(1, (1 - p) / 0.09)));
+    for (const element of [clone.sourceLayer, clone.sourceSurface]) {
+      element.style.transform = `scale(${sourceScaleX}, ${sourceScaleY})`;
+      element.style.opacity = String(1 - blend);
+    }
+    for (const element of [destination.layer, destination.surface]) {
+      element.style.transform = `scale(${targetScaleX}, ${targetScaleY})`;
+      element.style.opacity = String(blend);
+    }
+  });
+}
+
+function renderReturnBubbles(prepared: Array<{ clone: BubbleClone; destination: ReturnDestination }>, progress: number, compact: boolean) {
+  prepared.forEach(({ clone, destination }, index) => {
+    const p = staggeredProgress(progress, index);
+    const { end, element } = destination;
+    const x = end.left + end.width / 2 - (clone.start.left + clone.start.width / 2);
+    const y = end.top + end.height / 2 - (clone.start.top + clone.start.height / 2);
+    const arc = Math.sin(Math.PI * p) * (compact ? 8 : 14);
+    clone.shell.style.transform = `translate3d(${x * p}px, ${y * p - arc}px, 0) scale(${1 - p * 0.04})`;
+    clone.shell.style.opacity = String(Math.max(0, Math.min(1, (1 - p) / 0.11)));
+    if (p > 0.89) element.setAttribute("data-bubble-landed", "");
+  });
+}
+
+async function springFlight(render: (progress: number) => void, active: (motion: SpringValue<number> | null) => void) {
+  const motion = new SpringValue(0);
+  active(motion);
+  render(0);
+  try {
+    const result = await motion.start({
+      from: 0,
+      to: 1,
+      config: { mass: 0.9, tension: 320, friction: 35, clamp: true, precision: 0.002 },
+      onChange: ({ value }) => render(value),
+    });
+    if (!result.cancelled) render(1);
+  } finally {
+    motion.stop();
+    active(null);
+  }
 }
 
 function cleanupTransition(root: HTMLElement, clones: BubbleClone[]) {
   clones.forEach(({ shell }) => shell.remove());
+  document.querySelectorAll("[data-bubble-landed]").forEach((element) => element.removeAttribute("data-bubble-landed"));
+  root.style.removeProperty("--dashboard-route-reveal");
   root.classList.remove(
     "dashboard-navigation-animating",
     "dashboard-target-preview",
@@ -309,7 +399,7 @@ function cleanupTransition(root: HTMLElement, clones: BubbleClone[]) {
     "dashboard-transition-settled",
     "dashboard-compact-transition",
   );
-  ScrollTrigger.refresh();
+  window.setTimeout(() => ScrollTrigger.refresh(), 250);
 }
 
 export async function runDashboardBubbleTransition({
@@ -333,7 +423,9 @@ export async function runDashboardBubbleTransition({
 
   const root = document.documentElement;
   const clones = Array.from(buttonsFor(direction, "source", compact), ([sectionHref, source]) =>
-    createBubbleClone(sectionHref, source),
+    direction === "undock"
+      ? createReturnIconClone(sectionHref, source)
+      : createBubbleClone(sectionHref, source),
   ).filter((clone): clone is BubbleClone => clone !== null);
   if (clones.length !== 6) {
     router.push(href);
@@ -341,11 +433,11 @@ export async function runDashboardBubbleTransition({
   }
 
   navigationInProgress = true;
-  let timeline: gsap.core.Timeline | undefined;
+  let motion: SpringValue<number> | null = null;
   let cancelled = false;
   const cancel = () => {
     cancelled = true;
-    timeline?.progress(1);
+    motion?.stop();
     cleanupTransition(root, clones);
   };
   window.addEventListener("resize", cancel, { once: true });
@@ -365,18 +457,24 @@ export async function runDashboardBubbleTransition({
       const rect = target.getBoundingClientRect();
       return !rect.width || !rect.height;
     })) return;
-    const prepared = clones.map((clone, index) => ({
-      clone, destination: addDestination(clone, targets.get(clone.href)!), index,
-    }));
-    root.classList.add("dashboard-route-ready");
-    await new Promise<void>((resolve) => {
-      timeline = gsap.timeline({ onComplete: resolve, onInterrupt: resolve });
-      prepared.forEach(({ clone, destination, index }) => animateBubble(timeline!, clone, destination, index));
-      timeline.call(() => root.classList.add("dashboard-transition-settled"))
-        .to(clones.map(({ shell }) => shell), { opacity: 0, duration: 0.1, ease: "none" });
-    });
+    if (direction === "undock") {
+      const prepared = clones.map((clone) => ({
+        clone, destination: returnDestination(targets.get(clone.href)!),
+      }));
+      prepared.sort((a, b) => Math.abs(a.destination.end.top - b.destination.end.top) > 8
+        ? a.destination.end.top - b.destination.end.top
+        : a.destination.end.left - b.destination.end.left);
+      root.classList.add("dashboard-route-ready");
+      await springFlight((progress) => renderReturnBubbles(prepared, progress, compact), (current) => { motion = current; });
+    } else {
+      const prepared = clones.map((clone) => ({
+        clone, destination: addDestination(clone, targets.get(clone.href)!),
+      }));
+      root.classList.add("dashboard-route-ready");
+      await springFlight((progress) => renderDockBubbles(prepared, progress), (current) => { motion = current; });
+      root.classList.add("dashboard-transition-settled");
+    }
   } finally {
-    timeline?.kill();
     window.removeEventListener("resize", cancel);
     window.removeEventListener("popstate", cancel);
     motionPreference.removeEventListener("change", cancel);
