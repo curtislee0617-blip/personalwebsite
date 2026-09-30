@@ -369,6 +369,8 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
         labels.forEach((label) => { remember(label); gsap.set(label, { opacity: 0 }); });
         departureDrift?.kill();
         setPhase("dashboard-assemble");
+        const dashboardCopyRevealStart = 1.15;
+        const dashboardCopyRevealDuration = 1;
         await play((tl) => {
           tl.to(root, { "--navigation-page-opacity": 1, duration: 0.28 }, 0);
           tl.to(destination, { opacity: 1, duration: 0.6 }, 0.15);
@@ -403,8 +405,16 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
             tl.to([targetLayer, targetSurface], { opacity: 1, duration: 0.3 }, 0.3);
           });
           tl.to(labels, { opacity: 1, duration: 0.4 }, 0.55);
-          if (art) tl.to(art, { opacity: 1, y: 0, scale: 1, duration: 0.75, ease: "back.out(0.7)" }, 0.8);
-          if (heading) tl.to(heading, { opacity: 1, y: 0, duration: 1, ease: "power1.out" }, 1.15);
+          if (art) tl.to(art, {
+            opacity: 1, y: 0, scale: 1,
+            duration: dashboardCopyRevealDuration,
+            ease: "power1.out",
+          }, dashboardCopyRevealStart);
+          if (heading) tl.to(heading, {
+            opacity: 1, y: 0,
+            duration: dashboardCopyRevealDuration,
+            ease: "power1.out",
+          }, dashboardCopyRevealStart);
         });
       } else {
         if (destination) {
