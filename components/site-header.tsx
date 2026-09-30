@@ -126,7 +126,7 @@ export function SiteHeader() {
       event.preventDefault();
       if (navigatingRef.current) return;
       navigatingRef.current = true;
-      // Keep the menu mounted while its bubbles collapse into the page centre.
+      // Let the navigation director close the menu before revealing Home.
       openingMenuRef.current?.stop();
       try {
         await runDashboardBubbleTransition({ direction: "undock", href, router });

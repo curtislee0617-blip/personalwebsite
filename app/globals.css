@@ -1364,7 +1364,7 @@ body.has-page-cursor * { cursor: inherit; }
 }
 
 /* Left-light mode (sun on the LA side, before the ~8:15am HKT flip).
-   The scene is drawn as two panels that meet on a hidden seam at 60cqw,
+   The scene is drawn as two panels that meet on a hidden seam at 50cqw,
    inside London's constant zone: the LA–London border rides the near curve,
    and the London–HK border rides --contact-far-curve — the same ellipse
    translated right so its arc is an exact copy of the near border's
@@ -1422,13 +1422,13 @@ body.has-page-cursor * { cursor: inherit; }
   background: linear-gradient(180deg, rgb(2 22 55) 0%, rgb(3 24 58) 46%, rgb(4 22 50) 100%);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::before {
-  inset: 0 40% 0 0;
+  inset: 0 50% 0 0;
   -webkit-mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
   mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::after {
-  inset: 0 0 0 60%;
-  --contact-far-curve: ellipse 69.35194cqw 180cqw at -29.624cqw calc(50% - 12.8549061cqw);
+  inset: 0 0 0 50%;
+  --contact-far-curve: ellipse 69.35194cqw 180cqw at -19.624cqw calc(50% - 12.8549061cqw);
   -webkit-mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
   mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
 }
@@ -1525,7 +1525,8 @@ body.has-page-cursor * { cursor: inherit; }
 }
 /* Adjacent layout boxes share one edge without painting translucent pixels
    twice during the initial lighting fade. The right panel's gradient origin
-   is offset by its 60cqw position to preserve the scene-wide curvature. */
+   is offset by its 50cqw position to preserve the scene-wide curvature.
+   This keeps the seam clear of the curved twilight edge on taller frames. */
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span {
   background: none;
 }
@@ -1536,11 +1537,11 @@ body.has-page-cursor * { cursor: inherit; }
   inset: 0;
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::before {
-  inset: 0 40% 0 0;
+  inset: 0 50% 0 0;
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::after {
-  inset: 0 0 0 60%;
-  --contact-far-curve: ellipse 69.35194cqw 180cqw at -29.624cqw calc(50% - 12.8549061cqw);
+  inset: 0 0 0 50%;
+  --contact-far-curve: ellipse 69.35194cqw 180cqw at -19.624cqw calc(50% - 12.8549061cqw);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue::before {
   background: radial-gradient(var(--contact-transition-curve), rgb(45 54 93 / calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night))) 0% var(--contact-near-end), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) var(--contact-middle-start) 148%);
@@ -6799,7 +6800,7 @@ div.restaurant-results-limit {
   .home-dashboard-heading > div:first-child { display: none; }
   .home-dashboard-pixel-art {
     order: 1;
-    min-height: 14rem;
+    min-height: 0;
     min-width: 0;
     overflow: hidden;
     border: 1px solid rgb(var(--color-ink) / 0.09);
@@ -6875,14 +6876,14 @@ div.restaurant-results-limit {
     background-image: url("/mobile-photo-collage-v5.webp");
   }
 
-  /* Give the live city scene enough height for the person and all three clocks
-     to remain legible in the elongated mobile dashboard. */
+  /* Match the illustrated scene's native frame instead of adding empty sky
+     above and below it on tablet and phone dashboards. */
   .home-dashboard-pixel-artwork.contact-cities-art {
-    min-height: 14rem;
-    aspect-ratio: 1.7 / 1;
+    min-height: 0;
+    aspect-ratio: 1916 / 821;
   }
   .home-dashboard-pixel-artwork.contact-cities-art .contact-cities-picture {
-    min-height: 14rem;
+    min-height: 0;
   }
 
   /* Compact every top-level section on phones so the hierarchy remains clear
@@ -12902,13 +12903,19 @@ html.dashboard-mode .home-dashboard-panel,
 /* Give recipe guides more room than the compact recipe cards, while tightening
    the handoff to the recipe collection below them. */
 .recipe-library-page #recipe-guides .recipe-guide-card { width: 23.1rem !important; }
-.recipe-library-page #recipe-guides .recipe-guide-media { height: 11.7rem !important; }
+.recipe-library-page #recipe-guides .recipe-guide-media {
+  /* Preserve the desktop composition as cards shrink on phones. */
+  height: auto !important;
+  aspect-ratio: 11 / 6 !important;
+}
 .recipe-library-page #recipe-guides .recipe-guide-carousel { padding-bottom: 0.7rem !important; }
 .recipe-library-page #recipe-guides + #recipe-collection { margin-top: 0.7rem !important; }
 
 @media (max-width: 640px) {
+  .recipe-library-page #recipe-guides .recipe-guide-carousel {
+    --carousel-card-width: min(19.5rem, calc(100vw - 2rem));
+  }
   .recipe-library-page #recipe-guides .recipe-guide-card { width: min(19.5rem, calc(100vw - 2rem)) !important; }
-  .recipe-library-page #recipe-guides .recipe-guide-media { height: 9.6rem !important; }
   .recipe-library-page #recipe-guides .recipe-guide-carousel { padding-bottom: 0.45rem !important; }
   .recipe-library-page #recipe-guides + #recipe-collection { margin-top: 0.6rem !important; }
 }
@@ -12944,14 +12951,4 @@ html.dashboard-dock-staging .dashboard-sidebar :is(.dashboard-sidebar-subtitle, 
 }
 .navigation-panel-snapshot { will-change: transform, opacity; overflow: hidden; }
 .navigation-panel-snapshot, .navigation-panel-snapshot * { transition: none !important; animation: none !important; }
-.navigation-liquid-surface {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  fill: rgb(var(--color-surface) / 0.94);
-  stroke: rgb(var(--color-ink) / 0.16);
-  stroke-width: 1;
-}
 .navigation-corner-anchor { visibility: hidden; }
