@@ -1195,7 +1195,7 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-page {
   position: relative;
   display: grid;
-  min-height: calc(100svh - 73px);
+  min-height: 100svh;
   overflow: hidden;
   padding-top: clamp(1.25rem, 4vw, 3.25rem);
   padding-bottom: clamp(1.25rem, 4vw, 3.25rem);
@@ -1305,11 +1305,10 @@ body.has-page-cursor * { cursor: inherit; }
 
 @media (max-width: 639px) {
   .contact-page {
-    min-height: 100svh;
     overflow: clip;
-    padding-top: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
-    align-items: start;
+    padding-top: max(3.75rem, env(safe-area-inset-top)) !important;
+    padding-bottom: max(3.75rem, env(safe-area-inset-bottom)) !important;
+    align-items: center;
     justify-items: center;
   }
   .contact-page .mobile-photo-collage {
@@ -1317,7 +1316,18 @@ body.has-page-cursor * { cursor: inherit; }
     background-size: 25% 50%;
   }
   .contact-composition { border-radius: 1.35rem; box-shadow: 0 16px 44px rgb(var(--color-ink) / 0.1); }
-  .contact-art-frame .contact-cities-art { min-height: 10rem; }
+  /* Give the percentage-height sky a definite frame on phones while keeping
+     the city illustration at its original ratio inside it. The extra space
+     separates the presence badge and clocks from the buildings. */
+  .contact-art-frame .contact-cities-art {
+    height: clamp(13rem, 58vw, 20rem);
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+  .contact-art-frame .contact-city-time-row {
+    --contact-clock-scale: 1.08;
+    bottom: -1rem;
+  }
   .contact-link-grid {
     width: calc(100% - 0.9rem);
     padding: 0.52rem 0 0.62rem;
