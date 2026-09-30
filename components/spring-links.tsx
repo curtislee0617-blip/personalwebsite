@@ -9,6 +9,20 @@ const AnimatedLink = animated(Link);
 
 type SpringLinkProps = ComponentProps<typeof Link> & { lift?: number };
 type SpringAnchorProps = ComponentProps<"a"> & { lift?: number };
+type SpringButtonProps = ComponentProps<"button"> & { lift?: number };
+
+export function SpringButton({ lift = 2, className = "", style, type = "button", ...props }: SpringButtonProps) {
+  const spring = usePressSpring(lift);
+  return (
+    <animated.button
+      {...props}
+      {...spring.handlers}
+      type={type}
+      className={`spring-control ${className}`.trim()}
+      style={{ ...style, ...spring.style }}
+    />
+  );
+}
 
 export function SpringLink({ lift = 2, className = "", style, ...props }: SpringLinkProps) {
   const spring = usePressSpring(lift);

@@ -7789,7 +7789,7 @@ details.modernist-original-layout > summary::-webkit-details-marker {
 .recipe-library-hero > .page-intro { max-width: none; padding: 0 !important; }
 .recipe-library-hero > .page-intro .page-intro-title { font-size: clamp(2.8rem, 4.6vw, 4.25rem); }
 .recipe-library-hero > .page-intro .page-intro-description { width: min(100%, 56rem); margin-top: 0.55rem; }
-.recipe-library-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) clamp(14rem, 26vw, 23rem); align-items: center; gap: 1.5rem; padding-top: 1.5rem; padding-bottom: 1rem; }
+.recipe-library-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) clamp(18rem, 36vw, 32rem); align-items: center; gap: 1.5rem; padding-top: 1.5rem; padding-bottom: 1rem; }
 .recipe-library-page .recipe-search-shell { min-width: 0; justify-content: flex-end; padding: 0 !important; }
 .recipe-library-page .recipe-search-shell .recipe-library-search { width: 100%; }
 .recipe-library-page .recipe-content-section { padding-top: 0.8rem; }
@@ -9358,6 +9358,13 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
 .cocktail-cabinet-result-card .cocktail-cabinet-substitutions { color: rgb(var(--color-clay)); }
 .cocktail-cabinet-result-card .cocktail-cabinet-missing { color: rgb(var(--color-clay)); font-weight: 650; }
 .cocktail-cabinet-empty { margin-top: 0.65rem; color: rgb(var(--color-ink) / 0.46); font-size: 0.68rem; line-height: 1.55; }
+.cocktail-pantry-save-status { margin-top: .65rem; color: rgb(var(--color-moss)); font-size: .72rem; line-height: 1.5; }
+.cocktail-pantry-save-status.is-error { color: rgb(var(--color-clay)); }
+.cocktail-pantry-storage-note, .cocktail-pantry-recovery > p { margin-top: .4rem; color: rgb(var(--color-ink) / .55); font-size: .66rem; line-height: 1.5; }
+.cocktail-pantry-recovery { margin-top: .8rem; padding-top: .7rem; border-top: 1px solid rgb(var(--color-ink) / .1); }
+.cocktail-pantry-recovery > summary { cursor: pointer; font-size: .72rem; font-weight: 650; }
+.cocktail-pantry-recovery > div { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .65rem; }
+.cocktail-pantry-recovery button { padding: .45rem .65rem; font-size: .64rem; }
 
 .cocktail-pantry-usage {
   grid-column: 1 / -1;
@@ -12523,8 +12530,8 @@ html.dashboard-undocking .home-entry-center::after,
 .recipe-browser-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.1rem; }
 .recipe-browser-grid > li { min-width: 0; }
 .recipe-browser-grid > li:has(.recipe-card[open]) { grid-column: 1 / -1; }
-.recipe-library-page .recipe-browser-grid .recipe-card { width: 100%; max-width: none; }
-.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) { height: 100%; border: 1px solid rgb(var(--color-ink) / 0.1) !important; background: rgb(var(--color-surface) / 0.6) !important; overflow: hidden; }
+.recipe-library-page .recipe-browser-grid .recipe-card { width: 100%; max-width: none; border-radius: 0 !important; }
+.recipe-library-page .recipe-browser-grid .recipe-card:not([open]) { height: 100%; border: 1px solid transparent !important; background: transparent !important; box-shadow: none !important; overflow: hidden; }
 .recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-summary { display: block; min-height: 0; height: auto; }
 .recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-thumbnail { width: 100%; height: auto; aspect-ratio: 4 / 3; margin: 0; border: 0; border-radius: 0 !important; }
 .recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-thumbnail > div { height: 100%; }
@@ -12542,19 +12549,23 @@ html.dashboard-undocking .home-entry-center::after,
 .recipe-media-link h3 span { font-size: 0.8rem; color: rgb(var(--color-ink) / 0.5); }
 .recipe-media-link p { margin-top: 0.25rem; font-size: 0.8rem; }
 .recipe-cocktail-section { padding: clamp(1.2rem, 3vw, 2rem); border: 1px solid rgb(var(--color-moss) / .18); border-radius: 1.5rem; background: linear-gradient(120deg, rgb(var(--color-moss) / .08), rgb(var(--color-clay) / .07)); }
-.recipe-cocktail-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(10rem, .48fr); align-items: center; gap: 2rem; }
 .recipe-cocktail-intro h2 { margin-top: .6rem; font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 600; line-height: 1.12; letter-spacing: -.035em; }
 .recipe-cocktail-intro p:not(.eyebrow) { max-width: 40rem; margin-top: .9rem; font-size: .92rem; line-height: 1.75; color: rgb(var(--color-ink) / .68); }
 .recipe-cocktail-intro .back-link-bubble { margin-top: 1.4rem; }
 .recipe-cocktail-intro small { display: block; margin-top: .8rem; font-size: .7rem; color: rgb(var(--color-ink) / .55); }
-.recipe-cocktail-art { width: 100%; max-width: 20rem; justify-self: center; color: rgb(var(--color-moss)); }
-.recipe-cocktail-books { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 2rem; }
+.recipe-book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: .75rem; margin-top: 1rem; }
+.recipe-library-page #recipe-books .recipe-book-card { min-width: 0; padding: .45rem !important; }
+.recipe-library-page #recipe-books .recipe-book-card > div:first-child { max-height: 8rem; }
+.recipe-library-page #recipe-books .recipe-book-card > div:last-child { padding: .6rem .15rem .35rem !important; }
+.recipe-library-page #recipe-books .recipe-book-card h3 { font-size: .9rem; line-height: 1.3; }
+.recipe-library-page #recipe-books .recipe-book-card .eyebrow { font-size: .55rem; letter-spacing: .08em; }
+.recipe-cocktail-books { display: grid; grid-template-columns: repeat(3, minmax(0, 13rem)); gap: .75rem; margin-top: 1.4rem; }
 .recipe-cocktail-book { display: block; min-width: 0; overflow: hidden; border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1rem; background: rgb(var(--color-paper) / .6); }
-.recipe-cocktail-cover { position: relative; display: grid; height: 12rem; place-items: center; margin: 1rem; color: rgb(var(--color-paper)); background: rgb(var(--color-ink) / .9); }
+.recipe-cocktail-cover { position: relative; display: grid; height: 8rem; place-items: center; margin: .65rem; color: rgb(var(--color-paper)); background: rgb(var(--color-ink) / .9); }
 .recipe-cocktail-cover span { font-family: var(--font-serif); font-size: 1.4rem; letter-spacing: .05em; line-height: 1.2; text-align: center; }
-.recipe-cocktail-book > div:last-child { padding: 0 1rem 1.1rem; }
-.recipe-cocktail-book h3 { font-weight: 650; font-size: 1rem; line-height: 1.3; }
-.recipe-cocktail-book p { margin-top: .35rem; font-size: .76rem; color: rgb(var(--color-ink) / .65); }
+.recipe-cocktail-book > div:last-child { padding: 0 .75rem .75rem; }
+.recipe-cocktail-book h3 { font-weight: 650; font-size: .9rem; line-height: 1.3; }
+.recipe-cocktail-book p { margin-top: .3rem; font-size: .7rem; color: rgb(var(--color-ink) / .65); }
 .recipe-cocktail-book small { display: block; margin-top: .5rem; font-size: .66rem; color: rgb(var(--color-ink) / .5); }
 .recipe-library-page :is(.recipe-filter-list button, .recipe-show-more, .recipe-index-nav a):focus-visible { outline: 2px solid rgb(var(--color-moss)); outline-offset: 3px; }
 @media (max-width: 1000px) { .recipe-browser-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -12562,11 +12573,10 @@ html.dashboard-undocking .home-entry-center::after,
   .recipe-library-toolbar { grid-template-columns: minmax(0, 1fr); gap: .65rem; padding-top: .9rem; padding-bottom: .5rem; }
   .recipe-index-nav { gap: .4rem; padding-top: .4rem; padding-bottom: .4rem; }
   .recipe-index-nav a { padding: 0.45rem 0.75rem; font-size: 0.7rem; }
-  .recipe-cocktail-intro { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
-  .recipe-cocktail-art { max-width: 12rem; }
+  .recipe-book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
   .recipe-cocktail-books { grid-template-columns: minmax(0, 1fr); }
-  .recipe-cocktail-book { display: grid; grid-template-columns: 6rem minmax(0, 1fr); align-items: center; }
-  .recipe-cocktail-cover { height: 7.5rem; margin: .6rem; }
+  .recipe-cocktail-book { display: grid; grid-template-columns: 5rem minmax(0, 1fr); align-items: center; }
+  .recipe-cocktail-cover { height: 6rem; margin: .5rem; }
   .recipe-cocktail-cover span { font-size: .85rem; }
   .recipe-cocktail-book > div:last-child { padding: .7rem; }
   .recipe-filter-list { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; padding: 0.25rem 0.2rem; }

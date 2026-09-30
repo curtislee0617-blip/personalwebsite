@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { RecipeCard } from "@/components/recipe-card";
+import { SpringButton } from "@/components/spring-links";
 import { recipeCategories } from "@/data/recipe-categories";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 
@@ -83,13 +84,13 @@ export function RecipeCollection({ recipes, authenticated }: { recipes: RecipeCa
   return (
     <div className="recipe-browser">
       <div aria-label="Filter recipes by category" className="recipe-filter-list" ref={filtersRef} role="group">
-        <button aria-pressed={category === "all"} onClick={() => { setCategory("all"); setVisibleCount(INITIAL_PAGE_SIZE); setTargetId(null); }} type="button">All recipes <span>{recipes.length}</span></button>
+        <SpringButton aria-pressed={category === "all"} onClick={() => { setCategory("all"); setVisibleCount(INITIAL_PAGE_SIZE); setTargetId(null); }}>All recipes <span>{recipes.length}</span></SpringButton>
         {recipeCategories.map((item) => {
           const count = recipes.filter((recipe) => matches(recipe, item.id)).length;
           return (
-            <button aria-pressed={category === item.id} id={`recipe-category-${item.id}`} key={item.id} onClick={() => { setCategory(item.id); setVisibleCount(INITIAL_PAGE_SIZE); setTargetId(null); }} type="button">
+            <SpringButton aria-pressed={category === item.id} id={`recipe-category-${item.id}`} key={item.id} onClick={() => { setCategory(item.id); setVisibleCount(INITIAL_PAGE_SIZE); setTargetId(null); }}>
               {item.title} <span>{count}</span>
-            </button>
+            </SpringButton>
           );
         })}
       </div>
@@ -108,9 +109,9 @@ export function RecipeCollection({ recipes, authenticated }: { recipes: RecipeCa
       </ul>
       {filtered.length === 0 && <p className="recipe-browser-empty">No recipes in this category yet.</p>}
       {visibleCount < filtered.length && (
-        <button className="recipe-show-more" onClick={() => setVisibleCount((count) => count + SHOW_MORE_SIZE)} type="button">
+        <SpringButton className="recipe-show-more" onClick={() => setVisibleCount((count) => count + SHOW_MORE_SIZE)}>
           Show more recipes <span>{filtered.length - visibleCount} remaining</span>
-        </button>
+        </SpringButton>
       )}
     </div>
   );

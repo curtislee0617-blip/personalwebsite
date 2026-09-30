@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useDeferredValue, useMemo, useState, useSyncExternalStore } from "react";
+import { useDeferredValue, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { SpringButton } from "@/components/spring-links";
+import {
+  EMPTY_PANTRY, mergeRecoveredPantries, parsePantryStore, readPantryStorage, writePantryStorage,
+  type PantryProfile, type PantryStore, type PantryStorageState, type PantryUsage,
+} from "@/lib/cocktail-pantry-storage";
 
 export type CocktailMatcherRecipe = {
   id: string;
@@ -11,27 +16,6 @@ export type CocktailMatcherRecipe = {
   section: string;
   href: string;
   ingredients: string[];
-};
-
-type PantryUsage = {
-  id: string;
-  recipeId: string;
-  title: string;
-  bookTitle: string;
-  usedAt: string;
-  ingredients: string[];
-};
-
-type PantryProfile = {
-  id: string;
-  name: string;
-  value: string;
-  usage: PantryUsage[];
-};
-
-type PantryStore = {
-  activeId: string;
-  profiles: PantryProfile[];
 };
 
 type MatchedRecipe = CocktailMatcherRecipe & {
@@ -56,15 +40,11 @@ type BookMatchGroup = {
   recipes: MatchedRecipe[];
 };
 
-const LEGACY_STORAGE_KEY = "curtis-cocktail-cabinet";
-const STORAGE_KEY = "curtis-cocktail-cabinet-profiles-v1";
 const STORAGE_EVENT = "curtis-cocktail-cabinet-change";
-const DEFAULT_PROFILE_ID = "main-bar";
-const DEFAULT_STORE: PantryStore = {
-  activeId: DEFAULT_PROFILE_ID,
-  profiles: [{ id: DEFAULT_PROFILE_ID, name: "Main bar", value: "", usage: [] }],
-};
-const DEFAULT_STORE_JSON = JSON.stringify(DEFAULT_STORE);
+const EMPTY_STORAGE_STATE: PantryStorageState = { store: EMPTY_PANTRY, source: "empty", recovery: [] };
+const DEFAULT_STORE_JSON = JSON.stringify(EMPTY_STORAGE_STATE);
+// Keep edits on screen if the browser refuses a write, so Save can be retried.
+let unsavedStore: PantryStore | null = null;
 const IGNORE = /\b(?:garnish|decorate|optional|ice cubes?|crushed ice|large rock|cold water|filtered water|boiling water|warm water)\b/i;
 const QUANTITY = /^(?:about\s+|approximately\s+|scant\s+)?(?:\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞]|\d+[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[–-]\s*\d+)?\s*/i;
 const UNIT = /^(?:ounces?|oz\.?|measures?|teaspoons?|tablespoons?|barspoons?|dashes?|drops?|cups?|grams?|g|kg|ml|milliliters?|liters?|parts?|bottles?|cans?|pieces?|slices?|wedges?|sprigs?|leaves?|whole|large|small|medium|pinches?|handfuls?)\s+(?:of\s+)?/i;
@@ -255,53 +235,26 @@ function subscribeToCabinet(callback: () => void) {
 }
 
 function readCabinetSnapshot() {
-  const saved = window.localStorage.getItem(STORAGE_KEY);
-  if (saved) return saved;
-  const legacyValue = window.localStorage.getItem(LEGACY_STORAGE_KEY) ?? "";
-  return JSON.stringify({
-    ...DEFAULT_STORE,
-    profiles: [{ ...DEFAULT_STORE.profiles[0], value: legacyValue }],
-  });
-}
-
-function parseCabinetStore(snapshot: string): PantryStore {
+  let state: PantryStorageState;
   try {
-    const parsed = JSON.parse(snapshot) as Partial<PantryStore>;
-    const profiles = Array.isArray(parsed.profiles)
-      ? parsed.profiles.flatMap((profile): PantryProfile[] => {
-        if (!profile || typeof profile !== "object") return [];
-        const candidate = profile as Partial<PantryProfile>;
-        if (typeof candidate.id !== "string" || typeof candidate.name !== "string") return [];
-        return [{
-          id: candidate.id,
-          name: candidate.name.trim() || "Untitled pantry",
-          value: typeof candidate.value === "string" ? candidate.value : "",
-          usage: Array.isArray(candidate.usage)
-            ? candidate.usage.filter((entry): entry is PantryUsage => Boolean(
-              entry
-              && typeof entry.id === "string"
-              && typeof entry.recipeId === "string"
-              && typeof entry.title === "string"
-              && typeof entry.bookTitle === "string"
-              && typeof entry.usedAt === "string"
-              && Array.isArray(entry.ingredients),
-            ))
-            : [],
-        }];
-      })
-      : [];
-    if (profiles.length === 0) return DEFAULT_STORE;
-    const activeId = profiles.some((profile) => profile.id === parsed.activeId) ? parsed.activeId as string : profiles[0].id;
-    return { activeId, profiles };
+    state = readPantryStorage(window.localStorage);
   } catch {
-    return DEFAULT_STORE;
+    state = { ...EMPTY_STORAGE_STATE, source: "unavailable" };
   }
+  return JSON.stringify(unsavedStore ? { ...state, store: unsavedStore } : state);
 }
 
-function saveCabinetStore(store: PantryStore) {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-  window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+function saveCabinetStore(store: PantryStore, checkpoint = false) {
+  let saved = false;
+  try {
+    writePantryStorage(window.localStorage, store, checkpoint);
+    unsavedStore = null;
+    saved = true;
+  } catch {
+    unsavedStore = store;
+  }
   window.dispatchEvent(new Event(STORAGE_EVENT));
+  return saved;
 }
 
 function pantryId() {
@@ -405,8 +358,11 @@ function BookResultGroups({
 
 export function CocktailCabinetMatcher({ recipes }: { recipes: CocktailMatcherRecipe[] }) {
   const [active, setActive] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{ text: string; error: boolean } | null>(null);
+  const importRef = useRef<HTMLInputElement>(null);
   const snapshot = useSyncExternalStore(subscribeToCabinet, readCabinetSnapshot, () => DEFAULT_STORE_JSON);
-  const store = useMemo(() => parseCabinetStore(snapshot), [snapshot]);
+  const storageState = useMemo(() => JSON.parse(snapshot) as PantryStorageState, [snapshot]);
+  const store = storageState.store;
   const activeProfile = store.profiles.find((profile) => profile.id === store.activeId) ?? store.profiles[0];
   const deferredValue = useDeferredValue(activeProfile.value);
   const bookOrder = useMemo(() => Array.from(new Set(recipes.map((recipe) => recipe.bookId))), [recipes]);
@@ -454,11 +410,45 @@ export function CocktailCabinetMatcher({ recipes }: { recipes: CocktailMatcherRe
     return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   }, [activeProfile.usage]);
 
+  function persistStore(update: (latest: PantryStore) => PantryStore, checkpoint = false) {
+    const latest = (JSON.parse(readCabinetSnapshot()) as PantryStorageState).store;
+    const saved = saveCabinetStore(update(latest), checkpoint);
+    setSaveMessage(saved
+      ? { text: checkpoint ? `Pantry list saved in this browser at ${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}. Recovery copy saved too.` : "Changes saved in this browser.", error: false }
+      : { text: "Could not save in this browser. Your edits are still here. Download a backup before leaving, then try Save again.", error: true });
+    return saved;
+  }
+
   function updateActiveProfile(update: (profile: PantryProfile) => PantryProfile) {
-    saveCabinetStore({
-      ...store,
-      profiles: store.profiles.map((profile) => profile.id === activeProfile.id ? update(profile) : profile),
+    persistStore((latest) => {
+      const existing = latest.profiles.find((profile) => profile.id === activeProfile.id);
+      const updated = update(existing ?? activeProfile);
+      return { ...latest, activeId: updated.id, profiles: existing
+        ? latest.profiles.map((profile) => profile.id === updated.id ? updated : profile)
+        : [...latest.profiles, updated] };
     });
+  }
+
+  function downloadBackup() {
+    const latest = (JSON.parse(readCabinetSnapshot()) as PantryStorageState).store;
+    const url = URL.createObjectURL(new Blob([JSON.stringify(latest, null, 2)], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `cocktail-pantries-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async function importBackup(file: File) {
+    try {
+      if (file.size > 1_000_000) throw new Error("This backup is too large. Choose a pantry JSON file smaller than 1 MB.");
+      const recovered = parsePantryStore(await file.text());
+      if (!recovered) throw new Error("This file is not a valid pantry backup. Your current lists have not changed.");
+      persistStore((latest) => mergeRecoveredPantries(latest, recovered), true);
+      setActive(false);
+    } catch (error) {
+      setSaveMessage({ text: error instanceof Error ? error.message : "Could not read the backup file.", error: true });
+    }
   }
 
   function addPantry() {
@@ -469,14 +459,16 @@ export function CocktailCabinetMatcher({ recipes }: { recipes: CocktailMatcherRe
       value: "",
       usage: [],
     };
-    saveCabinetStore({ activeId: id, profiles: [...store.profiles, nextProfile] });
+    persistStore((latest) => ({ activeId: id, profiles: [...latest.profiles, nextProfile] }));
     setActive(false);
   }
 
   function removeActivePantry() {
     if (store.profiles.length <= 1) return;
-    const profiles = store.profiles.filter((profile) => profile.id !== activeProfile.id);
-    saveCabinetStore({ activeId: profiles[0].id, profiles });
+    persistStore((latest) => {
+      const profiles = latest.profiles.filter((profile) => profile.id !== activeProfile.id);
+      return profiles.length ? { activeId: profiles[0].id, profiles } : latest;
+    });
     setActive(false);
   }
 
@@ -523,7 +515,8 @@ export function CocktailCabinetMatcher({ recipes }: { recipes: CocktailMatcherRe
         <select
           id="cocktail-pantry-profile"
           onChange={(event) => {
-            saveCabinetStore({ ...store, activeId: event.currentTarget.value });
+            const id = event.currentTarget.value;
+            persistStore((latest) => ({ ...latest, activeId: id }));
             setActive(false);
           }}
           value={activeProfile.id}
@@ -555,13 +548,41 @@ export function CocktailCabinetMatcher({ recipes }: { recipes: CocktailMatcherRe
           value={activeProfile.value}
         />
         <div>
+          <SpringButton onClick={() => persistStore((latest) => latest, true)}>Save pantry list</SpringButton>
           <button disabled={inventory.length === 0} onClick={() => setActive(true)} type="button">Check {recipes.length} recipes</button>
           <button onClick={() => {
             updateActiveProfile((profile) => ({ ...profile, value: "" }));
             setActive(false);
           }} type="button">Clear ingredients</button>
-          <small>{inventory.length} ingredients · {activeProfile.usage.length} drinks logged · saved on this device</small>
+          <small>{inventory.length} ingredients · {activeProfile.usage.length} drinks logged</small>
         </div>
+        <p className={`cocktail-pantry-save-status${saveMessage?.error || storageState.source === "unavailable" ? " is-error" : ""}`} role="status">
+          {saveMessage?.text ?? (storageState.source === "unavailable"
+            ? "Browser storage is unavailable. Download a backup to keep your list."
+            : storageState.source === "empty" ? "No saved pantry list found in this browser."
+              : storageState.source === "current" ? "Loaded your saved pantry list."
+                : "Recovered an earlier pantry list. Choose Save pantry list to keep it.")}
+        </p>
+        <p className="cocktail-pantry-storage-note">Lists are saved in this browser for this website address. Localhost, the live site, and other browsers keep separate lists.</p>
+        <details className="cocktail-pantry-recovery">
+          <summary>Recover or back up lists</summary>
+          <div>
+            {storageState.recovery.map((item) => (
+              <button key={item.source} onClick={() => {
+                persistStore((latest) => mergeRecoveredPantries(latest, item.store), true);
+                setActive(false);
+              }} type="button">Restore {item.label.toLowerCase()}</button>
+            ))}
+            <button onClick={downloadBackup} type="button">Download backup</button>
+            <button onClick={() => importRef.current?.click()} type="button">Import backup</button>
+            <input accept="application/json,.json" aria-label="Import pantry backup" hidden onChange={(event) => {
+              const file = event.currentTarget.files?.[0];
+              event.currentTarget.value = "";
+              if (file) void importBackup(file);
+            }} ref={importRef} type="file" />
+          </div>
+          <p>{storageState.recovery.length ? "Restoring keeps any different lists you have now." : "No recovery copy was found here. If you saved in another browser or on the live site, download a backup there and import it here."}</p>
+        </details>
       </div>
 
       {(activeProfile.usage.length > 0 || usedIngredients.length > 0) && (
