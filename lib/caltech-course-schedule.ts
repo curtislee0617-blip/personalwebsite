@@ -65,13 +65,31 @@ export function findMeetingConflicts(courses: ScheduledOffering[]) {
   return conflicts;
 }
 
-export function courseMatchesSearch(course: ScheduledOffering, query: string) {
-  const normalized = query.trim().toLocaleLowerCase();
-  if (!normalized) return true;
-  return [course.code, course.title, course.subject, course.instructor, course.location, course.daysTime]
-    .join(" ")
+function normalizeCourseSearch(value: string) {
+  return value
     .toLocaleLowerCase()
-    .includes(normalized);
+    .replace(/\s+/g, "")
+    .replace(/\d+/g, (digits) => digits.replace(/^0+(?=\d)/, ""));
+}
+
+/** Subject prefixes in a cross-listed course code (for example, `APh/EE 009`). */
+export function courseSubjectCodes(code: string) {
+  const prefix = code.match(/^\s*([A-Za-z]+(?:\s*[/-]\s*[A-Za-z]+)*)\s*0*\d/)?.[1];
+  return prefix ? prefix.split(/\s*[/-]\s*/).map((subject) => subject.trim()) : [];
+}
+
+export function courseMatchesSearch(course: ScheduledOffering, query: string, subjectCodes: string[] = []) {
+  const normalized = normalizeCourseSearch(query);
+  if (!normalized) return true;
+
+  // A query that is itself a catalog subject is a subject filter, not a loose
+  // substring search through titles (so `Ch` cannot also match `ChE`).
+  if (subjectCodes.some((subject) => normalizeCourseSearch(subject) === normalized)) {
+    return courseSubjectCodes(course.code).some((subject) => normalizeCourseSearch(subject) === normalized);
+  }
+
+  return [course.code, course.title, course.subject, course.instructor, course.location, course.daysTime]
+    .some((value) => normalizeCourseSearch(value).includes(normalized));
 }
 
 function fall2026Date(day: ScheduleDay, minutes: number) {

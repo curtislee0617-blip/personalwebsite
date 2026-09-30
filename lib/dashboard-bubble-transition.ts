@@ -23,6 +23,7 @@ type BubbleClone = {
 };
 
 export const DASHBOARD_FOLD_EVENT = "dashboard-navigation-folded";
+export const DASHBOARD_LOADING_EVENT = "dashboard-navigation-loading";
 
 const DASHBOARD_MEDIA_QUERY = "(min-width: 1200px) and (hover: hover) and (pointer: fine)";
 
@@ -42,7 +43,7 @@ function nextPaint(frames = 2) {
   });
 }
 
-function waitForRoutePaint(href: string, aborted: () => boolean) {
+function waitForRoutePaint(href: string, aborted: () => boolean, allowLoading = false) {
   const destination = new URL(href, window.location.href);
   const startedAt = performance.now();
 
@@ -53,9 +54,9 @@ function waitForRoutePaint(href: string, aborted: () => boolean) {
         && window.location.search === destination.search;
       const homeMounted = Boolean(document.querySelector(".home-landing"));
       const contentReady = homeMounted === (destination.pathname === "/")
-        && !document.querySelector(".site-app-shell main .section-loading");
+        && (allowLoading || !document.querySelector(".site-app-shell main .section-loading"));
 
-      if ((routeMatches && contentReady) || performance.now() - startedAt > 5000) {
+      if ((routeMatches && contentReady) || (!allowLoading && performance.now() - startedAt > 5000)) {
         void nextPaint(2).then(() => resolve(routeMatches));
         return;
       }
@@ -463,18 +464,11 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
         .filter((clone): clone is BubbleClone => clone !== null);
       overlay.append(...clones.map(({ shell }) => shell));
       sources.forEach((element) => { remember(element).style.visibility = "hidden"; });
-      // Keep travelling during the route handoff instead of parking in midair.
-      departureDrift = gsap.to(clones.map(({ shell }) => shell), {
-        x: -480, y: -30, scale: 0.94, duration: 6, ease: "none",
-      });
-      await play((tl) => {
-        tl.to(root, { "--navigation-page-opacity": 0, duration: 0.24 }, 0);
-      });
-      if (cancelled) return;
-      setPhase("route");
-      router.push(href);
-      if (!await waitForRoutePaint(href, () => cancelled) || cancelled || !sidebar) return;
+      // The sidebar is persistent, so its folded targets can be measured on
+      // the home route. Route latency must never delay the docking animation.
       await nextPaint();
+      if (cancelled) return;
+      if (!sidebar) { router.push(href); return; }
       remember(sidebar);
       // Staging CSS makes the final, folded geometry measurable without flashing.
       gsap.set(sidebar, { x: 0, opacity: 1, visibility: "hidden", transition: "none" });
@@ -485,13 +479,13 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
       ));
       hiddenParts.forEach((element) => { remember(element).style.visibility = "hidden"; });
       const sidebarRect = sidebar.getBoundingClientRect();
-      gsap.set(sidebar, { x: -sidebarRect.right - 24, scaleX: 0.82, visibility: "visible", transformOrigin: "0% 50%" });
-      departureDrift.kill();
-      const accelerate = gsap.parseEase("sine.inOut");
       setPhase("taskbar-emerge");
+      gsap.set(sidebar, { x: -sidebarRect.right - 24, scaleX: 0.82, visibility: "visible", transformOrigin: "0% 50%" });
+      const accelerate = gsap.parseEase("sine.inOut");
       await play((tl) => {
+        tl.to(root, { "--navigation-page-opacity": 0, duration: 0.24 }, 0);
+        tl.call(() => router.push(href), [], 0.24);
         tl.to(sidebar, { x: 0, scaleX: 1, duration: 0.58, ease: "back.out(0.7)" }, 0);
-        tl.to(root, { "--navigation-page-opacity": 1, duration: 0.3 }, 1.05);
         clones.forEach(({ href: key, shell, sourceLayer, sourceSurface, start }, index) => {
           const target = targets.get(key);
           const end = targetRects.get(key);
@@ -538,9 +532,28 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
           tl.fromTo(element, { y: profile ? -75 : 0, opacity: 0 }, { visibility: "visible", y: 0, opacity: 1, duration: profile ? 0.6 : 0.25, ease: profile ? "bounce.out" : "power1.out" }, profile ? 1.2 : 1.12);
         });
       });
+      if (cancelled) return;
+      // If the route has not committed yet, fill the empty content area with
+      // its loader. Once mounted, Next's page fallback can take over directly.
+      const destination = new URL(href, window.location.href);
+      if (window.location.pathname !== destination.pathname
+        || window.location.search !== destination.search
+        || document.querySelector(".home-landing")) {
+        setPhase("dock-loading");
+        window.dispatchEvent(new CustomEvent(DASHBOARD_LOADING_EVENT, { detail: href }));
+        if (!await waitForRoutePaint(href, () => cancelled, true) || cancelled) return;
+      }
+      setPhase("page-reveal");
+      window.dispatchEvent(new CustomEvent(DASHBOARD_LOADING_EVENT, { detail: null }));
+      await play((tl) => {
+        tl.to(root, { "--navigation-page-opacity": 1, duration: 0.28, ease: "power1.out" }, 0);
+      });
     }
     if (!cancelled) ScrollTrigger.refresh();
   } finally {
+    if (direction === "dock" && !compact) {
+      window.dispatchEvent(new CustomEvent(DASHBOARD_LOADING_EVENT, { detail: null }));
+    }
     departureDrift?.kill();
     animation.timeline?.kill();
     overlay.remove();

@@ -17,6 +17,7 @@ export type NightPlan = {
   moonset: Date | null;
   moonPhase: string;
   moonIllumination: number;
+  sunBelowHorizonWindows: DarkWindow[];
   astronomicalMinutes: number;
   astronomicalWindows: DarkWindow[];
   windows: DarkWindow[];
@@ -123,9 +124,11 @@ export function getNightPlan(date: string, timeZone: string, location: Coordinat
   };
   const lunar = crossings(start, end, location, "moon", 0);
   const boundaries = [start.getTime(), end.getTime(),
+    ...solar.horizon.map((event) => event.at.getTime()),
     ...solar.astronomical.map((event) => event.at.getTime()),
     ...lunar.map((event) => event.at.getTime())].sort((a, b) => a - b);
   const windows: DarkWindow[] = [];
+  const sunBelowHorizonWindows: DarkWindow[] = [];
   const astronomicalWindows: DarkWindow[] = [];
   let astronomicalMinutes = 0;
 
@@ -134,7 +137,17 @@ export function getNightPlan(date: string, timeZone: string, location: Coordinat
     const to = boundaries[index + 1];
     if (to <= from) continue;
     const middle = new Date((from + to) / 2);
-    if (altitude(middle, location, "sun") >= -18) continue;
+    const sunAltitude = altitude(middle, location, "sun");
+    if (sunAltitude < -0.833) {
+      const previous = sunBelowHorizonWindows[sunBelowHorizonWindows.length - 1];
+      if (previous && Math.abs(previous.end.getTime() - from) < 1000) {
+        previous.end = new Date(to);
+        previous.minutes = (to - previous.start.getTime()) / minute;
+      } else {
+        sunBelowHorizonWindows.push({ start: new Date(from), end: new Date(to), minutes: (to - from) / minute });
+      }
+    }
+    if (sunAltitude >= -18) continue;
     astronomicalMinutes += (to - from) / minute;
     const lastAstronomical = astronomicalWindows[astronomicalWindows.length - 1];
     if (lastAstronomical && Math.abs(lastAstronomical.end.getTime() - from) < 1000) {
@@ -167,6 +180,7 @@ export function getNightPlan(date: string, timeZone: string, location: Coordinat
     moonset: first(lunar, "setting"),
     moonPhase: phaseName(illumination.phase),
     moonIllumination: illumination.fraction,
+    sunBelowHorizonWindows,
     astronomicalMinutes,
     astronomicalWindows,
     windows,

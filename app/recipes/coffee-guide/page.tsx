@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import "./coffee-guide.css";
 import { CoffeeGuide } from "@/components/coffee-guide";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { SectionRail } from "@/components/section-rail";
+import { isRecipeAdminSessionAuthenticated } from "@/lib/recipe-admin-auth";
 
-export const metadata: Metadata = { title: "The science of coffee" };
+export const metadata: Metadata = { title: "The science of coffee", robots: { index: false, follow: false } };
+export const dynamic = "force-dynamic";
 
 const sections = [
   { id: "coffee-what", label: "What coffee is" },
@@ -15,7 +18,9 @@ const sections = [
   { id: "coffee-brewing", label: "How it is brewed" },
 ] as const;
 
-export default function CoffeeGuidePage() {
+export default async function CoffeeGuidePage() {
+  if (!(await isRecipeAdminSessionAuthenticated())) notFound();
+
   return (
     <div className="guide-page coffee-guide-page">
       <PageIntro

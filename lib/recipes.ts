@@ -18,6 +18,19 @@ export type RecipeEntry = {
   date?: string;
 };
 
+export const privateRecipeGuideSlugs = new Set([
+  "coffee-guide",
+  "wine-guide",
+  "sushi-guide",
+]);
+
+export function isPrivateRecipeGuideHref(href: string) {
+  const pathname = href.split(/[?#]/, 1)[0];
+  return [...privateRecipeGuideSlugs].some((slug) => (
+    pathname === `/recipes/${slug}` || pathname.startsWith(`/recipes/${slug}/`)
+  ));
+}
+
 export const recipeEntries: RecipeEntry[] = [
   {
     slug: "sourdough-guide",

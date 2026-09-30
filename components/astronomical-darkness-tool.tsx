@@ -48,13 +48,6 @@ function eventLabel(name: string, instant: Date | null, plan: NightPlan, timeZon
     : name;
 }
 
-function bestWindow(plan: NightPlan) {
-  return plan.windows.reduce<DarkWindow | null>(
-    (best, window) => !best || window.minutes > best.minutes ? window : best,
-    null,
-  );
-}
-
 function forecastCloudCover(forecast: Forecast | null, window: DarkWindow | null) {
   const times = forecast?.hourly?.time;
   const values = forecast?.hourly?.cloud_cover;
@@ -72,31 +65,34 @@ function forecastCloudCover(forecast: Forecast | null, window: DarkWindow | null
   return typeof nearest === "number" && Number.isFinite(nearest) && Math.abs(times[closest] * 1000 - middle) <= 90 * 60_000 ? Math.round(nearest) : null;
 }
 
-function nightVerdict(plan: NightPlan, window: DarkWindow | null, cloud: number | null) {
-  if (!plan.astronomicalMinutes) return { title: "No astronomical night", detail: "The Sun does not reach 18° below the horizon on this date.", tone: "limited" };
-  if (!window) return { title: "Moonlit all night", detail: "There is no interval with both the Sun and Moon below the horizon.", tone: "limited" };
-  if (cloud !== null && cloud >= 70) return { title: "Clouds likely", detail: "A moonless window exists, but forecast cloud cover may block the sky.", tone: "limited" };
-  if (window.minutes < 45) return { title: "Short dark window", detail: "Plan a tight shoot around the window shown below.", tone: "mixed" };
-  if (cloud !== null && cloud <= 35) return { title: "Promising timing", detail: "Sun, Moon, and forecast cloud cover line up. Check local skyglow before traveling.", tone: "good" };
-  return { title: "Moonless window available", detail: "The timing works; check clouds and local skyglow before heading out.", tone: "mixed" };
-}
-
-function Timeline({ plan, timeZone }: { plan: NightPlan; timeZone: string }) {
+function Timeline({ plan, timeZone, location }: { plan: NightPlan; timeZone: string; location: Coordinates }) {
   const start = plan.intervalStart.getTime();
   const span = plan.intervalEnd.getTime() - start;
   const barStyle = (window: DarkWindow) => ({
     left: `${100 * (window.start.getTime() - start) / span}%`,
     width: `${100 * (window.end.getTime() - window.start.getTime()) / span}%`,
   });
+  const middleSky = getCurrentSky(new Date(start + span / 2), location);
+  const sunUnavailable = plan.sunset || plan.sunrise ? "Outside this 24-hour period" : middleSky.sunAltitude >= -0.833 ? "Sun stays above the horizon" : "Sun stays below the horizon";
+  const moonUnavailable = plan.moonset || plan.moonrise ? "Outside this 24-hour period" : middleSky.moonAltitude >= 0 ? "Moon stays above the horizon" : "Moon stays below the horizon";
+  const events = [
+    { label: "Sunset", at: plan.sunset, body: "sun", unavailable: sunUnavailable },
+    { label: "Sunrise", at: plan.sunrise, body: "sun", unavailable: sunUnavailable },
+    { label: "Moonset", at: plan.moonset, body: "moon", unavailable: moonUnavailable },
+    { label: "Moonrise", at: plan.moonrise, body: "moon", unavailable: moonUnavailable },
+  ] as const;
 
   return (
-    <div className="astro-timeline" aria-label="Timeline from local noon to the following noon">
-      <div className="astro-timeline-key"><span><i className="is-astronomical" />Astronomical night</span><span><i className="is-moonless" />Moonless darkness</span></div>
-      <div className="astro-timeline-track">
+    <div className="astro-timeline" aria-label="Sky conditions from local noon to the following noon">
+      <div className="astro-timeline-key"><span><i className="is-daylight" />Daylight</span><span><i className="is-twilight" />After sunset</span><span><i className="is-astronomical" />Astronomical night</span><span><i className="is-moonless" />Sun and Moon below</span></div>
+      <div className="astro-timeline-track" role="img" aria-label={`Sky conditions at this location; ${plan.windows.length ? `${plan.windows.length} moonless astronomical-darkness interval${plan.windows.length === 1 ? "" : "s"}` : "no moonless astronomical darkness"} in this 24-hour period`}>
+        {plan.sunBelowHorizonWindows.map((window) => <span className="astro-timeline-after-sunset" key={window.start.toISOString()} style={barStyle(window)} />)}
         {plan.astronomicalWindows.map((window) => <span className="astro-timeline-astronomical" key={window.start.toISOString()} style={barStyle(window)} />)}
         {plan.windows.map((window) => <span className="astro-timeline-moonless" key={window.start.toISOString()} style={barStyle(window)} />)}
+        {events.filter((event) => event.at).map((event) => <span className={`astro-timeline-event is-${event.body}`} key={event.label} style={{ left: `${100 * (event.at!.getTime() - start) / span}%` }} title={`${eventLabel(event.label, event.at, plan, timeZone)} · ${timeLabel(event.at, timeZone)}`} />)}
       </div>
       <div className="astro-timeline-labels"><span>Noon · {dateLabel(plan.intervalStart, timeZone)}</span><span>Midnight</span><span>Noon · {dateLabel(plan.intervalEnd, timeZone)}</span></div>
+      <div className="astro-night-events">{events.map((event) => <div key={event.label}><span>{eventLabel(event.label, event.at, plan, timeZone)}</span><strong>{timeLabel(event.at, timeZone)}</strong>{!event.at && <small>{event.unavailable}</small>}</div>)}</div>
     </div>
   );
 }
@@ -114,7 +110,6 @@ export function AstronomicalDarknessTool() {
   const [date, setDate] = useState("");
   const [now, setNow] = useState<Date | null>(null);
   const [forecast, setForecast] = useState<Forecast | null>(null);
-  const [weatherMessage, setWeatherMessage] = useState("Loading cloud forecast…");
   const [locationMessage, setLocationMessage] = useState("");
   const [locationPrompt, setLocationPrompt] = useState(true);
   const [locating, setLocating] = useState(false);
@@ -166,7 +161,6 @@ export function AstronomicalDarknessTool() {
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setForecast(null);
-      setWeatherMessage("Loading cloud forecast…");
       try {
         const response = await fetch(globeForecastUrl(location.latitude, location.longitude), { signal: controller.signal });
         if (!response.ok) throw new Error("Forecast unavailable");
@@ -178,9 +172,8 @@ export function AstronomicalDarknessTool() {
           setZoneIsFallback(false);
         }
         setForecast(result);
-        setWeatherMessage("");
       } catch {
-        if (!controller.signal.aborted) setWeatherMessage("Cloud forecast unavailable; astronomical times still work.");
+        if (!controller.signal.aborted) setForecast(null);
       }
     }, 250);
     return () => {
@@ -189,7 +182,7 @@ export function AstronomicalDarknessTool() {
     };
   }, [location.latitude, location.longitude]);
 
-  const selectLocation = useCallback((next: Coordinates, label: string) => {
+  const selectLocation = useCallback((next: Coordinates, label: string, knownTimeZone?: string) => {
     locationTouchedRef.current = true;
     setLocation(next);
     setPlaceName(label);
@@ -197,8 +190,8 @@ export function AstronomicalDarknessTool() {
     setLongitudeInput(next.longitude.toFixed(5));
     setLocationMessage("");
     setLocationPrompt(false);
-    setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
-    setZoneIsFallback(true);
+    setTimeZone(knownTimeZone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
+    setZoneIsFallback(!knownTimeZone);
   }, []);
 
   function useMyLocation() {
@@ -227,14 +220,11 @@ export function AstronomicalDarknessTool() {
   }
 
   const plan = useMemo(() => date ? getNightPlan(date, timeZone, location) : null, [date, timeZone, location]);
-  const primeWindow = plan ? bestWindow(plan) : null;
-  const cloudCover = forecastCloudCover(forecast, primeWindow);
-  const verdict = plan ? nightVerdict(plan, primeWindow, cloudCover) : null;
   const sky = now ? getCurrentSky(now, location) : null;
   const currentPlan = useMemo(() => now ? getNightPlan(dateInZone(now, timeZone), timeZone, location) : null, [now, timeZone, location]);
   const currentCloud = now ? forecastCloudCover(forecast, { start: new Date(now.getTime() - 1800000), end: new Date(now.getTime() + 1800000), minutes: 60 }) : null;
   const currentCondition = !sky ? "Checking the sky…" : sky.sunAltitude >= 0 ? "Daylight" : sky.sunAltitude >= -6 ? "Civil twilight" : sky.sunAltitude >= -12 ? "Nautical twilight" : sky.sunAltitude >= -18 ? "Astronomical twilight" : sky.moonAltitude >= 0 ? "Moonlit night" : "Moonless darkness";
-  const moonlessMinutes = plan?.windows.reduce((sum, window) => sum + window.minutes, 0) ?? 0;
+  const selectedPreset = Object.entries(skyLocations).find(([, preset]) => preset.name === placeName)?.[0] ?? "custom";
   const pollutionMapUrl = `https://www.lightpollutionmap.info/#zoom=8.00&lat=${location.latitude.toFixed(4)}&lon=${location.longitude.toFixed(4)}&layers=B0FFFFFFFTFFFFFFFFFFF`;
 
   return (
@@ -254,7 +244,13 @@ export function AstronomicalDarknessTool() {
         <div className="astro-control-heading"><div><span className="astro-section-number">02 / Set the scene</span><h2>Where and when?</h2></div><button className="astro-location-button" disabled={locating} onClick={useMyLocation} type="button">{locating ? "Locating…" : "⌖ Use my location"}</button></div>
         {locationPrompt && <div className="astro-location-prompt"><div><strong>Find the darkness where you are.</strong><p>Use your location to see local skyglow, your dark window, and your spot on Earth. Your browser will ask permission. Coordinates are used for weather and map lookups.</p></div><div><button disabled={locating} type="button" onClick={useMyLocation}>{locating ? "Locating…" : "Enable location"}</button><a href="#astro-scout" onClick={() => setLocationPrompt(false)}>Choose on map</a><button type="button" className="astro-location-skip" onClick={() => setLocationPrompt(false)}>Keep {placeName}</button></div></div>}
         <div className="astro-controls-grid">
-          <div className="astro-selected-place"><span>Selected spot</span><strong>{placeName}</strong><small>{coordinateLabel(location)}</small></div>
+          <label className="astro-selected-place astro-location-select"><span>Observing location</span><select aria-label="Observing location" onChange={(event) => {
+            const preset = skyLocations[event.target.value as keyof typeof skyLocations];
+            if (preset) selectLocation(preset, preset.name, preset.timeZone);
+          }} value={selectedPreset}>
+            {Object.entries(skyLocations).map(([id, preset]) => <option key={id} value={id}>{preset.name}</option>)}
+            <option disabled value="custom">Custom / map selection</option>
+          </select><small>{coordinateLabel(location)} · <a href="#astro-scout">Choose anywhere on the map</a></small></label>
           <label className="astro-date-field">Night of<input aria-label="Night of" onChange={(event) => { dateTouchedRef.current = true; setDate(event.target.value); }} type="date" value={date} /></label>
           <div className="astro-selected-place"><span>Local time</span><strong>{now ? new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(now) : "—"}</strong><small>{timeZone.replace(/_/g, " ")}{zoneIsFallback ? " · device time zone until location lookup succeeds" : ""}</small></div>
         </div>
@@ -264,23 +260,28 @@ export function AstronomicalDarknessTool() {
       <LightPollutionReadout reading={pollution} placeName={placeName} />
 
 
-      {plan && verdict && <>
-        <section className="astro-result" aria-label="Tonight's darkness assessment">
-          <div className="astro-result-main"><span className="astro-section-number">03 / Best window</span><p className="astro-result-status" data-tone={verdict.tone}>{verdict.title}</p><h2>{primeWindow ? <>{timeLabel(primeWindow.start, timeZone)} <span>→</span> {timeLabel(primeWindow.end, timeZone)}</> : "No moonless window"}</h2><p>{verdict.detail}</p><div className="astro-result-meta"><span>{primeWindow ? dateLabel(primeWindow.start, timeZone) : dateLabel(plan.intervalStart, timeZone)}</span><span>{primeWindow ? `${durationLabel(primeWindow.minutes)} longest stretch` : `${durationLabel(plan.astronomicalMinutes)} astronomical night`}</span></div></div>
-          <div className="astro-result-stats"><div><span>Moonless darkness</span><strong>{durationLabel(moonlessMinutes)}</strong><small>Across tonight</small></div><div><span>Moon illumination</span><strong>{Math.round(plan.moonIllumination * 100)}%</strong><small>{plan.moonPhase}</small></div><div><span>Cloud forecast</span><strong>{cloudCover === null ? "—" : `${cloudCover}%`}</strong><small>{cloudCover === null ? weatherMessage || "Outside forecast range" : "Average near best window"}</small></div></div>
+      {plan && <>
+        <section className="astro-night-chart" aria-label={`Sun, Moon, and darkness at ${placeName}`}>
+          <span className="astro-section-number">03 / {placeName} · local night</span>
+          <h2>Where the darkness falls</h2>
+          <p className="astro-night-intro">The night of {dateLabel(plan.intervalStart, timeZone)}: sunset, sunrise, and the Moon’s movements in {timeZone.replace(/_/g, " ")}.</p>
+          <Timeline plan={plan} timeZone={timeZone} location={location} />
+          <div className="astro-night-darkness">
+            <div><span>Absolute darkness</span><strong>{plan.windows.length ? "Sun and Moon below the horizon" : "None in this 24-hour period"}</strong></div>
+            {plan.windows.length ? <div className="astro-night-windows">{plan.windows.map((window) => <span key={window.start.toISOString()}>{timeLabel(window.start, timeZone)}–{timeLabel(window.end, timeZone)} <small>· {durationLabel(window.minutes)}</small></span>)}</div> : <p>{plan.astronomicalMinutes === 0 ? "The Sun never reaches 18° below the horizon here on this date." : "The Moon is above the horizon throughout astronomical night here on this date."}</p>}
+          </div>
+          <p className="astro-night-caveat">Black segments have no direct sunlight, twilight, or moonlight (Sun below −18°, Moon below the horizon). Light pollution, airglow, and clouds can still brighten the actual sky.</p>
         </section>
 
-        <section className="astro-timing" aria-label="Night timeline and sky events">
-          <div className="astro-section-heading"><span className="astro-section-number">04 / Timing</span><h2>From sunset to dawn</h2><p>Times are shown in {timeZone.replace(/_/g, " ")}.</p></div>
-          <Timeline plan={plan} timeZone={timeZone} />
-          <div className="astro-events"><div><span>Sunset</span><strong>{timeLabel(plan.sunset, timeZone)}</strong></div><div><span>Civil twilight ends</span><strong>{timeLabel(plan.civilDusk, timeZone)}</strong></div><div><span>Nautical twilight ends</span><strong>{timeLabel(plan.nauticalDusk, timeZone)}</strong></div><div><span>Astronomical dusk</span><strong>{timeLabel(plan.astronomicalDusk, timeZone)}</strong></div><div><span>Astronomical dawn</span><strong>{timeLabel(plan.astronomicalDawn, timeZone)}</strong></div><div><span>Sunrise</span><strong>{timeLabel(plan.sunrise, timeZone)}</strong></div><div><span>{eventLabel("Moonrise", plan.moonrise, plan, timeZone)}</span><strong>{timeLabel(plan.moonrise, timeZone)}</strong></div><div><span>{eventLabel("Moonset", plan.moonset, plan, timeZone)}</span><strong>{timeLabel(plan.moonset, timeZone)}</strong></div></div>
-          <p className="astro-timing-note">{sky ? `Right now: Sun ${sky.sunAltitude.toFixed(1)}°, Moon ${sky.moonAltitude.toFixed(1)}° above the horizon.` : ""} Rise and set times assume a clear, flat horizon. Mountains, buildings and weather can change what you see.</p>
-          {plan.windows.length > 1 && <div className="astro-extra-windows"><strong>All moonless stretches</strong>{plan.windows.map((window) => <span key={window.start.toISOString()}>{timeLabel(window.start, timeZone)}–{timeLabel(window.end, timeZone)} · {durationLabel(window.minutes)}</span>)}</div>}
+        <section className="astro-timing" aria-label="Twilight details">
+          <div className="astro-section-heading"><span className="astro-section-number">04 / Twilight</span><h2>When daylight fades</h2><p>Times are shown in {timeZone.replace(/_/g, " ")}.</p></div>
+          <div className="astro-events"><div><span>Civil twilight ends</span><strong>{timeLabel(plan.civilDusk, timeZone)}</strong></div><div><span>Nautical twilight ends</span><strong>{timeLabel(plan.nauticalDusk, timeZone)}</strong></div><div><span>Astronomical dusk</span><strong>{timeLabel(plan.astronomicalDusk, timeZone)}</strong></div><div><span>Astronomical dawn</span><strong>{timeLabel(plan.astronomicalDawn, timeZone)}</strong></div></div>
+          <p className="astro-timing-note">{sky ? `Right now: Sun ${sky.sunAltitude.toFixed(1)}°, Moon ${sky.moonAltitude.toFixed(1)}° above the horizon.` : ""} Rise and set times assume a clear, flat horizon. Mountains and buildings can shift what you see.</p>
         </section>
       </>}
 
       <section className="astro-map-section" aria-label="Light pollution map" id="astro-scout">
-        <div className="astro-section-heading"><span className="astro-section-number">05 / Scout the site</span><h2>Find a darker place</h2><p>Tap the map to move your pin and update the local skyglow reading and Earth view. Cooler colors mark darker skies; yellow, red, and white mark more artificial skyglow.</p></div>
+        <div className="astro-section-heading"><span className="astro-section-number">05 / Scout the site</span><h2>Find a darker place</h2><p>Tap the map to move your pin, or pinch the trackpad to zoom. Normal two-finger scrolling still moves the page. Cooler colors mark darker skies; yellow, red, and white mark more artificial skyglow.</p></div>
         <div className="astro-map-toolbar"><label><input checked={showLights} onChange={(event) => setShowLights(event.target.checked)} type="checkbox" /> Show light pollution</label><span>David Lorenz · 2025 skyglow model</span></div>
         <div className="astro-map-frame" ref={mapHostRef}>{mapReady ? <DarknessMap location={location} onSelect={(next) => selectLocation(next, "Map selection")} showLights={showLights} /> : <div className="astro-map astro-map-loading">Map loads as you scroll here…</div>}</div>
         <div className="astro-pollution-legend"><span>Darker sky</span><i /><span>Brighter sky</span></div><div className="astro-map-below"><form className="astro-coordinate-form" onSubmit={applyCoordinates}><label>Latitude<input inputMode="decimal" onChange={(event) => setLatitudeInput(event.target.value)} type="number" min="-90" max="90" step="any" value={latitudeInput} /></label><label>Longitude<input inputMode="decimal" onChange={(event) => setLongitudeInput(event.target.value)} type="number" min="-180" max="180" step="any" value={longitudeInput} /></label><button type="submit">Go to coordinates</button></form><div className="astro-site-check"><strong>Light pollution at this pin</strong>{pollution.status === "ok" ? <p className="astro-map-reading"><strong>{pollution.magnitude.toFixed(2)} mag/arcsec²</strong> · {pollutionAssessment(pollution.ratio).label}</p> : <p role="status">{pollution.status === "loading" ? "Checking skyglow…" : pollution.status === "outside-coverage" ? "Outside atlas coverage (65°S–75°N)." : "Atlas reading unavailable."}</p>}<p>The local reading estimates clear, moonless sky brightness directly overhead. Nearby light domes and weather can still affect the horizon. Compare this location with Light Pollution Map before traveling.</p><a href={pollutionMapUrl} rel="noopener noreferrer" target="_blank">Inspect this spot on Light Pollution Map ↗</a></div></div>

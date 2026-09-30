@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import "./sushi-guide.css";
 import { HistoryBackButton } from "@/components/history-back-button";
@@ -12,12 +13,15 @@ import {
   sushiFoundationIngredients,
   sushiReferenceSources,
 } from "@/data/sushi-guide-data";
+import { isRecipeAdminSessionAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const metadata: Metadata = {
   title: "The sushi counter, decoded",
   description:
     "A visual guide to sushi fish and ingredients with Japanese names, pronunciation, whole-animal photographs, seasonality, preparation and food science.",
+  robots: { index: false, follow: false },
 };
+export const dynamic = "force-dynamic";
 
 const sections = [
   { id: "sushi-start", label: "Start here" },
@@ -209,7 +213,9 @@ function TunaCutMap() {
   );
 }
 
-export default function SushiGuidePage() {
+export default async function SushiGuidePage() {
+  if (!(await isRecipeAdminSessionAuthenticated())) notFound();
+
   return (
     <div className="guide-page sushi-guide-page">
       <PageIntro

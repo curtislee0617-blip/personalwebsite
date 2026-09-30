@@ -9,7 +9,7 @@ import { modernistEntryHref } from "@/lib/modernist-navigation";
 import { modernistPizzaEntries, modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { operaBasics, operaRecipes } from "@/lib/opera";
 import { pollenStreetBasics, pollenStreetCategories, pollenStreetDishes } from "@/lib/pollen-street";
-import { recipeEntries } from "@/lib/recipes";
+import { privateRecipeGuideSlugs, recipeEntries } from "@/lib/recipes";
 
 export type RecipeSearchItem = {
   title: string;
@@ -108,7 +108,7 @@ export const recipeSearchItems: RecipeSearchItem[] = [
     searchText: `${recipe.title} ${recipe.category} ${recipe.bookTitle}`,
   })),
   ...recipeEntries
-    .filter((entry) => entry.kind === "guide")
+    .filter((entry) => entry.kind === "guide" && !privateRecipeGuideSlugs.has(entry.slug))
     .map((entry): RecipeSearchItem => ({
       title: entry.title,
       context: "Recipe guide",

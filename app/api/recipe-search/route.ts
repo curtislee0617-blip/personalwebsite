@@ -3,16 +3,19 @@ import { getPersonalRecipeCards } from "@/lib/personal-recipes";
 import { recipeSearchItems } from "@/lib/recipe-search";
 import { isPrivateCookbookHref } from "@/lib/cookbook-access";
 import { hasPrivateRecipeLibraryAccess } from "@/lib/cookbook-auth";
+import { isRecipeAdminSessionAuthenticated } from "@/lib/recipe-admin-auth";
+import { isPrivateRecipeGuideHref } from "@/lib/recipes";
 import { getCocktailLibrarySearchItems } from "@/lib/cocktail-books";
 import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const [personalRecipes, privateLibraryAccess, wishlistRecipes] = await Promise.all([
+  const [personalRecipes, privateLibraryAccess, wishlistRecipes, recipeAdminAccess] = await Promise.all([
     getPersonalRecipeCards(),
     hasPrivateRecipeLibraryAccess(),
     getRecipeWishlistEntries(),
+    isRecipeAdminSessionAuthenticated(),
   ]);
   const personalItems = personalRecipes.map((entry) => ({
     title: entry.title,
@@ -31,6 +34,9 @@ export async function GET() {
   const visibleLibraryItems = privateLibraryAccess
     ? [...recipeSearchItems, ...getCocktailLibrarySearchItems()]
     : recipeSearchItems.filter((item) => !isPrivateCookbookHref(item.href));
+  const visibleGuideItems = recipeAdminAccess
+    ? visibleLibraryItems
+    : visibleLibraryItems.filter((item) => !isPrivateRecipeGuideHref(item.href));
   const wishlistItems = wishlistRecipes.map((entry) => ({
     title: entry.title,
     context: entry.bookTitle ? `Public wishlist recipe · ${entry.bookTitle}` : "Recipe wishlist",
@@ -39,7 +45,7 @@ export async function GET() {
     searchText: [entry.note, entry.bookTitle].filter(Boolean).join(" "),
   }));
 
-  return NextResponse.json([...visibleLibraryItems, ...personalItems, ...wishlistItems], {
+  return NextResponse.json([...visibleGuideItems, ...personalItems, ...wishlistItems], {
     headers: { "Cache-Control": "no-store" },
   });
 }

@@ -50,6 +50,8 @@
 .astro-selected-place > span, .astro-date-field { color: rgb(var(--color-ink) / 0.54); font-size: 0.69rem; font-weight: 700; letter-spacing: 0.03em; }
 .astro-selected-place strong { font-size: 1rem; font-weight: 650; }
 .astro-selected-place small { color: rgb(var(--color-ink) / 0.52); font-size: 0.65rem; line-height: 1.4; }
+.astro-location-select select { width: 100%; padding: 0.15rem 1.5rem 0.15rem 0; border: 0; outline-offset: 3px; background: transparent; color: rgb(var(--color-ink)); font-size: 1rem; font-weight: 650; cursor: pointer; }
+.astro-location-select a { color: rgb(var(--color-moss)); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .astro-date-field input { width: 100%; border: 0; outline: 0; background: transparent; color: rgb(var(--color-ink)); font-size: 0.95rem; font-weight: 650; color-scheme: light dark; }
 .astro-inline-message { margin-top: 0.75rem; color: rgb(var(--color-ink) / 0.7); font-size: 0.8rem; }
 
@@ -79,6 +81,39 @@
 .astro-timeline-astronomical { background: #273c56; }
 .astro-timeline-moonless { z-index: 1; background: linear-gradient(90deg, #76b8b5, #b9e4cf); box-shadow: 0 0 11px rgb(169 238 209 / 0.55); }
 .astro-timeline-labels { display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 0.55rem; color: rgb(var(--color-ink) / 0.5); font-size: 0.61rem; }
+.astro-night-chart { margin-top: 1.25rem; padding: clamp(1.25rem, 2.7vw, 2rem); border: 1px solid #31445a; border-radius: 1.45rem; background: linear-gradient(145deg, #0b1828, #10243a); box-shadow: 0 14px 36px rgb(8 20 38 / 0.12); color: #f7f8f5; }
+.astro-night-chart .astro-section-number { color: #a8c8d7; }
+.astro-night-chart h2 { margin-top: 0.45rem; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 650; letter-spacing: -0.045em; line-height: 1.12; }
+.astro-night-intro { margin-top: 0.55rem; color: #bed0dc; font-size: 0.81rem; line-height: 1.5; }
+.astro-night-chart .astro-timeline { margin-top: 1.7rem; }
+.astro-night-chart .astro-timeline-key { color: #c5d4dd; }
+.astro-night-chart .astro-timeline-key i { width: 0.65rem; height: 0.65rem; border-radius: 0.15rem; }
+.astro-night-chart .astro-timeline-key .is-daylight { background: #e9c398; }
+.astro-night-chart .astro-timeline-key .is-twilight { background: #627fa4; }
+.astro-night-chart .astro-timeline-key .is-astronomical { background: #233953; }
+.astro-night-chart .astro-timeline-key .is-moonless { background: #03060c; border: 1px solid #9cb5c4; }
+.astro-night-chart .astro-timeline-track { height: 2.25rem; border: 1px solid rgb(255 255 255 / 0.28); border-radius: 0.55rem; background: #e9c398; }
+.astro-night-chart .astro-timeline-after-sunset, .astro-night-chart .astro-timeline-astronomical, .astro-night-chart .astro-timeline-moonless { position: absolute; top: 0; height: 100%; }
+.astro-night-chart .astro-timeline-after-sunset { background: #627fa4; }
+.astro-night-chart .astro-timeline-astronomical { background: #233953; }
+.astro-night-chart .astro-timeline-moonless { z-index: 1; background: #03060c; box-shadow: inset 0 0 0 1px rgb(207 237 245 / 0.32); }
+.astro-night-chart .astro-timeline-event { position: absolute; z-index: 2; top: 0; width: 2px; height: 100%; background: #fff5d8; box-shadow: 0 0 5px rgb(0 0 0 / 0.6); }
+.astro-night-chart .astro-timeline-event.is-moon { background: #8fdfdd; }
+.astro-night-chart .astro-timeline-labels { color: #aabfcd; }
+.astro-night-events { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem; margin-top: 1.25rem; }
+.astro-night-events > div { display: grid; align-content: start; gap: 0.25rem; min-width: 0; min-height: 4.5rem; padding: 0.75rem 0.85rem; border: 1px solid rgb(218 238 255 / 0.17); border-radius: 0.8rem; background: rgb(231 244 255 / 0.055); }
+.astro-night-events span { color: #adcad6; font-size: 0.68rem; }
+.astro-night-events strong { font-size: 1rem; font-weight: 650; }
+.astro-night-events small { color: #a5b6c4; font-size: 0.61rem; line-height: 1.4; }
+.astro-night-darkness { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.65rem 1rem; margin-top: 1.3rem; padding-top: 1rem; border-top: 1px solid rgb(218 238 255 / 0.16); }
+.astro-night-darkness > div:first-child { display: grid; gap: 0.25rem; }
+.astro-night-darkness > div:first-child span { color: #a9cad2; font-size: 0.64rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; }
+.astro-night-darkness > div:first-child strong { font-size: 0.93rem; font-weight: 650; }
+.astro-night-darkness > p { max-width: 35rem; color: #dbbbac; font-size: 0.72rem; line-height: 1.5; }
+.astro-night-windows { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.astro-night-windows > span { padding: 0.5rem 0.65rem; border: 1px solid rgb(172 210 223 / 0.42); border-radius: 0.55rem; background: #040b14; color: #fff; font-size: 0.72rem; font-weight: 650; }
+.astro-night-windows small { color: #aac4cd; font-size: 0.65rem; font-weight: 500; }
+.astro-night-caveat { margin-top: 0.9rem; max-width: 70rem; color: #9fb3c1; font-size: 0.68rem; line-height: 1.55; }
 .astro-events { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem; margin-top: 1.6rem; }
 .astro-events > div { display: grid; gap: 0.25rem; min-height: 4.5rem; padding: 0.72rem 0.9rem; border: 1px solid rgb(var(--color-ink) / 0.08); border-radius: 0.78rem; background: rgb(var(--color-paper) / 0.75); }
 .astro-events span { color: rgb(var(--color-ink) / 0.52); font-size: 0.65rem; }
@@ -122,6 +157,7 @@
   .astro-result-stats > div { display: block; }
   .astro-result-stats strong, .astro-result-stats small { display: block; margin-top: 0.35rem; }
   .astro-events { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .astro-night-events { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .astro-map-below { grid-template-columns: 1fr; }
 }
 

@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import "./wine-guide.css";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { WineGuide } from "@/components/wine-guide";
+import { isRecipeAdminSessionAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const metadata: Metadata = {
   title: "The world of wine",
   description:
     "A comprehensive guide to wine chemistry, viticulture, world regions, grape varieties, winemaking, sparkling wine and fortified wine.",
+  robots: { index: false, follow: false },
 };
+export const dynamic = "force-dynamic";
 
-export default function WineGuidePage() {
+export default async function WineGuidePage() {
+  if (!(await isRecipeAdminSessionAuthenticated())) notFound();
+
   return (
     <div className="guide-page wine-guide-page">
       <PageIntro

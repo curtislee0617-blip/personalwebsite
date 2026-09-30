@@ -3,7 +3,7 @@
 import { useMemo, useState, type CSSProperties, type DragEvent } from "react";
 import fallSchedule from "@/data/caltech-fall-2026-schedule.json";
 import { requirementCategories } from "@/data/caltech-requirements";
-import { courseLoadLabel, courseMatchesSearch, courseScheduleIcs, findMeetingConflicts, formatMinutes, WEEKDAY_ORDER, type ScheduledOffering } from "@/lib/caltech-course-schedule";
+import { courseLoadLabel, courseMatchesSearch, courseScheduleIcs, courseSubjectCodes, findMeetingConflicts, formatMinutes, WEEKDAY_ORDER, type ScheduledOffering } from "@/lib/caltech-course-schedule";
 
 const schedule = fallSchedule as { term: string; source: string; offerings: ScheduledOffering[] };
 const CALENDAR_START = 8 * 60;
@@ -58,7 +58,13 @@ export function CaltechCourseScheduler() {
   const [movedTerms, setMovedTerms] = useState<Record<string, string>>({});
 
   const subjects = useMemo(
-    () => [...new Set(schedule.offerings.map((course) => course.subject))].sort((a, b) => a.localeCompare(b)),
+    () => {
+      const unique = new Map<string, string>();
+      schedule.offerings.flatMap((course) => [course.subject, ...courseSubjectCodes(course.code)]).forEach((value) => {
+        if (!unique.has(value.toLocaleLowerCase())) unique.set(value.toLocaleLowerCase(), value);
+      });
+      return [...unique.values()].sort((a, b) => a.localeCompare(b));
+    },
     [],
   );
   const selectedCourses = useMemo(
@@ -70,10 +76,10 @@ export function CaltechCourseScheduler() {
     [selectedCourses],
   );
   const filteredCourses = useMemo(() => schedule.offerings.filter((course) => (
-    (subject === "all" || course.subject === subject)
+    (subject === "all" || courseSubjectCodes(course.code).some((codeSubject) => codeSubject.toLocaleLowerCase() === subject.toLocaleLowerCase()))
     && (!showScheduledOnly || course.meetings.length > 0)
-    && courseMatchesSearch(course, query)
-  )), [query, showScheduledOnly, subject]);
+    && courseMatchesSearch(course, query, subjects)
+  )), [query, showScheduledOnly, subject, subjects]);
   const conflicts = useMemo(() => findMeetingConflicts(selectedCourses), [selectedCourses]);
   const conflictingIds = useMemo(() => new Set(conflicts.flatMap((conflict) => [conflict.firstId, conflict.secondId])), [conflicts]);
   const fixedUnitTotal = selectedCourses.reduce((total, course) => total + (course.totalUnits ?? 0), 0);
@@ -90,6 +96,7 @@ export function CaltechCourseScheduler() {
       window.dispatchEvent(new CustomEvent("caltech-course-schedule-add", {
         detail: {
           label: `${course.code}${course.section ? ` ${course.section}` : ""}: ${course.title}`,
+          code: course.code,
           units: course.totalUnits ?? 0,
           cell: planTerm,
         },

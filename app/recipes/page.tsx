@@ -9,11 +9,11 @@ import { SpringAnchor, SpringLink } from "@/components/spring-links";
 import { RecipeCollection } from "@/components/recipe-collection";
 import { SnapCarousel } from "@/components/snap-carousel";
 import { CookbookAccessGate } from "@/components/cookbook-access-gate";
-import { recipeEntries, wishlistEntries, type WishlistEntry } from "@/lib/recipes";
+import { privateRecipeGuideSlugs, recipeEntries, wishlistEntries, type WishlistEntry } from "@/lib/recipes";
 import { getInstagramSavedRecipeCount, getPersonalRecipeCards, getYouTubeSavedRecipeCount } from "@/lib/personal-recipes";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
-import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
+import { isRecipeAdminAuthenticated, isRecipeAdminSessionAuthenticated } from "@/lib/recipe-admin-auth";
 import { importedCookbooks, importedCookbookSearchEntries } from "@/lib/imported-cookbooks";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
@@ -35,9 +35,10 @@ const recipePageSections = [
 function buildRecipeSearchPreview(
   personalRecipes: RecipeCardEntry[],
   wishlistRecipes: WishlistEntry[],
+  includePrivateGuides: boolean,
 ): RecipeSearchItem[] {
   const siteEntries: RecipeSearchItem[] = recipeEntries
-    .filter((entry) => entry.kind === "guide")
+    .filter((entry) => entry.kind === "guide" && (includePrivateGuides || !privateRecipeGuideSlugs.has(entry.slug)))
     .map((entry) => ({
       title: entry.title,
       context: "Recipe guide",
@@ -330,7 +331,6 @@ function GuideVisual({ slug }: { slug: string }) {
 }
 
 export default async function RecipesPage() {
-  const guides = recipeEntries.filter((entry) => entry.kind === "guide");
   const [recipes, instagramRecipeCount, youtubeRecipeCount, savedCookbookRecipes] = await Promise.all([
     getPersonalRecipeCards(),
     getInstagramSavedRecipeCount(),
@@ -340,12 +340,14 @@ export default async function RecipesPage() {
   const publishedUploadTitles = new Set(recipes.filter((entry) => entry.source === "uploaded").map((entry) => entry.title.toLowerCase()));
   const wishlist = [...savedCookbookRecipes, ...wishlistEntries]
     .filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
-  const [authenticated, cookbookAuthenticated] = await Promise.all([
+  const [authenticated, cookbookAuthenticated, ownerSession] = await Promise.all([
     isRecipeAdminAuthenticated(),
     isCookbookAuthenticated(),
+    isRecipeAdminSessionAuthenticated(),
   ]);
   const privateLibraryAccess = authenticated || cookbookAuthenticated;
-  const searchPreview = buildRecipeSearchPreview(recipes, wishlist)
+  const guides = recipeEntries.filter((entry) => entry.kind === "guide" && (ownerSession || !privateRecipeGuideSlugs.has(entry.slug)));
+  const searchPreview = buildRecipeSearchPreview(recipes, wishlist, ownerSession)
     .filter((item) => privateLibraryAccess || !isPrivateCookbookHref(item.href));
   const chronologicalRecipes = [...recipes].sort((a, b) => {
     if (a.date && b.date) return b.date.localeCompare(a.date) || a.title.localeCompare(b.title);

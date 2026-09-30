@@ -18,7 +18,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SectionLoading, type SectionLoadingVariant } from "@/components/section-loading";
 import { recipeCategories } from "@/data/recipe-categories";
-import { DASHBOARD_FOLD_EVENT, runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
+import { DASHBOARD_FOLD_EVENT, DASHBOARD_LOADING_EVENT, runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
 import { navIconForPath } from "@/lib/page-cursors";
 
 type DashboardTreeNode = {
@@ -30,6 +30,7 @@ type DashboardTreeNode = {
 type DashboardGroupItem = {
   href: string;
   label: string;
+  adminAccessOnly?: boolean;
   items?: readonly DashboardGroupItem[];
   dynamicChildren?: "recipe-categories";
 };
@@ -103,9 +104,9 @@ export const dashboardSections: readonly DashboardSection[] = [
         label: "Guides",
         items: [
           { href: "/recipes/pasta-guide", label: "Pasta guide" },
-          { href: "/recipes/coffee-guide", label: "Coffee guide" },
-          { href: "/recipes/wine-guide", label: "Wine guide" },
-          { href: "/recipes/sushi-guide", label: "Sushi guide" },
+          { href: "/recipes/coffee-guide", label: "Coffee guide", adminAccessOnly: true },
+          { href: "/recipes/wine-guide", label: "Wine guide", adminAccessOnly: true },
+          { href: "/recipes/sushi-guide", label: "Sushi guide", adminAccessOnly: true },
           { href: "/recipes/viennoiserie-guide", label: "Viennoiserie guide" },
           { href: "/recipes/sourdough-guide", label: "Sourdough guide" },
           { href: "/projects/cook-enterprise?from=recipes", label: "cook.enterprise cookbook" },
@@ -274,7 +275,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
   const [dashboardRecipes, setDashboardRecipes] = useState<DashboardRecipeItem[]>([]);
   const [hasCookbookAccess, setHasCookbookAccess] = useState(false);
+  const [hasRecipeAdminAccess, setHasRecipeAdminAccess] = useState(false);
   const [routeLoading, setRouteLoading] = useState<DashboardRouteLoading | null>(null);
+  const [dockLoading, setDockLoading] = useState<Pick<DashboardRouteLoading, "title" | "variant"> | null>(null);
   const routeLoadingStartedRef = useRef(0);
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
   const sidebarResizerRef = useRef<HTMLDivElement>(null);
@@ -282,6 +285,16 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const homeTransitionRef = useRef(false);
   const recipeNavigationLoaded = useRef(false);
   const recipesExpanded = expanded["/recipes"] ?? pathname.startsWith("/recipes");
+  const activeRouteLoading = dockLoading ?? routeLoading;
+
+  useEffect(() => {
+    const showDockLoading = (event: Event) => {
+      const href = (event as CustomEvent<string | null>).detail;
+      setDockLoading(href ? loadingDetailsForPath(new URL(href, window.location.href).pathname) : null);
+    };
+    window.addEventListener(DASHBOARD_LOADING_EVENT, showDockLoading);
+    return () => window.removeEventListener(DASHBOARD_LOADING_EVENT, showDockLoading);
+  }, []);
 
   useEffect(() => {
     const foldNavigation = () => {
@@ -389,20 +402,27 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    const syncCookbookSession = () => {
-      void fetch("/api/cookbook-access/session", { cache: "no-store", signal: controller.signal })
-        .then((response) => response.json() as Promise<{ authenticated?: boolean }>)
-        .then((result) => setHasCookbookAccess(result.authenticated === true))
+    const syncSessions = () => {
+      void Promise.all([
+        fetch("/api/cookbook-access/session", { cache: "no-store", signal: controller.signal })
+          .then((response) => response.json() as Promise<{ authenticated?: boolean }>),
+        fetch("/api/recipe-admin/session?strict=1", { cache: "no-store", signal: controller.signal })
+          .then((response) => response.json() as Promise<{ authenticated?: boolean }>),
+      ])
+        .then(([cookbook, admin]) => {
+          setHasCookbookAccess(cookbook.authenticated === true);
+          setHasRecipeAdminAccess(admin.authenticated === true);
+        })
         .catch(() => undefined);
     };
 
-    syncCookbookSession();
-    window.addEventListener("cookbook-access-session-changed", syncCookbookSession);
-    window.addEventListener("recipe-admin-session-changed", syncCookbookSession);
+    syncSessions();
+    window.addEventListener("cookbook-access-session-changed", syncSessions);
+    window.addEventListener("recipe-admin-session-changed", syncSessions);
     return () => {
       controller.abort();
-      window.removeEventListener("cookbook-access-session-changed", syncCookbookSession);
-      window.removeEventListener("recipe-admin-session-changed", syncCookbookSession);
+      window.removeEventListener("cookbook-access-session-changed", syncSessions);
+      window.removeEventListener("recipe-admin-session-changed", syncSessions);
     };
   }, []);
 
@@ -636,7 +656,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
                       {visibleGroups.map((group) => {
                         const groupKey = `${section.href}:${group.label}`;
                         const groupNodes = [
-                          ...group.items.map((item) => dashboardTreeNodeForItem(item, recipeCategoryNodes)),
+                          ...group.items
+                            .filter((item) => !item.adminAccessOnly || hasRecipeAdminAccess)
+                            .map((item) => dashboardTreeNodeForItem(item, recipeCategoryNodes)),
                           ...(group.dynamicItems === "recipe-categories" ? recipeCategoryNodes : []),
                         ];
                         const groupHasItems = groupNodes.length > 0;
@@ -705,13 +727,13 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {routeLoading && (
-        <div className="dashboard-route-loading">
+      {activeRouteLoading && (
+        <div className={`dashboard-route-loading${dockLoading ? " dashboard-route-loading-dock" : ""}`}>
           <SectionLoading
             compact
             description=""
-            title={routeLoading.title}
-            variant={routeLoading.variant}
+            title={activeRouteLoading.title}
+            variant={activeRouteLoading.variant}
           />
         </div>
       )}

@@ -21,6 +21,39 @@ type SavedPlan = { classes: Record<string, PlacedClass>; customTemplates: Requir
 type Selection = { type: "requirement" | "class"; id: string } | null;
 type RequirementOwner = { classId: string; className: string; units: number };
 
+type CourseCodeParts = { subjects: string[]; number: string; suffix: string };
+
+function parseCourseCode(value: string): CourseCodeParts | null {
+  const match = value.match(/^\s*([A-Za-z]+(?:\s*[/-]\s*[A-Za-z]+)*)\s*0*(\d+)(?:\s*([A-Za-z]|ab|abc|bc)\b)?/i);
+  if (!match) return null;
+  return {
+    subjects: match[1].split(/\s*[/-]\s*/).map((subject) => subject.replace(/\s+/g, "").toLocaleLowerCase()),
+    number: match[2].replace(/^0+(?=\d)/, ""),
+    suffix: (match[3] ?? "").toLocaleLowerCase(),
+  };
+}
+
+function requirementCourseCodes(label: string) {
+  const primary = parseCourseCode(label);
+  // Only map a listed alternative when the requirement itself starts with a
+  // course code. This avoids treating broad elective/lab descriptions as exact matches.
+  if (!primary) return [] as CourseCodeParts[];
+  const alternatives = [...label.matchAll(/\bor\s+([A-Za-z]+(?:\s*[/-]\s*[A-Za-z]+)*)\s*0*(\d+)\s*([A-Za-z]*)\b/gi)]
+    .map((match) => parseCourseCode(`${match[1]} ${match[2]}${match[3] ? ` ${match[3]}` : ""}`))
+    .filter((code): code is CourseCodeParts => Boolean(code));
+  return [primary, ...alternatives];
+}
+
+function matchingRequirementIds(code: string, templates: RequirementTemplate[]) {
+  const course = parseCourseCode(code);
+  if (!course) return [];
+  return templates.filter((template) => requirementCourseCodes(template.label).some((requirement) => (
+    requirement.number === course.number
+    && requirement.subjects.some((subject) => course.subjects.includes(subject))
+    && (!requirement.suffix || requirement.suffix === course.suffix)
+  ))).map((template) => template.id);
+}
+
 const LOCAL_MAJORS_STORAGE_KEY = "caltech-course-planner-local-majors-v1";
 const DEFAULT_CLASS_UNITS = 9;
 const DEFAULT_CORE_SCHEDULE_MODE: CoreScheduleMode = "normal";
@@ -746,8 +779,9 @@ export function CaltechCoursePlanner() {
   // Keep this small bridge here so schedule data never changes the saved-plan shape.
   useEffect(() => {
     const addScheduledCourse = (event: Event) => {
-      const detail = (event as CustomEvent<{ label?: unknown; units?: unknown; cell?: unknown }>).detail;
+      const detail = (event as CustomEvent<{ label?: unknown; code?: unknown; units?: unknown; cell?: unknown }>).detail;
       const label = detail?.label;
+      const code = typeof detail?.code === "string" ? detail.code : typeof label === "string" ? label.split(":", 1)[0] : "";
       const cell = detail?.cell;
       if (typeof label !== "string" || typeof cell !== "string") return;
       if (!/^([1-4])-(Fall|Winter|Spring)$/.test(cell)) return;
@@ -764,7 +798,9 @@ export function CaltechCoursePlanner() {
             unitsEdited: true,
             done: false,
             cell,
-            requirementIds: [],
+            requirementIds: matchingRequirementIds(code, allTemplates).filter((requirementId) => (
+              !Object.values(currentPlan.classes).some((placedClass) => placedClass.requirementIds.includes(requirementId))
+            )),
           },
         },
       }));
@@ -772,7 +808,7 @@ export function CaltechCoursePlanner() {
     };
     window.addEventListener("caltech-course-schedule-add", addScheduledCourse);
     return () => window.removeEventListener("caltech-course-schedule-add", addScheduledCourse);
-  }, []);
+  }, [allTemplates]);
 
   useEffect(() => {
     const importTranscriptCourses = (event: Event) => {
@@ -1141,15 +1177,22 @@ export function CaltechCoursePlanner() {
               Sign out
             </button>
             <div className="basis-full rounded-2xl border border-ink/10 bg-paper/45 p-3">
-              <p className="text-xs font-semibold text-ink/55">Update majors / minors</p>
-              <p className="mt-1 max-w-2xl text-xs leading-5 text-ink/45">
-                Changes apply immediately and save to the cloud automatically. Checked-off classes are kept and retagged where possible; unchecked classes outside the new requirements are removed.
-              </p>
+              <details>
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-xs font-semibold text-ink/55 marker:hidden">
+                  <span>Update majors / minors</span>
+                  <span className="text-right text-[0.65rem] font-medium text-ink/40">
+                    {loginMajors.length ? `${loginMajors.length} selected` : "Choose programs"} <span aria-hidden="true">▾</span>
+                  </span>
+                </summary>
+                <p className="mt-2 max-w-2xl text-xs leading-5 text-ink/45">
+                  Changes apply immediately and save to the cloud automatically. Checked-off classes are kept and retagged where possible; unchecked classes outside the new requirements are removed.
+                </p>
+                <div className="course-planner-major-block mt-3 border-t border-ink/10 pt-3">
+                  <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
+                </div>
+              </details>
               <div className="course-planner-core-block mt-3">
                 {renderCoreScheduleToggle()}
-              </div>
-              <div className="course-planner-major-block mt-3 border-t border-ink/10 pt-3">
-                <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
               </div>
             </div>
           </div>
@@ -1168,19 +1211,21 @@ export function CaltechCoursePlanner() {
               </div>
 
               <div className="rounded-2xl border border-ink/10 bg-paper/45 p-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-ink/55">Major(s) / minor(s)</p>
-                  <p className="text-[0.62rem] font-medium text-ink/35">
-                    {loginMajors.length ? `${loginMajors.length} selected` : "Choose to show requirements"} · up to {MAX_PROFILE_PROGRAMS}
-                  </p>
-                </div>
-                <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
-                {pendingMajorLabels.length > 0 && (
-                  <div className="mt-3 rounded-2xl border border-ink/10 bg-surface/55 px-3 py-2 text-[0.68rem] leading-5 text-ink/45">
-                    <span className="font-semibold text-ink/55">Active locally:</span>{" "}
-                    {pendingMajorLabels.join(", ")}. Their requirements are now shown below.
-                  </div>
-                )}
+                <details>
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-semibold text-ink/55 marker:hidden">
+                    <span>Major(s) / minor(s)</span>
+                    <span className="text-right text-[0.62rem] font-medium text-ink/40">
+                      {loginMajors.length ? `${loginMajors.length} selected` : "Choose to show requirements"} · up to {MAX_PROFILE_PROGRAMS} <span aria-hidden="true">▾</span>
+                    </span>
+                  </summary>
+                  <MajorSelector onToggleMajor={toggleLoginMajor} selectedMajors={loginMajors} />
+                  {pendingMajorLabels.length > 0 && (
+                    <div className="mt-3 rounded-2xl border border-ink/10 bg-surface/55 px-3 py-2 text-[0.68rem] leading-5 text-ink/45">
+                      <span className="font-semibold text-ink/55">Active locally:</span>{" "}
+                      {pendingMajorLabels.join(", ")}. Their requirements are now shown below.
+                    </div>
+                  )}
+                </details>
               </div>
 
               <div className="border-t border-ink/10 pt-4">

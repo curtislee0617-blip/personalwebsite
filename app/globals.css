@@ -12933,6 +12933,10 @@ html.dashboard-liquid-transition .dashboard-sidebar {
   pointer-events: none !important;
 }
 html.dashboard-liquid-transition .dashboard-route-loading { display: none; }
+html.dashboard-liquid-transition[data-navigation-phase="dock-loading"] .dashboard-route-loading-dock {
+  display: grid;
+  inset: 0 0 0 var(--dashboard-sidebar-width);
+}
 html.dashboard-dock-staging:is([data-navigation-phase="lift"], [data-navigation-phase="route"]) .dashboard-sidebar {
   visibility: hidden !important;
   opacity: 0 !important;

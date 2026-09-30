@@ -33,9 +33,18 @@ export function AstronomicalDarknessMap({ location, onSelect, showLights }: Prop
     void import("leaflet").then((leaflet) => {
       if (cancelled || !containerRef.current) return;
       const initial = locationRef.current;
-      map = leaflet.map(containerRef.current, { scrollWheelZoom: false, zoomControl: true, minZoom: 2 })
+      map = leaflet.map(containerRef.current, { scrollWheelZoom: true, wheelPxPerZoomLevel: 110, zoomControl: true, minZoom: 2 })
         .setView([initial.latitude, initial.longitude], 7);
       mapRef.current = map;
+
+      // Trackpad pinches arrive as Ctrl+wheel in Chromium. Let Leaflet handle
+      // those gestures while normal two-finger scrolling still moves the page.
+      const container = containerRef.current;
+      const pinchOnly = (event: WheelEvent) => {
+        if (!event.ctrlKey) event.stopImmediatePropagation();
+      };
+      container.addEventListener("wheel", pinchOnly, { capture: true, passive: false });
+      map.on("unload", () => container.removeEventListener("wheel", pinchOnly, true));
 
       leaflet.tileLayer(BASEMAP_TILES, {
         maxZoom: 16,
@@ -81,5 +90,5 @@ export function AstronomicalDarknessMap({ location, onSelect, showLights }: Prop
     lightsRef.current?.setOpacity(showLights ? 0.62 : 0);
   }, [showLights]);
 
-  return <><div aria-label="Light pollution map; click to select a photography location, or use the coordinate fields below" className="astro-map" ref={containerRef} />{tileError && showLights && <p className="astro-map-warning" role="status">Some skyglow map tiles could not be loaded. The location readout uses a separate atlas lookup.</p>}</>;
+  return <><div aria-label="Light pollution map; click to select a photography location, pinch the trackpad or use the zoom buttons to zoom" className="astro-map" ref={containerRef} />{tileError && showLights && <p className="astro-map-warning" role="status">Some skyglow map tiles could not be loaded. The location readout uses a separate atlas lookup.</p>}</>;
 }
