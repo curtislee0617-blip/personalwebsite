@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Map as LeafletMap, Marker, TileLayer } from "leaflet";
 import type { Coordinates } from "@/lib/astronomical-darkness";
+import { ATLAS_TILES, ATLAS_YEAR } from "@/lib/light-pollution";
 
 type Props = {
   location: Coordinates;
@@ -10,10 +11,10 @@ type Props = {
   showLights: boolean;
 };
 
-const NIGHT_LIGHT_TILES = "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_CityLights_2012/default//GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg";
 const BASEMAP_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
 export function AstronomicalDarknessMap({ location, onSelect, showLights }: Props) {
+  const [tileError, setTileError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<Marker | null>(null);
@@ -32,7 +33,7 @@ export function AstronomicalDarknessMap({ location, onSelect, showLights }: Prop
     void import("leaflet").then((leaflet) => {
       if (cancelled || !containerRef.current) return;
       const initial = locationRef.current;
-      map = leaflet.map(containerRef.current, { scrollWheelZoom: false, zoomControl: true })
+      map = leaflet.map(containerRef.current, { scrollWheelZoom: false, zoomControl: true, minZoom: 2 })
         .setView([initial.latitude, initial.longitude], 7);
       mapRef.current = map;
 
@@ -40,19 +41,26 @@ export function AstronomicalDarknessMap({ location, onSelect, showLights }: Prop
         maxZoom: 16,
         attribution: '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>',
       }).addTo(map);
-      lightsRef.current = leaflet.tileLayer(NIGHT_LIGHT_TILES, {
+      lightsRef.current = leaflet.tileLayer(ATLAS_TILES, {
         maxZoom: 16,
         maxNativeZoom: 8,
-        opacity: showLightsRef.current ? 0.72 : 0,
-        attribution: '<a href="https://earthdata.nasa.gov/eosdis/science-system-description/eosdis-components/gibs" target="_blank" rel="noopener noreferrer">NASA GIBS · VIIRS CityLights 2012</a>',
+        tileSize: 1024,
+        zoomOffset: -2,
+        opacity: showLightsRef.current ? 0.62 : 0,
+        attribution: `<a href="https://djlorenz.github.io/astronomy/lp/" target="_blank" rel="noopener noreferrer">David Lorenz · Light Pollution Atlas ${ATLAS_YEAR}</a>`,
       }).addTo(map);
+      lightsRef.current.on("tileerror", () => { if (!cancelled) setTileError(true); });
 
       markerRef.current = leaflet.marker([initial.latitude, initial.longitude], {
         icon: leaflet.divIcon({ className: "astro-map-marker-icon", html: '<span class="astro-map-marker"></span>', iconSize: [24, 24], iconAnchor: [12, 12] }),
       }).addTo(map);
       map.on("click", (event) => {
-        onSelectRef.current({ latitude: event.latlng.lat, longitude: event.latlng.lng });
+        const point = event.latlng.wrap();
+        onSelectRef.current({ latitude: Math.max(-90, Math.min(90, point.lat)), longitude: point.lng });
       });
+      const resize = new ResizeObserver(() => map?.invalidateSize());
+      resize.observe(containerRef.current);
+      map.on("unload", () => resize.disconnect());
     });
 
     return () => {
@@ -70,8 +78,8 @@ export function AstronomicalDarknessMap({ location, onSelect, showLights }: Prop
   }, [location.latitude, location.longitude]);
 
   useEffect(() => {
-    lightsRef.current?.setOpacity(showLights ? 0.72 : 0);
+    lightsRef.current?.setOpacity(showLights ? 0.62 : 0);
   }, [showLights]);
 
-  return <div aria-label="Night lights map; click to select a photography location" className="astro-map" ref={containerRef} role="application" />;
+  return <><div aria-label="Light pollution map; click to select a photography location, or use the coordinate fields below" className="astro-map" ref={containerRef} />{tileError && showLights && <p className="astro-map-warning" role="status">Some skyglow map tiles could not be loaded. The location readout uses a separate atlas lookup.</p>}</>;
 }

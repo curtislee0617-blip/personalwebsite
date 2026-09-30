@@ -44,9 +44,9 @@ export function dateInZone(instant: Date, timeZone: string) {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
-function localNoon(date: string, timeZone: string) {
+function localTime(date: string, timeZone: string, hour = 12) {
   const [year, month, day] = date.split("-").map(Number);
-  const target = Date.UTC(year, month - 1, day, 12);
+  const target = Date.UTC(year, month - 1, day, hour);
   let guess = target;
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const local = zonedParts(new Date(guess), timeZone);
@@ -59,6 +59,10 @@ function localNoon(date: string, timeZone: string) {
 function nextDate(date: string) {
   const [year, month, day] = date.split("-").map(Number);
   return new Date(Date.UTC(year, month - 1, day + 1, 12)).toISOString().slice(0, 10);
+}
+
+export function getDayInterval(date: string, timeZone: string) {
+  return { start: localTime(date, timeZone, 0), end: localTime(nextDate(date), timeZone, 0) };
 }
 
 function altitude(instant: Date, location: Coordinates, body: "sun" | "moon") {
@@ -109,8 +113,8 @@ function phaseName(phase: number) {
 }
 
 export function getNightPlan(date: string, timeZone: string, location: Coordinates): NightPlan {
-  const start = localNoon(date, timeZone);
-  const end = localNoon(nextDate(date), timeZone);
+  const start = localTime(date, timeZone);
+  const end = localTime(nextDate(date), timeZone);
   const solar = {
     horizon: crossings(start, end, location, "sun", -0.833),
     civil: crossings(start, end, location, "sun", -6),

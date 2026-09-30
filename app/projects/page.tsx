@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { AstronomyThumbnail } from "@/components/astronomy-thumbnail";
 import { ContactCityTimeline } from "@/components/contact-city-timeline";
 import { PageIntro } from "@/components/page-intro";
 import { ProjectCarousel } from "@/components/project-carousel";
@@ -30,7 +31,7 @@ export default function ProjectsPage() {
               <div className="website-project-media">
                 <Image
                   alt="The Curtis Lee website homepage"
-                  className="object-cover"
+                  className="object-contain"
                   fill
                   priority
                   sizes="(max-width: 899px) 94vw, 52vw"
@@ -68,7 +69,18 @@ export default function ProjectsPage() {
                     ))}
                   </ul>
                 </div>
-                <SpringLink className="back-link-bubble website-project-link" href="/">Visit the front page</SpringLink>
+                <div className="website-project-actions">
+                  <SpringLink className="back-link-bubble website-project-link" href="/">Visit the front page</SpringLink>
+                  <SpringLink className="back-link-bubble website-project-link" href="/projects/website-toolkit">Explore the toolkit</SpringLink>
+                </div>
+                <div className="website-project-clicks">
+                  <div>
+                    <p className="eyebrow">UI/UX brainstorming</p>
+                    <h4>Clicks</h4>
+                    <p>One hundred interactive button directions to explore for future website updates.</p>
+                  </div>
+                  <SpringLink aria-label="Explore Clicks button ideas" href="/projects/clicks">Explore Clicks ↗</SpringLink>
+                </div>
               </div>
             </article>
             <article className="fusion-project-bubble" data-reveal data-spotlight>
@@ -79,74 +91,16 @@ export default function ProjectsPage() {
               <p>Design work and experiments in CAD, collected here as they take shape.</p>
               <span aria-label="Project details coming soon">Coming soon</span>
             </article>
-            <article className="fusion-project-bubble" data-reveal data-spotlight>
-              <div>
-                <p className="eyebrow">UI/UX brainstorming</p>
-                <h3><SpringLink href="/projects/clicks">Clicks</SpringLink></h3>
-              </div>
-              <p>One hundred interactive button ideas to explore for future website updates.</p>
-              <SpringLink aria-label="Explore Clicks button ideas" href="/projects/clicks">Explore ↗</SpringLink>
-            </article>
-            <section aria-labelledby="personal-reading-title" className="personal-reading" id="personal-reading">
-              <div className="personal-reading-heading">
-                <div>
-                  <p className="eyebrow">Personal library</p>
-                  <h3 id="personal-reading-title">Personal reading</h3>
-                </div>
-                <p>Books and essays I&apos;m keeping close. Uploaded copies and notes will appear here over time.</p>
-              </div>
-              <div className="personal-reading-columns">
-                <div>
-                  <h4>Books</h4>
-                  <ul>
-                    <li>
-                      <a href="https://www.anand.ly/winners-take-all" rel="noreferrer" target="_blank">
-                        <span>
-                          <strong>Winners Take All: The Elite Charade of Changing the World</strong>
-                          <small>Anand Giridharadas</small>
-                        </span>
-                        <span aria-hidden="true">↗</span>
-                      </a>
-                    </li>
-                    <li>
-                      <div>
-                        <span>
-                          <strong>You Can Just Do Things</strong>
-                          <small>
-                            By <a href="https://www.harpercollins.com/blogs/authors/cate-hall-89578" rel="noreferrer" target="_blank">Cate Hall</a> &amp; <a href="https://www.harpercollins.com/blogs/authors/sasha-chapin-89579" rel="noreferrer" target="_blank">Sasha Chapin</a>
-                          </small>
-                        </span>
-                        <em>Upload pending</em>
-                      </div>
-                    </li>
-                    <li>
-                      <div>
-                        <span>
-                          <strong>Introduction to Probability Theory</strong>
-                          <small>Paul G. Hoel, Sidney C. Port &amp; Charles J. Stone</small>
-                        </span>
-                        <em>Upload pending</em>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4>Articles</h4>
-                  <ul>
-                    <li>
-                      <a href="https://theamericanscholar.org/the-disadvantages-of-an-elite-education/" rel="noreferrer" target="_blank">
-                        <span>
-                          <strong>The Disadvantages of an Elite Education</strong>
-                          <small>William Deresiewicz · The American Scholar</small>
-                        </span>
-                        <span aria-hidden="true">↗</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </section>
             <ContactCityTimeline />
+            <article className="astronomy-project-card creative-project-card project-card design-panel overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" data-reveal data-spotlight>
+              <div className="astronomy-project-media"><AstronomyThumbnail /></div>
+              <div className="astronomy-project-copy creative-project-copy">
+                <p className="eyebrow">Photography tool</p>
+                <h3>Astronomical darkness</h3>
+                <p>Follow the night line across Earth, then find moonless dark-sky windows, weather, and light-pollution conditions for an observing location.</p>
+                <SpringLink className="back-link-bubble" href="/tools/astronomical-darkness">Open the darkness tracker</SpringLink>
+              </div>
+            </article>
           </div>
           <span aria-hidden="true" id="pixel-art-cities" />
         </section>

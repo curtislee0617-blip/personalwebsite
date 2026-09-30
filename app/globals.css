@@ -62,13 +62,13 @@
 
 .dark {
   color-scheme: dark;
-  --color-paper: 27 29 24;
-  --color-ink: 236 233 224;
-  --color-moss: 159 194 131;
-  --color-lime: 44 53 36;
-  --color-clay: 226 145 107;
-  --color-mist: 32 40 36;
-  --color-surface: 38 40 31;
+  --color-paper: 12 15 13;
+  --color-ink: 238 240 233;
+  --color-moss: 151 184 133;
+  --color-lime: 28 39 31;
+  --color-clay: 234 151 112;
+  --color-mist: 23 31 26;
+  --color-surface: 18 23 20;
   --color-map-industrial: 122 176 226;
   --color-map-context: 178 152 224;
   --color-map-port: 224 168 82;
@@ -424,7 +424,7 @@ svg text { font-family: var(--font-ui); }
 }
 
 ::selection { background: #c9dfbd; color: rgb(var(--color-ink)); }
-.dark ::selection { background: #47593c; color: rgb(var(--color-ink)); }
+.dark ::selection { background: #3f563e; color: rgb(var(--color-ink)); }
 
 /* Keep the page's themed cursor over buttons/links/images too, while allowing explicit previews. */
 body.has-page-cursor * { cursor: inherit; }
@@ -1176,7 +1176,7 @@ body.has-page-cursor * { cursor: inherit; }
 }
 
 .dark .about-pixel-card::before { opacity: 0.32; }
-.dark .about-brigade-wall { background-color: #4c5147; border-color: #747967; }
+.dark .about-brigade-wall { background-color: #3f473e; border-color: #687362; }
 .dark .about-kitchen-counter,
 .dark .about-brigade-pass,
 .dark .about-engine-bench { filter: brightness(0.86); }
@@ -2397,8 +2397,9 @@ body.has-page-cursor * { cursor: inherit; }
   font-size: 0.82rem;
   line-height: 1.7;
 }
-.website-project-card { display: grid; align-items: stretch; grid-template-columns: minmax(0, 0.82fr) minmax(22rem, 1.18fr); }
-.website-project-media { position: relative; min-height: 24rem; overflow: hidden; border-right: 1px solid rgb(var(--color-ink) / 0.08); background: rgb(var(--color-mist)); }
+.website-project-card { display: grid; align-items: start; grid-template-columns: minmax(20rem, 0.82fr) minmax(22rem, 1.18fr); }
+.website-project-media { position: relative; min-height: 0; aspect-ratio: 1357 / 987; overflow: hidden; border-right: 1px solid rgb(var(--color-ink) / 0.08); background: rgb(var(--color-mist)); }
+.website-project-media img { padding: clamp(0.5rem, 1.5vw, 1rem); }
 .website-project-copy { padding: clamp(1.5rem, 3vw, 3rem); }
 .website-project-copy h3 { margin-top: 0.6rem; font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 600; line-height: 1; letter-spacing: -0.055em; }
 .website-project-copy .creative-project-description { margin-top: 1.15rem; }
@@ -2418,7 +2419,37 @@ body.has-page-cursor * { cursor: inherit; }
 .website-project-toolkit li[data-status="in-use"] small { color: rgb(var(--color-clay) / 0.8); }
 .website-project-toolkit li[data-status="ready"] small,
 .website-project-toolkit li[data-status="native"] small { color: rgb(var(--color-moss) / 0.78); }
-.website-project-link { margin-top: 1.25rem; }
+.website-project-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1.25rem; }
+.website-project-link { margin-top: 0; }
+.website-project-clicks { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgb(var(--color-ink) / 0.09); }
+.website-project-clicks h4 { margin-top: 0.25rem; font-size: 1.1rem; font-weight: 650; letter-spacing: -0.035em; }
+.website-project-clicks p:last-child { max-width: 28rem; margin-top: 0.35rem; color: rgb(var(--color-ink) / 0.54); font-size: 0.68rem; line-height: 1.55; }
+.website-project-clicks > a { flex: none; color: rgb(var(--color-moss)); font-size: 0.72rem; font-weight: 700; }
+.astronomy-project-card { display: grid; align-items: stretch; grid-template-columns: minmax(0, 1fr) minmax(18rem, .78fr); }
+.astronomy-project-media { min-height: 14rem; border-right: 1px solid rgb(var(--color-ink) / 0.08); }
+.astronomy-project-media .tool-astronomy-preview { position: relative; isolation: isolate; height: 100%; min-height: 14rem; overflow: hidden; background: #030916; color: #eef4eb; }
+.astronomy-project-media .tool-earth-scene { position: absolute; z-index: 0; inset: 0; pointer-events: none; }
+.astronomy-project-media .earth-preview-visual,
+.astronomy-project-media .earth-preview-canvas { position: relative; width: 100%; height: 100%; }
+.astronomy-project-media .earth-preview-canvas canvas { display: block; width: 100%; height: 100%; }
+.astronomy-project-media .tool-astronomy-preview::after { content: ""; position: absolute; z-index: 1; inset: 42% 0 0; pointer-events: none; background: linear-gradient(transparent, rgb(3 9 22 / .82)); }
+.astronomy-project-media .tool-earth-preview-label { position: absolute; z-index: 2; top: .9rem; left: 1.1rem; padding: .3rem .55rem; border: 1px solid rgb(151 189 212 / .38); border-radius: 999px; background: rgb(3 9 22 / .76); color: #d3e6f1; font-size: .56rem; font-weight: 650; letter-spacing: .06em; }
+.astronomy-project-media .tool-earth-cloud-label { position: absolute; z-index: 2; top: 1.1rem; right: 1.1rem; color: #c3d2dd; font-size: .5rem; text-shadow: 0 1px 5px #030916; }
+.astronomy-project-media .tool-astronomy-now { position: absolute; z-index: 2; right: 1.15rem; bottom: 1rem; left: 1.15rem; display: grid; gap: .2rem; text-shadow: 0 1px 8px #030916; }
+.astronomy-project-media .tool-astronomy-now span { color: #b6d3cd; font-size: .55rem; letter-spacing: .13em; text-transform: uppercase; }
+.astronomy-project-media .tool-astronomy-now strong { font-size: 1.08rem; font-weight: 600; }
+.astronomy-project-media .tool-astronomy-now small { color: #c3d2dd; font-size: .6rem; }
+.astronomy-project-media .tool-astronomy-now .tool-earth-weather { color: #d8e8ef; font-size: .56rem; }
+.astronomy-project-copy { padding: clamp(1.5rem, 3vw, 2.5rem); }
+.astronomy-project-copy h3 { margin-top: .6rem; font-size: clamp(1.6rem, 3vw, 2.45rem); font-weight: 600; letter-spacing: -0.05em; }
+.astronomy-project-copy > p:not(.eyebrow) { margin-top: .85rem; color: rgb(var(--color-ink) / .58); font-size: .78rem; line-height: 1.6; }
+.astronomy-project-copy > a { align-self: flex-start; margin-top: 1.2rem; }
+.website-toolkit-page-grid { display: grid; gap: 1rem; margin-top: 1.75rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+.website-toolkit-page-card { display: flex; min-height: 15rem; padding: 1.35rem; flex-direction: column; border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.5rem; background: rgb(var(--color-surface) / .56); }
+.website-toolkit-page-card h2 { margin-top: .45rem; font-size: 1.35rem; font-weight: 650; letter-spacing: -.04em; }
+.website-toolkit-page-card > div > p:last-child { margin-top: .45rem; color: rgb(var(--color-moss)); font-size: .7rem; font-weight: 650; }
+.website-toolkit-page-description { margin-top: .9rem; color: rgb(var(--color-ink) / .58); font-size: .72rem; line-height: 1.6; }
+.website-toolkit-page-card > a { align-self: flex-start; margin-top: auto; padding-top: 1rem; color: rgb(var(--color-clay)); font-size: .7rem; font-weight: 750; }
 .fusion-project-bubble { display: grid; padding: clamp(1.25rem, 2.5vw, 2rem); align-items: end; gap: 1rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 999px; background: linear-gradient(135deg, rgb(var(--color-mist) / 0.74), rgb(var(--color-surface) / 0.8)); grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.9fr) auto; transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease; }
 .fusion-project-bubble:hover { border-color: rgb(var(--color-ink) / 0.22); transform: translateY(-0.15rem); box-shadow: 0 14px 30px rgb(var(--color-ink) / 0.08); }
 .fusion-project-bubble h3 { margin-top: 0.35rem; font-size: clamp(1.3rem, 2.5vw, 1.9rem); font-weight: 600; letter-spacing: -0.045em; }
@@ -6401,7 +6432,9 @@ div.restaurant-results-limit {
   .about-pixel-card-engine { grid-column: 1 / -1; }
   .contact-cities { grid-template-columns: 1fr; }
   .website-project-card { grid-template-columns: 1fr; }
-  .website-project-media { min-height: 0; aspect-ratio: 16 / 9; border-right: 0; border-bottom: 1px solid rgb(var(--color-ink) / 0.08); }
+  .website-project-media { min-height: 0; aspect-ratio: 1357 / 987; border-right: 0; border-bottom: 1px solid rgb(var(--color-ink) / 0.08); }
+  .astronomy-project-card { grid-template-columns: 1fr; }
+  .astronomy-project-media { min-height: 12rem; border-right: 0; border-bottom: 1px solid rgb(var(--color-ink) / 0.08); }
   .contact-cities-art { min-height: 0; border-top: 0; }
   .steam-symbols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .steam-workspace { grid-template-columns: 1fr; }
@@ -6943,6 +6976,14 @@ div.restaurant-results-limit {
   .website-project-facts strong { font-size: 0.55rem; }
   .website-project-facts span { font-size: 0.58rem; line-height: 1.45; }
   .website-project-link { margin-top: 0.8rem; }
+  .website-project-actions { gap: 0.45rem; margin-top: 0.8rem; }
+  .website-project-clicks { align-items: start; margin-top: 0.8rem; padding-top: 0.8rem; }
+  .website-project-clicks h4 { font-size: 1rem; }
+  .website-project-clicks p:last-child { font-size: 0.6rem; }
+  .website-project-clicks > a { font-size: 0.62rem; }
+  .astronomy-project-copy { padding: 1rem; }
+  .astronomy-project-copy h3 { font-size: 1.35rem; }
+  .astronomy-project-copy > p:not(.eyebrow) { font-size: .68rem; line-height: 1.5; }
   .fusion-project-bubble { display: grid; padding: 1rem 1.1rem; border-radius: 1.35rem; align-items: start; gap: 0.65rem; grid-template-columns: 1fr auto; }
   .fusion-project-bubble > p { grid-column: 1 / -1; font-size: 0.63rem; }
   .fusion-project-bubble > span { font-size: 0.49rem; }
@@ -9810,20 +9851,21 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   font-weight: 700;
   opacity: 0;
 }
-.tool-planner-row > span:has(.tool-planner-demo-chip) { overflow: visible; }
+.tool-planner-row > span:has(.tool-planner-demo-chip) { flex-direction: column; gap: 0.04rem; overflow: visible; }
+.tool-planner-demo-chip { max-width: 100%; flex-shrink: 0; padding-block: 0.01rem; line-height: 1.2; }
 
 @keyframes tool-planner-drag {
-  0% { opacity: 0; transform: translate(-2.2rem, -1.8rem) rotate(-4deg) scale(1.12); filter: drop-shadow(0 5px 7px rgb(32 35 31 / 0.3)); }
+  0% { opacity: 0; transform: translate(-2.2rem, -1.8rem) rotate(-4deg) scale(1.12);  }
   6% { opacity: 1; }
-  22% { transform: translate(0.12rem, 0.08rem) rotate(1.5deg) scale(1.05); filter: drop-shadow(0 2px 3px rgb(32 35 31 / 0.22)); }
+  22% { transform: translate(0.12rem, 0.08rem) rotate(1.5deg) scale(1.05);  }
   30%, 88% { opacity: 1; transform: none; filter: none; }
   96%, 100% { opacity: 0; transform: none; filter: none; }
 }
 
-/* Waves of drops land ~0.68s apart (25% quicker than before). */
-:is(.tool-card:hover, .mobile-snap-slot.is-focused) .tool-planner-demo-chip {
-  animation: tool-planner-drag 3.4s var(--ease-standard) infinite both;
-  animation-delay: calc(var(--demo-index, 0) * 0.68s);
+/* Fill each term, then add the next layer of courses with a small stagger. */
+:is(.tool-card:hover, .tool-card:focus-visible, .mobile-snap-slot.is-focused) .tool-planner-demo-chip {
+  animation: tool-planner-drag 5s var(--ease-standard) infinite both;
+  animation-delay: calc(var(--demo-index, 0) * 0.085s);
 }
 
 /* Contact cards tilt their icon toward the visitor on hover. */
@@ -9856,6 +9898,8 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   .tool-planner-demo-chip {
     animation: none !important;
   }
+
+  .tool-planner-demo-chip { opacity: 1; transform: none; }
 
   .contact-link-card:hover .contact-link-icon,
   .about-entry:hover .about-logo-badge {
@@ -12174,42 +12218,22 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
   }
 }
 
-html.dashboard-navigation-animating .site-app-shell {
+/* Collapse the outgoing controls first; hide the route commit and layout
+   changes until the destination is settled. Only opacity and transforms move. */
+html.dashboard-center-transition :is(.site-app-shell, .dashboard-sidebar) {
+  opacity: var(--dashboard-center-opacity, 1) !important;
+  transition: none !important;
   will-change: opacity;
-  transition: none !important;
+  pointer-events: none !important;
 }
 
-/* Switch the route first, while the source controls remain as fixed clones.
-   The destination is then measured in its final expanded layout before any
-   clone begins moving. */
-html.dashboard-navigation-animating.dashboard-route-swapping:not(.dashboard-route-ready) .site-app-shell {
-  opacity: 0;
-  transition: none !important;
+html.dashboard-center-transition .site-menu-shell {
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
-html.dashboard-navigation-animating.dashboard-route-ready .site-app-shell {
-  opacity: 1;
-  transition: opacity 150ms ease-out !important;
-}
-
-html.dashboard-navigation-animating.dashboard-undocking .site-app-shell {
-  opacity: 1 !important;
-  transition: none !important;
-}
-
-html.dashboard-navigation-animating.dashboard-docking .site-app-shell {
-  opacity: var(--dashboard-route-reveal, 0) !important;
-  transition: none !important;
-}
-
-html.dashboard-docking .home-dashboard-button,
-html.dashboard-undocking .home-dashboard-button {
-  opacity: 0;
-  pointer-events: none;
-  transform: none !important;
-}
-
-html.dashboard-undocking .home-dashboard-panel { animation: none; }
+html.dashboard-undocking .home-dashboard-panel,
+.home-entry-settled .home-dashboard-panel { animation: none; }
 
 html.dashboard-undocking .home-entry-pending::after,
 html.dashboard-undocking .home-entry-center::after,
@@ -12217,21 +12241,6 @@ html.dashboard-undocking .home-entry-center::after,
   animation: none;
   opacity: 0;
 }
-
-html.dashboard-compact-transition .site-menu-shell {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-html.dashboard-docking.dashboard-transition-settled :is(.dashboard-sidebar, .site-menu-shell) {
-  opacity: 1 !important;
-  transition: opacity 100ms linear !important;
-}
-html.dashboard-undocking .home-dashboard-button[data-bubble-landed] {
-  opacity: 1;
-  transition: opacity 110ms ease-out !important;
-}
-.home-entry-settled .home-dashboard-panel { animation: none; }
 
 /* Spring owns interaction scale/translation; CSS retains color and focus styles. */
 .site-menu-theme-control > button { width: 100%; }
@@ -12385,6 +12394,12 @@ html.dashboard-undocking .home-dashboard-button[data-bubble-landed] {
   background: rgb(var(--color-moss) / 0.16);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
   color: rgb(var(--color-ink));
+}
+
+.site-menu-panel[data-menu-animating="true"] :is(.site-menu-link:not(.site-menu-theme-toggle), .site-menu-theme-control) {
+  transform-origin: center;
+  transition: none;
+  will-change: transform, opacity;
 }
 
 .site-menu-theme-toggle { width: 100%; }
@@ -12551,4 +12566,167 @@ html.dashboard-undocking .home-dashboard-button[data-bubble-landed] {
   .recipe-library-page .recipe-content-section > .space-y-12 > * + * { margin-top: 2rem !important; padding-top: 1.5rem; }
   .recipe-media-links { gap: 0.7rem; }
   .recipe-media-link { padding: 1rem; }
+}
+
+.bi1x-projects-block { margin-top: clamp(3rem, 7vw, 6rem); }
+.bi1x-projects-intro { max-width: 42rem; margin-top: 0.75rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.9rem; line-height: 1.7; }
+.bi1x-project-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.bi1x-project-card { display: flex; min-height: 14rem; flex-direction: column; align-items: flex-start; padding: clamp(1.2rem, 2vw, 1.8rem); border: 1px solid rgb(var(--color-ink) / 0.09); border-radius: 1.5rem; background: rgb(var(--color-surface) / 0.6); color: inherit; text-decoration: none; transition: transform 200ms var(--ease-standard), border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease; }
+.bi1x-project-card:hover { transform: translateY(-3px); border-color: rgb(var(--color-ink) / 0.18); background: rgb(var(--color-surface) / 0.88); box-shadow: 0 18px 42px rgb(var(--color-ink) / 0.07); }
+.bi1x-project-number { color: rgb(var(--color-moss)); font-size: 0.62rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; }
+.bi1x-project-number > span { color: rgb(var(--color-ink) / 0.46); font-weight: 550; letter-spacing: 0.02em; text-transform: none; }
+.bi1x-project-card h3 { margin-top: 1.3rem; font-family: var(--font-serif); font-size: clamp(1.3rem, 2vw, 1.8rem); letter-spacing: -0.035em; line-height: 1.15; }
+.bi1x-project-card > p { margin-top: 0.7rem; color: rgb(var(--color-ink) / 0.58); font-size: 0.78rem; line-height: 1.65; }
+.bi1x-project-open { display: flex; width: 100%; justify-content: space-between; margin-top: auto; padding-top: 1.1rem; color: rgb(var(--color-ink) / 0.7); font-size: 0.72rem; font-weight: 650; }
+.bi1x-report-page { padding-top: 2.3rem; }
+.bi1x-report-topline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; color: rgb(var(--color-ink) / 0.48); font-size: 0.72rem; }
+.bi1x-back-link,.bi1x-markdown-link { color: rgb(var(--color-moss)); text-decoration: underline; text-decoration-color: rgb(var(--color-moss) / 0.34); text-underline-offset: 0.2em; }
+.bi1x-section-nav { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.3rem 0 1.2rem; scrollbar-width: thin; }
+.bi1x-section-nav a { flex: 0 0 auto; max-width: 18rem; overflow: hidden; padding: 0.56rem 0.8rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 999px; background: rgb(var(--color-surface) / 0.58); color: rgb(var(--color-ink) / 0.64); font-size: 0.68rem; text-overflow: ellipsis; white-space: nowrap; }
+.bi1x-notebook-sections { display: grid; gap: 1rem; }
+.bi1x-notebook-section { scroll-margin-top: 1.5rem; padding: clamp(1.15rem, 3vw, 2rem); border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1.5rem; background: rgb(var(--color-surface) / 0.48); }
+.bi1x-section-heading { display: flex; align-items: baseline; gap: 0.8rem; padding-bottom: 1rem; border-bottom: 1px solid rgb(var(--color-ink) / 0.09); margin-bottom: 1rem; }
+.bi1x-section-heading > span { flex: 0 0 auto; color: rgb(var(--color-moss)); font-size: 0.58rem; font-weight: 750; letter-spacing: 0.12em; }
+.bi1x-section-heading h2 { font-family: var(--font-serif); font-size: clamp(1.2rem, 2.6vw, 1.75rem); letter-spacing: -0.025em; line-height: 1.25; }
+.bi1x-answer-copy { color: rgb(var(--color-ink) / 0.73); font-size: 0.84rem; line-height: 1.8; overflow-wrap: anywhere; }
+.bi1x-answer-copy p + p { margin-top: 0.8rem; }
+.bi1x-answer-copy strong { color: rgb(var(--color-ink)); font-weight: 700; }
+.bi1x-answer-heading { margin: 1.2rem 0 0.45rem; color: rgb(var(--color-ink)); font-size: 0.95rem; font-weight: 700; }
+.bi1x-answer-list { display: grid; gap: 0.35rem; margin: 0.65rem 0 0.9rem; padding-left: 1.25rem; list-style: disc; }
+.bi1x-answer-list ol { list-style: decimal; }
+.bi1x-answer-copy code,.bi1x-code-disclosure code { border-radius: 0.35rem; background: rgb(var(--color-ink) / 0.07); padding: 0.12rem 0.32rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88em; }
+.bi1x-table-wrap { max-width: 100%; overflow-x: auto; margin: 1rem 0; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 0.8rem; }
+.bi1x-table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: left; }
+.bi1x-table-wrap th,.bi1x-table-wrap td { min-width: 5rem; padding: 0.6rem 0.75rem; border-bottom: 1px solid rgb(var(--color-ink) / 0.08); vertical-align: top; }
+.bi1x-table-wrap th { background: rgb(var(--color-ink) / 0.04); color: rgb(var(--color-ink)); font-weight: 700; }
+.bi1x-inline-image,.bi1x-figure-image { display: block; max-width: min(100%, 44rem); max-height: 28rem; width: auto; height: auto; margin: 0 auto; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 0.6rem; object-fit: contain; }
+.bi1x-inline-image { margin-block: 1rem; }
+.bi1x-figure { min-width: 0; margin: 1.2rem 0; }
+.bi1x-image-link { display: block; width: 100%; cursor: zoom-in; }
+.bi1x-figure figcaption { display: grid; gap: .35rem; max-width: 44rem; margin: .65rem auto 0; color: rgb(var(--color-ink) / 0.56); font-size: 0.68rem; line-height: 1.6; text-align: center; }
+.bi1x-figure figcaption a { color: rgb(var(--color-moss)); text-underline-offset: .2em; text-decoration: underline; }
+.bi1x-figure-group { min-width: 0; margin-block: 1.5rem; }
+.bi1x-figure-group > .bi1x-code-disclosure { max-width: 44rem; margin-inline: auto; }
+.bi1x-figure-group > .bi1x-figure { margin-top: .75rem; }
+.bi1x-code-disclosure { margin-top: 0.8rem; border: 1px solid rgb(var(--color-ink) / 0.09); border-radius: 0.85rem; background: rgb(var(--color-paper) / 0.56); }
+.bi1x-code-disclosure summary { cursor: pointer; padding: 0.72rem 0.9rem; color: rgb(var(--color-ink) / 0.62); font-size: 0.72rem; font-weight: 650; }
+.bi1x-code-disclosure[open] summary { border-bottom: 1px solid rgb(var(--color-ink) / 0.08); }
+.bi1x-code-disclosure pre { max-height: 36rem; overflow: auto; margin: 0; padding: 1rem; color: rgb(var(--color-ink) / 0.75); font-size: 0.7rem; line-height: 1.65; tab-size: 4; }
+.bi1x-code-disclosure pre code { padding: 0; background: transparent; white-space: pre; }
+.bi1x-code-disclosure { min-width: 0; overflow: hidden; }
+.bi1x-code-disclosure summary > span { float: right; color: rgb(var(--color-ink) / .4); font-weight: 400; }
+.bi1x-python .shiki { background-color: var(--shiki-light-bg); color: var(--shiki-light); }
+.bi1x-python .shiki span { color: var(--shiki-light); }
+.dark .bi1x-python .shiki { background-color: var(--shiki-dark-bg); color: var(--shiki-dark); }
+.dark .bi1x-python .shiki span { color: var(--shiki-dark); }
+.bi1x-python .shiki code { font-size: 1em; }
+.bi1x-code-disclosure pre:focus-visible { outline: 2px solid rgb(var(--color-moss)); outline-offset: -3px; }
+.bi1x-notebook-section { min-width: 0; }
+.bi1x-report-page { max-width: 68rem; margin-inline: auto; }
+.bi1x-class-page { max-width: 60rem; margin-inline: auto; }
+.bi1x-report-list { display: grid; gap: .85rem; margin-top: 1.5rem; }
+.bi1x-report-row { display: grid; grid-template-columns: 4rem minmax(0, 1fr) auto; align-items: start; gap: 1.25rem; padding: clamp(1rem, 3vw, 1.75rem); border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.25rem; background: rgb(var(--color-surface) / .55); }
+.bi1x-report-row h2 { font-size: clamp(1.05rem, 2vw, 1.4rem); font-weight: 650; line-height: 1.3; }
+.bi1x-report-row p { margin-top: .45rem; color: rgb(var(--color-ink) / .6); font-size: .85rem; line-height: 1.6; }
+.bi1x-report-row div > span { display: block; margin-top: .65rem; color: rgb(var(--color-ink) / .45); font-size: .7rem; }
+.bi1x-report-number { padding-top: .25rem; color: rgb(var(--color-moss)); font-size: .64rem; font-weight: 750; letter-spacing: .1em; }
+.bi1x-code-note { margin-top: 0.7rem; color: rgb(var(--color-ink) / 0.4); font-size: 0.62rem; }
+.bi1x-report-pagination { display: flex; justify-content: space-between; gap: 1rem; padding: 1.3rem 0; margin-top: 1.2rem; border-top: 1px solid rgb(var(--color-ink) / 0.1); color: rgb(var(--color-moss)); font-size: 0.75rem; }
+@media (max-width: 900px) { .bi1x-project-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .bi1x-project-cards { grid-template-columns: 1fr; }
+  .bi1x-project-card { min-height: 12rem; }
+  .bi1x-report-topline { align-items: flex-start; flex-direction: column; gap: 0.4rem; }
+  .bi1x-section-heading { align-items: flex-start; flex-direction: column; gap: 0.35rem; }
+  .bi1x-section-nav { margin-inline: -1rem; padding-inline: 1rem; }
+  .bi1x-report-pagination { font-size: 0.67rem; }
+  .bi1x-report-row { grid-template-columns: minmax(0, 1fr) auto; gap: .6rem; }
+  .bi1x-report-number { grid-column: 1 / -1; }
+  .bi1x-inline-image,.bi1x-figure-image { max-height: 22rem; }
+  .bi1x-code-disclosure pre { max-height: 24rem; }
+}
+
+/* Fall schedule builder */
+.course-schedule-shell { margin-top: clamp(3.5rem, 8vw, 6.5rem); padding: clamp(1rem, 3vw, 2rem); border: 1px solid rgb(var(--color-ink) / 0.11); border-radius: clamp(1.35rem, 3vw, 2rem); background: linear-gradient(135deg, rgb(var(--color-surface) / 0.88), rgb(var(--color-paper) / 0.68)); box-shadow: 0 20px 56px rgb(var(--color-ink) / 0.05); }
+.course-schedule-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+.course-schedule-eyebrow { color: rgb(var(--color-moss)); font-size: 0.64rem; font-weight: 750; letter-spacing: 0.11em; text-transform: uppercase; }
+.course-schedule-heading h2 { margin-top: 0.45rem; font-family: var(--font-serif); font-size: clamp(1.7rem, 4vw, 2.7rem); letter-spacing: -0.045em; line-height: 1; }
+.course-schedule-heading > div > p:last-child { max-width: 48rem; margin-top: 0.85rem; color: rgb(var(--color-ink) / 0.64); font-size: 0.84rem; line-height: 1.7; }
+.course-schedule-source { flex: 0 0 auto; padding: 0.66rem 0.86rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 999px; color: rgb(var(--color-ink) / 0.72); font-size: 0.68rem; font-weight: 680; text-decoration: none; transition: transform 180ms var(--ease-standard), background-color 180ms ease; }
+.course-schedule-source:hover { transform: translateY(-2px); background: rgb(var(--color-ink) / 0.055); }
+.course-schedule-summary { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.2rem; }
+.course-schedule-summary > span { padding: 0.42rem 0.62rem; border: 1px solid rgb(var(--color-ink) / 0.08); border-radius: 999px; background: rgb(var(--color-paper) / 0.48); color: rgb(var(--color-ink) / 0.55); font-size: 0.64rem; }
+.course-schedule-summary strong { color: rgb(var(--color-ink)); font-weight: 760; }
+.course-schedule-summary .course-schedule-conflict-count { border-color: rgb(210 92 72 / 0.3); background: rgb(210 92 72 / 0.08); color: rgb(166 60 45); }
+.course-schedule-workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, 20rem); gap: clamp(1rem, 2.5vw, 1.5rem); margin-top: 1.4rem; }
+.course-schedule-calendar-wrap { min-width: 0; }
+.course-schedule-calendar { position: relative; display: grid; min-width: 42rem; grid-template-columns: 3.8rem repeat(5, minmax(6.8rem, 1fr)); grid-template-rows: 2.15rem repeat(44, 0.8rem); overflow: hidden; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 1.05rem; background: rgb(var(--color-paper) / 0.68); isolation: isolate; }
+.course-schedule-calendar-wrap { overflow-x: auto; padding-bottom: 0.35rem; scrollbar-width: thin; }
+.course-schedule-calendar-label,.course-schedule-day { display: grid; z-index: 3; align-items: center; border-bottom: 1px solid rgb(var(--color-ink) / 0.1); background: rgb(var(--color-surface) / 0.94); color: rgb(var(--color-ink) / 0.48); font-size: 0.61rem; font-weight: 740; letter-spacing: 0.06em; text-align: center; text-transform: uppercase; }
+.course-schedule-calendar-label { grid-column: 1; grid-row: 1; }
+.course-schedule-day { grid-row: 1; }
+.course-schedule-day:nth-of-type(2) { grid-column: 2; }.course-schedule-day:nth-of-type(3) { grid-column: 3; }.course-schedule-day:nth-of-type(4) { grid-column: 4; }.course-schedule-day:nth-of-type(5) { grid-column: 5; }.course-schedule-day:nth-of-type(6) { grid-column: 6; }
+.course-schedule-time { z-index: 2; align-self: start; padding: 0.02rem 0.38rem 0 0; border-top: 1px solid rgb(var(--color-ink) / 0.065); color: rgb(var(--color-ink) / 0.4); font-size: 0.51rem; text-align: right; transform: translateY(-0.28rem); }
+.course-schedule-day-lane { z-index: 0; border-left: 1px solid rgb(var(--color-ink) / 0.07); background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(3.2rem - 1px), rgb(var(--color-ink) / 0.07) 3.2rem); }
+.course-schedule-event { z-index: 2; min-width: 0; margin: 0.08rem; overflow: hidden; border: 1px solid rgb(var(--color-moss) / 0.3); border-radius: 0.42rem; background: rgb(var(--color-moss) / 0.16); box-shadow: 0 2px 9px rgb(var(--color-ink) / 0.08); }
+.course-schedule-event.is-conflicting { z-index: 4; border-color: rgb(204 88 67 / 0.7); background: rgb(222 106 80 / 0.45); box-shadow: 0 3px 12px rgb(185 72 53 / 0.2); }
+.course-schedule-event button { display: grid; width: 100%; height: 100%; align-content: start; gap: 0.05rem; overflow: hidden; padding: 0.28rem 0.34rem; border: 0; background: transparent; color: rgb(var(--color-ink) / 0.8); cursor: pointer; text-align: left; }
+.course-schedule-event button:hover { background: rgb(var(--color-ink) / 0.07); }
+.course-schedule-event strong { overflow: hidden; font-size: 0.58rem; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }.course-schedule-event span { color: rgb(var(--color-ink) / 0.58); font-size: 0.5rem; line-height: 1.1; }.course-schedule-event small { display: none; margin-top: 0.06rem; font-size: 0.49rem; line-height: 1.15; }
+.course-schedule-event:hover small { display: block; }
+.course-schedule-drop-hint { margin: 0.65rem 0.2rem 0; color: rgb(var(--color-ink) / 0.47); font-size: 0.63rem; line-height: 1.45; }
+.course-schedule-selection { display: flex; min-width: 0; flex-direction: column; gap: 0.72rem; padding: 1rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1.05rem; background: rgb(var(--color-surface) / 0.56); }
+.course-schedule-selection h3,.course-schedule-catalog-heading h3 { margin-top: 0.3rem; font-family: var(--font-serif); font-size: 1.22rem; letter-spacing: -0.025em; }
+.course-schedule-empty { color: rgb(var(--color-ink) / 0.53); font-size: 0.71rem; line-height: 1.55; }
+.course-schedule-selected-list { display: grid; gap: 0.42rem; max-height: 20rem; overflow: auto; padding-right: 0.15rem; }
+.course-schedule-selected-list article { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; padding: 0.62rem; border: 1px solid rgb(var(--color-ink) / 0.09); border-radius: 0.7rem; background: rgb(var(--color-paper) / 0.55); }
+.course-schedule-selected-list article.is-conflicting { border-color: rgb(204 88 67 / 0.44); background: rgb(222 106 80 / 0.1); }
+.course-schedule-selected-list strong,.course-schedule-selected-list span { display: block; }.course-schedule-selected-list strong { color: rgb(var(--color-ink) / 0.82); font-size: 0.64rem; }.course-schedule-selected-list span,.course-schedule-selected-list p { margin-top: 0.12rem; color: rgb(var(--color-ink) / 0.48); font-size: 0.56rem; line-height: 1.35; }.course-schedule-selected-list button { flex: 0 0 auto; border: 0; background: transparent; color: rgb(var(--color-ink) / 0.45); cursor: pointer; font-size: 0.56rem; text-decoration: underline; text-underline-offset: 0.18em; }
+.course-schedule-conflict-note { padding: 0.58rem; border-radius: 0.65rem; background: rgb(222 106 80 / 0.1); color: rgb(151 53 39); font-size: 0.61rem; line-height: 1.45; }
+.course-schedule-plan-target { display: grid; gap: 0.35rem; padding-top: 0.25rem; border-top: 1px solid rgb(var(--color-ink) / 0.09); color: rgb(var(--color-ink) / 0.5); font-size: 0.58rem; font-weight: 650; }
+.course-schedule-plan-target select,.course-schedule-filters input,.course-schedule-filters select { width: 100%; border: 1px solid rgb(var(--color-ink) / 0.13); border-radius: 0.58rem; outline: none; background: rgb(var(--color-paper) / 0.75); color: rgb(var(--color-ink) / 0.78); font: inherit; }
+.course-schedule-plan-target select { padding: 0.52rem 0.58rem; font-size: 0.65rem; }.course-schedule-plan-target select:focus,.course-schedule-filters input:focus,.course-schedule-filters select:focus { border-color: rgb(var(--color-moss)); box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.12); }
+.course-schedule-move-button { width: 100%; padding: 0.57rem 0.6rem; border: 1px solid rgb(var(--color-moss) / 0.38); border-radius: 0.62rem; background: rgb(var(--color-moss) / 0.1); color: rgb(var(--color-ink) / 0.78); cursor: pointer; font-size: 0.61rem; font-weight: 700; text-align: left; transition: transform 180ms var(--ease-standard), background-color 180ms ease; }.course-schedule-move-button:hover:not(:disabled) { transform: translateY(-1px); background: rgb(var(--color-moss) / 0.18); }
+.course-schedule-catalog { margin-top: clamp(1.5rem, 3vw, 2.3rem); padding-top: 1.4rem; border-top: 1px solid rgb(var(--color-ink) / 0.1); }
+.course-schedule-catalog-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }.course-schedule-catalog-heading > p { max-width: 20rem; color: rgb(var(--color-ink) / 0.5); font-size: 0.66rem; line-height: 1.45; text-align: right; }
+.course-schedule-filters { display: grid; grid-template-columns: minmax(14rem, 1.4fr) minmax(8rem, .6fr) auto; align-items: end; gap: 0.72rem; margin-top: 1rem; }.course-schedule-filters label { display: grid; gap: 0.28rem; color: rgb(var(--color-ink) / 0.48); font-size: 0.58rem; font-weight: 680; }.course-schedule-filters input,.course-schedule-filters select { height: 2.15rem; padding: 0 0.66rem; font-size: 0.7rem; }.course-schedule-filters .course-schedule-meeting-filter { display: flex; align-items: center; gap: 0.4rem; min-height: 2.15rem; color: rgb(var(--color-ink) / 0.6); font-size: 0.61rem; }.course-schedule-filters .course-schedule-meeting-filter input { width: 0.82rem; height: 0.82rem; padding: 0; accent-color: rgb(var(--color-moss)); }
+.course-schedule-result-count { margin-top: 0.8rem; color: rgb(var(--color-ink) / 0.45); font-size: 0.61rem; }
+.course-schedule-table-wrap { overflow-x: auto; margin-top: 0.62rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 0.9rem; background: rgb(var(--color-paper) / 0.43); }.course-schedule-table-wrap table { width: 100%; min-width: 48rem; border-collapse: collapse; text-align: left; }.course-schedule-table-wrap th { padding: 0.64rem 0.75rem; border-bottom: 1px solid rgb(var(--color-ink) / 0.1); background: rgb(var(--color-ink) / 0.035); color: rgb(var(--color-ink) / 0.45); font-size: 0.55rem; font-weight: 750; letter-spacing: 0.075em; text-transform: uppercase; }.course-schedule-table-wrap td { padding: 0.64rem 0.75rem; border-bottom: 1px solid rgb(var(--color-ink) / 0.07); color: rgb(var(--color-ink) / 0.72); font-size: 0.65rem; vertical-align: top; }.course-schedule-table-wrap tbody tr { transition: background-color 160ms ease; }.course-schedule-table-wrap tbody tr:hover { background: rgb(var(--color-moss) / 0.055); }.course-schedule-table-wrap td strong,.course-schedule-table-wrap td span { display: block; }.course-schedule-table-wrap td strong { font-weight: 700; line-height: 1.35; }.course-schedule-table-wrap td span { margin-top: 0.14rem; color: rgb(var(--color-ink) / 0.47); font-size: 0.56rem; line-height: 1.35; }.course-schedule-add-button,.course-schedule-more-button { border: 1px solid rgb(var(--color-ink) / 0.13); border-radius: 0.5rem; background: rgb(var(--color-surface) / 0.7); color: rgb(var(--color-ink) / 0.7); cursor: pointer; font-size: 0.61rem; font-weight: 700; transition: transform 160ms var(--ease-standard), background-color 160ms ease; }.course-schedule-add-button { padding: 0.42rem 0.54rem; }.course-schedule-add-button:hover:not(:disabled),.course-schedule-more-button:hover { transform: translateY(-1px); background: rgb(var(--color-moss) / 0.12); }.course-schedule-add-button:disabled { cursor: default; opacity: 0.5; }.course-schedule-more-button { display: block; padding: 0.65rem 0.85rem; margin: 0.9rem auto 0; }
+@media (max-width: 900px) { .course-schedule-workspace { grid-template-columns: 1fr; }.course-schedule-selection { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }.course-schedule-selection > :first-child,.course-schedule-empty,.course-schedule-selected-list,.course-schedule-conflict-note { grid-column: 1 / -1; }.course-schedule-selected-list { max-height: 12rem; }.course-schedule-filters { grid-template-columns: minmax(0, 1fr) minmax(8rem, .55fr); }.course-schedule-filters .course-schedule-meeting-filter { grid-column: 1 / -1; } }
+@media (max-width: 600px) { .course-schedule-shell { margin-inline: -0.25rem; padding: 0.85rem; }.course-schedule-heading { display: block; }.course-schedule-source { display: inline-block; margin-top: 0.8rem; }.course-schedule-heading > div > p:last-child { font-size: 0.74rem; }.course-schedule-summary { gap: 0.32rem; }.course-schedule-summary > span { font-size: 0.56rem; }.course-schedule-calendar { min-width: 34rem; grid-template-columns: 3.15rem repeat(5, minmax(6.15rem, 1fr)); }.course-schedule-event button { padding: 0.24rem; }.course-schedule-event strong { font-size: 0.51rem; }.course-schedule-event span { font-size: 0.46rem; }.course-schedule-selection { display: flex; }.course-schedule-catalog-heading { display: block; }.course-schedule-catalog-heading > p { margin-top: 0.45rem; text-align: left; }.course-schedule-filters { grid-template-columns: 1fr; }.course-schedule-filters .course-schedule-meeting-filter { grid-column: auto; }.course-schedule-table-wrap { margin-inline: -0.15rem; }.course-schedule-table-wrap td,.course-schedule-table-wrap th { padding-inline: 0.58rem; } }
+
+/* Keep the searchable course list beside the weekly grid on larger screens. */
+.course-schedule-workspace { grid-template-columns: minmax(15rem, 18rem) minmax(32rem, 1fr); align-items: start; }
+.course-schedule-catalog { display: flex; min-width: 0; max-height: 43rem; flex-direction: column; padding: 1rem; border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1.05rem; background: rgb(var(--color-surface) / 0.56); }
+.course-schedule-catalog-heading { display: block; }.course-schedule-catalog-heading h3 { margin-top: 0.22rem; }.course-schedule-catalog-heading > p { display: none; }
+.course-schedule-filters { grid-template-columns: 1fr; gap: 0.55rem; margin-top: 0.8rem; }.course-schedule-filters .course-schedule-meeting-filter { grid-column: auto; min-height: auto; }
+.course-schedule-table-wrap { flex: 1 1 auto; min-height: 0; overflow: auto; margin-top: 0.5rem; }.course-schedule-table-wrap table { min-width: 27rem; }.course-schedule-table-wrap th:nth-child(2),.course-schedule-table-wrap td:nth-child(2) { min-width: 8rem; }.course-schedule-table-wrap td { padding: 0.55rem; }.course-schedule-table-wrap th { padding: 0.55rem; }.course-schedule-more-button { display: none; }
+@media (max-width: 900px) { .course-schedule-workspace { grid-template-columns: 1fr; }.course-schedule-catalog { max-height: 32rem; } }
+
+.transcript-importer { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 1rem 1.5rem; padding: clamp(1rem, 3vw, 1.45rem); border: 1px solid rgb(var(--color-ink) / 0.1); border-radius: 1.25rem; background: rgb(var(--color-surface) / 0.55); }
+.transcript-importer h2 { margin-top: 0.35rem; font-family: var(--font-serif); font-size: clamp(1.2rem, 2.5vw, 1.6rem); letter-spacing: -0.03em; }.transcript-importer > div > p:last-child { max-width: 42rem; margin-top: 0.5rem; color: rgb(var(--color-ink) / 0.55); font-size: 0.72rem; line-height: 1.55; }
+.transcript-import-button,.transcript-import-confirm { border: 1px solid rgb(var(--color-moss) / 0.4); border-radius: 999px; background: rgb(var(--color-moss) / 0.12); color: rgb(var(--color-ink) / 0.8); cursor: pointer; font-size: 0.68rem; font-weight: 720; transition: transform 180ms var(--ease-standard), background-color 180ms ease; }.transcript-import-button { padding: 0.68rem 0.9rem; }.transcript-import-button:hover,.transcript-import-confirm:hover:not(:disabled) { transform: translateY(-1px); background: rgb(var(--color-moss) / 0.2); }
+.transcript-import-message { grid-column: 1 / -1; margin-top: -0.35rem; color: rgb(var(--color-ink) / 0.52); font-size: 0.67rem; }.transcript-import-message.is-error { color: rgb(165 65 46); }.transcript-import-message.is-imported { color: rgb(var(--color-moss)); }
+.transcript-import-preview { display: grid; grid-column: 1 / -1; gap: 0.65rem; padding-top: 0.75rem; border-top: 1px solid rgb(var(--color-ink) / 0.08); }.transcript-import-preview-head { display: flex; justify-content: space-between; color: rgb(var(--color-ink) / 0.55); font-size: 0.64rem; font-weight: 650; }.transcript-import-preview-head button { border: 0; background: transparent; color: rgb(var(--color-moss)); cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: .2em; }
+.transcript-import-course-list { display: grid; max-height: 16rem; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.38rem; overflow: auto; padding-right: 0.2rem; }.transcript-import-course-list label { display: flex; align-items: flex-start; gap: .45rem; padding: .52rem; border: 1px solid rgb(var(--color-ink) / .08); border-radius: .65rem; background: rgb(var(--color-paper) / .5); cursor: pointer; }.transcript-import-course-list input { flex: 0 0 auto; margin-top: .12rem; accent-color: rgb(var(--color-moss)); }.transcript-import-course-list strong,.transcript-import-course-list small { display: block; }.transcript-import-course-list strong { color: rgb(var(--color-ink) / .76); font-size: .63rem; }.transcript-import-course-list small { margin-top: .12rem; color: rgb(var(--color-ink) / .44); font-size: .53rem; line-height: 1.35; }.transcript-import-confirm { justify-self: end; padding: .6rem .82rem; border-radius: .65rem; }.transcript-import-confirm:disabled { cursor: default; opacity: .45; }
+@media (max-width: 720px) { .transcript-importer { grid-template-columns: 1fr; }.transcript-import-button { justify-self: start; }.transcript-import-course-list { grid-template-columns: 1fr; } }
+
+.course-schedule-catalog .course-schedule-table-wrap table { min-width: 0; table-layout: fixed; }.course-schedule-catalog .course-schedule-table-wrap th:nth-child(2),.course-schedule-catalog .course-schedule-table-wrap td:nth-child(2) { display: none; }.course-schedule-catalog .course-schedule-table-wrap th:last-child,.course-schedule-catalog .course-schedule-table-wrap td:last-child { width: 3.6rem; }.course-schedule-catalog .course-schedule-table-wrap td:first-child { overflow: hidden; }.course-schedule-catalog .course-schedule-table-wrap td:first-child strong,.course-schedule-catalog .course-schedule-table-wrap td:first-child span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.registrar-form-links { display: grid; grid-template-columns: minmax(10rem, .45fr) minmax(0, 1.55fr); align-items: start; gap: 1.25rem; margin-top: 1.15rem; padding: clamp(1rem, 2.5vw, 1.4rem); border: 1px solid rgb(var(--color-ink) / .1); border-radius: 1.15rem; background: rgb(var(--color-surface) / .52); }.registrar-form-links h2 { margin-top: .28rem; font-family: var(--font-serif); font-size: 1.35rem; letter-spacing: -.03em; }.registrar-form-link-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; }.registrar-form-link-list a { display: flex; min-height: 6.8rem; flex-direction: column; justify-content: space-between; padding: .75rem; border: 1px solid rgb(var(--color-ink) / .1); border-radius: .82rem; background: rgb(var(--color-paper) / .53); color: inherit; text-decoration: none; transition: transform 180ms var(--ease-standard), border-color 180ms ease, background-color 180ms ease; }.registrar-form-link-list a:hover { transform: translateY(-2px); border-color: rgb(var(--color-moss) / .45); background: rgb(var(--color-moss) / .08); }.registrar-form-link-list strong,.registrar-form-link-list small { display: block; }.registrar-form-link-list strong { color: rgb(var(--color-ink) / .78); font-size: .68rem; }.registrar-form-link-list small { margin-top: .35rem; color: rgb(var(--color-ink) / .48); font-size: .58rem; line-height: 1.4; }.registrar-form-link-list b { align-self: end; color: rgb(var(--color-moss)); font-size: .78rem; }
+@media (max-width: 720px) { .registrar-form-links { grid-template-columns: 1fr; }.registrar-form-link-list { grid-template-columns: 1fr; }.registrar-form-link-list a { min-height: auto; }.registrar-form-link-list b { margin-top: .55rem; } }
+
+.course-schedule-calendar-export { display: inline-flex; align-items: center; justify-content: center; padding: .57rem .58rem; border: 1px solid rgb(var(--color-ink) / .13); border-radius: .62rem; background: rgb(var(--color-paper) / .58); color: rgb(var(--color-ink) / .66); font-size: .59rem; font-weight: 700; text-decoration: none; transition: transform 180ms var(--ease-standard), background-color 180ms ease; white-space: nowrap; }.course-schedule-calendar-export:hover:not(:disabled) { transform: translateY(-1px); background: rgb(var(--color-moss) / .1); }
+
+/* Keep plan and calendar actions immediately above the weekly grid. */
+.course-schedule-calendar-actions { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: .55rem 1rem; margin-bottom: .8rem; }
+.course-schedule-calendar-actions .course-schedule-plan-target { width: min(12.5rem, 100%); padding: 0; border: 0; }
+.course-schedule-calendar-actions .course-schedule-action-list { display: flex; min-width: 0; flex-wrap: wrap; gap: .45rem; }
+.course-schedule-calendar-actions .course-schedule-move-button, .course-schedule-calendar-actions .course-schedule-calendar-export { width: auto; padding: .5rem .58rem; font-size: .58rem; white-space: nowrap; }
+.course-schedule-calendar-actions .course-schedule-calendar-export:disabled { cursor: not-allowed; opacity: .48; }
+.course-schedule-calendar-actions .course-schedule-conflict-note { grid-column: 1 / -1; margin: 0; }
+@media (max-width: 640px) {
+  .course-schedule-calendar-actions { grid-template-columns: 1fr; }
+  .course-schedule-calendar-actions .course-schedule-plan-target { width: 100%; }
+  .course-schedule-calendar-actions .course-schedule-action-list { width: 100%; }
 }

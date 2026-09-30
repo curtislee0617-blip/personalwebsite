@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { CaltechCoursePlanner } from "@/components/caltech-course-planner";
+import { CaltechCourseScheduler } from "@/components/caltech-course-scheduler";
+import { RegistrarFormLinks } from "@/components/registrar-form-links";
 
 export const metadata: Metadata = {
   title: "Course planner",
@@ -19,6 +21,8 @@ export default function CoursePlannerPage() {
       <div className="page-shell pb-4 pt-5 sm:pt-6"><HistoryBackButton fallbackHref="/tools">← Back to tools</HistoryBackButton></div>
       <div className="page-shell pb-16 sm:pb-20">
         <CaltechCoursePlanner />
+        <CaltechCourseScheduler />
+        <RegistrarFormLinks />
         <p className="mt-10 text-xs leading-5 text-ink/40">
           Requirements are transcribed or compactly summarized from the Caltech Academic Catalog&apos;s current graduation requirements pages and may drift from the current catalog year — always confirm against your degree audit. BEM minor is a practical checklist because the current catalog lists BEM as an option, not an official minor. Saved locally in your browser, and to the cloud if you sign in above.
         </p>

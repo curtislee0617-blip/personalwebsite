@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 type FormStatus = "idle" | "sending" | "sent" | "error";
 
@@ -19,15 +18,18 @@ export function WebsiteErrorFeedback() {
     setStatus("sending");
     setMessage("");
 
-    const supabase = createClient();
-    const { error } = await supabase.from("website_error_feedback").insert({
-      page_url: String(formData.get("pageUrl") ?? "").trim() || window.location.href,
-      message: String(formData.get("message") ?? "").trim(),
-      submitter_name: String(formData.get("submitterName") ?? "").trim() || null,
+    const response = await fetch("/api/website-feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pageUrl: String(formData.get("pageUrl") ?? "").trim() || window.location.href,
+        message: String(formData.get("message") ?? "").trim(),
+        submitterName: String(formData.get("submitterName") ?? "").trim() || null,
+        website: String(formData.get("website") ?? ""),
+      }),
     });
 
-    if (error) {
-      console.error("Website error feedback submission failed", error);
+    if (!response.ok) {
       setStatus("error");
       setMessage("Feedback is not connected yet. Please try again later.");
       return;

@@ -4,10 +4,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { gsap } from "gsap";
+import { SpringValue } from "@react-spring/web";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
+import { CORNER_SPRING, cornerProgress, cornerTransform, distanceFromCorner } from "@/lib/corner-bubble-motion";
 import { navIconForPath } from "@/lib/page-cursors";
 
 const links = [
@@ -21,7 +22,8 @@ export function SiteHeader() {
   const shellRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const navigatingRef = useRef(false);
-  const openingMenuRef = useRef<gsap.core.Timeline | null>(null);
+  const openingMenuRef = useRef<{ animate: (show: boolean) => void; stop: () => void } | null>(null);
+  const menuTargetRef = useRef(true);
   const pathname = usePathname();
   const router = useRouter();
   const isProjectViewer = pathname.startsWith("/projects/");
@@ -34,15 +36,15 @@ export function SiteHeader() {
       return;
     }
 
-    const timeline = openingMenuRef.current;
-    if (timeline) timeline.timeScale(1.35).reverse();
+    const animation = openingMenuRef.current;
+    if (animation) animation.animate(false);
     else setOpen(false);
   }, [open]);
 
   function toggleMenu() {
     if (navigatingRef.current) return;
     if (open) {
-      if (openingMenuRef.current?.reversed()) openingMenuRef.current.timeScale(1).play();
+      if (!menuTargetRef.current) openingMenuRef.current?.animate(true);
       else closeMenu();
       return;
     }
@@ -51,29 +53,71 @@ export function SiteHeader() {
 
   useLayoutEffect(() => {
     if (!open) return;
+    menuTargetRef.current = true;
 
     const panel = document.getElementById("site-menu-panel");
-    if (!panel) return;
+    const button = buttonRef.current;
+    if (!panel || !button) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (preference.matches) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.set(panel, { clearProps: "all" });
-      return;
-    }
-
-    const items = gsap.utils.toArray<HTMLElement>(
-      "#site-menu-panel .site-menu-titlebar, #site-menu-panel .site-menu-link:not(.site-menu-theme-toggle), #site-menu-panel .site-menu-theme-control",
-    );
-    const timeline = gsap.timeline({ onReverseComplete: () => setOpen(false) });
-    openingMenuRef.current = timeline;
-    gsap.set(items, { autoAlpha: 0, y: 10 });
-    timeline
-      .fromTo(panel, { autoAlpha: 0, scale: 0.84 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "power3.out" })
-      .to(items, { autoAlpha: 1, y: 0, duration: 0.24, stagger: 0.025, ease: "power2.out" }, 0.08);
-
+    // Measure once at full size. Only transform and opacity change during motion.
+    panel.style.transform = "none";
+    panel.dataset.menuAnimating = "true";
+    const buttonRect = button.getBoundingClientRect();
+    const origin = { x: buttonRect.left + buttonRect.width / 2, y: buttonRect.top + buttonRect.height / 2 };
+    const items = Array.from(panel.querySelectorAll<HTMLElement>(
+      ".site-menu-link:not(.site-menu-theme-toggle), .site-menu-theme-control",
+    ));
+    const title = panel.querySelector<HTMLElement>(".site-menu-titlebar");
+    const prepared = items.map((element) => ({ element, rect: element.getBoundingClientRect() }))
+      .sort((a, b) => distanceFromCorner(a.rect, origin) - distanceFromCorner(b.rect, origin));
+    const motion = new SpringValue(0);
+    let disposed = false;
+    let revision = 0;
+    const clearItems = () => {
+      for (const element of items) {
+        element.style.removeProperty("transform");
+        element.style.removeProperty("opacity");
+      }
+      title?.style.removeProperty("opacity");
+      delete panel.dataset.menuAnimating;
+    };
+    const render = (progress: number) => {
+      panel.style.opacity = String(Math.min(1, progress / 0.3));
+      if (title) title.style.opacity = String(Math.min(1, progress / 0.65));
+      prepared.forEach(({ element, rect }, index) => {
+        const p = cornerProgress(progress, index);
+        element.style.transform = cornerTransform(rect, origin, p);
+        element.style.opacity = String(Math.min(1, p / 0.36));
+      });
+    };
+    const animate = (show: boolean) => {
+      menuTargetRef.current = show;
+      panel.dataset.menuAnimating = "true";
+      const currentRevision = ++revision;
+      void motion.start({ to: show ? 1 : 0, config: CORNER_SPRING, onChange: ({ value }) => render(value) })
+        .then((result) => {
+          if (disposed || result.cancelled || revision !== currentRevision) return;
+          if (show) clearItems();
+          else setOpen(false);
+        });
+    };
+    openingMenuRef.current = { animate, stop: () => { ++revision; motion.stop(true); } };
+    render(0);
+    animate(true);
+    const settle = () => setOpen(false);
+    window.addEventListener("resize", settle);
+    preference.addEventListener("change", settle);
     return () => {
-      timeline.kill();
+      disposed = true;
+      motion.stop(true);
       openingMenuRef.current = null;
-      gsap.set([panel, ...items], { clearProps: "opacity,visibility,transform" });
+      window.removeEventListener("resize", settle);
+      preference.removeEventListener("change", settle);
+      clearItems();
+      panel.style.removeProperty("opacity");
+      panel.style.removeProperty("transform");
     };
   }, [open]);
 
@@ -92,8 +136,8 @@ export function SiteHeader() {
       event.preventDefault();
       if (navigatingRef.current) return;
       navigatingRef.current = true;
-      // Preserve the menu's final arrangement until the shared transition clones it.
-      openingMenuRef.current?.progress(1).kill();
+      // Keep the menu mounted while its bubbles collapse into the page centre.
+      openingMenuRef.current?.stop();
       try {
         await runDashboardBubbleTransition({ direction: "undock", href, router });
       } finally {

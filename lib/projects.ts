@@ -126,6 +126,16 @@ export const projects: ProjectEntry[] = [
     ],
   },
   {
+    slug: "bi1x",
+    eyebrow: "Biology · Caltech",
+    title: "Bi1x Laboratory class",
+    year: "April–June 2025",
+    description: "Six laboratory reports exploring DNA, microscopy, mutation, bacterial growth, and antibiotic resistance, with Python analysis and experimental figures.",
+    detail: [],
+    tags: ["Biology", "Laboratory", "Python", "Data analysis"],
+    previews: [{ src: "/bi1x/images/lab-2-c29cbf73.webp", alt: "Microscopy from the Bi1x laboratory class" }],
+  },
+  {
     slug: "tonbridge-food-science",
     eyebrow: "Tonbridge Science Conference",
     title: "The science of flavour",

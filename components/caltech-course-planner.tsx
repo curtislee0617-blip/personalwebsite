@@ -6,6 +6,7 @@ import { scheduledUnitsForCourseLabel } from "@/lib/caltech-course-units";
 import { buildAccountLoginKey, COURSE_PLAN_STORAGE_KEY, displayNameFor, fetchCoursePlan, loadStoredIdentity, saveCoursePlan, saveStoredIdentity, type StoredIdentity } from "@/lib/course-plan-sync";
 import { normalizeNumericInputText } from "@/lib/numeric-input";
 import type { Json } from "@/lib/supabase/database.types";
+import { TranscriptImporter } from "@/components/transcript-importer";
 
 const YEARS = [1, 2, 3, 4] as const;
 const TERMS = ["Fall", "Winter", "Spring"] as const;
@@ -741,6 +742,66 @@ export function CaltechCoursePlanner() {
     window.localStorage.setItem(LOCAL_MAJORS_STORAGE_KEY, JSON.stringify(loginMajors));
   }, [identity, loginMajors]);
 
+  // The Fall timetable beneath this planner can hand a real course into any term.
+  // Keep this small bridge here so schedule data never changes the saved-plan shape.
+  useEffect(() => {
+    const addScheduledCourse = (event: Event) => {
+      const detail = (event as CustomEvent<{ label?: unknown; units?: unknown; cell?: unknown }>).detail;
+      const label = detail?.label;
+      const cell = detail?.cell;
+      if (typeof label !== "string" || typeof cell !== "string") return;
+      if (!/^([1-4])-(Fall|Winter|Spring)$/.test(cell)) return;
+      const id = newId("scheduled-class");
+      const year = Number(cell.split("-")[0]);
+      setPlan((currentPlan) => ({
+        ...currentPlan,
+        classes: {
+          ...currentPlan.classes,
+          [id]: {
+            id,
+            label,
+            units: sanitizeUnits(detail.units, 0),
+            unitsEdited: true,
+            done: false,
+            cell,
+            requirementIds: [],
+          },
+        },
+      }));
+      setCollapsedYears((current) => ({ ...current, [year]: false }));
+    };
+    window.addEventListener("caltech-course-schedule-add", addScheduledCourse);
+    return () => window.removeEventListener("caltech-course-schedule-add", addScheduledCourse);
+  }, []);
+
+  useEffect(() => {
+    const importTranscriptCourses = (event: Event) => {
+      const incoming = (event as CustomEvent<{ courses?: Array<{ code?: unknown; units?: unknown; cell?: unknown }> }>).detail?.courses;
+      if (!Array.isArray(incoming)) return;
+      const validated = incoming.flatMap((course) => (
+        typeof course.code === "string" && typeof course.cell === "string" && /^([1-4])-(Fall|Winter|Spring)$/.test(course.cell)
+          ? [{ code: course.code, units: sanitizeUnits(course.units, 0), cell: course.cell }]
+          : []
+      ));
+      if (!validated.length) return;
+      setPlan((currentPlan) => {
+        const classes = { ...currentPlan.classes };
+        const existing = new Set(Object.values(classes).map((cls) => `${cls.label.trim().toLocaleLowerCase()}|${cls.cell}`));
+        for (const course of validated) {
+          const key = `${course.code.trim().toLocaleLowerCase()}|${course.cell}`;
+          if (existing.has(key)) continue;
+          const id = newId("transcript-class");
+          classes[id] = { id, label: course.code, units: course.units, unitsEdited: true, done: true, cell: course.cell, requirementIds: [] };
+          existing.add(key);
+        }
+        return { ...currentPlan, classes };
+      });
+      setCollapsedYears((current) => ({ ...current, 1: false, 2: false, 3: false, 4: false }));
+    };
+    window.addEventListener("caltech-course-transcript-import", importTranscriptCourses);
+    return () => window.removeEventListener("caltech-course-transcript-import", importTranscriptCourses);
+  }, []);
+
   // Debounce cloud saves so rapid edits (typing a rename, checking several boxes) coalesce into one write.
   useEffect(() => {
     if (!hasLoadedRef.current || !identity || loginMajors.length === 0) return;
@@ -1156,6 +1217,8 @@ export function CaltechCoursePlanner() {
           </div>
         )}
       </section>
+
+      <TranscriptImporter />
 
       <section className="rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 sm:p-6">
         <div>

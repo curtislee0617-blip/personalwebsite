@@ -1,0 +1,89 @@
+.tools-collage { display: grid; gap: 2rem; }
+.tools-category { min-width: 0; }
+.tools-category .tool-card h3 { line-height: 1.25; }
+.tool-astronomy-preview { position: relative; height: 13rem; background: radial-gradient(ellipse at 60% 35%, #193a50, #081421 75%); color: #eef4eb; }
+.tool-earth-scene { position: absolute; inset: 0; pointer-events: none; }
+.tool-astronomy-preview::after { content: ""; position: absolute; inset: 45% 0 0; pointer-events: none; background: linear-gradient(transparent, #030916b8); }
+.earth-preview-visual, .earth-preview-canvas { position: relative; width: 100%; height: 100%; }
+.earth-preview-canvas canvas { display: block; width: 100%; height: 100%; }
+.tool-astronomy-now { position: absolute; z-index: 1; left: 1.15rem; right: 1.15rem; bottom: 1rem; display: grid; gap: .2rem; text-shadow: 0 1px 8px #030916; }
+.tool-astronomy-now span { font-size: .55rem; letter-spacing: .13em; text-transform: uppercase; color: #b1cec8; }
+.tool-astronomy-now strong { font-size: 1.1rem; font-weight: 550; }
+.tool-astronomy-now small { font-size: .6rem; color: #9cb2c1; }
+.tool-astronomy-now time { font-variant-numeric: tabular-nums; }
+.tool-astronomy-now .tool-earth-weather { color: #d4e4ec; font-size: .56rem; }
+.tool-earth-cloud-label { position: absolute; z-index: 1; top: 2.8rem; left: 1.25rem; color: #b4c3d0; font-size: .48rem; text-shadow: 0 1px 4px #030916; }
+/* Use the available page width, including a resized desktop sidebar. */
+.tools-page-content { container: tools-layout / inline-size; }
+.tools-column { display: grid; gap: 2rem; min-width: 0; align-content: start; }
+
+@media (min-width: 640px) {
+  .tools-collage {
+    --tools-gap: clamp(1.25rem, 2.5vw, 2rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--tools-gap);
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+  .tools-column { gap: clamp(1.75rem, 4cqi, 2.5rem); }
+  .tools-category { container: tool-section / inline-size; }
+  .tools-category .section-title { font-size: clamp(1.4rem, 2.5vw, 2rem); }
+  .tools-category .tools-category-cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--tools-gap);
+    overflow: visible;
+    margin: 0;
+    padding: 1rem 0 0;
+  }
+  .tools-category :is(.mobile-snap-slot, .mobile-snap-depth) { display: contents; }
+  .tools-category .tool-card {
+    container: tool-card / inline-size;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    min-height: min-content;
+    aspect-ratio: 6 / 5;
+  }
+  .tools-category .tool-thumbnail {
+    flex: none;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 88 / 31;
+  }
+  .tools-category .tool-card-copy {
+    flex: 1;
+    align-items: flex-start;
+    gap: .75rem;
+    min-height: min-content;
+    padding: clamp(.85rem, 4.5cqi, 1.15rem);
+  }
+  .tools-category .tool-card-copy > div { min-width: 0; }
+  .tools-category .tool-card-copy > span { align-self: flex-end; }
+  .tools-category .tool-card h3 { font-size: clamp(1rem, 5.5cqi, 1.25rem); line-height: 1.25; }
+  .tools-category .tool-card p { font-size: clamp(.8rem, 4cqi, .875rem); line-height: 1.6; }
+  .tools-category-photography .tool-card { aspect-ratio: auto; }
+  .tools-category-photography .tool-thumbnail { aspect-ratio: 16 / 9; }
+}
+
+/* A third card column appears only when every bubble has room to breathe. */
+@container tools-layout (min-width: 64rem) {
+  .tools-collage { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 76rem; }
+  .tools-column:last-child { grid-column: span 2; }
+  .tools-category-chemistry .tools-category-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 639px) {
+  .tools-column { display: contents; }
+  .tools-category-planning { order: 0; }
+  .tools-category-chemistry { order: 1; }
+  .tools-category-photography { order: 2; }
+  .tools-category-thermodynamics { order: 3; }
+  .tools-category-photography .mobile-snap-slot { width: min(18rem, calc(100vw - 4rem)); flex-basis: min(18rem, calc(100vw - 4rem)); }
+  .tools-category-photography .tool-astronomy-preview { height: 13rem !important; }
+}
+
+.tool-earth-preview-label { position: absolute; top: .8rem; left: 1.15rem; padding: .3rem .5rem; border: 1px solid #65849955; border-radius: 99px; background: #07111fcc; color: #c4d9e4; font-size: .55rem; letter-spacing: .06em; }
+.tool-astronomy-preview { background: #030916; }

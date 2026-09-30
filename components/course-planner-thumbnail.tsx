@@ -3,28 +3,25 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { COURSE_PLAN_STORAGE_KEY, fetchCoursePlan, loadStoredIdentity } from "@/lib/course-plan-sync";
 
-// The drag-in animation uses the viewer's own saved schedule: one real class
-// per term (the first in each populated cell) drops into place as a colored
-// requirement bubble, staggered in waves so several land together. Terms with
-// no class are skipped entirely.
-// Requirement colours from the real planner (data/caltech-requirements), used
-// the same way the planner styles a chip: a low-opacity tint of the colour
-// behind text in the full colour.
+// Use the planner palette for compact, staggered stacks of course chips.
 const dropColors = ["#42a727", "#0c9b70", "#2a78d6", "#eb6834", "#7a4fc8", "#b96b00"];
 
-// When no saved plan has loaded (fresh browser / signed out), the animation
-// falls back to a representative Caltech ChemE + BEM schedule so the drag-in
-// demo never disappears. One class per listed term.
-const fallbackClasses: ThumbnailClass[] = [
-  { id: "f1", label: "Ch 1a", units: 9, done: true, cell: "1-Fall" },
-  { id: "f2", label: "Ph 1a", units: 9, done: true, cell: "1-Spring" },
-  { id: "f3", label: "ChE 63a", units: 9, done: true, cell: "2-Fall" },
-  { id: "f4", label: "ChE 63b", units: 9, done: false, cell: "2-Winter" },
-  { id: "f5", label: "ChE 103a", units: 9, done: false, cell: "3-Fall" },
-  { id: "f6", label: "ChE 130", units: 9, done: false, cell: "3-Spring" },
-  { id: "f7", label: "ChE 126", units: 9, done: false, cell: "4-Fall" },
-  { id: "f8", label: "BEM 103", units: 9, done: false, cell: "4-Winter" },
+// A populated example shows the animation when there is no saved plan.
+const exampleTerms = [
+  ["Ch 1a", "Ma 1a"], ["Ch 1b", "Ph 1b"], ["Ma 1c", "Ph 1c"],
+  ["ChE 63a", "Ch 21a"], ["ChE 63b", "Ch 21b"], ["ChE 64", "Ch 21c"],
+  ["ChE 103a", "BEM 103"], ["ChE 103b", "BEM 104"], ["ChE 130", "Hum elective"],
+  ["ChE 126", "ChE elective"], ["BEM 105", "Hum elective"], ["ChE elective", "SS elective"],
 ];
+const fallbackClasses: ThumbnailClass[] = exampleTerms.flatMap((labels, cellIndex) =>
+  labels.map((label, index) => ({
+    id: `example-${cellIndex}-${index}`,
+    label,
+    units: 9,
+    done: false,
+    cell: `${Math.floor(cellIndex / 3) + 1}-${["Fall", "Winter", "Spring"][cellIndex % 3]}`,
+  })),
+);
 
 type ThumbnailClass = {
   id: string;
@@ -101,28 +98,11 @@ export function CoursePlannerThumbnail() {
   }, [displayClasses]);
   const totalUnits = classes.reduce((sum, entry) => sum + entry.units, 0);
 
-  // Assign each populated term a drop order (two per wave) and a bubble colour,
-  // walking the grid in reading order. Empty terms take no slot.
-  const dropByCell = useMemo(() => {
-    const map = new Map<string, { wave: number; color: string }>();
-    let index = 0;
-    for (const year of YEARS) {
-      for (const term of TERMS) {
-        const cell = `${year}-${term}`;
-        if ((classesByCell.get(cell)?.length ?? 0) > 0) {
-          map.set(cell, { wave: Math.floor(index / 2), color: dropColors[index % dropColors.length] });
-          index += 1;
-        }
-      }
-    }
-    return map;
-  }, [classesByCell]);
-
   return (
     <div className="tool-thumbnail swipe-bubble-media tool-thumbnail-planner" aria-hidden="true">
       <div className="tool-planner-heading">
         <span>My 4-year plan</span>
-        <small>{classes.length > 0 ? `${classes.length} classes · ${totalUnits} units` : "Your saved schedule"}</small>
+        <small>{classes.length > 0 ? `${classes.length} classes · ${totalUnits} units` : "Example schedule"}</small>
       </div>
       <div className="tool-planner-term-headings"><i /><span>Fall</span><span>Winter</span><span>Spring</span></div>
       <div className="tool-planner-grid">
@@ -130,15 +110,20 @@ export function CoursePlannerThumbnail() {
           <div className="tool-planner-row" key={year}>
             <strong>Year {year}</strong>
             {TERMS.map((term) => {
-              const first = (classesByCell.get(`${year}-${term}`) ?? [])[0];
-              const drop = dropByCell.get(`${year}-${term}`);
-              // Every cell is an empty block; on hover one class per populated
-              // term drops into its block. Empty terms stay empty.
+              const cellClasses = (classesByCell.get(`${year}-${term}`) ?? []).slice(0, 3);
+              const cellIndex = (year - 1) * TERMS.length + TERMS.indexOf(term);
               return (
                 <span key={term}>
-                  {first && drop && (
-                    <i className="tool-planner-demo-chip" style={{ "--demo-chip-bg": `${drop.color}2b`, "--demo-chip-fg": drop.color, "--demo-index": drop.wave } as CSSProperties}>{first.label}</i>
-                  )}
+                  {cellClasses.map((entry, index) => {
+                    const color = dropColors[(cellIndex + index) % dropColors.length];
+                    return (
+                      <i
+                        key={entry.id}
+                        className="tool-planner-demo-chip"
+                        style={{ "--demo-chip-bg": `${color}2b`, "--demo-chip-fg": color, "--demo-index": cellIndex + index * 12 } as CSSProperties}
+                      >{entry.label}</i>
+                    );
+                  })}
                 </span>
               );
             })}

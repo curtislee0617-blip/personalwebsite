@@ -150,3 +150,118 @@
 @media (prefers-reduced-motion: reduce) {
   .astro-location-button, .astro-coordinate-form button { transition: none; }
 }
+
+/* Location, skyglow, and the interactive Earth. */
+.astro-location-prompt { display: grid; gap: 1rem; margin-top: 1rem; padding: 1.1rem; border: 1px solid rgb(var(--color-ink) / 0.12); border-radius: 1rem; background: rgb(var(--color-moss) / 0.07); }
+.astro-location-prompt strong { font-size: 0.95rem; }
+.astro-location-prompt p { max-width: 52rem; margin-top: 0.35rem; font-size: 0.78rem; line-height: 1.6; color: rgb(var(--color-ink) / 0.68); }
+.astro-location-prompt > div:last-child { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem 1rem; }
+.astro-location-prompt button, .astro-location-prompt a { font-size: 0.76rem; font-weight: 650; }
+.astro-location-prompt button { padding: 0.6rem 0.85rem; background: rgb(var(--color-ink)); color: rgb(var(--color-paper)); border-radius: 0.7rem; cursor: pointer; }
+.astro-location-prompt .astro-location-skip { background: transparent; color: rgb(var(--color-ink) / 0.6); }
+.astro-page button:disabled { cursor: wait; opacity: 0.55; }
+.astro-page :is(button, a, input):focus-visible { outline: 2px solid #658da5; outline-offset: 4px; }
+.astro-pollution-card { display: grid; grid-template-columns: 1.25fr 1fr; gap: 1.2rem 2rem; margin-top: 1.25rem; padding: clamp(1.25rem, 2.7vw, 2rem); background: rgb(var(--color-surface) / 0.72); border: 1px solid rgb(var(--color-ink) / 0.11); border-radius: 1.45rem; }
+.astro-pollution-card h2 { margin: 0.7rem 0 0.45rem; font-size: 1.55rem; line-height: 1.1; font-weight: 650; letter-spacing: -0.035em; }
+.astro-pollution-card p:not(.astro-section-number) { font-size: 0.8rem; line-height: 1.6; color: rgb(var(--color-ink) / 0.67); }
+.astro-pollution-values { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: center; }
+.astro-pollution-values strong { display: block; font-size: 2rem; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; }
+.astro-pollution-values span { display: block; margin-top: 0.3rem; font-size: 0.65rem; line-height: 1.5; color: rgb(var(--color-ink) / 0.6); }
+.astro-pollution-card > small { grid-column: 1 / -1; padding-top: 0.8rem; border-top: 1px solid rgb(var(--color-ink) / 0.08); font-size: 0.65rem; line-height: 1.6; color: rgb(var(--color-ink) / 0.55); }
+.astro-pollution-card a { text-decoration: underline; text-underline-offset: 3px; }
+.astro-earth-section, .astro-earth-loading { position: relative; margin-top: 1.25rem; overflow: hidden; border: 1px solid #243b4e; border-radius: 1.5rem; background: radial-gradient(ellipse at 28% 40%, #142c40, #060e1a 65%); color: #e8eeed; }
+.astro-earth-loading { min-height: 40rem; display: grid; place-items: center; color: #b7cbd7; }
+.astro-earth-section { padding: clamp(1.3rem, 3vw, 2.2rem); }
+.astro-earth-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.astro-earth-section .astro-section-number { color: #89b3c7; }
+.astro-earth-heading h2 { margin: 0.5rem 0; font-size: clamp(2rem, 4vw, 3.1rem); font-weight: 600; letter-spacing: -0.05em; line-height: 1.05; }
+.astro-earth-heading p { font-size: 0.8rem; line-height: 1.6; color: #97aebf; }
+.astro-earth-live { flex-shrink: 0; padding: 0.35rem 0.65rem; border: 1px solid #4a5c6b; border-radius: 99px; color: #b7c7d2; font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.astro-earth-live[data-live="true"] { color: #a4dac8; border-color: #376b61; }
+.astro-earth-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(12rem, 0.8fr); gap: 1rem; align-items: center; }
+.astro-globe-visual { min-width: 0; position: relative; }
+.astro-globe-canvas { width: 100%; height: clamp(20rem, 40vw, 34rem); cursor: grab; }
+.astro-globe-canvas:active { cursor: grabbing; }
+.astro-globe-canvas canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+.astro-globe-drag { position: absolute; top: 0.9rem; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: #92aabc; white-space: nowrap; pointer-events: none; }
+.astro-globe-camera { display: flex; gap: 0.4rem; align-items: center; justify-content: center; margin-top: -0.3rem; }
+.astro-globe-camera button { min-width: 2.5rem; min-height: 2.5rem; padding: 0.4rem 0.75rem; border: 1px solid #3c5265; border-radius: 99px; background: #132333; color: #c8d8df; font-size: 0.67rem; cursor: pointer; }
+.astro-globe-camera button:hover { background: #263d50; }
+.astro-globe-fallback { position: absolute; inset: 25% 10%; font-size: 0.9rem; line-height: 1.7; text-align: center; }
+.astro-earth-details { border-left: 1px solid #2b3e50; padding-left: clamp(1rem, 2.5vw, 2rem); }
+.astro-earth-kicker { color: #91aabd; font-size: 0.64rem; font-weight: 650; text-transform: uppercase; letter-spacing: 0.1em; }
+.astro-earth-clock { display: block; margin: 0.55rem 0 0.3rem; font-size: clamp(1.9rem, 3.1vw, 2.8rem); line-height: 1; font-variant-numeric: tabular-nums; font-weight: 500; letter-spacing: -0.04em; }
+.astro-earth-date { color: #90a9bc; font-size: 0.7rem; line-height: 1.8; }
+.astro-earth-condition { margin: 1.1rem 0; color: #d9dfba; font-size: 0.87rem; font-weight: 650; }
+.astro-earth-details dl { display: grid; gap: 0.6rem; padding: 0.9rem 0; border-top: 1px solid #2b3e50; border-bottom: 1px solid #2b3e50; font-size: 0.7rem; }
+.astro-earth-details dl > div { display: flex; justify-content: space-between; gap: 0.5rem; }
+.astro-earth-details dt { color: #91aabc; }
+.astro-earth-details dd { font-variant-numeric: tabular-nums; color: #d9e5e9; }
+.astro-earth-weather { margin-top: 1rem; }
+.astro-earth-weather > p { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4rem; margin: .45rem 0; color: #d9e5e9; font-size: .75rem; }
+.astro-earth-weather > small { color: #91aabc; font-size: .58rem; }
+.astro-moon-switch { display: flex; align-items: center; gap: 0.5rem; margin-top: 1.1rem; font-size: 0.72rem; cursor: pointer; }
+.astro-moon-switch input { accent-color: #99c7dd; width: 1rem; height: 1rem; }
+.astro-earth-pin-key { display: block; margin-top: 0.8rem; color: #ddca96; font-size: 0.65rem; }
+.astro-earth-scrubber { margin-top: 1.7rem; }
+.astro-earth-scrubber > div { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+.astro-earth-scrubber label { color: #cbdbe5; font-size: 0.72rem; }
+.astro-earth-scrubber button { min-height: 2.5rem; padding: 0.5rem 0.85rem; color: #b3dacf; background: #1c353a; border: 1px solid #315459; border-radius: 0.7rem; font-size: 0.7rem; cursor: pointer; }
+.astro-earth-scrubber input { width: 100%; height: 1.6rem; margin: 0.75rem 0 0.2rem; accent-color: #b5d9de; cursor: ew-resize; }
+.astro-earth-time-labels { color: #8ca5b9; font-size: 0.62rem; font-variant-numeric: tabular-nums; }
+.astro-earth-legend { display: flex; flex-wrap: wrap; gap: 0.7rem 1.3rem; margin-top: 1.5rem; color: #b5c8d5; font-size: 0.65rem; }
+.astro-earth-legend span { display: flex; align-items: center; gap: 0.4rem; }
+.astro-earth-legend i { width: 0.55rem; height: 0.55rem; border-radius: 50%; }
+.astro-earth-legend .day { background: #9aad90; }.astro-earth-legend .twilight { background: #4c7197; }.astro-earth-legend .moon { background: #92b8d3; }.astro-earth-legend .night { background: #142737; border: 1px solid #59738a; }
+.astro-earth-note { max-width: 62rem; margin-top: 0.8rem; color: #879fb2; font-size: 0.64rem; line-height: 1.65; }
+.astro-pollution-legend { display: flex; align-items: center; justify-content: center; gap: 0.65rem; margin-top: 0.8rem; font-size: 0.65rem; color: rgb(var(--color-ink) / 0.65); }
+.astro-pollution-legend i { height: 0.55rem; width: min(16rem, 45%); border-radius: 99px; background: linear-gradient(to right, #222, #214cd1, #20982c, #d9c43b, #f68b47, #ed6452, #f4f4f4); border: 1px solid rgb(var(--color-ink) / 0.2); }
+.astro-map-warning { padding: 0.75rem; background: rgb(var(--color-paper)); color: rgb(var(--color-ink)); font-size: 0.75rem; }
+#astro-scout { scroll-margin-top: 2rem; }
+@media (max-width: 700px) {
+  .astro-pollution-card { grid-template-columns: 1fr; }
+  .astro-pollution-values { max-width: 26rem; }
+  .astro-earth-layout { grid-template-columns: 1fr; gap: 1.5rem; }
+  .astro-globe-canvas { height: clamp(18rem, 86vw, 30rem); }
+  .astro-earth-details { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 1rem; border-left: 0; border-top: 1px solid #2b3e50; padding: 1.2rem 0 0; }
+  .astro-earth-kicker, .astro-earth-clock, .astro-earth-date, .astro-earth-condition { grid-column: 1; }
+  .astro-earth-details dl { grid-column: 2; grid-row: 1 / 4; border: 0; align-content: center; padding: 0; font-size: 0.63rem; }
+  .astro-earth-clock { font-size: 1.85rem; margin-top: 0.2rem; }
+  .astro-earth-condition { margin: 0.4rem 0; font-size: 0.78rem; }
+  .astro-moon-switch { grid-column: 2; grid-row: 4; margin-top: 0; font-size: 0.65rem; }
+  .astro-earth-pin-key { grid-column: 1 / -1; margin-top: 0.1rem; }
+  .astro-earth-weather { grid-column: 1 / -1; border-top: 1px solid #2b3e50; padding-top: .9rem; }
+  .astro-earth-weather dl { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem 1rem; padding: .4rem 0; }
+}
+
+.astro-page-heading { padding: .6rem 0 1.7rem; }
+.astro-page-heading .astro-eyebrow { color: rgb(var(--color-ink) / .5); }
+.astro-page-heading h1 { margin: .7rem 0; font-size: clamp(2rem, 4.5vw, 4rem); font-weight: 600; letter-spacing: -.055em; line-height: 1.05; }
+.astro-page-heading > p:last-child { font-size: .9rem; color: rgb(var(--color-ink) / .6); }
+.astro-current { display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5rem; align-items: center; padding: 1.5rem; border: 1px solid rgb(var(--color-ink) / .12); border-radius: 1.4rem; background: rgb(var(--color-surface) / .75); }
+.astro-current-place > span { font-size: .65rem; color: rgb(var(--color-ink) / .6); letter-spacing: .04em; }
+.astro-current-place h2 { margin: .5rem 0; font-size: 1.5rem; font-weight: 550; letter-spacing: -.04em; }
+.astro-current-place p { font-size: .7rem; color: rgb(var(--color-ink) / .6); }
+.astro-current dl { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.astro-current dt { font-size: .65rem; color: rgb(var(--color-ink) / .6); }
+.astro-current dd { margin-top: .3rem; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.astro-earth-scrubber > div:first-child { flex-wrap: wrap; justify-content: flex-start; gap: .6rem; }
+.astro-earth-scrubber label { margin-right: auto; }
+@media (max-width: 700px) {
+  .astro-current { grid-template-columns: 1fr; }
+  .astro-current dl { border-top: 1px solid rgb(var(--color-ink) / .1); padding-top: 1rem; }
+  .astro-earth-heading { flex-wrap: wrap; }
+  .astro-earth-scrubber label { flex-basis: 100%; }
+}
+.astro-earth-section { background: radial-gradient(ellipse at 28% 42%, #0a1725, #02060d 70%); }
+.astro-globe-canvas { height: clamp(22rem, 43vw, 36rem); }
+.astro-earth-pin-key { color: #b7e5ff; }
+@media (max-width: 700px) {
+ .astro-globe-canvas { height: clamp(18rem, 84vw, 30rem); }
+ .astro-globe-drag { font-size: .52rem; }
+}
+.astro-earth-display-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-top: 1.2rem; }
+.astro-earth-display-controls button { padding: .55rem .85rem; border: 1px solid #3a5367; border-radius: 99px; color: #a8bed1; font-size: .7rem; min-height: 2.5rem; }
+.astro-earth-display-controls button[aria-pressed="true"] { background: #d8e8e7; color: #102934; border-color: #d8e8e7; }
+.astro-earth-display-controls > span { margin-left: auto; color: #829aae; font-size: .62rem; }
+@media (max-width: 700px) { .astro-earth-display-controls > span { width: 100%; margin: .3rem 0; } }

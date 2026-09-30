@@ -21,7 +21,8 @@
     "maps:upload": "node scripts/upload-restaurants-to-supabase.mjs",
     "maps:report": "node scripts/report-google-maps-takeout.mjs",
     "maps:review": "node scripts/export-restaurant-review.mjs",
-    "photos:guide-previews": "node --experimental-strip-types scripts/build-guide-previews.mjs"
+    "photos:guide-previews": "node --experimental-strip-types scripts/build-guide-previews.mjs",
+    "courses:import-fall-2026": "node scripts/import-caltech-fall-2026-schedule.mjs"
   },
   "dependencies": {
     "@d3-maps/atlas": "^1.0.0",
@@ -44,6 +45,7 @@
     "@use-gesture/react": "^10.3.1",
     "@xstate/react": "^6.1.0",
     "animejs": "^4.5.0",
+    "astronomy-engine": "^2.1.19",
     "cytoscape": "^3.34.0",
     "d3-geo": "^3.1.1",
     "d3-selection": "^3.0.0",
@@ -55,10 +57,12 @@
     "matter-js": "^0.20.0",
     "motion": "^12.43.0",
     "next": "16.2.9",
+    "pdfjs-dist": "^6.3.289",
     "pixi.js": "^8.19.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "read-excel-file": "^9.2.0",
+    "shiki": "^4.4.3",
     "suncalc": "^2.0.2",
     "three": "^0.185.1",
     "topojson-client": "^3.1.0",
@@ -72,6 +76,7 @@
     "@types/matter-js": "^0.20.2",
     "@types/node": "26.0.1",
     "@types/react": "19.2.17",
+    "@types/three": "^0.186.0",
     "@types/topojson-client": "^3.1.5",
     "adm-zip": "^0.5.18",
     "autoprefixer": "10.4.19",

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { CoursePlannerThumbnail } from "@/components/course-planner-thumbnail";
 import { NmrPhaseThumbnailPath } from "@/components/nmr-phase-thumbnail-path";
 import { PageIntro } from "@/components/page-intro";
+import { AstronomyThumbnail } from "@/components/astronomy-thumbnail";
+import "./tools.css";
 import { SnapCarousel } from "@/components/snap-carousel";
 
 export const metadata: Metadata = { title: "Tools" };
@@ -71,15 +73,9 @@ const ethanolIrPath = spectrumPath({
 
 const toolSections: ToolSection[] = [
   {
-    title: "Photography",
-    tools: [
-      { href: "/tools/astronomical-darkness", title: "Astronomical darkness", description: "Find moonless dark-sky windows, twilight, moonrise and moonset, cloud forecasts, and nearby night lights.", kind: "astro" },
-    ],
-  },
-  {
     title: "Planning",
     tools: [
-      { href: "/tools/course-planner", title: "Course planner", description: "Plan four years at Caltech term by term, arranging course requirements while keeping track of classes that fulfil more than one requirement.", kind: "planner" },
+      { href: "/tools/course-planner", title: "Course planner", description: "Plan your four years at Caltech, organise courses by term, and track classes that fulfil multiple requirements.", kind: "planner" },
     ],
   },
   {
@@ -87,6 +83,12 @@ const toolSections: ToolSection[] = [
     tools: [
       { href: "/tools/ir-spectrum", title: "IR spectrum plotter", description: "Upload, compare, convert, and automatically label peaks in up to ten infrared spectra.", kind: "ir" },
       { href: "/tools/nmr-spectrum", title: "NMR spectrum processor", description: "Read Spinsolve data.1d files, process the complex FID, and inspect a calibrated frequency or ppm spectrum.", kind: "nmr" },
+    ],
+  },
+  {
+    title: "Photography",
+    tools: [
+      { href: "/tools/astronomical-darkness", title: "Astronomical darkness", description: "Find moonless dark-sky windows, twilight, moonrise and moonset, cloud forecasts, and nearby night lights.", kind: "astro" },
     ],
   },
   {
@@ -120,16 +122,7 @@ function CycleValue({ values, variant = "steady" }: { values: readonly string[];
 
 function ToolThumbnail({ kind }: { kind: ToolKind }) {
   if (kind === "astro") {
-    return (
-      <div className="tool-thumbnail swipe-bubble-media relative overflow-hidden rounded-2xl bg-[#101d31] p-5 text-[#edf5f4]" aria-hidden="true">
-        <div className="absolute right-10 top-4 h-11 w-11 rounded-full bg-[#f2f1df] shadow-[0_0_25px_#d1d9ec]" />
-        <div className="absolute right-6 top-4 h-11 w-11 rounded-full bg-[#101d31]" />
-        <div className="absolute bottom-0 left-0 right-0 h-12 rounded-[50%_50%_0_0] bg-[#1e3c4a]" />
-        <span className="relative z-10 text-[0.55rem] font-bold uppercase tracking-[0.16em] text-[#9ed1d2]">Tonight · Moonless</span>
-        <strong className="relative z-10 mt-8 block text-2xl tracking-tight">9:42 → 1:18</strong>
-        <div className="relative z-10 mt-4 h-2 overflow-hidden rounded-full bg-[#45617c]"><span className="ml-[28%] block h-full w-[41%] rounded-full bg-[#a5ddd0]" /></div>
-      </div>
-    );
+    return <AstronomyThumbnail />;
   }
 
   if (kind === "planner") {
@@ -188,7 +181,7 @@ function ToolThumbnail({ kind }: { kind: ToolKind }) {
 
 function ToolCard({ index, tool }: { index: number; tool: Tool }) {
   return (
-    <Link className="tool-card swipe-bubble-card group block w-[19rem] shrink-0 rounded-[1.5rem] border border-ink/10 bg-surface/55 p-5 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem] sm:p-6" data-reveal data-spotlight href={tool.href} style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}>
+    <Link className="tool-card swipe-bubble-card group block w-[19rem] shrink-0 rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 hover:bg-surface sm:w-[22rem]" data-reveal data-spotlight href={tool.href} style={{ "--reveal-delay": `${index * 80}ms` } as CSSProperties}>
       <ToolThumbnail kind={tool.kind} />
       <div className="tool-card-copy swipe-bubble-copy flex items-end justify-between gap-5">
         <div>
@@ -205,17 +198,23 @@ export default function ToolsPage() {
   return (
     <>
       <PageIntro title="Tools" description="Random tools for school, and maybe other things later on." />
-      <div className="tools-page-content page-section space-y-10 pt-8 sm:pt-10 lg:pt-12">
-        {toolSections.map((section) => (
-          <section key={section.title}>
+      <div className="tools-page-content page-section pt-8 sm:pt-10 lg:pt-12">
+        <div className="tools-collage">
+        {[["Planning", "Thermodynamics"], ["Chemistry", "Photography"]].map((column, columnIndex) => (
+          <div className="tools-column" key={columnIndex}>
+          {column.map(title => toolSections.find(section => section.title === title)!).map((section) => (
+          <section className={`tools-category tools-category-${section.title.toLowerCase()}`} key={section.title}>
             <h2 className="section-title">{section.title}</h2>
-            <SnapCarousel className="mobile-snap-carousel -mx-5 -mt-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 pt-6 sm:mx-0 sm:px-0" repeatEdges={false}>
+            <SnapCarousel className="tools-category-cards mobile-snap-carousel -mx-5 -mt-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 pt-6 sm:mx-0 sm:px-0" repeatEdges={false}>
               {section.tools.map((tool, index) => (
                 <ToolCard index={index} key={tool.href} tool={tool} />
               ))}
             </SnapCarousel>
           </section>
+          ))}
+          </div>
         ))}
+        </div>
       </div>
     </>
   );

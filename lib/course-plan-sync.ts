@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/client";
 import type { MajorId } from "@/data/caltech-requirements";
 import type { Json } from "@/lib/supabase/database.types";
 
@@ -12,6 +11,13 @@ export type StoredIdentity = {
 
 const IDENTITY_STORAGE_KEY = "caltech-course-planner-identity-v1";
 export const COURSE_PLAN_STORAGE_KEY = "caltech-course-planner-v2";
+
+type RemoteCoursePlan = {
+  login_key: string;
+  display_name: string;
+  majors: string[];
+  plan: Json;
+};
 
 /** Legacy profile key kept so existing saved plans can be found and migrated without deleting them. */
 export function buildLegacyLoginKey(name: string, majorIds: MajorId[]) {
@@ -57,25 +63,29 @@ export function saveStoredIdentity(identity: StoredIdentity | null) {
 
 /** Returns the saved row, or null if this login_key has never saved a plan before. */
 export async function fetchCoursePlan(loginKey: string) {
-  const supabase = createClient();
-  const { data, error } = await supabase.rpc("get_course_plan", { p_login_key: loginKey });
-  if (error) throw error;
-  // A PostgreSQL function returning a composite row produces an object whose
-  // fields are all null when no row matches, rather than JavaScript `null`.
-  // Normalize that wire shape so a new login combination reaches account
-  // creation instead of being mistaken for an existing profile.
-  if (!data?.login_key || !Array.isArray(data.majors)) return null;
-  return data;
+  const response = await fetch("/api/course-plan", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "load", loginKey }),
+  });
+  if (!response.ok) throw new Error("Unable to load the saved course plan.");
+  const result = await response.json() as { plan?: RemoteCoursePlan | null };
+  return result.plan?.login_key && Array.isArray(result.plan.majors) ? result.plan : null;
 }
 
 export async function saveCoursePlan(identity: StoredIdentity, plan: Json) {
-  const supabase = createClient();
-  const { data, error } = await supabase.rpc("upsert_course_plan", {
-    p_login_key: identity.loginKey,
-    p_display_name: identity.displayName,
-    p_majors: identity.majors,
-    p_plan: plan,
+  const response = await fetch("/api/course-plan", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "save",
+      loginKey: identity.loginKey,
+      displayName: identity.displayName,
+      majors: identity.majors,
+      plan,
+    }),
   });
-  if (error) throw error;
-  return data;
+  if (!response.ok) throw new Error("Unable to save the course plan.");
+  const result = await response.json() as { plan?: RemoteCoursePlan };
+  return result.plan ?? null;
 }

@@ -12,7 +12,7 @@ type ProjectPageProps = {
 };
 
 export async function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
+  return projects.filter((project) => project.slug !== "bi1x").map((project) => ({ slug: project.slug }));
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
