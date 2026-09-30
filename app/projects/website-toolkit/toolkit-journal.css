@@ -7,6 +7,9 @@
 .toolkit-journal-header h1 em { color: rgb(var(--color-moss)); font-weight: 400; }
 .toolkit-deck { max-width: 42rem; margin-top: 1.5rem; font-size: clamp(1rem, 1.7vw, 1.2rem); line-height: 1.65; color: rgb(var(--color-ink) / .74); }
 .toolkit-byline { display: flex; flex-wrap: wrap; gap: .65rem; margin-block: 1.6rem 2.8rem; font-size: .68rem; color: rgb(var(--color-ink) / .55); }
+.toolkit-new-notes { margin-block: -1rem 2.5rem; padding-left: 1rem; border-left: 2px solid rgb(var(--color-clay) / .65); font-size: .8rem; line-height: 1.9; color: rgb(var(--color-ink) / .75); }
+.toolkit-new-notes p { margin-bottom: .2rem; font-size: .65rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--color-clay)); }
+.toolkit-new-notes a { display: inline-block; text-decoration: underline; color: rgb(var(--color-moss)); }
 .toolkit-journal-layout { display: grid; grid-template-columns: minmax(8.5rem, 12rem) minmax(0, 46rem); gap: clamp(2rem, 5vw, 5rem); border-top: 1px solid rgb(var(--color-ink) / .2); padding-top: 2.5rem; align-items: start; }
 .toolkit-contents { position: sticky; top: 2rem; max-height: calc(100dvh - 4rem); overflow-y: auto; padding: .3rem .5rem .8rem 0; scrollbar-width: thin; }
 .toolkit-contents > p { margin-bottom: 1.15rem; font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: rgb(var(--color-ink) / .5); }
@@ -22,6 +25,7 @@
 .toolkit-reading-column { min-width: 0; }
 .toolkit-reading-column p { font-size: .95rem; line-height: 1.85; color: rgb(var(--color-ink) / .77); }
 .toolkit-opening p + p { margin-top: 1rem; }
+.toolkit-opening a { color: rgb(var(--color-moss)); text-decoration: underline; }
 .toolkit-opening > p:first-child { font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.6rem); line-height: 1.6; color: rgb(var(--color-ink) / .9); }
 .toolkit-chapter { margin-top: 4.5rem; scroll-margin-top: 3rem; }
 .toolkit-chapter-heading { border-top: 1px solid rgb(var(--color-ink) / .3); padding-top: 1.2rem; margin-bottom: 2.5rem; }
@@ -31,6 +35,7 @@
 .toolkit-entry h3 { font-size: 1.35rem; font-weight: 650; letter-spacing: -.025em; }
 .toolkit-entry p { margin-top: .95rem; }
 .toolkit-entry .toolkit-entry-summary { margin-top: .3rem; font-size: .92rem; font-weight: 550; color: rgb(var(--color-moss)); }
+.toolkit-entry .toolkit-entry-format { margin-top: .55rem; font-size: .65rem; letter-spacing: .06em; text-transform: uppercase; color: rgb(var(--color-ink) / .6); }
 .toolkit-entry .toolkit-source { margin-top: .75rem; font-size: .72rem; line-height: 1.6; color: rgb(var(--color-ink) / .6); }
 .toolkit-source a { text-decoration: underline; }
 .toolkit-margin-note { margin-block: 1.4rem; padding-left: 1rem; border-left: 2px solid rgb(var(--color-clay) / .65); }
@@ -38,6 +43,11 @@
 .toolkit-margin-note p { margin-top: .4rem; font-family: var(--font-serif); font-size: 1.05rem; line-height: 1.65; }
 .toolkit-entry .toolkit-fit { font-size: .8rem; line-height: 1.75; color: rgb(var(--color-ink) / .65); }
 .toolkit-fit strong { font-weight: 650; color: rgb(var(--color-ink) / .8); }
+.toolkit-workflow { display: grid; gap: 1.25rem; margin-block: 1.5rem; padding-left: 1.5rem; list-style: decimal; font-size: .95rem; line-height: 1.85; color: rgb(var(--color-ink) / .77); }
+.toolkit-workflow li { padding-left: .4rem; }
+.toolkit-workflow li::marker { color: rgb(var(--color-clay)); font-weight: 650; }
+.toolkit-workflow strong { font-weight: 600; color: rgb(var(--color-ink)); }
+#creative-workflow a { text-decoration: underline; text-underline-offset: .22em; color: rgb(var(--color-moss)); }
 .toolkit-table-scroll { overflow-x: auto; margin-block: 2rem; }
 .toolkit-table-scroll:focus-visible { outline: 2px solid rgb(var(--color-moss)); outline-offset: 4px; }
 .toolkit-table-scroll table { width: 100%; min-width: 31rem; border-collapse: collapse; text-align: left; font-size: .76rem; line-height: 1.6; }
@@ -48,6 +58,21 @@
 .toolkit-table-scroll td { color: rgb(var(--color-ink) / .7); }
 .toolkit-table-scroll td:nth-child(2) { width: 25%; color: rgb(var(--color-moss)); }
 .toolkit-reading-column .toolkit-closing { font-family: var(--font-serif); font-size: 1.2rem; line-height: 1.7; }
+.toolkit-project-index { margin-block: 2rem 3rem; }
+.toolkit-project-index ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem 1.5rem; list-style: none; padding: 0; }
+.toolkit-project-index a { display: grid; grid-template-columns: 1.35rem minmax(0, 1fr); gap: .5rem; font-size: .8rem; line-height: 1.6; color: rgb(var(--color-moss)); }
+.toolkit-project-index a:hover { text-decoration: underline; }
+.toolkit-project-index span { font-size: .65rem; font-variant-numeric: tabular-nums; color: rgb(var(--color-clay)); }
+.toolkit-project { border-top: 1px solid rgb(var(--color-ink) / .18); padding-block: 1.5rem 2.5rem; scroll-margin-top: 3rem; }
+.toolkit-project .toolkit-project-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4rem 1rem; margin-bottom: .8rem; font-size: .62rem; line-height: 1.7; letter-spacing: .06em; text-transform: uppercase; color: rgb(var(--color-clay)); }
+.toolkit-project-meta span:last-child { color: rgb(var(--color-ink) / .6); }
+.toolkit-project h3 { margin-bottom: .8rem; font-family: var(--font-serif); font-size: clamp(1.4rem, 2.5vw, 1.9rem); line-height: 1.25; letter-spacing: -.025em; text-wrap: balance; }
+.toolkit-project h4 { margin-top: 1.4rem; font-size: .64rem; line-height: 1.7; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--color-ink) / .6); }
+.toolkit-project-tools { display: grid; gap: .85rem; margin-block: .85rem 1.5rem; padding: 0; list-style: none; }
+.toolkit-project-tools li { display: grid; grid-template-columns: minmax(7rem, 10rem) minmax(0, 1fr); gap: .4rem 1rem; font-size: .85rem; line-height: 1.75; color: rgb(var(--color-ink) / .77); }
+.toolkit-project-tools a { align-self: start; font-weight: 550; color: rgb(var(--color-moss)); text-decoration: underline; }
+.toolkit-project .toolkit-project-first { border-left: 2px solid rgb(var(--color-clay) / .6); padding-left: 1rem; font-size: .85rem; line-height: 1.8; }
+.toolkit-project-first strong { font-weight: 600; color: rgb(var(--color-ink)); }
 .toolkit-journal-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-top: 1px solid rgb(var(--color-ink) / .25); margin-top: 3rem; padding-top: 1rem; font-size: .7rem; color: rgb(var(--color-ink) / .6); }
 @media (max-width: 900px) {
   .toolkit-journal-layout { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
@@ -62,4 +87,6 @@
   .toolkit-byline { font-size: .6rem; }
   .toolkit-contents ol { grid-template-columns: 1fr; }
   .toolkit-chapter { margin-top: 3rem; }
+  .toolkit-project-index ol { grid-template-columns: minmax(0, 1fr); }
+  .toolkit-project-tools li { grid-template-columns: minmax(0, 1fr); gap: .1rem; }
 }
