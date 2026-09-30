@@ -346,7 +346,7 @@ export default async function RecipesPage() {
     isRecipeAdminSessionAuthenticated(),
   ]);
   const privateLibraryAccess = authenticated || cookbookAuthenticated;
-  const guides = recipeEntries.filter((entry) => entry.kind === "guide" && (ownerSession || !privateRecipeGuideSlugs.has(entry.slug)));
+  const guides = recipeEntries.filter((entry) => entry.kind === "guide");
   const searchPreview = buildRecipeSearchPreview(recipes, wishlist, ownerSession)
     .filter((item) => privateLibraryAccess || !isPrivateCookbookHref(item.href));
   const chronologicalRecipes = [...recipes].sort((a, b) => {
@@ -400,18 +400,33 @@ export default async function RecipesPage() {
             </div>
 
             <SnapCarousel className="recipe-guide-carousel mobile-snap-carousel -mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0" repeatEdges={false}>
-              {guides.map((entry) => (
-                <Link className="recipe-guide-card swipe-bubble-card w-[20rem] shrink-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]" data-spotlight href={entry.href} id={entry.slug} key={entry.slug}>
-                  <GuideVisual slug={entry.slug} />
-                  <div className="recipe-guide-copy swipe-bubble-copy">
-                    <p className="eyebrow">Guide</p>
-                    <div className="recipe-guide-title-row">
-                      <h3>{entry.title}</h3>
+              {guides.map((entry) => {
+                const unpublished = privateRecipeGuideSlugs.has(entry.slug) && !ownerSession;
+                const cardClassName = "recipe-guide-card swipe-bubble-card relative w-[20rem] shrink-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]";
+                const cardContent = (
+                  <>
+                    <GuideVisual slug={entry.slug} />
+                    <div className="recipe-guide-copy swipe-bubble-copy">
+                      <p className="eyebrow">Guide</p>
+                      <div className="recipe-guide-title-row">
+                        <h3>{entry.title}</h3>
+                      </div>
+                      <p className="recipe-guide-description">{entry.description}</p>
                     </div>
-                    <p className="recipe-guide-description">{entry.description}</p>
-                  </div>
-                </Link>
-              ))}
+                  </>
+                );
+
+                return unpublished ? (
+                  <article aria-label={`${entry.title}, not published`} className={`${cardClassName} recipe-guide-card-unpublished`} id={entry.slug} key={entry.slug}>
+                    <div aria-hidden="true" className="recipe-guide-card-blurred">{cardContent}</div>
+                    <div className="recipe-guide-unpublished-overlay"><span>Not published</span></div>
+                  </article>
+                ) : (
+                  <Link className={cardClassName} data-spotlight href={entry.href} id={entry.slug} key={entry.slug}>
+                    {cardContent}
+                  </Link>
+                );
+              })}
             </SnapCarousel>
           </section>
 

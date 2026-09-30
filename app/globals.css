@@ -12904,6 +12904,36 @@ html.dashboard-mode .home-dashboard-panel,
 /* Give recipe guides more room than the compact recipe cards, while tightening
    the handoff to the recipe collection below them. */
 .recipe-library-page #recipe-guides .recipe-guide-card { width: 23.1rem !important; }
+
+.recipe-guide-card-unpublished { isolation: isolate; cursor: default; }
+.recipe-guide-card-unpublished .recipe-guide-card-blurred {
+  filter: blur(5px);
+  opacity: 0.62;
+  transform: scale(1.015);
+  user-select: none;
+}
+.recipe-guide-unpublished-overlay {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(var(--color-paper) / 0.12);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+}
+.recipe-guide-unpublished-overlay span {
+  padding: 0.62rem 1rem;
+  border: 1px solid rgb(var(--color-ink) / 0.14);
+  border-radius: 9999px;
+  background: rgb(var(--color-surface) / 0.9);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  color: rgb(var(--color-ink) / 0.8);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .recipe-library-page #recipe-guides .recipe-guide-media {
   /* Preserve the desktop composition as cards shrink on phones. */
   height: auto !important;
