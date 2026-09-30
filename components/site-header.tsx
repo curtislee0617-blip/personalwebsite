@@ -6,9 +6,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SpringValue } from "@react-spring/web";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { SpringButton } from "@/components/spring-links";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
-import { CORNER_SPRING, cornerProgress, cornerTransform, distanceFromCorner } from "@/lib/corner-bubble-motion";
+import { CORNER_SPRING } from "@/lib/corner-bubble-motion";
 import { navIconForPath } from "@/lib/page-cursors";
 
 const links = [
@@ -65,32 +66,21 @@ export function SiteHeader() {
     panel.style.transform = "none";
     panel.dataset.menuAnimating = "true";
     const buttonRect = button.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
     const origin = { x: buttonRect.left + buttonRect.width / 2, y: buttonRect.top + buttonRect.height / 2 };
-    const items = Array.from(panel.querySelectorAll<HTMLElement>(
-      ".site-menu-link:not(.site-menu-theme-toggle), .site-menu-theme-control",
-    ));
-    const title = panel.querySelector<HTMLElement>(".site-menu-titlebar");
-    const prepared = items.map((element) => ({ element, rect: element.getBoundingClientRect() }))
-      .sort((a, b) => distanceFromCorner(a.rect, origin) - distanceFromCorner(b.rect, origin));
+    panel.style.transformOrigin = `${origin.x - panelRect.left}px ${origin.y - panelRect.top}px`;
     const motion = new SpringValue(0);
     let disposed = false;
     let revision = 0;
-    const clearItems = () => {
-      for (const element of items) {
-        element.style.removeProperty("transform");
-        element.style.removeProperty("opacity");
-      }
-      title?.style.removeProperty("opacity");
+    const clearAnimationStyles = () => {
       delete panel.dataset.menuAnimating;
+      panel.style.removeProperty("transform-origin");
+      panel.style.removeProperty("pointer-events");
     };
     const render = (progress: number) => {
-      panel.style.opacity = String(Math.min(1, progress / 0.3));
-      if (title) title.style.opacity = String(Math.min(1, progress / 0.65));
-      prepared.forEach(({ element, rect }, index) => {
-        const p = cornerProgress(progress, index);
-        element.style.transform = cornerTransform(rect, origin, p);
-        element.style.opacity = String(Math.min(1, p / 0.36));
-      });
+      panel.style.transform = `scale(${0.12 + 0.88 * progress})`;
+      panel.style.opacity = String(progress);
+      panel.style.pointerEvents = progress >= 1 ? "auto" : "none";
     };
     const animate = (show: boolean) => {
       menuTargetRef.current = show;
@@ -99,7 +89,7 @@ export function SiteHeader() {
       void motion.start({ to: show ? 1 : 0, config: CORNER_SPRING, onChange: ({ value }) => render(value) })
         .then((result) => {
           if (disposed || result.cancelled || revision !== currentRevision) return;
-          if (show) clearItems();
+          if (show) clearAnimationStyles();
           else setOpen(false);
         });
     };
@@ -115,7 +105,7 @@ export function SiteHeader() {
       openingMenuRef.current = null;
       window.removeEventListener("resize", settle);
       preference.removeEventListener("change", settle);
-      clearItems();
+      clearAnimationStyles();
       panel.style.removeProperty("opacity");
       panel.style.removeProperty("transform");
     };
@@ -178,7 +168,7 @@ export function SiteHeader() {
 
   return (
     <header id="top" className={`site-menu-shell ${isProjectViewer ? "site-menu-shell-project-viewer" : ""}`} ref={shellRef}>
-      <button
+      <SpringButton
         ref={buttonRef}
         type="button"
         className={`site-menu-button ${open ? "is-open" : ""}`}
@@ -188,7 +178,7 @@ export function SiteHeader() {
         aria-label={open ? "Close navigation" : "Open navigation"}
       >
         <span /><span /><span />
-      </button>
+      </SpringButton>
 
       <div id="site-menu-panel" className={`site-menu-panel ${open ? "is-open" : ""}`} aria-hidden={!open} inert={!open}>
         <div className="site-menu-titlebar mb-5 flex items-center justify-between border-b border-ink/10 pb-4">

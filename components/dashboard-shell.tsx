@@ -18,7 +18,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SectionLoading, type SectionLoadingVariant } from "@/components/section-loading";
 import { recipeCategories } from "@/data/recipe-categories";
-import { runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
+import { DASHBOARD_FOLD_EVENT, runDashboardBubbleTransition } from "@/lib/dashboard-bubble-transition";
 import { navIconForPath } from "@/lib/page-cursors";
 
 type DashboardTreeNode = {
@@ -282,6 +282,16 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const homeTransitionRef = useRef(false);
   const recipeNavigationLoaded = useRef(false);
   const recipesExpanded = expanded["/recipes"] ?? pathname.startsWith("/recipes");
+
+  useEffect(() => {
+    const foldNavigation = () => {
+      setExpanded(Object.fromEntries(dashboardSections.map((section) => [section.href, false])));
+      setExpandedGroups({});
+      setExpandedNodes({});
+    };
+    window.addEventListener(DASHBOARD_FOLD_EVENT, foldNavigation);
+    return () => window.removeEventListener(DASHBOARD_FOLD_EVENT, foldNavigation);
+  }, []);
 
   useEffect(() => {
     const desktop = window.matchMedia(DASHBOARD_MEDIA_QUERY);
