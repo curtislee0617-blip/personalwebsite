@@ -263,7 +263,7 @@ export default function AboutPage() {
               </ul>
             </section>
 
-            <section className="about-section about-section--leadership scroll-mt-24" data-reveal style={{ "--reveal-delay": "80ms" } as CSSProperties}>
+            <section className="about-section about-section--leadership scroll-mt-24" id="about-leadership" data-reveal style={{ "--reveal-delay": "80ms" } as CSSProperties}>
               <h2 className="about-section-heading eyebrow">Leadership experience</h2>
               <ul className="about-aside-list mt-5 space-y-4 text-sm leading-6 text-ink/60">
                 <li><strong className="font-semibold text-ink">Built and led a 17-person venture</strong> to a Kent-wide Best Company award and £5,850 in revenue.</li>

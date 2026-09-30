@@ -66,24 +66,33 @@ export const dashboardSections: readonly DashboardSection[] = [
     href: "/about", label: "CV", subtitle: "I think the title is self explanatory",
     groups: [
       { href: "/about#about-education", label: "Background", items: [{ href: "/about#about-education", label: "Education" }, { href: "/about#about-experience", label: "Experience" }] },
-      { href: "/about#about-awards", label: "Profile", items: [{ href: "/about#about-awards", label: "Awards" }, { href: "/about#about-beyond", label: "Beyond the lab" }, { href: "/about#about-languages", label: "Languages" }, { href: "/about#about-skills", label: "Skills" }] },
+      { href: "/about#about-awards", label: "Profile", items: [{ href: "/about#about-awards", label: "Awards" }, { href: "/about#about-leadership", label: "Leadership" }, { href: "/about#about-beyond", label: "Beyond the lab" }, { href: "/about#about-languages", label: "Languages" }, { href: "/about#about-skills", label: "Skills" }] },
       { href: "/about#about-projects", label: "Featured work", items: [{ href: "/about#about-projects", label: "Projects & publications" }] },
     ],
   },
   {
     href: "/projects", label: "Projects", subtitle: "Engineering, research and creative stuff",
     groups: [
-      { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/supercritical-water-gasification", label: "SCWG-OXZEO gasification" }, { href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
-      { href: "/projects#creative-projects-title", label: "Creative & enterprise", items: [{ href: "/projects/cook-enterprise", label: "cook.enterprise" }, { href: "/projects#creative-projects-title", label: "Website" }, { href: "/projects/clicks", label: "Clicks" }, { href: "/projects#pixel-art-cities", label: "Pixel-art cities" }] },
+      { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/supercritical-water-gasification", label: "SCWG-OXZEO gasification" }, { href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/bi1x", label: "Bi1x Laboratory class" }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
+      { href: "/projects#creative-projects-title", label: "Creative & enterprise", items: [
+        { href: "/projects/cook-enterprise", label: "cook.enterprise" },
+        { href: "/projects#website-project", label: "Website", items: [
+          { href: "/projects/website-toolkit", label: "Website toolkit" },
+          { href: "/projects/website-toolkit#project-collection", label: "Project ideas" },
+          { href: "/projects/clicks", label: "UI/UX · Clicks" },
+        ] },
+        { href: "/projects#pixel-art-cities", label: "Pixel-art cities" },
+        { href: "/projects#astronomical-darkness-project", label: "Astronomical darkness" },
+      ] },
     ],
   },
   {
     href: "/tools", label: "Tools", subtitle: "Utilities for school, and more coming soon :)",
     groups: [
-      { href: "/tools", label: "Planning", items: [{ href: "/tools/course-planner", label: "Course planner" }] },
-      { href: "/tools", label: "Chemistry", items: [{ href: "/tools/ir-spectrum", label: "IR spectrum plotter" }, { href: "/tools/nmr-spectrum", label: "NMR spectrum processor" }] },
-      { href: "/tools", label: "Photography", items: [{ href: "/tools/astronomical-darkness", label: "Astronomical darkness" }] },
-      { href: "/tools", label: "Thermodynamics", items: [{ href: "/tools/water-properties", label: "Water properties" }, { href: "/tools/compound-properties", label: "Compound properties" }, { href: "/tools/vle", label: "VLE simulator" }] },
+      { href: "/tools#tools-planning", label: "Planning", items: [{ href: "/tools/course-planner", label: "Course planner", items: [{ href: "/tools/course-planner#grid-title", label: "Four-year plan" }, { href: "/tools/course-planner#fall-schedule-heading", label: "Weekly Course Scheduler" }] }] },
+      { href: "/tools#tools-chemistry", label: "Chemistry", items: [{ href: "/tools/ir-spectrum", label: "IR spectrum plotter" }, { href: "/tools/nmr-spectrum", label: "NMR spectrum processor" }] },
+      { href: "/tools#tools-photography", label: "Photography", items: [{ href: "/tools/astronomical-darkness", label: "Astronomical darkness" }] },
+      { href: "/tools#tools-thermodynamics", label: "Thermodynamics", items: [{ href: "/tools/water-properties", label: "Water properties" }, { href: "/tools/compound-properties", label: "Compound properties" }, { href: "/tools/vle", label: "VLE simulator" }] },
     ],
   },
   {
@@ -106,6 +115,11 @@ export const dashboardSections: readonly DashboardSection[] = [
         href: "/recipes#recipe-collection",
         label: "Recipes",
         dynamicItems: "recipe-categories",
+        items: [],
+      },
+      {
+        href: "/recipes#recipe-cocktails",
+        label: "Cocktail library",
         items: [],
       },
       {
@@ -164,13 +178,6 @@ export const dashboardSections: readonly DashboardSection[] = [
               { href: "/recipes/larousse-patisserie-and-baking", label: "Larousse Patisserie and Baking" },
               { href: "/recipes/crumb-richard-bertinet", label: "Crumb" },
               { href: "/recipes/advanced-professional-pastry-chef", label: "The Advanced Professional Pastry Chef" },
-            ],
-          },
-          {
-            href: "/recipes/cocktail-books",
-            label: "Cocktails",
-            items: [
-              { href: "/recipes/cocktail-books", label: "Cocktail books" },
             ],
           },
         ],

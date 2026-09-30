@@ -28,7 +28,7 @@ export default async function CocktailBooksPage() {
         <p className="mt-3 max-w-md text-sm leading-6 text-ink/60">
           This source library is visible after cookbook or admin login. Open the private books from the recipes page, then return here.
         </p>
-        <HistoryBackButton className="mt-6" fallbackHref="/recipes#recipe-category-drinks">← Back to Cocktails &amp; Drinks</HistoryBackButton>
+        <HistoryBackButton className="mt-6" fallbackHref="/recipes#recipe-cocktails">← Back to recipes</HistoryBackButton>
       </div>
     );
   }
@@ -44,7 +44,7 @@ export default async function CocktailBooksPage() {
       />
       <section className="cocktail-library-index page-section pt-8 sm:pt-10">
         <div className="flex flex-wrap gap-3">
-          <HistoryBackButton fallbackHref="/recipes#recipe-category-drinks">← Back to Cocktails &amp; Drinks</HistoryBackButton>
+          <HistoryBackButton fallbackHref="/recipes#recipe-cocktails">← Back to recipes</HistoryBackButton>
           {adminAuthenticated && <Link className="back-link-bubble" href="/recipes/admin">Recipe admin</Link>}
         </div>
 

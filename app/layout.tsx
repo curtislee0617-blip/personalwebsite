@@ -45,13 +45,13 @@ export const metadata: Metadata = {
     description: "School, work and life.",
     type: "website",
     url: "/",
-    images: [{ url: "/og-dashboard-v2.png", width: 1200, height: 630, alt: "Curtis Lee's six-button dashboard with Personal and Professional sections." }],
+    images: [{ url: "/og-dashboard-v3.jpg", width: 1200, height: 630, type: "image/jpeg", alt: "Curtis Lee's homepage with the live city pixel art, photo collage and six navigation cards." }],
   },
   twitter: {
     card: "summary_large_image",
     title: "My personal website",
     description: "School, work and life.",
-    images: ["/og-dashboard-v2.png"],
+    images: ["/og-dashboard-v3.jpg"],
   },
 };
 

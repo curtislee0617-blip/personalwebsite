@@ -203,7 +203,7 @@ export default function ToolsPage() {
         {[["Planning", "Thermodynamics"], ["Chemistry", "Photography"]].map((column, columnIndex) => (
           <div className="tools-column" key={columnIndex}>
           {column.map(title => toolSections.find(section => section.title === title)!).map((section) => (
-          <section className={`tools-category tools-category-${section.title.toLowerCase()}`} key={section.title}>
+          <section id={`tools-${section.title.toLowerCase()}`} className={`tools-category scroll-mt-24 tools-category-${section.title.toLowerCase()}`} key={section.title}>
             <h2 className="section-title">{section.title}</h2>
             <SnapCarousel className="tools-category-cards mobile-snap-carousel -mx-5 -mt-1 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 pt-6 sm:mx-0 sm:px-0" repeatEdges={false}>
               {section.tools.map((tool, index) => (

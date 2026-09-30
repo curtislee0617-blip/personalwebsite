@@ -5,6 +5,7 @@ import Link from "next/link";
 import { guidePreviewSrc, guideVisuals } from "@/lib/recipe-guide-visuals";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeLibrarySearch } from "@/components/recipe-library-search";
+import { SpringAnchor, SpringLink } from "@/components/spring-links";
 import { RecipeCollection } from "@/components/recipe-collection";
 import { SnapCarousel } from "@/components/snap-carousel";
 import { CookbookAccessGate } from "@/components/cookbook-access-gate";
@@ -25,6 +26,7 @@ export const metadata: Metadata = { title: "Recipes" };
 const recipePageSections = [
   { id: "recipe-guides", label: "Guides" },
   { id: "recipe-collection", label: "Recipes" },
+  { id: "recipe-cocktails", label: "Cocktails" },
   { id: "recipe-media-saved", label: "Media saved" },
   { id: "recipe-wishlist", label: "Wishlist" },
   { id: "recipe-books", label: "Books" },
@@ -373,6 +375,11 @@ export default async function RecipesPage() {
           title="From my kitchen"
           description="Dishes I love to cook, practical guides, and ideas for the next meal."
         />
+      </div>
+      <div className="recipe-library-toolbar page-shell">
+        <nav aria-label="Recipe page sections" className="recipe-index-nav">
+          {recipePageSections.map((section) => <SpringAnchor href={`#${section.id}`} key={section.id}>{section.label}</SpringAnchor>)}
+        </nav>
         <div className="recipe-search-shell">
           <RecipeLibrarySearch
             initialItems={searchPreview}
@@ -380,9 +387,6 @@ export default async function RecipesPage() {
           />
         </div>
       </div>
-      <nav aria-label="Recipe page sections" className="recipe-index-nav page-shell">
-        {recipePageSections.map((section) => <a href={`#${section.id}`} key={section.id}>{section.label}</a>)}
-      </nav>
 
       <section className="recipe-content-section page-section">
         <div className="space-y-12">
@@ -421,6 +425,46 @@ export default async function RecipesPage() {
 
             <RecipeCollection authenticated={authenticated} recipes={chronologicalRecipes} />
 
+          </section>
+
+          <section className="recipe-cocktail-section" id="recipe-cocktails" aria-labelledby="recipe-cocktails-title">
+            <div className="recipe-cocktail-intro">
+              <div>
+                <p className="eyebrow">At the bar</p>
+                <h2 id="recipe-cocktails-title">Cocktail library</h2>
+                <p>Classic drinks, modern techniques, and ideas for the next round. Explore {cocktailBooks.length} cocktail books, browse by style, or find a drink using what is in your cabinet.</p>
+                <SpringLink className="back-link-bubble" href={privateLibraryAccess ? "/recipes/cocktail-books" : "#recipe-books"}>
+                  {privateLibraryAccess ? "Explore the cocktail library ↗" : "Unlock with cookbook access ↓"}
+                </SpringLink>
+                {!privateLibraryAccess && <small>The source books share the private bookshelf login below.</small>}
+              </div>
+              <svg className="recipe-cocktail-art" aria-hidden="true" fill="none" viewBox="0 0 300 220">
+                <ellipse cx="155" cy="197" rx="116" ry="9" fill="currentColor" opacity=".08" />
+                <path d="M28 45h124l-62 72Z" fill="currentColor" opacity=".09" />
+                <path d="m45 65 45 52 45-52Z" fill="#bf8150" opacity=".65" />
+                <path d="M28 45h124l-62 72V190m-31 0h62" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="m117 24-28 56" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                <ellipse cx="101" cy="57" rx="10" ry="7" fill="#65734b" transform="rotate(-63 101 57)" />
+                <path d="M180 87h91l-9 100h-73Z" fill="currentColor" opacity=".07" />
+                <path d="M184 131h83l-5 56h-73Z" fill="#bd8b3f" opacity=".7" />
+                <rect x="194" y="111" width="25" height="26" rx="4" stroke="currentColor" opacity=".35" transform="rotate(-12 194 111)" />
+                <rect x="228" y="120" width="23" height="24" rx="4" stroke="currentColor" opacity=".35" transform="rotate(15 228 120)" />
+                <path d="M180 87h91l-9 100h-73Z" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" />
+                <path d="M240 97a25 25 0 1 0 0-33Z" fill="#d1a35d" stroke="currentColor" strokeWidth="2" />
+              </svg>
+            </div>
+            {privateLibraryAccess && (
+              <div className="recipe-cocktail-books">
+                {cocktailBooks.map((book) => (
+                  <SpringLink className="recipe-cocktail-book" href={`/recipes/cocktail-books/${book.id}`} key={book.id}>
+                    <div className="recipe-cocktail-cover">
+                      {book.thumbnail ? <Image alt={`${book.title} cover`} fill sizes="(max-width: 639px) 30vw, 10rem" src={book.thumbnail} className="object-contain" unoptimized /> : <span aria-hidden="true">LOST<br />COCKTAILS</span>}
+                    </div>
+                    <div><h3>{book.title}</h3><p>{book.author}</p><small>{book.recipeCountLabel}</small></div>
+                  </SpringLink>
+                ))}
+              </div>
+            )}
           </section>
 
           <section id="recipe-media-saved">
@@ -505,7 +549,6 @@ export default async function RecipesPage() {
 
             {privateLibraryAccess ? (
               <div className="mt-7 space-y-10">
-                <Link className="recipe-cocktail-link" href="/recipes/cocktail-books">Cocktail library <span>{cocktailBooks.length} books ↗</span></Link>
                 {recipeBookGroups.map((group) => {
                   const books = recipeBookCards.filter((book) => book.group === group.id);
 

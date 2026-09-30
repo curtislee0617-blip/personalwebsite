@@ -103,7 +103,7 @@ export function ContactCityTimeline() {
   }, []);
 
   return (
-    <article className="contact-cities creative-project-card project-card design-panel overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55">
+    <article id="pixel-art-cities" className="contact-cities creative-project-card project-card design-panel scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55">
       <div className="contact-cities-copy creative-project-copy">
         <p className="creative-project-description" id={descriptionId}>
           For my Contact page, I wanted to create a map of the places I frequent—one that keeps track of the local time, where I am, the moon phase and illumination, and whether each city is in daylight or darkness. I also update it with a small figure to show where I am at the moment.

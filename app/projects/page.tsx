@@ -27,7 +27,7 @@ export default function ProjectsPage() {
             <h2 className="section-title" id="creative-projects-title">Creative projects</h2>
           </div>
           <div className="creative-projects-list">
-            <article className="website-project-card creative-project-card project-card design-panel overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" data-reveal data-spotlight>
+            <article id="website-project" className="website-project-card creative-project-card project-card design-panel scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" data-reveal data-spotlight>
               <div className="website-project-media">
                 <Image
                   alt="The Curtis Lee website homepage"
@@ -92,7 +92,7 @@ export default function ProjectsPage() {
               <span aria-label="Project details coming soon">Coming soon</span>
             </article>
             <ContactCityTimeline />
-            <article className="astronomy-project-card creative-project-card project-card design-panel overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" data-reveal data-spotlight>
+            <article id="astronomical-darkness-project" className="astronomy-project-card creative-project-card project-card design-panel scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink/10 bg-surface/55" data-reveal data-spotlight>
               <div className="astronomy-project-media"><AstronomyThumbnail /></div>
               <div className="astronomy-project-copy creative-project-copy">
                 <p className="eyebrow">Photography tool</p>
@@ -102,7 +102,6 @@ export default function ProjectsPage() {
               </div>
             </article>
           </div>
-          <span aria-hidden="true" id="pixel-art-cities" />
         </section>
       </section>
     </>
