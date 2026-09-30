@@ -170,6 +170,7 @@ function createContentLayer(source: HTMLElement, role: "source" | "target") {
     minHeight: "0",
     padding: style.padding,
     width: "100%",
+    visibility: "visible",
   });
 
   return layer;
@@ -213,48 +214,6 @@ function createBubbleClone(href: string, source: HTMLElement): BubbleClone | nul
   return { href, shell, sourceLayer, sourceSurface, start };
 }
 
-type Point = { x: number; y: number };
-
-// Project the real panel onto a tapered quadrilateral. Perspective transforms
-// deform the text and surface together without painting a replacement shape.
-function panelWarp(width: number, height: number, corners: [Point, Point, Point, Point]) {
-  const [a, b, c, d] = corners;
-  const dx1 = b.x - c.x;
-  const dx2 = d.x - c.x;
-  const dx3 = a.x - b.x + c.x - d.x;
-  const dy1 = b.y - c.y;
-  const dy2 = d.y - c.y;
-  const dy3 = a.y - b.y + c.y - d.y;
-  const determinant = dx1 * dy2 - dx2 * dy1;
-  const perspectiveX = (dx3 * dy2 - dx2 * dy3) / determinant;
-  const perspectiveY = (dx1 * dy3 - dx3 * dy1) / determinant;
-  return `matrix3d(${[
-    (b.x - a.x + perspectiveX * b.x) / width,
-    (b.y - a.y + perspectiveX * b.y) / width, 0, perspectiveX / width,
-    (d.x - a.x + perspectiveY * d.x) / height,
-    (d.y - a.y + perspectiveY * d.y) / height, 0, perspectiveY / height,
-    0, 0, 1, 0, a.x, a.y, 0, 1,
-  ].join(",")})`;
-}
-
-function panelSnapshot(source: HTMLElement, overlay: HTMLElement) {
-  const rect = source.getBoundingClientRect();
-  const copy = source.cloneNode(true) as HTMLElement;
-  removeInteractionAttributes(copy);
-  copy.classList.add("navigation-panel-snapshot");
-  copy.setAttribute("aria-hidden", "true");
-  copy.inert = true;
-  Object.assign(copy.style, {
-    position: "fixed", inset: "auto", left: `${rect.left}px`, top: `${rect.top}px`,
-    width: `${rect.width}px`, height: `${rect.height}px`, margin: "0", maxWidth: "none",
-    visibility: "visible", opacity: "1", transform: "none", scale: "none", translate: "none",
-    animation: "none", transition: "none", backdropFilter: "none", webkitBackdropFilter: "none",
-    pointerEvents: "none", transformOrigin: "50% 50%",
-  });
-  overlay.append(copy);
-  return { copy, rect };
-}
-
 export async function runDashboardBubbleTransition({ direction, href, router }: DashboardBubbleTransitionOptions) {
   if (navigationInProgress) return;
   const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -284,7 +243,6 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
   overlay.className = "navigation-motion-overlay";
   overlay.inert = true;
   overlay.setAttribute("aria-hidden", "true");
-  const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
   const animation: { timeline: gsap.core.Timeline | null } = { timeline: null };
   let departureDrift: gsap.core.Tween | null = null;
   let resolveMotion: (() => void) | undefined;
@@ -304,40 +262,6 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
   const cancel = () => { cancelled = true; animation.timeline?.kill(); resolveMotion?.(); };
   const setPhase = (phase: string) => { root.dataset.navigationPhase = phase; };
 
-  // Pull the leading edge in first, then let the rest of the actual panel
-  // follow it. Keep the labels visible until the final few pixels disappear.
-  const absorb = async (surface: HTMLElement, destination: Point) => {
-    const { copy, rect } = panelSnapshot(surface, overlay);
-    copy.style.transformOrigin = "0 0";
-    copy.style.boxShadow = "none";
-    remember(surface).style.visibility = "hidden";
-    const end = { x: destination.x - rect.left, y: destination.y - rect.top };
-    const progress = { value: 0 };
-    const corners: [Point, Point, Point, Point] = [
-      { x: 0, y: 0 }, { x: rect.width, y: 0 },
-      { x: rect.width, y: rect.height }, { x: 0, y: rect.height },
-    ];
-    await play((tl) => {
-      tl.to(progress, {
-        value: 1, duration: 0.68, ease: "power2.inOut",
-        onUpdate: () => {
-          const p = progress.value;
-          const warped = corners.map((corner, index) => {
-            const leading = index === 1 || index === 2;
-            const pull = leading ? 1 - (1 - p) ** 1.6 : p ** 1.6;
-            const x = end.x + (leading ? 2 : -2);
-            const y = end.y + (index < 2 ? -2 : 2);
-            return { x: corner.x + (x - corner.x) * pull, y: corner.y + (y - corner.y) * pull };
-          }) as [Point, Point, Point, Point];
-          copy.style.transform = panelWarp(rect.width, rect.height, warped);
-          copy.style.borderRadius = `${p * 32}px`;
-        },
-      }, 0);
-      tl.to(copy, { opacity: 0, duration: 0.1 }, 0.58);
-      tl.to(root, { "--navigation-page-opacity": 0, duration: 0.3, ease: "power1.inOut" }, 0.2);
-    });
-    copy.remove();
-  };
 
   navigationInProgress = true;
   window.addEventListener("resize", finishMotion);
@@ -351,6 +275,7 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
 
   try {
     if (direction === "undock") {
+      let returning: BubbleClone[] = [];
       const menuButton = compact ? document.querySelector<HTMLElement>(".site-menu-button") : null;
       const buttonRect = menuButton?.getBoundingClientRect();
       const corner = buttonRect
@@ -390,8 +315,20 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
           if (menuButton) tl.to(menuButton, { opacity: 0, duration: 0.16 }, 0.3);
         });
       } else {
-        setPhase("absorb");
-        await absorb(source, center);
+        setPhase("labels-lift");
+        const rows = sidebarButtons();
+        returning = Array.from(rows, ([key, element]) => createBubbleClone(key, element))
+          .filter((clone): clone is BubbleClone => clone !== null);
+        overlay.append(...returning.map(({ shell }) => shell));
+        rows.forEach((element) => { remember(element).style.visibility = "hidden"; });
+        remember(source);
+        departureDrift = gsap.to(returning.map(({ shell }) => shell), {
+          x: 360, y: -24, duration: 6, ease: "none",
+        });
+        await play((tl) => {
+          tl.to(source, { x: -source.getBoundingClientRect().width - 24, opacity: 0, duration: 0.3, ease: "power2.in" }, 0);
+          tl.to(root, { "--navigation-page-opacity": 0, duration: 0.22 }, 0);
+        });
       }
       if (cancelled) return;
       setPhase("route");
@@ -401,20 +338,89 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
       while (!document.querySelector(".home-entry-settled") && performance.now() - started < 1500 && !cancelled) await nextPaint();
       if (cancelled) return;
       const destination = document.querySelector<HTMLElement>(".home-dashboard-panel");
-      if (destination) {
+      if (!compact && destination) {
         remember(destination);
         const rect = destination.getBoundingClientRect();
+        const panelStyle = getComputedStyle(destination);
+        const borderColor = panelStyle.borderColor;
+        const radius = Number.parseFloat(panelStyle.borderTopLeftRadius);
         gsap.set(destination, {
-          opacity: 0, scale: compact ? 0.06 : 0.72, y: compact ? 0 : 18,
-          transformOrigin: compact ? `${corner.x - rect.left}px ${corner.y - rect.top}px` : "50% 50%",
-          animation: "none",
+          borderColor: "transparent", opacity: 0, animation: "none",
+        });
+        const outline = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        outline.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+        Object.assign(outline.style, {
+          position: "fixed", left: `${rect.left}px`, top: `${rect.top}px`,
+          width: `${rect.width}px`, height: `${rect.height}px`, overflow: "visible",
+        });
+        const border = document.createElementNS(outline.namespaceURI, "rect");
+        Object.entries({ x: "0.5", y: "0.5", width: String(rect.width - 1), height: String(rect.height - 1), rx: String(radius), fill: "none", stroke: borderColor, "stroke-width": "1", pathLength: "1", "stroke-dasharray": "1", "stroke-dashoffset": "1" })
+          .forEach(([key, value]) => border.setAttribute(key, value));
+        outline.append(border);
+        overlay.prepend(outline);
+        const targets = homeButtons();
+        targets.forEach((element) => { remember(element).style.visibility = "hidden"; });
+        const art = destination.querySelector<HTMLElement>(".home-dashboard-pixel-art");
+        const heading = destination.querySelector<HTMLElement>(".home-dashboard-heading > div:first-child");
+        const labels = Array.from(destination.querySelectorAll<HTMLElement>(".home-dashboard-group > h2"));
+        if (art) { remember(art); gsap.set(art, { opacity: 0, y: Math.min(110, art.offsetHeight * 0.65), scale: 0.92, transformOrigin: "50% 100%" }); }
+        if (heading) { remember(heading); gsap.set(heading, { opacity: 0, y: 10 }); }
+        labels.forEach((label) => { remember(label); gsap.set(label, { opacity: 0 }); });
+        departureDrift?.kill();
+        setPhase("dashboard-assemble");
+        await play((tl) => {
+          tl.to(root, { "--navigation-page-opacity": 1, duration: 0.28 }, 0);
+          tl.to(destination, { opacity: 1, duration: 0.6 }, 0.15);
+          tl.to(border, { attr: { "stroke-dashoffset": 0 }, duration: 0.95, ease: "power1.inOut" }, 0.25);
+          returning.forEach(({ href: key, shell, sourceLayer, sourceSurface, start }, index) => {
+            const target = targets.get(key);
+            if (!target) { tl.to(shell, { opacity: 0, duration: 0.2 }, 0); return; }
+            const end = target.getBoundingClientRect();
+            const targetLayer = createContentLayer(target, "target");
+            const targetSurface = createSurface(target, "target");
+            Object.assign(targetLayer.style, { width: `${end.width}px`, height: `${end.height}px`, transform: `scale(${start.width / end.width}, ${start.height / end.height})`, opacity: "0" });
+            targetSurface.style.opacity = "0";
+            shell.append(targetSurface, targetLayer);
+            const departure = { x: start.left + Number(gsap.getProperty(shell, "x")), y: start.top + Number(gsap.getProperty(shell, "y")) };
+            const control = { x: (departure.x + end.left) / 2, y: Math.min(departure.y, end.top) - 35 - index * 4 };
+            const progress = { value: 0 };
+            tl.to(progress, {
+              value: 1, duration: 0.92 + index * 0.035, ease: "power1.out",
+              onUpdate: () => {
+                const p = progress.value;
+                const q = 1 - p;
+                gsap.set(shell, {
+                  x: q * q * departure.x + 2 * q * p * control.x + p * p * end.left - start.left,
+                  y: q * q * departure.y + 2 * q * p * control.y + p * p * end.top - start.top,
+                  scaleX: 1 + (end.width / start.width - 1) * p,
+                  scaleY: 1 + (end.height / start.height - 1) * p,
+                });
+              },
+              onComplete: () => { target.style.visibility = "visible"; shell.style.display = "none"; },
+            }, 0);
+            tl.to([sourceLayer, sourceSurface], { opacity: 0, duration: 0.25 }, 0.12);
+            tl.to([targetLayer, targetSurface], { opacity: 1, duration: 0.3 }, 0.3);
+          });
+          tl.to(labels, { opacity: 1, duration: 0.4 }, 0.55);
+          if (art) tl.to(art, { opacity: 1, y: 0, scale: 1, duration: 0.75, ease: "back.out(0.7)" }, 0.8);
+          if (heading) tl.to(heading, { opacity: 1, y: 0, duration: 1, ease: "power1.out" }, 1.15);
+        });
+      } else {
+        if (destination) {
+          remember(destination);
+          const rect = destination.getBoundingClientRect();
+          gsap.set(destination, {
+            opacity: 0, scale: 0.06, y: 0,
+            transformOrigin: `${corner.x - rect.left}px ${corner.y - rect.top}px`,
+            animation: "none",
+          });
+        }
+        setPhase("corner-home-reveal");
+        await play((tl) => {
+          tl.to(root, { "--navigation-page-opacity": 1, duration: 0.3 }, 0);
+          if (destination) tl.to(destination, { opacity: 1, scale: 1, y: 0, duration: 0.65, ease: "back.out(1.15)" }, 0);
         });
       }
-      setPhase(compact ? "corner-home-reveal" : "home-reveal");
-      await play((tl) => {
-        tl.to(root, { "--navigation-page-opacity": 1, duration: 0.3 }, 0);
-        if (destination) tl.to(destination, { opacity: 1, scale: 1, y: 0, duration: 0.65, ease: "back.out(1.15)" }, 0);
-      });
     } else if (compact) {
       setPhase("corner-collapse");
       // Measure the same corner anchor used by SiteHeader, including safe areas.
@@ -459,7 +465,7 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
       sources.forEach((element) => { remember(element).style.visibility = "hidden"; });
       // Keep travelling during the route handoff instead of parking in midair.
       departureDrift = gsap.to(clones.map(({ shell }) => shell), {
-        x: -180, y: -30, scale: 0.94, duration: 6, ease: "none",
+        x: -480, y: -30, scale: 0.94, duration: 6, ease: "none",
       });
       await play((tl) => {
         tl.to(root, { "--navigation-page-opacity": 0, duration: 0.24 }, 0);
@@ -481,11 +487,11 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
       const sidebarRect = sidebar.getBoundingClientRect();
       gsap.set(sidebar, { x: -sidebarRect.right - 24, scaleX: 0.82, visibility: "visible", transformOrigin: "0% 50%" });
       departureDrift.kill();
-      const accelerate = gsap.parseEase("power3.inOut");
+      const accelerate = gsap.parseEase("sine.inOut");
       setPhase("taskbar-emerge");
       await play((tl) => {
-        tl.to(sidebar, { x: 0, scaleX: 1, duration: 0.85, ease: "back.out(0.7)" }, 0);
-        tl.to(root, { "--navigation-page-opacity": 1, duration: 0.35 }, 1.3);
+        tl.to(sidebar, { x: 0, scaleX: 1, duration: 0.58, ease: "back.out(0.7)" }, 0);
+        tl.to(root, { "--navigation-page-opacity": 1, duration: 0.3 }, 1.05);
         clones.forEach(({ href: key, shell, sourceLayer, sourceSurface, start }, index) => {
           const target = targets.get(key);
           const end = targetRects.get(key);
@@ -502,11 +508,10 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
             scale: Number(gsap.getProperty(shell, "scaleX")),
           };
           const control = { x: (departure.x + end.left) / 2, y: Math.min(departure.y, end.top) - 45 - index * 6 };
-          const duration = 1.12 + index * 0.05;
+          const duration = 0.94 + index * 0.035;
           tl.to(progress, {
-            // A small linear component keeps every bubble moving from frame one;
-            // the remaining curve accelerates as the sidebar springs into view.
-            value: 1, duration, ease: (p: number) => p * 0.08 + accelerate(p) * 0.92,
+            // Mostly constant travel speed with a gentle easing at each end.
+            value: 1, duration, ease: (p: number) => p * 0.7 + accelerate(p) * 0.3,
             onUpdate: () => {
               const p = progress.value;
               const q = 1 - p;
@@ -521,7 +526,7 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
             onComplete: () => {
               const item = target.closest<HTMLElement>(".dashboard-sidebar-item");
               if (item) item.style.visibility = "visible";
-              shell.style.visibility = "hidden";
+              shell.style.display = "none";
             },
           }, 0);
           tl.to([sourceLayer, sourceSurface], { opacity: 0, duration: 0.24 }, duration * 0.48);
@@ -530,7 +535,7 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
         const finishing = hiddenParts.filter((element) => !element.classList.contains("dashboard-sidebar-item"));
         finishing.forEach((element) => {
           const profile = element.classList.contains("dashboard-sidebar-profile");
-          tl.fromTo(element, { y: profile ? -75 : 0, opacity: 0 }, { visibility: "visible", y: 0, opacity: 1, duration: profile ? 0.6 : 0.25, ease: profile ? "bounce.out" : "power1.out" }, profile ? 1.55 : 1.42);
+          tl.fromTo(element, { y: profile ? -75 : 0, opacity: 0 }, { visibility: "visible", y: 0, opacity: 1, duration: profile ? 0.6 : 0.25, ease: profile ? "bounce.out" : "power1.out" }, profile ? 1.2 : 1.12);
         });
       });
     }

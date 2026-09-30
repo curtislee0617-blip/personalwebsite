@@ -12351,6 +12351,7 @@ html.dashboard-center-transition .site-menu-shell {
 }
 
 html.dashboard-undocking .home-dashboard-panel,
+html.dashboard-mode .home-entry-settled .home-dashboard-panel,
 .home-entry-settled .home-dashboard-panel { animation: none; }
 
 html.dashboard-undocking .home-entry-pending::after,
@@ -12949,6 +12950,4 @@ html.dashboard-dock-staging .dashboard-sidebar :is(.dashboard-sidebar-subtitle, 
   pointer-events: none;
   isolation: isolate;
 }
-.navigation-panel-snapshot { will-change: transform, opacity; overflow: hidden; }
-.navigation-panel-snapshot, .navigation-panel-snapshot * { transition: none !important; animation: none !important; }
 .navigation-corner-anchor { visibility: hidden; }
