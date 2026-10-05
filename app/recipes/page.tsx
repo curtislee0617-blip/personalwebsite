@@ -433,11 +433,14 @@ export default async function RecipesPage() {
           <section id="recipe-collection">
             <div className="flex items-end justify-between gap-4">
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Recipes</h2>
-              {authenticated && (
-                <Link className="self-start rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss sm:self-auto" href="/recipes/admin">
-                  + Upload recipe
-                </Link>
-              )}
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <Link className="recipe-show-all-link" href="/recipes/all">Show all recipes ↗</Link>
+                {authenticated && (
+                  <Link className="self-start rounded-full bg-ink px-4 py-2 text-xs font-semibold text-paper transition hover:bg-moss sm:self-auto" href="/recipes/admin">
+                    + Upload recipe
+                  </Link>
+                )}
+              </div>
             </div>
 
             <RecipeCollection authenticated={authenticated} recipes={chronologicalRecipes} />
