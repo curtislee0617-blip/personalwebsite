@@ -74,7 +74,7 @@ export const dashboardSections: readonly DashboardSection[] = [
   {
     href: "/projects", label: "Projects", subtitle: "Engineering, research and creative stuff",
     groups: [
-      { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/supercritical-water-gasification", label: "SCWG-OXZEO gasification" }, { href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/bi1x", label: "Bi1x Laboratory class" }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
+      { href: "/projects", label: "Research & coursework", items: [{ href: "/projects/supercritical-water-gasification", label: "SCWG-OXZEO gasification" }, { href: "/projects/biodiesel-from-used-cooking-oil", label: "Biodiesel project" }, { href: "/projects/bem-114-report", label: "Earnings-call NLP" }, { href: "/projects/bi1x", label: "Bi1x Laboratory class", adminAccessOnly: true }, { href: "/projects/tonbridge-food-science", label: "The science of flavour" }] },
       { href: "/projects#creative-projects-title", label: "Creative & enterprise", items: [
         { href: "/projects/cook-enterprise", label: "cook.enterprise" },
         { href: "/projects#website-project", label: "Website", items: [

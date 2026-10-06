@@ -7,6 +7,7 @@ import { feature } from "topojson-client";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import {
+  WineMapBasemapContext,
   WineBordeauxBoundaryMap,
   WineBurgundyBoundaryMap,
   WineCountryBoundaryMap,
@@ -47,28 +48,22 @@ const mapHeight = 560;
 const atlas = worldAtlas as unknown as AtlasTopology;
 const worldFeatures = (
   feature(atlas, atlas.objects.features) as FeatureCollection<Geometry, AtlasProperties>
-).features;
+).features.filter(country => country.properties.id !== "ATA");
 const worldProjection = geoNaturalEarth1().fitExtent(
   [[18, 18], [mapWidth - 18, mapHeight - 18]],
   { type: "FeatureCollection", features: worldFeatures },
 );
 const worldPath = geoPath(worldProjection);
-const worldWineLabels = worldFeatures.flatMap((countryFeature) => {
-  const wineCountry = wineCountryByIso.get(countryFeature.properties.id);
-  if (!wineCountry) return [];
-  const [x, y] = worldPath.centroid(countryFeature);
-  return Number.isFinite(x) && Number.isFinite(y)
-    ? [{
-        country: wineCountry,
-        label: wineCountry.iso === "USA"
-          ? "USA"
-          : wineCountry.iso === "GBR"
-            ? "UK"
-            : wineCountry.name,
-        x,
-        y,
-      }]
-    : [];
+const worldContinentLabels = [
+  { label: "North America", lines: ["North", "America"], coordinate: [-105, 43] },
+  { label: "South America", lines: ["South", "America"], coordinate: [-60, -19] },
+  { label: "Europe", lines: ["Europe"], coordinate: [18, 54] },
+  { label: "Africa", lines: ["Africa"], coordinate: [20, 3] },
+  { label: "Asia", lines: ["Asia"], coordinate: [95, 40] },
+  { label: "Oceania", lines: ["Oceania"], coordinate: [139, -25] },
+].map(({ coordinate, ...continent }) => {
+  const [x, y] = worldProjection(coordinate as [number, number])!;
+  return { ...continent, x, y };
 });
 const burgundyBands = [
   { area: "Chablis", grapes: "Chardonnay" },
@@ -88,6 +83,13 @@ function svgButtonKeyDown(
 }
 
 export function WineRegionExplorer() {
+  const [basemap, setBasemap] = useState<"atlas" | "satellite">("atlas");
+  const [query, setQuery] = useState("");
+  const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const searchTerm = normalize(query.trim());
+  const matches = searchTerm ? wineCountries.flatMap(country => country.regions.filter(region =>
+    normalize([country.name, region.name, ...region.grapes, ...region.subregions.map(item => item.name)].join(" ")).includes(searchTerm)
+  ).map(region => ({country, region}))) : [];
   const [selectedCountryIso, setSelectedCountryIso] = useState<string | null>(null);
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null);
   const [selectedSubregionName, setSelectedSubregionName] = useState<string | null>(null);
@@ -97,13 +99,13 @@ export function WineRegionExplorer() {
   const [selectedBurgundyAreaId, setSelectedBurgundyAreaId] = useState("burgundy-meursault-perrieres");
   const worldViewport = useWineMapViewport(mapWidth, mapHeight);
   const worldLabelPlacements = layoutMapLabels(
-    worldWineLabels.map(({ country, label, x, y }) => ({
-      height: 12,
-      id: country.iso,
+    worldContinentLabels.map(({ label, lines, x, y }) => ({
+      height: (lines.length * 14 + 6) * worldViewport.labelScale,
+      id: label,
       placement: "centered" as const,
       point: [x, y],
-      priority: country.regions.length,
-      width: Math.max(28, label.length * 5.4 + 8),
+      priority: 1,
+      width: (Math.max(...lines.map(line => line.length)) * 7 + 14) * worldViewport.labelScale,
     })),
     { scale: worldViewport.scale, x: worldViewport.x, y: worldViewport.y },
     mapWidth,
@@ -173,7 +175,16 @@ export function WineRegionExplorer() {
   };
 
   return (
-    <div className="wine-region-explorer">
+    <WineMapBasemapContext.Provider value={basemap}>
+    <div className="wine-region-explorer" data-basemap={basemap}>
+      <div className="wine-atlas-toolbar">
+        <label><span>Find a wine region</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Region, country, grape or appellation…" type="search" /></label>
+        <div className="wine-basemap-switch" aria-label="Map background">
+          <button type="button" aria-pressed={basemap === "atlas"} onClick={() => setBasemap("atlas")}>Atlas</button>
+          <button type="button" aria-pressed={basemap === "satellite"} onClick={() => setBasemap("satellite")}>Satellite</button>
+        </div>
+      </div>
+      {searchTerm && <div className="wine-map-search-results"><p role="status">{matches.length} matching regions</p>{matches.map(({country, region}) => <button key={region.id} type="button" onClick={() => { selectCountry(country); selectRegion(region); setQuery(""); }}><strong>{region.name}</strong><span>{country.name} · {region.grapes.slice(0,3).join(", ")}</span></button>)}</div>}
       <div className="wine-map-country-picker" aria-label="Wine countries">
         <button
           aria-pressed={selectedCountry === null}
@@ -293,15 +304,17 @@ export function WineRegionExplorer() {
                       );
                     })}
                   </g>
-                  <g aria-hidden="true" className="wine-world-labels">
-                    {worldWineLabels.map(({ country, label, x, y }) => {
-                      const placement = worldLabelPlacements.get(country.iso);
+                  <g className="wine-world-labels wine-continent-labels" aria-hidden="true">
+                    {worldContinentLabels.map(({ label, lines, x, y }) => {
+                      const placement = worldLabelPlacements.get(label);
                       return placement && !placement.hidden ? (
                         <g
-                          key={`${country.iso}-label`}
-                          transform={`translate(${x} ${y}) scale(${1 / worldViewport.scale}) translate(${placement.offsetX} ${placement.offsetY})`}
+                          key={label}
+                          transform={`translate(${x} ${y}) scale(${1 / worldViewport.scale}) translate(${placement.offsetX} ${placement.offsetY}) scale(${worldViewport.labelScale})`}
                         >
-                          <text textAnchor="middle">{label}</text>
+                          <text textAnchor="middle">
+                            {lines.map((line, index) => <tspan key={line} x="0" y={index * 14 - (lines.length - 1) * 7 + 4}>{line}</tspan>)}
+                          </text>
                         </g>
                       ) : null;
                     })}
@@ -335,11 +348,11 @@ export function WineRegionExplorer() {
                   ? "Satellite + official south Côte de Beaune parcels"
                   : "Burgundy overview"
                 : isBordeauxOpen
-                  ? "Satellite + official appellation parcels"
+                  ? "Official appellation parcels"
                   : selectedCountry
                     ? selectedRegion
-                      ? "Satellite regional close-up"
-                      : "Satellite region map"
+                      ? "Regional boundary close-up"
+                      : "Country region atlas"
                     : "World atlas"}
             </span>
             <p>
@@ -555,14 +568,14 @@ export function WineRegionExplorer() {
 
       {selectedCountry && !isBurgundyOpen ? (
         <div className="wine-region-index" aria-label={`${selectedCountry.name} wine regions`}>
-          {selectedCountry.regions.map((item) => (
+          {selectedCountry.regions.map((item, index) => (
             <button
               aria-pressed={selectedRegion?.id === item.id}
               key={item.id}
               onClick={() => selectRegion(item)}
               type="button"
             >
-              <span>{item.name}</span>
+              <span>{selectedCountry.iso === "FRA" ? <b className="wine-region-number">{index + 1}</b> : null}{item.name}</span>
               <small>{item.grapes.slice(0, 2).join(" · ")}</small>
             </button>
           ))}
@@ -676,5 +689,6 @@ export function WineRegionExplorer() {
         ; the wine boundaries, rivers and altitude guides remain separate vector layers above it.
       </p>
     </div>
+    </WineMapBasemapContext.Provider>
   );
 }

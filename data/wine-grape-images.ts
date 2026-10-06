@@ -2,20 +2,21 @@
  * Photographs and ampelography plates for the grape atlas.
  *
  * Every image here comes from Wikimedia Commons under a free licence — public
- * domain, CC0, CC BY or CC BY-SA. Roughly a quarter are plates from Viala and
+ * domain, CC0, CC BY, CC BY-SA or an explicitly permitted free-use licence. Roughly a quarter are plates from Viala and
  * Vermorel's Ampelographie (1901-1910), which is out of copyright and, being
  * drawn rather than photographed, shows bunch and leaf shape far more clearly
  * than a snapshot does.
  *
- * Each image was checked by eye before being committed: an earlier automated
- * pass happily returned wine bottles, a road sign and a painting of Bacchus.
+ * Sources identify the depicted cultivar. Family representatives are labelled.
  * Varieties with no verified image are simply absent here, and the atlas falls
- * back to its colour marker for those.
+ * back to an explicit image-unavailable label for those.
  *
  * CC BY-SA requires the credit and licence to travel with the image, which is
  * why both are stored alongside the file and rendered by WineGrapeAtlas.
  */
 export type WineGrapeImage = {
+  subject?: string;
+  licenseUrl?: string;
   file: string;
   thumb: string;
   credit: string;
@@ -33,10 +34,10 @@ export const wineGrapeImages: Record<string, WineGrapeImage> = {
   "bacchus": { file: "/grapes/bacchus.webp", thumb: "/grapes/thumbs/bacchus.webp", credit: "Dr. Joachim Schmid, FG RZ, FA Geisenheim", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Bacchus_04c_3.jpg" },
   "baga": { file: "/grapes/baga.webp", thumb: "/grapes/thumbs/baga.webp", credit: "Wines of Portugal, i. V. Marie-Luise Bächle", license: "CC BY 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Baga.jpg" },
   "barbera": { file: "/grapes/barbera.webp", thumb: "/grapes/thumbs/barbera.webp", credit: "Giorgio Gallesio", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Uva_Barbera_-_Giorgio_Gallesio.jpg" },
-  "blauburgunder-family": { file: "/grapes/blauburgunder-family.webp", thumb: "/grapes/thumbs/blauburgunder-family.webp", credit: "Jules Troncy", license: "CC0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Pinot_blanc_-_Amp%C3%A9lographie.jpg" },
+  "blauburgunder-family": { subject: "Pinot Blanc — one white-skinned member of the Pinot family", file: "/grapes/blauburgunder-family.webp", thumb: "/grapes/thumbs/blauburgunder-family.webp", credit: "Jules Troncy", license: "CC0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Pinot_blanc_-_Amp%C3%A9lographie.jpg" },
   "blaufrankisch": { file: "/grapes/blaufrankisch.webp", thumb: "/grapes/thumbs/blaufrankisch.webp", credit: "Alexis Kreyder", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Blaufrankisch_Viala_Vermorel.jpg" },
   "boal": { file: "/grapes/boal.webp", thumb: "/grapes/thumbs/boal.webp", credit: "Alexis Kreyder", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Boal.jpg" },
-  "bobal": { file: "/grapes/bobal.webp", thumb: "/grapes/thumbs/bobal.webp", credit: "No machine-readable author provided. Chateau bobal~commonswiki assumed (based on copyright", license: "CC BY-SA 2.5", sourceUrl: "https://commons.wikimedia.org/wiki/File:Racimo_bobal_PERFECTO.jpg" },
+  "bobal": { file: "/grapes/bobal.webp", thumb: "/grapes/thumbs/bobal.webp", credit: "No machine-readable author provided. Chateau bobal~commonswiki assumed (based on copyright claims).", license: "CC BY-SA 2.5", sourceUrl: "https://commons.wikimedia.org/wiki/File:Racimo_bobal_PERFECTO.jpg" },
   "cabernet-franc": { file: "/grapes/cabernet-franc.webp", thumb: "/grapes/thumbs/cabernet-franc.webp", credit: "Rosenzweig", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Cabernet_Franc_Weinsberg_20060909.jpg" },
   "cabernet-sauvignon": { file: "/grapes/cabernet-sauvignon.webp", thumb: "/grapes/thumbs/cabernet-sauvignon.webp", credit: "Jules Troncy", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Cabernet_sauvignon_Viala_Vermorel.jpg" },
   "carignan": { file: "/grapes/carignan.webp", thumb: "/grapes/thumbs/carignan.webp", credit: "Viala et Vermorel", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Carignan_Viala_et_Vermorel.jpg" },
@@ -48,7 +49,7 @@ export const wineGrapeImages: Record<string, WineGrapeImage> = {
   "dolcetto": { file: "/grapes/dolcetto.webp", thumb: "/grapes/thumbs/dolcetto.webp", credit: "Agne27", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Dolcetto_grapes.JPG" },
   "encruzado": { file: "/grapes/encruzado.webp", thumb: "/grapes/thumbs/encruzado.webp", credit: "Wines of Portugal, i.V. Marie-Luise Bächle", license: "CC BY 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Encruzado.jpg" },
   "fiano": { file: "/grapes/fiano.webp", thumb: "/grapes/thumbs/fiano.webp", credit: "Viala et Vermorel", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Fiano.jpg" },
-  "friulano": { file: "/grapes/friulano.webp", thumb: "/grapes/thumbs/friulano.webp", credit: "Please note: This photo can be reproduced. Please quote the source as indicated below: Urs", license: "CC BY-SA 4.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:VIVC12543_FRIULANO_Cluster_in_the_field_17025.jpg" },
+  "friulano": { file: "/grapes/friulano.webp", thumb: "/grapes/thumbs/friulano.webp", credit: "Ursula Brühl, Julius Kühn-Institut (JKI), Federal Research Centre for Cultivated Plants, Institute for Grapevine Breeding Geilweilerhof - 76833 Siebeldingen, GERMANY", license: "CC BY-SA 4.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:VIVC12543_FRIULANO_Cluster_in_the_field_17025.jpg" },
   "furmint": { file: "/grapes/furmint.webp", thumb: "/grapes/thumbs/furmint.webp", credit: "Vermorel et Viala", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Furmint.jpg" },
   "gamay": { file: "/grapes/gamay.webp", thumb: "/grapes/thumbs/gamay.webp", credit: "Viking59", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Gamay.jpg" },
   "garganega": { file: "/grapes/garganega.webp", thumb: "/grapes/thumbs/garganega.webp", credit: "Giacomino Timillero", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Garganega_Recioto_di_Gambellara.png" },
@@ -60,7 +61,7 @@ export const wineGrapeImages: Record<string, WineGrapeImage> = {
   "lagrein": { file: "/grapes/lagrein.webp", thumb: "/grapes/thumbs/lagrein.webp", credit: "Nathan Jones", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Lagrein_vines_at_Gisborne_Peak.jpg" },
   "macabeo": { file: "/grapes/macabeo.webp", thumb: "/grapes/thumbs/macabeo.webp", credit: "Viala et Vermorel", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Maccabeo_blanc.jpg" },
   "malbec": { file: "/grapes/malbec.webp", thumb: "/grapes/thumbs/malbec.webp", credit: "Ian L", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Malbec_grapes.jpg" },
-  "malvasia": { file: "/grapes/malvasia.webp", thumb: "/grapes/thumbs/malvasia.webp", credit: "No machine-readable author provided. Scops~commonswiki assumed (based on copyright claims)", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Malvasia_grapes_(cropped).JPG" },
+  "malvasia": { subject: "Malvasia reference photograph; the family contains distinct cultivars", file: "/grapes/malvasia.webp", thumb: "/grapes/thumbs/malvasia.webp", credit: "No machine-readable author provided. Scops~commonswiki assumed (based on copyright claims).", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Malvasia_grapes_(cropped).JPG" },
   "marsanne": { file: "/grapes/marsanne.webp", thumb: "/grapes/thumbs/marsanne.webp", credit: "Jules Troncy", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Marsanne_viala_et_vermorel.jpg" },
   "marselan": { file: "/grapes/marselan.webp", thumb: "/grapes/thumbs/marselan.webp", credit: "Vbecart", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Marselan.jpg" },
   "melon": { file: "/grapes/melon.webp", thumb: "/grapes/thumbs/melon.webp", credit: "Cyril5555", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Melon_de_bourgogne.jpg" },
@@ -72,18 +73,18 @@ export const wineGrapeImages: Record<string, WineGrapeImage> = {
   "mourvedre": { file: "/grapes/mourvedre.webp", thumb: "/grapes/thumbs/mourvedre.webp", credit: "Pancrat", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Balzac_noir-mourvedre.jpg" },
   "muscat-blanc": { file: "/grapes/muscat-blanc.webp", thumb: "/grapes/thumbs/muscat-blanc.webp", credit: "Viala et Vermorel", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Muscat_blanc_%C3%A0_petits_grains_Viala_et_Vermorel.jpg" },
   "nebbiolo": { file: "/grapes/nebbiolo.webp", thumb: "/grapes/thumbs/nebbiolo.webp", credit: "Hanna", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Close_up_of_Nebbiolo_cluster_in_Italy.jpg" },
-  "negroamaro": { file: "/grapes/negroamaro.webp", thumb: "/grapes/thumbs/negroamaro.webp", credit: "Please note: This photo can be reproduced. Please quote the source as indicated below: Dor", license: "CC BY-SA 4.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:VIVC8456_NEGRO_AMARO_Cluster_in_the_laboratory_7744.jpg" },
+  "negroamaro": { file: "/grapes/negroamaro.webp", thumb: "/grapes/thumbs/negroamaro.webp", credit: "Doris Schneider, Julius Kühn-Institut (JKI), Federal Research Centre for Cultivated Plants, Institute for Grapevine Breeding Geilweilerhof - 76833 Siebeldingen, GERMANY", license: "CC BY-SA 4.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:VIVC8456_NEGRO_AMARO_Cluster_in_the_laboratory_7744.jpg" },
   "nero-davola": { file: "/grapes/nero-davola.webp", thumb: "/grapes/thumbs/nero-davola.webp", credit: "Fabio Ingrosso from Italy", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Grappolo_di_Nero_d%27Avola.jpg" },
   "pais": { file: "/grapes/pais.webp", thumb: "/grapes/thumbs/pais.webp", credit: "Alexis Kreyder", license: "CC0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Mission_-_Amp%C3%A9lographie.jpg" },
-  "palomino": { file: "/grapes/palomino.webp", thumb: "/grapes/thumbs/palomino.webp", credit: "Viala et Vermorel", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Palomino_Viala_et_Vermorel.jpg" },
+  "palomino": {"file": "/grapes/palomino.webp", "thumb": "/grapes/thumbs/palomino.webp", "credit": "Pamela Heywood", "license": "CC BY 2.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:PalominoListan_Blanco_grapes_growing_in_Tenerife.jpg", "licenseUrl": "https://creativecommons.org/licenses/by/2.0"} ,
   "parellada": { file: "/grapes/parellada.webp", thumb: "/grapes/thumbs/parellada.webp", credit: "Justus Hayes", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:St._Sadurni_d%27Anoia_-_white_grapes.jpg" },
   "pedro-ximenez": { file: "/grapes/pedro-ximenez.webp", thumb: "/grapes/thumbs/pedro-ximenez.webp", credit: "Viala et Vermorel", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Pedro-ximenes_Viala_et_Vermorel.jpg" },
   "petit-verdot": { file: "/grapes/petit-verdot.webp", thumb: "/grapes/thumbs/petit-verdot.webp", credit: "Eric 先魁 Hwang", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:01_Petit_verdot.jpg" },
   "pinot-gris": { file: "/grapes/pinot-gris.webp", thumb: "/grapes/thumbs/pinot-gris.webp", credit: "Andy / Andrew Fogg", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Pinot_Gris_close.JPG" },
   "pinot-noir": { file: "/grapes/pinot-noir.webp", thumb: "/grapes/thumbs/pinot-noir.webp", credit: "Pierre Viala (1859-1936), Victor Vermorel (1848-1927)", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Pinot_Noir_(Viala_Vermorel).jpg" },
-  "pinotage": { file: "/grapes/pinotage.webp", thumb: "/grapes/thumbs/pinotage.webp", credit: "Please note: This photo can be reproduced. Please quote the source as indicated below: Dor", license: "CC BY-SA 4.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:VIVC9286_PINOTAGE_Full_plant_3638.jpg" },
+  "pinotage": { file: "/grapes/pinotage.webp", thumb: "/grapes/thumbs/pinotage.webp", credit: "Doris Schneider, Julius Kühn-Institut (JKI), Federal Research Centre for Cultivated Plants, Institute for Grapevine Breeding Geilweilerhof - 76833 Siebeldingen, GERMANY", license: "CC BY-SA 4.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:VIVC9286_PINOTAGE_Full_plant_3638.jpg" },
   "primitivo": { file: "/grapes/primitivo.webp", thumb: "/grapes/thumbs/primitivo.webp", credit: "Anachronist", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Zinfandel_grapes.jpg" },
-  "riesling": { file: "/grapes/riesling.webp", thumb: "/grapes/thumbs/riesling.webp", credit: "No machine-readable author provided. T.o.m.~commonswiki assumed (based on copyright claims", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Riesling_grapes_leaves.jpg" },
+  "riesling": { file: "/grapes/riesling.webp", thumb: "/grapes/thumbs/riesling.webp", credit: "No machine-readable author provided. T.o.m.~commonswiki assumed (based on copyright claims).", license: "CC BY-SA 3.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Riesling_grapes_leaves.jpg" },
   "roussanne": { file: "/grapes/roussanne.webp", thumb: "/grapes/thumbs/roussanne.webp", credit: "Jules Troncy", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Roussanne.jpg" },
   "sagrantino": { file: "/grapes/sagrantino.webp", thumb: "/grapes/thumbs/sagrantino.webp", credit: "Zyance", license: "CC BY-SA 2.5", sourceUrl: "https://commons.wikimedia.org/wiki/File:Montefalco_z09.jpg" },
   "sangiovese": { file: "/grapes/sangiovese.webp", thumb: "/grapes/thumbs/sangiovese.webp", credit: "Francesco Sgroi", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Sangiovese_grapevine.jpg" },
@@ -109,6 +110,18 @@ export const wineGrapeImages: Record<string, WineGrapeImage> = {
   "viognier": { file: "/grapes/viognier.webp", thumb: "/grapes/thumbs/viognier.webp", credit: "Viala et Vermorel", license: "Public domain", sourceUrl: "https://commons.wikimedia.org/wiki/File:Viognier_Viala_et_Vermorel.jpg" },
   "xarel-lo": { file: "/grapes/xarel-lo.webp", thumb: "/grapes/thumbs/xarel-lo.webp", credit: "batega", license: "CC BY 2.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:Xarel_lo_Cava_grapes.jpg" },
   "zweigelt": { file: "/grapes/zweigelt.webp", thumb: "/grapes/thumbs/zweigelt.webp", credit: "Bauer Karl", license: "CC BY 3.0 at", sourceUrl: "https://commons.wikimedia.org/wiki/File:Zweigelt_DSC_4458.JPG" },
+  "airen": {"file": "/grapes/airen.webp", "thumb": "/grapes/thumbs/airen.webp", "credit": "Doris Schneider, Julius Kühn-Institut (JKI), Federal Research Centre for Cultivated Plants, Institute for Grapevine Breeding Geilweilerhof - 76833 Siebeldingen, GERMANY", "license": "CC BY-SA 4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:VIVC157_AIREN_Cluster_in_the_field_8859.jpg", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"} ,
+  "assyrtiko": {"file": "/grapes/assyrtiko.webp", "thumb": "/grapes/thumbs/assyrtiko.webp", "credit": "Elisavetch at Greek Wikipedia", "license": "Copyrighted free use", "sourceUrl": "https://commons.wikimedia.org/wiki/File:ASSYRTIKO.jpg"} ,
+  "glera": {"file": "/grapes/glera.webp", "thumb": "/grapes/thumbs/glera.webp", "credit": "Ursula Brühl, Julius Kühn-Institut (JKI), Federal Research Centre for Cultivated Plants, Institute for Grapevine Breeding Geilweilerhof - 76833 Siebeldingen, GERMANY", "license": "CC BY-SA 4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:VIVC9741_GLERA_Cluster_in_the_field_17055.jpg", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"} ,
+  "cortese": {"file": "/grapes/cortese.webp", "thumb": "/grapes/thumbs/cortese.webp", "credit": "Doris Schneider, Ursula Brühl, Julius Kühn-Institut (JKI), Federal Research Centre for Cultivated Plants, Institute for Grapevine Breeding Geilweilerhof - 76833 Siebeldingen, GERMANY", "license": "CC BY-SA 4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:VIVC2856_CORTESE_Cluster_in_the_laboratory_7638.jpg", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"} ,
+  "catarratto": {"file": "/grapes/catarratto.webp", "thumb": "/grapes/thumbs/catarratto.webp", "credit": "Alexis Kreyder", "license": "CC0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Catarratto_-_Amp%C3%A9lographie.jpg", "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en", "subject": "Historical botanical plate"} ,
+  "ribolla-gialla": {"file": "/grapes/ribolla-gialla.webp", "thumb": "/grapes/thumbs/ribolla-gialla.webp", "credit": "Doris Schneider, Julius Kühn-Institut (JKI), Federal Research Centre for Cultivated Plants, Institute for Grapevine Breeding Geilweilerhof - 76833 Siebeldingen, GERMANY", "license": "CC BY-SA 4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:VIVC10054_RIBOLLA_GIALLA_Cluster_in_the_field_3757.jpg", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"} ,
+  "muscadelle": {"file": "/grapes/muscadelle.webp", "thumb": "/grapes/thumbs/muscadelle.webp", "credit": "Imprimerie A. Bellier & Cie - Bordeaux", "license": "CC0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Muscadelle_-_Joseph_Daurel.jpg", "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en", "subject": "Historical botanical plate"} ,
+  "touriga-franca": {"file": "/grapes/touriga-franca.webp", "thumb": "/grapes/thumbs/touriga-franca.webp", "credit": "Wines of Portugal, i. V. Marie-Luise Bächle", "license": "CC BY 3.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Touriga_Franca.jpg", "licenseUrl": "https://creativecommons.org/licenses/by/3.0"} ,
+  "negrette": {"file": "/grapes/negrette.webp", "thumb": "/grapes/thumbs/negrette.webp", "credit": "Jules Troncy", "license": "CC0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:N%C3%A9grette_-_Amp%C3%A9lographie.jpg", "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en", "subject": "Historical botanical plate"} ,
+  "xinomavro": {"file": "/grapes/xinomavro.webp", "thumb": "/grapes/thumbs/xinomavro.webp", "credit": "Elisavetch at Greek Wikipedia", "license": "Attribution", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Popolka-Xinomavro.jpg"} ,
+  "castelao": {"file": "/grapes/castelao.webp", "thumb": "/grapes/thumbs/castelao.webp", "credit": "Wines of Portugal, i.V. Marie‐Luise Bächle", "license": "CC BY 3.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Castelao.jpg", "licenseUrl": "https://creativecommons.org/licenses/by/3.0"} ,
+  "lambrusco": {"file": "/grapes/lambrusco.webp", "thumb": "/grapes/thumbs/lambrusco.webp", "credit": "Justlettersandnumbers", "license": "CC BY-SA 4.0", "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lambrusco_Maestri.jpg", "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0", "subject": "Lambrusco Maestri — one member of the Lambrusco family"} ,
 };
 
 export const wineGrapeImageCount = Object.keys(wineGrapeImages).length;

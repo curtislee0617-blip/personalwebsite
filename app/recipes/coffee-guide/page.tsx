@@ -5,7 +5,7 @@ import { CoffeeGuide } from "@/components/coffee-guide";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { PageIntro } from "@/components/page-intro";
 import { SectionRail } from "@/components/section-rail";
-import { isRecipeAdminSessionAuthenticated } from "@/lib/recipe-admin-auth";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const metadata: Metadata = { title: "The science of coffee", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ const sections = [
 ] as const;
 
 export default async function CoffeeGuidePage() {
-  if (!(await isRecipeAdminSessionAuthenticated())) notFound();
+  if (!(await isRecipeAdminAuthenticated())) notFound();
 
   return (
     <div className="guide-page coffee-guide-page">

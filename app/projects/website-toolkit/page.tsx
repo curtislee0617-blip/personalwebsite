@@ -111,7 +111,7 @@ export default function WebsiteToolkitPage() {
                 {toolkitChoices.map((choice) => <tr key={choice.goal}><th scope="row">{choice.goal}</th><td>{choice.tools}</td><td>{choice.reason}</td></tr>)}
               </tbody></table>
             </div>
-            <p className="toolkit-closing">My first experiments for this site would be a faster course list with TanStack Virtual, a PhotoSwipe gallery, and one Bi1x analysis that readers can rerun with Pyodide. Structured recipe quantities would be another useful step, making portion adjustments and shopping lists possible after the data has been reviewed.</p>
+            <p className="toolkit-closing">My first experiments for this site would be a faster course list with TanStack Virtual, a PhotoSwipe gallery, and one laboratory analysis that readers can rerun with Pyodide. Structured recipe quantities would be another useful step, making portion adjustments and shopping lists possible after the data has been reviewed.</p>
           </section>
           <section className="toolkit-chapter toolkit-project-collection" id="project-collection" aria-labelledby="project-collection-title">
             <header className="toolkit-chapter-heading">
@@ -142,7 +142,7 @@ export default function WebsiteToolkitPage() {
                 <p className="toolkit-project-first"><strong>A first version.</strong> {project.firstVersion}</p>
               </section>
             ))}
-            <p className="toolkit-closing">For a first design and animation project, I would start with the chemistry thumbnail: Penpot for its layout, Blender for the asset and Three.js for the interaction. For a useful addition to an existing page, the rerunnable Bi1x figure or the photography gallery would make a focused next experiment.</p>
+            <p className="toolkit-closing">For a first design and animation project, I would start with the chemistry thumbnail: Penpot for its layout, Blender for the asset and Three.js for the interaction. For a useful addition to an existing page, a rerunnable laboratory figure or the photography gallery would make a focused next experiment.</p>
           </section>
           <footer className="toolkit-journal-footer"><span>End of field notes</span><a href="#toolkit-top">Back to the beginning ↑</a></footer>
         </article>

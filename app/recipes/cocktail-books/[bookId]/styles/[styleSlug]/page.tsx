@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HistoryBackButton } from "@/components/history-back-button";
+import { CocktailCodexContents } from "@/components/cocktail-codex-contents";
 import { PageIntro } from "@/components/page-intro";
 import { RecipeImageViewer } from "@/components/recipe-image-viewer";
 import { cocktailCodexStyleHref, cocktailCodexStyles, getCocktailCodexStyle } from "@/lib/cocktail-codex";
@@ -63,7 +64,7 @@ export default async function CocktailCodexStylePage({ params }: { params: Style
       />
       <section className="cocktail-codex-article page-section pt-8 sm:pt-10">
         <div className="cocktail-codex-article-actions">
-          <HistoryBackButton fallbackHref="/recipes/cocktail-books/cocktail-codex">← Cocktail Codex</HistoryBackButton>
+          <Link className="back-link-bubble" href="/recipes/cocktail-books/cocktail-codex">← Cocktail Codex</Link>
           <Link className="back-link-bubble" href={`/recipes/cocktail-books/cocktail-codex#cocktail-section-${style.slug}`}>View {style.label} recipes</Link>
         </div>
 
@@ -80,19 +81,7 @@ export default async function CocktailCodexStylePage({ params }: { params: Style
         </nav>
 
         <div className="cocktail-codex-article-layout">
-          <aside className="cocktail-codex-article-contents">
-            <p className="eyebrow">On this page</p>
-            <ol>
-              {sections.map((section, sectionIndex) => (
-                <li key={section.id}>
-                  <a href={`#cocktail-codex-reading-${section.id}`}>
-                    <span>{String(sectionIndex + 1).padStart(2, "0")}</span>
-                    {section.title}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </aside>
+          <CocktailCodexContents sections={sections.map(({ id, title }) => ({ id, title }))} />
 
           <article className="cocktail-codex-article-body">
             {sections.map((section, sectionIndex) => (

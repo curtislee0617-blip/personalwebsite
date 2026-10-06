@@ -2,11 +2,11 @@
 
 import {
   useCallback,
+  useEffect,
   useRef,
   useState,
   type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
-  type WheelEvent as ReactWheelEvent,
 } from "react";
 
 type ViewportTransform = {
@@ -78,10 +78,12 @@ export function layoutMapLabels(
   mapHeight: number,
   {
     hideOnCollision = true,
+    expandSearch = false,
     padding = 10,
     obstacles = [],
   }: {
     hideOnCollision?: boolean;
+    expandSearch?: boolean;
     obstacles?: MapLabelBox[];
     padding?: number;
   } = {},
@@ -119,6 +121,18 @@ export function layoutMapLabels(
           [-label.width * 0.42, label.height * 0.62],
           [0, 0],
         ];
+    // Dense country overviews need additional callout positions on narrow screens.
+    if (expandSearch && label.placement !== "centered") {
+      for (const ring of [1.25, 1.75, 2.25]) {
+        for (let direction = 0; direction < 8; direction += 1) {
+          const angle = direction * Math.PI / 4;
+          candidates.push([
+            Math.cos(angle) * label.width * ring,
+            Math.sin(angle) * label.height * ring,
+          ]);
+        }
+      }
+    }
     let best:
       | { box: MapLabelBox; centerX: number; centerY: number; score: number }
       | null = null;
@@ -175,6 +189,20 @@ export function useWineMapViewport(width: number, height: number) {
   const [viewport, setViewport] = useState<ViewportTransform>({ scale: 1, x: 0, y: 0 });
   const pointerStart = useRef<PointerStart | null>(null);
   const suppressClick = useRef(false);
+  const [svgNode, setSvgNode] = useState<SVGSVGElement | null>(null);
+  const [labelScale, setLabelScale] = useState(1);
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<(ViewportTransform & { distance: number; centerX: number; centerY: number }) | null>(null);
+
+  useEffect(() => {
+    if (!svgNode) return;
+    const observer = new ResizeObserver(() => {
+      const displayedWidth = svgNode.getBoundingClientRect().width;
+      if (displayedWidth > 0) setLabelScale(width / displayedWidth);
+    });
+    observer.observe(svgNode);
+    return () => observer.disconnect();
+  }, [svgNode, width]);
 
   const zoomAt = useCallback((nextScale: number, focusX = width / 2, focusY = height / 2) => {
     setViewport((current) => {
@@ -193,17 +221,38 @@ export function useWineMapViewport(width: number, height: number) {
     setViewport({ scale: 1, x: 0, y: 0 });
   }, []);
 
-  const onWheel = useCallback((event: ReactWheelEvent<SVGSVGElement>) => {
-    event.preventDefault();
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const focusX = ((event.clientX - bounds.left) / bounds.width) * width;
-    const focusY = ((event.clientY - bounds.top) / bounds.height) * height;
-    const factor = event.deltaY < 0 ? 1.18 : 1 / 1.18;
-    zoomAt(viewport.scale * factor, focusX, focusY);
-  }, [height, viewport.scale, width, zoomAt]);
+  useEffect(() => {
+    if (!svgNode) return;
+    // React wheel handlers are passive; a native listener prevents page zoom/scroll
+    // and uses the current state for every event in a trackpad gesture.
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      const bounds = svgNode.getBoundingClientRect();
+      const focusX = ((event.clientX - bounds.left) / bounds.width) * width;
+      const focusY = ((event.clientY - bounds.top) / bounds.height) * height;
+      const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? bounds.height : 1);
+      const factor = Math.exp(-clamp(delta, -120, 120) * (event.ctrlKey ? 0.012 : 0.003));
+      setViewport(current => {
+        const scale = clamp(current.scale * factor, minimumScale, maximumScale);
+        const ratio = scale / current.scale;
+        return constrainViewport({scale, x: focusX - (focusX - current.x) * ratio, y: focusY - (focusY - current.y) * ratio}, width, height);
+      });
+    };
+    svgNode.addEventListener("wheel", onWheel, {passive: false});
+    return () => svgNode.removeEventListener("wheel", onWheel);
+  }, [svgNode, width, height]);
 
   const onPointerDown = useCallback((event: ReactPointerEvent<SVGSVGElement>) => {
     if (event.button !== 0) return;
+    pointers.current.set(event.pointerId, {x: event.clientX, y: event.clientY});
+    if (pointers.current.size === 2) {
+      const [first, second] = [...pointers.current.values()];
+      const bounds = event.currentTarget.getBoundingClientRect();
+      pinch.current = {...viewport, distance: Math.max(1, Math.hypot(second.x-first.x, second.y-first.y)), centerX: ((first.x+second.x)/2-bounds.left)/bounds.width*width, centerY: ((first.y+second.y)/2-bounds.top)/bounds.height*height};
+      pointers.current.forEach((_, id) => event.currentTarget.setPointerCapture(id));
+      suppressClick.current = true;
+      return;
+    }
     suppressClick.current = false;
     pointerStart.current = {
       ...viewport,
@@ -212,9 +261,20 @@ export function useWineMapViewport(width: number, height: number) {
       clientY: event.clientY,
       moved: false,
     };
-  }, [viewport]);
+  }, [viewport, width, height]);
 
   const onPointerMove = useCallback((event: ReactPointerEvent<SVGSVGElement>) => {
+    if (pointers.current.has(event.pointerId)) pointers.current.set(event.pointerId, {x: event.clientX, y: event.clientY});
+    if (pinch.current && pointers.current.size === 2) {
+      const [first, second] = [...pointers.current.values()];
+      const start = pinch.current;
+      const bounds = event.currentTarget.getBoundingClientRect();
+      const scale = clamp(start.scale * Math.hypot(second.x-first.x, second.y-first.y) / start.distance, minimumScale, maximumScale);
+      const centerX = ((first.x+second.x)/2-bounds.left)/bounds.width*width;
+      const centerY = ((first.y+second.y)/2-bounds.top)/bounds.height*height;
+      setViewport(constrainViewport({scale, x: centerX-(start.centerX-start.x)*scale/start.scale, y: centerY-(start.centerY-start.y)*scale/start.scale}, width, height));
+      return;
+    }
     const start = pointerStart.current;
     if (!start || start.pointerId !== event.pointerId) return;
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -237,7 +297,8 @@ export function useWineMapViewport(width: number, height: number) {
   }, [height, width]);
 
   const finishPointer = useCallback((event: ReactPointerEvent<SVGSVGElement>) => {
-    if (pointerStart.current?.pointerId !== event.pointerId) return;
+    pointers.current.delete(event.pointerId);
+    if (pinch.current) { pinch.current = null; pointerStart.current = null; }
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
@@ -252,6 +313,7 @@ export function useWineMapViewport(width: number, height: number) {
   }, []);
 
   return {
+    labelScale,
     scale: viewport.scale,
     transform: `translate(${viewport.x} ${viewport.y}) scale(${viewport.scale})`,
     x: viewport.x,
@@ -260,12 +322,14 @@ export function useWineMapViewport(width: number, height: number) {
     zoomOut: () => zoomAt(viewport.scale / 1.35),
     reset,
     svgProps: {
+      ref: setSvgNode,
+      "data-lenis-prevent": true,
+      onLostPointerCapture: finishPointer,
       onClickCapture,
       onPointerCancel: finishPointer,
       onPointerDown,
       onPointerMove,
       onPointerUp: finishPointer,
-      onWheel,
     },
   };
 }
@@ -283,8 +347,8 @@ export function WineMapViewportControls({
 }) {
   return (
     <div className="wine-map-viewport-controls" aria-label="Map view controls">
-      <button aria-label="Zoom in" onClick={onZoomIn} type="button">+</button>
-      <button aria-label="Zoom out" disabled={scale <= minimumScale} onClick={onZoomOut} type="button">−</button>
+      <button aria-label="Zoom in" disabled={scale >= maximumScale} onClick={onZoomIn} type="button">+</button>
+      <button aria-label="Zoom out" disabled={scale <= minimumScale + 0.001} onClick={onZoomOut} type="button">−</button>
       <button className="wine-map-reset" disabled={scale === 1} onClick={onReset} type="button">Reset</button>
       <output aria-live="polite">{Math.round(scale * 100)}%</output>
     </div>

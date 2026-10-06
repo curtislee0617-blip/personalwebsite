@@ -598,7 +598,7 @@ const sparklingRegions = [
   ["Lambrusco", "Sorbara · Salamino · Grasparossa and relatives", "mostly tank", "A family rather than one grape: pale floral Sorbara and darker tannic Grasparossa can make dry or sweet, frizzante or spumante wine."],
   ["Franciacorta", "Chardonnay · Pinot Noir · Pinot Blanc", "traditional", "A warmer Lombardy basin gives riper base wine; Satèn lowers pressure for a creamier mousse, while rosé and longer-aged styles add breadth."],
   ["Trentodoc", "Chardonnay · Pinot Noir · Pinot Blanc · Meunier", "traditional", "High Alpine vineyards combine intense light with cold nights, giving ripe aroma without surrendering the acid needed for lees ageing."],
-  ["Germany", "Riesling · Pinot family and many others", "tank or traditional", "Sekt ranges from large-volume blends to estate-grown traditional-method wine. Origin and producer tell me far more than the word Sekt by itself."],
+  ["Germany", "Riesling · Pinot family and many others", "tank or traditional", "Sekt ranges from large-volume blends to estate-grown traditional-method wine. Origin and producer distinguish these styles more precisely than the word Sekt alone."],
   ["England & Wales", "Chardonnay · Pinot Noir · Meunier", "traditional", "A long, marginal growing season preserves acid; chalk and clay sites can produce precise base wines, while weather makes vintage blending valuable."],
   ["United States", "Chardonnay · Pinot Noir · local varieties", "traditional and tank", "Coastal California leads premium production, but Oregon, Washington, New York and New Mexico show that altitude, latitude and water can all provide cool fruit."],
   ["Chile", "Chardonnay · Pinot Noir", "traditional and tank", "Pacific influence and high or southern sites supply freshness; large producers can blend across cool zones for consistent base wine."],
@@ -684,7 +684,7 @@ const labelLayers = [
   ["Grape", "A varietal name may be explicit or hidden behind a place such as Chablis or Barolo. Percentage rules and permitted blending partners change by jurisdiction."],
   ["Vintage", "Usually the harvest year. It matters most where weather varies, while reserve wine and multi-vintage blending deliberately soften that variation."],
   ["Style terms", "Dryness, colour, method, ageing or hierarchy terms only mean what that region’s rulebook says. “Reserve,” “old vines” and “selection” may be tightly defined, loosely defined or unregulated."],
-  ["Technical line", "Alcohol, volume, allergens, importer, bottler and lot code make the bottle traceable. None is a tasting score, but each tells me how the product entered the market."],
+  ["Technical line", "Alcohol, volume, allergens, importer, bottler and lot code make the bottle traceable. None is a tasting score, but each documents how the product entered the market."],
 ] as const;
 
 const serviceTemperatures = [
@@ -757,8 +757,8 @@ export function WineVineyardPracticeAtlas() {
         ))}
       </div>
       <p className="wine-science-aside">
-        I use soil and rock names to explain drainage, heat, rooting and water—not as a claim that slate, limestone
-        or granite dissolves into a matching flavour. The vine builds aroma compounds through biology, and
+        Soil and rock influence drainage, heat, rooting and water supply. Slate, limestone
+        and granite do not dissolve into a matching flavour. The vine builds aroma compounds through biology, and
         fermentation transforms them again.
       </p>
     </>
@@ -890,7 +890,7 @@ export function WineFinishingAndPackaging() {
       <div className="wine-finishing-detail">
         <section>
           <p className="eyebrow">Fining is targeted chemistry</p>
-          <h4>The material should match the thing I am trying to remove</h4>
+          <h4>Choose a fining agent for the target compound</h4>
           <div>
             {finingAgents.map(([agent, target, note]) => (
               <p key={agent}><strong>{agent}</strong><span>{target}</span><small>{note}</small></p>
@@ -1000,7 +1000,7 @@ export function WineLabelAndService() {
             <p><strong>Package & route</strong><span>heavy glass, cork, freight, duty, distributor and retailer margins can cost more than the liquid</span></p>
             <p><strong>Demand & rarity</strong><span>classification, critic attention, brand, vintage and tiny supply can move price far beyond production cost</span></p>
           </div>
-          <small>Expensive can mean rare or desired; it does not guarantee that I will prefer the wine.</small>
+          <small>Rarity and demand can increase price without predicting individual preference.</small>
         </section>
       </div>
       <div className="wine-service-temperatures">

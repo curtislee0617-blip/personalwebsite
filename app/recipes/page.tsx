@@ -13,7 +13,7 @@ import { privateRecipeGuideSlugs, recipeEntries, wishlistEntries, type WishlistE
 import { getInstagramSavedRecipeCount, getPersonalRecipeCards, getYouTubeSavedRecipeCount } from "@/lib/personal-recipes";
 import type { RecipeCardEntry } from "@/lib/recipe-card-types";
 import type { RecipeSearchItem } from "@/lib/recipe-search";
-import { isRecipeAdminAuthenticated, isRecipeAdminSessionAuthenticated } from "@/lib/recipe-admin-auth";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { importedCookbooks, importedCookbookSearchEntries } from "@/lib/imported-cookbooks";
 import { modernistPizzaKnowledge, modernistPizzaRecipes } from "@/lib/modernist-pizza";
 import { getRecipeWishlistEntries } from "@/lib/recipe-wishlist";
@@ -340,14 +340,13 @@ export default async function RecipesPage() {
   const publishedUploadTitles = new Set(recipes.filter((entry) => entry.source === "uploaded").map((entry) => entry.title.toLowerCase()));
   const wishlist = [...savedCookbookRecipes, ...wishlistEntries]
     .filter((entry) => !publishedUploadTitles.has(entry.title.toLowerCase()));
-  const [authenticated, cookbookAuthenticated, ownerSession] = await Promise.all([
+  const [authenticated, cookbookAuthenticated] = await Promise.all([
     isRecipeAdminAuthenticated(),
     isCookbookAuthenticated(),
-    isRecipeAdminSessionAuthenticated(),
   ]);
   const privateLibraryAccess = authenticated || cookbookAuthenticated;
   const guides = recipeEntries.filter((entry) => entry.kind === "guide");
-  const searchPreview = buildRecipeSearchPreview(recipes, wishlist, ownerSession)
+  const searchPreview = buildRecipeSearchPreview(recipes, wishlist, authenticated)
     .filter((item) => privateLibraryAccess || !isPrivateCookbookHref(item.href));
   const chronologicalRecipes = [...recipes].sort((a, b) => {
     if (a.date && b.date) return b.date.localeCompare(a.date) || a.title.localeCompare(b.title);
@@ -401,7 +400,7 @@ export default async function RecipesPage() {
 
             <SnapCarousel className="recipe-guide-carousel mobile-snap-carousel -mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-3 pt-1 sm:mx-0 sm:px-0" repeatEdges={false}>
               {guides.map((entry) => {
-                const unpublished = privateRecipeGuideSlugs.has(entry.slug) && !ownerSession;
+                const unpublished = privateRecipeGuideSlugs.has(entry.slug) && !authenticated;
                 const cardClassName = "recipe-guide-card swipe-bubble-card relative w-[20rem] shrink-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-surface/55 transition hover:-translate-y-0.5 hover:border-ink/20 sm:w-[24rem]";
                 const cardContent = (
                   <>

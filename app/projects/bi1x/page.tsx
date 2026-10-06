@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/page-intro";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { SpringLink } from "@/components/spring-links";
 import { bi1xClass, bi1xProjects } from "@/lib/bi1x-projects";
 
@@ -9,7 +11,8 @@ export const metadata: Metadata = {
   description: "Bi1x laboratory reports at Caltech, April–June 2025. Written answers, Python analysis, and experimental figures from six labs.",
 };
 
-export default function Bi1xClassPage() {
+export default async function Bi1xClassPage() {
+  if (!(await isRecipeAdminAuthenticated())) notFound();
   return <>
     <PageIntro eyebrow={`Caltech · ${bi1xClass.dates}`} title={bi1xClass.title} description="Six experiments, from DNA restriction digests to bacterial growth and antibiotic resistance. Explore the written answers, figures, and original Python analysis in each report." />
     <section className="page-section bi1x-class-page">

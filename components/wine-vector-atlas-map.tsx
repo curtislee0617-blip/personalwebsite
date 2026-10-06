@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState, type KeyboardEvent } from "react";
+import { createContext, useContext, useId, useMemo, useState, type KeyboardEvent } from "react";
 import worldAtlas from "@d3-maps/atlas/world/countries/countries-50m";
 import { geoBounds, geoMercator, geoPath, type GeoProjection } from "d3-geo";
 import { feature, mesh } from "topojson-client";
@@ -29,6 +29,8 @@ import {
   type WineCountry,
   type WineRegion,
 } from "@/data/wine-guide-data";
+
+export const WineMapBasemapContext = createContext<"atlas" | "satellite">("atlas");
 
 type AtlasProperties = {
   id: string;
@@ -219,13 +221,16 @@ function countryFeatureForMap(
   countryFeature: Feature<Geometry, AtlasProperties>,
   iso: string,
 ): Feature<Geometry, AtlasProperties> {
-  if (iso !== "USA" || countryFeature.geometry.type !== "MultiPolygon") {
+  if (!["USA", "FRA"].includes(iso) || countryFeature.geometry.type !== "MultiPolygon") {
     return countryFeature;
   }
 
   const continentalCoordinates = countryFeature.geometry.coordinates.filter((polygon) => {
     const [west, south, east, north] = polygonBounds(polygon);
-    return east > -125 && west < -66 && south < 50 && north > 24;
+    // Keep metropolitan France (including Corsica), excluding overseas territories.
+    return iso === "FRA"
+      ? west > -6 && east < 10 && south > 41 && north < 52
+      : east > -125 && west < -66 && south < 50 && north > 24;
   });
 
   return {
@@ -349,10 +354,12 @@ function WineSatelliteTiles({
   projection: GeoProjection;
   width: number;
 }) {
+  const basemap = useContext(WineMapBasemapContext);
   const tiles = useMemo(
-    () => satelliteTilesForProjection(projection, width, height),
-    [height, projection, width],
+    () => basemap === "satellite" ? satelliteTilesForProjection(projection, width, height) : [],
+    [basemap, height, projection, width],
   );
+  if (basemap !== "satellite") return null;
 
   return (
     <g aria-hidden="true" className="wine-satellite-tiles">
@@ -360,6 +367,7 @@ function WineSatelliteTiles({
         <image
           height={tile.height}
           href={tile.href}
+          onError={(event) => { event.currentTarget.style.display = "none"; }}
           key={tile.key}
           preserveAspectRatio="none"
           width={tile.width}
@@ -373,6 +381,8 @@ function WineSatelliteTiles({
 }
 
 function WineSatelliteAttribution() {
+  const basemap = useContext(WineMapBasemapContext);
+  if (basemap !== "satellite") return null;
   return (
     <p className="wine-satellite-attribution">
       Imagery ©{" "}
@@ -460,7 +470,9 @@ export function WineCountryBoundaryMap({
   const clipId = `wine-country-clip-${rawId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const countryFeature = countryFeatures.find((item) => item.properties.id === country.iso);
   const context = wineMapCountryContext[country.iso];
-  const viewport = useWineMapViewport(vectorMapWidth, vectorMapHeight);
+  const isFranceOverview = country.iso === "FRA" && !selectedRegionId;
+  const countryMapHeight = isFranceOverview ? 700 : vectorMapHeight;
+  const viewport = useWineMapViewport(vectorMapWidth, countryMapHeight);
   const mappedRegions = useMemo(() => country.regions.flatMap((region) => {
     const boundary = regionBoundaryDataset.regions[region.id];
     return boundary ? [{ region, boundary, feature: asRegionBoundaryFeature(region, boundary) }] : [];
@@ -477,22 +489,25 @@ export function WineCountryBoundaryMap({
     ? madeiraFeatureForInset(madeiraInset.feature)
     : null;
   const projection = useMemo(() => {
-    const target = selectedMappedRegion?.feature ?? paddedRegionBounds(
+    const metropolitanFrance = country.iso === "FRA" && countryFeature
+      ? countryFeatureForMap(countryFeature, country.iso)
+      : null;
+    const target = selectedMappedRegion?.feature ?? metropolitanFrance ?? paddedRegionBounds(
       country.iso === "PRT"
         ? country.regions.filter((region) => region.id !== "pt-madeira")
         : country.regions,
     );
     const horizontalPadding = selectedMappedRegion ? 78 : 30;
-    const verticalPadding = selectedMappedRegion ? 46 : 28;
+    const verticalPadding = selectedMappedRegion ? 46 : 64;
 
     return geoMercator().fitExtent(
       [
         [horizontalPadding, verticalPadding],
-        [vectorMapWidth - horizontalPadding, vectorMapHeight - verticalPadding],
+        [vectorMapWidth - horizontalPadding, countryMapHeight - verticalPadding],
       ],
       target,
     );
-  }, [country.iso, country.regions, selectedMappedRegion]);
+  }, [country.iso, country.regions, countryFeature, countryMapHeight, selectedMappedRegion]);
   const path = useMemo(() => geoPath(projection), [projection]);
   const nearbyCountryFeatures = useMemo(
     () => {
@@ -555,7 +570,7 @@ export function WineCountryBoundaryMap({
   }, [country.iso, nearbyCountryFeatures]);
   const madeiraProjection = madeiraInsetFeature
     ? geoMercator().fitExtent(
-      [[48, vectorMapHeight - 105], [226, vectorMapHeight - 37]],
+      [[48, countryMapHeight - 105], [226, countryMapHeight - 37]],
       madeiraInsetFeature,
     )
     : null;
@@ -575,7 +590,7 @@ export function WineCountryBoundaryMap({
       && x >= 18
       && x <= vectorMapWidth - 18
       && y >= 18
-      && y <= vectorMapHeight - 18
+      && y <= countryMapHeight - 18
       ? [{
           id: nearbyCountry.properties.id,
           name: nearbyCountry.properties.name,
@@ -588,9 +603,9 @@ export function WineCountryBoundaryMap({
     const point = projection(boundary.label);
     if (!point) return [];
     return [{
-      labelWidth: Math.max(
+      labelWidth: isFranceOverview ? 28 : Math.max(
         denseLabels ? 54 : 62,
-        region.name.length * (denseLabels ? 5.7 : 6.4) + 16,
+        region.name.length * 7.7 + 20,
       ),
       point: point as [number, number],
       region,
@@ -599,11 +614,11 @@ export function WineCountryBoundaryMap({
   const labelPlacements = layoutMapLabels(
     [
       ...regionLabelData.map(({ labelWidth, point, region }) => ({
-        height: 21,
+        height: 28 * viewport.labelScale,
         id: `region:${region.id}`,
         point,
         priority: region.id === selectedRegionId ? 100 : 20,
-        width: labelWidth,
+        width: labelWidth * viewport.labelScale,
       })),
       ...nearbyCountryLabels.map((label) => ({
         height: 14,
@@ -616,11 +631,13 @@ export function WineCountryBoundaryMap({
     ],
     { scale: viewport.scale, x: viewport.x, y: viewport.y },
     vectorMapWidth,
-    vectorMapHeight,
+    countryMapHeight,
     {
+      hideOnCollision: !isFranceOverview,
+      expandSearch: isFranceOverview,
       obstacles: [
         { bottom: 52, left: vectorMapWidth - 225, right: vectorMapWidth - 8, top: 8 },
-        { bottom: vectorMapHeight - 7, left: 10, right: 286, top: vectorMapHeight - 37 },
+        { bottom: countryMapHeight - 7, left: 10, right: 286, top: countryMapHeight - 37 },
       ],
     },
   );
@@ -636,10 +653,11 @@ export function WineCountryBoundaryMap({
           aria-roledescription="interactive draggable map"
           className="wine-country-boundary-map"
           data-dense={denseLabels || undefined}
+          data-country={country.iso}
           data-map-layer="satellite"
           data-region-focus={selectedMappedRegion ? selectedMappedRegion.region.id : undefined}
           role="group"
-          viewBox={`0 0 ${vectorMapWidth} ${vectorMapHeight}`}
+          viewBox={`0 0 ${vectorMapWidth} ${countryMapHeight}`}
         >
           <title>{country.name} wine regions, rivers and basic elevation guides</title>
           <defs>
@@ -647,11 +665,15 @@ export function WineCountryBoundaryMap({
               <path d={outlinePath} />
             </clipPath>
           </defs>
-          <rect className="wine-vector-map-paper" height={vectorMapHeight} rx="22" width={vectorMapWidth} />
+          <rect className="wine-vector-map-paper" height={countryMapHeight} rx="22" width={vectorMapWidth} />
 
           <g className="wine-map-transform-layer" transform={viewport.transform}>
+            <g aria-hidden="true" className="wine-atlas-land">
+              {nearbyCountryFeatures.map((item) => <path className="wine-atlas-neighbour" key={item.properties.id} d={path(item) ?? undefined} />)}
+              <path className="wine-atlas-country" d={outlinePath} />
+            </g>
             <WineSatelliteTiles
-              height={vectorMapHeight}
+              height={countryMapHeight}
               projection={projection}
               width={vectorMapWidth}
             />
@@ -690,6 +712,9 @@ export function WineCountryBoundaryMap({
               </g>
             </g>
 
+            <g aria-hidden="true" className="wine-atlas-rivers">
+              {context?.rivers?.map(river => <path key={river.name} d={smoothWaterwayPath(river, projection)}><title>{river.name}</title></path>)}
+            </g>
             <path
               aria-hidden="true"
               className="wine-country-shared-borders"
@@ -714,9 +739,9 @@ export function WineCountryBoundaryMap({
                 className="wine-country-inset"
                 data-selected={madeiraInset.region.id === selectedRegionId || undefined}
               >
-                <rect height="116" rx="12" width="208" x="33" y={vectorMapHeight - 136} />
+                <rect height="116" rx="12" width="208" x="33" y={countryMapHeight - 136} />
                 <g
-                  transform={`translate(48 ${vectorMapHeight - 113}) scale(${1 / viewport.scale})`}
+                  transform={`translate(48 ${countryMapHeight - 113}) scale(${1 / viewport.scale})`}
                 >
                   <text className="wine-country-inset-title">Madeira · inset</text>
                 </g>
@@ -770,10 +795,17 @@ export function WineCountryBoundaryMap({
                     onKeyDown={(event) => svgButtonKeyDown(event, openRegion)}
                     role="button"
                     tabIndex={0}
-                    transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale}) translate(${placement.offsetX} ${placement.offsetY})`}
+                    transform={`translate(${point[0]} ${point[1]}) scale(${1 / viewport.scale}) translate(${placement.offsetX} ${placement.offsetY}) scale(${viewport.labelScale})`}
                   >
-                    <rect height="21" rx="6" width={labelWidth} x={-labelWidth / 2} y="-12" />
-                    <text textAnchor="middle" y="3">{region.name}</text>
+                    {isFranceOverview ? <line
+                      className="wine-region-marker-leader"
+                      x1={-placement.offsetX / viewport.labelScale}
+                      y1={-placement.offsetY / viewport.labelScale}
+                      x2="0" y2="0"
+                    /> : null}
+                    <rect height="28" rx={isFranceOverview ? 14 : 6} width={labelWidth} x={-labelWidth / 2} y="-14" />
+                    <text textAnchor="middle" y="4">{isFranceOverview ? country.regions.findIndex(item => item.id === region.id) + 1 : region.name}</text>
+                    <title>{region.name}</title>
                   </g>
                 ) : null;
               })}
@@ -786,7 +818,7 @@ export function WineCountryBoundaryMap({
           onZoomOut={viewport.zoomOut}
           scale={viewport.scale}
         />
-        <p className="wine-map-drag-hint">Drag to reorient · scroll or use + / − to zoom</p>
+        <p className="wine-map-drag-hint">{isFranceOverview ? "Numbers match the region list below · " : ""}Drag or pinch to explore</p>
         <WineSatelliteAttribution />
       </div>
 

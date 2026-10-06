@@ -13,7 +13,7 @@ import {
   sushiFoundationIngredients,
   sushiReferenceSources,
 } from "@/data/sushi-guide-data";
-import { isRecipeAdminSessionAuthenticated } from "@/lib/recipe-admin-auth";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const metadata: Metadata = {
   title: "The sushi counter, decoded",
@@ -214,7 +214,7 @@ function TunaCutMap() {
 }
 
 export default async function SushiGuidePage() {
-  if (!(await isRecipeAdminSessionAuthenticated())) notFound();
+  if (!(await isRecipeAdminAuthenticated())) notFound();
 
   return (
     <div className="guide-page sushi-guide-page">

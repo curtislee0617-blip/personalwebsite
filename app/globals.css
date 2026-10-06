@@ -8855,14 +8855,19 @@ details.modernist-recipe[open] > summary .modernist-row-arrow {
   display: grid;
   grid-template-columns: 1.65rem minmax(0, 1fr);
   gap: 0.38rem;
+  border: 1px solid transparent;
   border-radius: 0.5rem;
   padding: 0.38rem 0.42rem;
   color: rgb(var(--color-ink) / 0.53);
   font-size: 0.58rem;
   line-height: 1.35;
-  transition: background 160ms ease, color 160ms ease;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
 }
 .cocktail-codex-article-contents a:hover { background: rgb(var(--color-moss) / 0.08); color: rgb(var(--color-ink)); }
+.cocktail-codex-article-contents a.is-active,
+.cocktail-codex-article-contents a[aria-current="location"] { border-color: rgb(var(--color-moss) / 0.34); background: rgb(var(--color-moss) / 0.12); color: rgb(var(--color-moss)); }
+.cocktail-codex-article-contents a.is-active span,
+.cocktail-codex-article-contents a[aria-current="location"] span { color: rgb(var(--color-moss)); }
 .cocktail-codex-article-contents a span { color: rgb(var(--color-moss) / 0.6); font-size: 0.5rem; font-weight: 750; }
 .cocktail-codex-article-body { display: grid; min-width: 0; max-width: 58rem; }
 .cocktail-codex-article-body > section { min-width: 0; scroll-margin-top: 5.5rem; }
@@ -12401,7 +12406,7 @@ html.dashboard-undocking .home-entry-center::after,
    cards remain solid/translucent surfaces so nested glass never turns muddy. */
 :root {
   --glass-fill: rgb(255 254 251 / 0.58);
-  --glass-menu-fill: rgb(255 254 251 / 0.42);
+  --glass-menu-fill: rgb(255 254 251 / 0.34);
   --glass-menu-highlight: rgb(255 255 255 / 0.28);
   --glass-control-fill: rgb(255 255 255 / 0.34);
   --glass-highlight: rgb(255 255 255 / 0.7);
@@ -12415,7 +12420,7 @@ html.dashboard-undocking .home-entry-center::after,
 
 .dark {
   --glass-fill: rgb(31 34 27 / 0.62);
-  --glass-menu-fill: rgb(12 18 15 / 0.5);
+  --glass-menu-fill: rgb(12 18 15 / 0.4);
   --glass-menu-highlight: rgb(255 255 255 / 0.1);
   --glass-control-fill: rgb(255 255 255 / 0.075);
   --glass-highlight: rgb(255 255 255 / 0.12);
@@ -12552,7 +12557,7 @@ html.dashboard-mode .home-dashboard-panel,
   .site-menu-panel {
     background:
       linear-gradient(145deg, var(--glass-highlight), transparent 34%),
-      rgb(var(--color-paper) / 0.97);
+      rgb(var(--color-paper) / 0.9);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

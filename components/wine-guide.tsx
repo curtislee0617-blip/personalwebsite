@@ -13,6 +13,7 @@ import {
   WineVineCycle,
   WineVineyardPracticeAtlas,
 } from "@/components/wine-book-expansion";
+import { WineEncyclopediaIndex } from "@/components/wine-encyclopedia-index";
 import { WineGrapeAtlas } from "@/components/wine-grape-atlas";
 import { WineRegionExplorer } from "@/components/wine-region-explorer";
 import { wineCountryCount, wineRegionCount, wineSubregionCount } from "@/data/wine-guide-data";
@@ -93,7 +94,7 @@ const wineContents = [
       { href: "#wine-tasting-method", label: "A tasting sequence" },
       { href: "#wine-faults", label: "Faults & harmless deposits" },
       { href: "#wine-label-service", label: "Labels, ageing & service" },
-      { href: "#wine-sources", label: "Book trail" },
+      { href: "#wine-sources", label: "Sources & further reading" },
     ],
   },
 ] as const;
@@ -160,41 +161,6 @@ function EssayIntro({ children }: { children: ReactNode }) {
   return <div className="wine-essay-intro">{children}</div>;
 }
 
-function WineGuideContents() {
-  const sectionCount = wineContents.reduce((count, chapter) => count + chapter.sections.length, 0);
-
-  return (
-    <nav aria-labelledby="wine-guide-contents-title" className="wine-guide-contents">
-      <details>
-        <summary>
-          <span className="wine-guide-index-kicker">Guide index</span>
-          <strong id="wine-guide-contents-title">Contents</strong>
-          <span className="wine-guide-index-meta">
-            {wineContents.length} chapters · {sectionCount} topics
-          </span>
-          <span aria-hidden="true" className="wine-guide-index-toggle" />
-        </summary>
-        <div className="wine-guide-index-panel">
-          <ol>
-            {wineContents.map((chapter, chapterIndex) => (
-              <li key={chapter.href}>
-                <a className="wine-guide-contents-chapter" href={chapter.href}>
-                  <span>{String(chapterIndex + 1).padStart(2, "0")}</span>
-                  <strong>{chapter.title}</strong>
-                </a>
-                <div>
-                  {chapter.sections.map((section) => (
-                    <a href={section.href} key={section.href}>{section.label}</a>
-                  ))}
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </details>
-    </nav>
-  );
-}
 
 function GrapeAnatomy() {
   return (
@@ -364,7 +330,7 @@ const cellarTools = [
   },
   {
     title: "Concrete & amphora",
-    text: "Concrete buffers temperature and can admit slow oxygen without adding wood aroma. Clay vessels range from porous to lined, so “amphora” alone does not tell me how oxidative the wine was.",
+    text: "Concrete buffers temperature and can admit slow oxygen without adding wood aroma. Clay vessels range from porous to lined, so “amphora” alone does not establish how oxidative the wine was.",
     image: {
       src: "/recipes/wine-guide/winemaking/tools/concrete-egg.jpg",
       alt: "An egg-shaped concrete wine vessel inside a Bordeaux cellar.",
@@ -486,7 +452,12 @@ const dosageScale = [
 export function WineGuide() {
   return (
     <div className="wine-guide">
-      <WineGuideContents />
+      <div className="wine-reference-start">
+        <a href="#wine-regions"><span>Geography</span><strong>World wine atlas</strong><small>{wineCountryCount} countries · {wineRegionCount} regions · {wineSubregionCount} subregions ↗</small></a>
+        <a href="#wine-grape-atlas"><span>Ampelography</span><strong>Grape variety library</strong><small>{wineGrapeCount} varieties and families · images and profiles ↗</small></a>
+        <a href="#wine-making"><span>Science & practice</span><strong>From grape to wine</strong><small>Viticulture, fermentation, ageing and tasting ↗</small></a>
+      </div>
+      <WineEncyclopediaIndex chapters={wineContents} />
 
       <GuideChapter
         description="Wine is fermented grape juice, but that short definition hides a moving mixture of water, ethanol, acids, sugar, phenolics and hundreds of volatile compounds."
@@ -494,18 +465,18 @@ export function WineGuide() {
         id="wine-what"
         title="What wine is"
       >
-        <WineSection eyebrow="The liquid itself" id="wine-composition" title="A solution that never really sits still">
+        <WineSection eyebrow="The liquid itself" id="wine-composition" title="Wine composition and structure">
           <div className="wine-two-column">
             <div>
               <CopyBlock>
                 <p className={paragraphClass}>
-                  We make wine by asking yeast to eat the sugar in ripe grapes. That sounds simple until the grape,
-                  vineyard, microbes, oxygen, vessel and time all begin pulling the result in different directions.
-                  Even after bottling, slow reactions keep changing aroma, colour and texture.
+                  Yeast ferments the sugars in grape juice. Grape composition, growing conditions, microorganisms,
+                  oxygen exposure, vessel and ageing determine the resulting wine.
+                  Chemical reactions continue after bottling, changing aroma, colour and texture.
                 </p>
                 <p className={paragraphClass}>
-                  Water is the bulk of the drink. Ethanol is more than the part that makes us tipsy: it changes body,
-                  warmth, volatility and how sweetness or bitterness feels. Tartaric and malic acids give the young
+                  Water is the principal component. Ethanol affects body,
+                  warmth, volatility and the perception of sweetness and bitterness. Tartaric and malic acids give the young
                   wine its sharp frame. Lactic acid may replace some malic acid later, while acetic acid is useful in
                   tiny amounts and vinegary when it escapes control.
                 </p>
@@ -567,7 +538,7 @@ export function WineGuide() {
             </div>
           </div>
           <p className="wine-book-note">
-            Book trail · <i>Wined4 / Wine Production</i>, grape composition, acidity, aroma compounds and wine
+            References · <i>Wined4 / Wine Production</i>, grape composition, acidity, aroma compounds and wine
             structure chapters.
           </p>
         </WineSection>
@@ -589,7 +560,7 @@ export function WineGuide() {
           </EssayIntro>
           <WineVineCycle />
           <p className="wine-book-note">
-            Book trail · <i>Wined4 / Wine Production</i>, anatomy, propagation, growth-cycle and grape-development
+            References · <i>Wined4 / Wine Production</i>, anatomy, propagation, growth-cycle and grape-development
             chapters. The timing shifts with hemisphere, climate, variety and vintage; the sequence does not.
           </p>
         </WineSection>
@@ -670,7 +641,7 @@ export function WineGuide() {
           </EssayIntro>
           <WineHazardsAndHarvest />
           <p className="wine-book-note">
-            Book trail · <i>Wined4 / Wine Production</i>, vineyard establishment, soil and water management, canopy,
+            References · <i>Wined4 / Wine Production</i>, vineyard establishment, soil and water management, canopy,
             hazards, pests, diseases and harvest chapters; regional examples checked against{" "}
             <i>Wines of the World</i>.
           </p>
@@ -679,16 +650,15 @@ export function WineGuide() {
         <WineSection eyebrow="From country to climat" id="wine-regions" title="A world map of wine regions">
           <div className="wine-section-intro">
             <p className={paragraphClass}>
-              I have mapped {wineCountryCount} countries into {wineRegionCount} named regions and{" "}
-              {wineSubregionCount} closer zones. Start with the world, open a country, then choose a region. Burgundy
-              goes another level down because its whole argument is that a few metres of slope can deserve a
-              different name.
+              Explore {wineCountryCount} countries, {wineRegionCount} wine regions and {wineSubregionCount}
+              {" "}subregions. Select a country, then a region, to compare climate, terrain, grapes and wine styles.
+              Burgundy and Bordeaux include more detailed appellation and parcel views.
             </p>
             <p>
-              The country maps now draw the wine areas as boundaries rather than dots. Open European PDO,
-              Australian GI and American AVA geometry supplies the regulatory footprints; elsewhere I use real
-              county or provincial lines as an honest atlas redraw. Every map can be zoomed and dragged, while the
-              Bordeaux and south Côte de Beaune views go down to finer INAO parcel geometry.
+              Boundaries use European PDO, Australian GI and American AVA data where available. Other regions
+              use administrative outlines, identified as approximations. The vector atlas works without satellite
+              imagery; satellite view is optional. Zoom, drag or pinch to explore, and use search to find a region.
+              Detailed Bordeaux and south Côte de Beaune boundaries come from INAO.
             </p>
           </div>
           <WineRegionExplorer />
@@ -704,16 +674,14 @@ export function WineGuide() {
         <WineSection eyebrow={`${wineGrapeCount} varieties and families`} id="wine-grape-atlas" title="The grape atlas">
           <div className="wine-section-intro">
             <p className={paragraphClass}>
-              The atlas now opens from the world&apos;s most widely planted varieties downward. Search by grape,
-              synonym, country, flavour or wine type, or switch to A–Z. Each entry tells me how the vine behaves as
-              well as what the wine can taste like, because Cabernet in a textbook and Cabernet in a wet, shaded
-              vineyard are not the same useful piece of information.
+              Search {wineGrapeCount} varieties and families by name, synonym, region, aroma or wine style.
+              Each profile covers origin, viticulture, flavour, structure, genetics and principal growing regions.
+              Sort alphabetically or by recorded global vineyard area.
             </p>
             <p>
-              This is the book set&apos;s major and region-defining working collection, not a claim that the world
-              contains only {wineGrapeCount} grapes. More than a thousand named wine varieties exist, many in tiny
-              local plantings. “Common” here means global bearing vineyard area, not bottle sales or cultural
-              importance.
+              This collection covers major and region-defining grapes, rather than every named variety.
+              More than a thousand wine varieties exist, often in small local plantings. Vineyard-area rankings
+              measure bearing vines, not bottle sales or cultural importance; family entries are identified separately.
             </p>
           </div>
           <WineGrapeAtlas />
@@ -775,7 +743,7 @@ export function WineGuide() {
             </article>
           </div>
           <p className="wine-book-note">
-            Book trail · <i>Wined4 / Wine Production</i>, transport, grape reception, sorting, crushing, pressing,
+            References · <i>Wined4 / Wine Production</i>, transport, grape reception, sorting, crushing, pressing,
             must adjustment, oxygen, sulfur dioxide and hygiene chapters.
           </p>
         </WineSection>
@@ -877,7 +845,7 @@ export function WineGuide() {
             ))}
           </div>
           <p className="wine-book-note">
-            Book trail · <i>Wined4 / Wine Production</i>, fermentation, extraction, MLF, maturation and blending
+            References · <i>Wined4 / Wine Production</i>, fermentation, extraction, MLF, maturation and blending
             chapters; cross-checked against <i>Understanding Wines</i>.
           </p>
         </WineSection>
@@ -896,7 +864,7 @@ export function WineGuide() {
           </EssayIntro>
           <WineFinishingAndPackaging />
           <p className="wine-book-note">
-            Book trail · <i>Wined4 / Wine Production</i>, finishing, filtration, stabilisation, packaging, closures,
+            References · <i>Wined4 / Wine Production</i>, finishing, filtration, stabilisation, packaging, closures,
             quality assurance and transport chapters.
           </p>
         </WineSection>
@@ -1023,7 +991,7 @@ export function WineGuide() {
             </div>
           </div>
           <p className="wine-book-note">
-            Book trail · <i>Sparkling Wines</i>, production-method chapters and regional sections on Champagne,
+            References · <i>Sparkling Wines</i>, production-method chapters and regional sections on Champagne,
             Crémant, Cava, Prosecco, Asti, Lambrusco, Franciacorta, Trentodoc, England and New World sparkling wine.
           </p>
         </WineSection>
@@ -1043,7 +1011,7 @@ export function WineGuide() {
           </EssayIntro>
           <WineSparklingWorld />
           <p className="wine-book-note">
-            Book trail · every regional chapter in <i>Sparkling Wines</i>: Champagne, Alsace, Burgundy, Loire, Cava,
+            References · every regional chapter in <i>Sparkling Wines</i>: Champagne, Alsace, Burgundy, Loire, Cava,
             the major Italian families, Germany, England and Wales, the United States, Chile, Argentina, South
             Africa, Australia and New Zealand.
           </p>
@@ -1196,7 +1164,7 @@ export function WineGuide() {
             </article>
           </div>
           <p className="wine-book-note">
-            Book trail · <i>Fortified Wines</i>, Sherry, Port, Madeira, vins doux naturels and Rutherglen Muscat
+            References · <i>Fortified Wines</i>, Sherry, Port, Madeira, vins doux naturels and Rutherglen Muscat
             chapters. Numerical ranges describe the book&apos;s production framework; individual appellation rules
             and bottlings can be narrower.
           </p>
@@ -1204,7 +1172,7 @@ export function WineGuide() {
       </GuideChapter>
 
       <GuideChapter
-        description="Tasting becomes more useful when I separate what I sense from the story I expect. Structure first, aromas second, possible cause last."
+        description="A systematic tasting records appearance, aroma, flavour and structure before interpreting origin, production method or quality."
         eyebrow="From evidence to inference"
         id="wine-tasting"
         title="How to read a glass"
@@ -1247,7 +1215,7 @@ export function WineGuide() {
           <WineFaultAtlas />
           <p className="wine-science-aside">
             Cloudiness, sediment and tartrate crystals can be visually unexpected without harming flavour or safety.
-            I check smell, taste and the intended style before deciding that an unpolished appearance is a fault.
+            Smell, taste and intended style help distinguish a wine fault from harmless variation in appearance.
           </p>
         </WineSection>
 
@@ -1265,18 +1233,18 @@ export function WineGuide() {
           </EssayIntro>
           <WineLabelAndService />
           <p className="wine-book-note">
-            Book trail · <i>Understanding Wines: Explaining Style and Quality</i> and <i>Wined4 / Wine
+            References · <i>Understanding Wines: Explaining Style and Quality</i> and <i>Wined4 / Wine
             Production</i>, quality, price, labelling, faults, bottle maturation, storage, service and sensory
             assessment chapters.
           </p>
         </WineSection>
 
-        <WineSection eyebrow="Sources used to build this guide" id="wine-sources" title="The book trail">
+        <WineSection eyebrow="Sources used to build this guide" id="wine-sources" title="Sources and further reading">
           <EssayIntro>
             <p>
               This is a synthesis rather than a substitute for the books. Production texts supply mechanisms,
               regional texts supply place and the current official sources settle rules that have changed since
-              publication. The notes below show where each part of the argument began.
+              publication. The notes below identify the main references for each subject.
             </p>
           </EssayIntro>
           <div className="wine-source-list">
@@ -1322,7 +1290,7 @@ export function WineGuide() {
             </article>
           </div>
           <p className="wine-source-method">
-            I rewrote and reorganised the material rather than reproducing the books. Numerical ranges are retained
+            This reference synthesises the source material. Numerical ranges are included
             only where they explain a process. Regional tasting descriptions are tendencies, not promises about
             every producer, vintage or parcel.
           </p>

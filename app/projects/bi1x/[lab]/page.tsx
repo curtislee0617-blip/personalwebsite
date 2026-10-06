@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bi1xNotebook } from "@/components/bi1x-notebook";
 import { PageIntro } from "@/components/page-intro";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 import { bi1xClass, bi1xProjects, getBi1xProject } from "@/lib/bi1x-projects";
 
 type Props = { params: Promise<{ lab: string }> };
@@ -18,6 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Bi1xProjectPage({ params }: Props) {
+  if (!(await isRecipeAdminAuthenticated())) notFound();
   const { lab } = await params;
   const project = await getBi1xProject(lab);
   if (!project) notFound();

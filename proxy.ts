@@ -49,10 +49,14 @@ async function hasValidAdminSession(request: NextRequest) {
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const protectsBi1x = pathname === "/projects/bi1x"
+    || pathname.startsWith("/projects/bi1x/")
+    || pathname === "/bi1x"
+    || pathname.startsWith("/bi1x/");
   const protectsCookbookMedia = isPrivateCookbookMediaPathname(pathname);
   const protectsCookbookPage = isPrivateCookbookPathname(pathname);
 
-  if (!protectsCookbookMedia && !protectsCookbookPage) {
+  if (!protectsBi1x && !protectsCookbookMedia && !protectsCookbookPage) {
     return NextResponse.next();
   }
 
@@ -61,6 +65,10 @@ export async function proxy(request: NextRequest) {
     hasValidAdminSession(request),
   ]);
   const hasCookbookAccess = hasCookbookSession || hasAdminSession;
+
+  if (protectsBi1x && !hasAdminSession) {
+    return new NextResponse(null, { status: 404 });
+  }
 
   if (protectsCookbookMedia) {
     if (!isPublicCookbookMediaPathname(pathname) && !hasCookbookAccess) {
@@ -89,6 +97,9 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/recipes/:path*",
+    "/projects/bi1x",
+    "/projects/bi1x/:path*",
+    "/bi1x/:path*",
     "/bachour/:path*",
     "/benu/:path*",
     "/core-book/:path*",

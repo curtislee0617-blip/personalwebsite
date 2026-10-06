@@ -1,0 +1,132 @@
+/* Encyclopedia layer: local to the wine guide. */
+.wine-guide-page { --wine-rule: rgb(var(--color-ink) / .14); }
+.wine-guide-page > .page-intro { max-width: 86rem; margin-inline: auto; }
+.wine-guide-page > .page-section { max-width: 86rem; }
+.wine-guide-page .wine-guide { gap: 4rem; }
+.wine-guide-page .wine-reference-start { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border-block: 1px solid var(--wine-rule); margin-top: 1.5rem; }
+.wine-reference-start > a { display: grid; gap: .55rem; padding: 1.5rem; text-decoration: none; }
+.wine-reference-start > a + a { border-left: 1px solid var(--wine-rule); }
+.wine-reference-start span { color: rgb(var(--wine-red)); text-transform: uppercase; letter-spacing: .14em; font-size: .64rem; }
+.wine-reference-start strong { font-family: var(--font-display), serif; font-size: clamp(1.1rem,2vw,1.6rem); }
+.wine-reference-start small { color: rgb(var(--color-ink)/.65); line-height: 1.6; }
+.wine-reference-start a:hover { background: rgb(var(--wine-red)/.05); }
+.wine-chapter-rail { position: sticky; top: 0; z-index: 12; display: flex; gap: .3rem; overflow-x: auto; padding: .7rem .4rem; background: rgb(var(--color-paper)/.96); border-bottom: 1px solid var(--wine-rule); scrollbar-width: thin; }
+.wine-chapter-rail a { display:flex; align-items:center; gap:.45rem; padding:.65rem .8rem; white-space:nowrap; font-size:.72rem; border-radius:.2rem; color:rgb(var(--color-ink)/.65); }
+.wine-chapter-rail a span { font-size:.58rem; opacity:.6; }
+.wine-chapter-rail a[aria-current] { background:rgb(var(--wine-red)); color:rgb(var(--color-paper)); }
+.wine-reference-index { padding-bottom:2rem; border-bottom:1px solid var(--wine-rule); }
+.wine-reference-index > header { display:flex; justify-content:space-between; gap:1.5rem; align-items:end; margin-bottom:1.5rem; }
+.wine-reference-index h2 { font-size:1.7rem; margin-top:.4rem; letter-spacing:-.035em; }
+.wine-reference-index label { width:min(100%,23rem); }
+.wine-reference-index label > span, .wine-atlas-toolbar label > span, .wine-variety-controls label > span { display:block; margin-bottom:.5rem; font-size:.68rem; font-weight:650; color:rgb(var(--color-ink)/.7); }
+.wine-reference-index input, .wine-atlas-toolbar input, .wine-variety-controls input, .wine-variety-controls select { width:100%; min-height:2.8rem; padding:.65rem .85rem; border:1px solid var(--wine-rule); border-radius:.35rem; background:rgb(var(--color-paper)); color:rgb(var(--color-ink)); font:inherit; font-size:.8rem; }
+.wine-reference-index > ol { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1.6rem; }
+.wine-reference-index > ol > li > a { font-size:.88rem; font-weight:700; color:rgb(var(--wine-red)); }
+.wine-reference-index ul { display:grid; gap:.1rem; margin-top:.6rem; }
+.wine-reference-index ul a { display:flex; justify-content:space-between; gap:.5rem; font-size:.76rem; padding:.4rem 0; line-height:1.5; color:rgb(var(--color-ink)/.7); }
+.wine-reference-index ul a span { opacity:.35; }
+.wine-reference-index a:hover { text-decoration:underline; text-underline-offset:4px; }
+.wine-guide-page :is(.wine-guide-chapter,.wine-section) { scroll-margin-top:6rem; }
+.wine-guide-page .wine-section-intro { max-width:68ch; }
+.wine-atlas-toolbar { display:flex; justify-content:space-between; align-items:end; gap:1rem; margin-bottom:1rem; }
+.wine-atlas-toolbar label { width:min(100%,32rem); }
+.wine-basemap-switch { display:flex; border:1px solid var(--wine-rule); border-radius:.4rem; padding:.2rem; }
+.wine-basemap-switch button { padding:.6rem .85rem; font-size:.75rem; border-radius:.25rem; }
+.wine-basemap-switch button[aria-pressed=true] { background:rgb(var(--wine-red)); color:white; }
+.wine-map-search-results { max-height:17rem; overflow:auto; border:1px solid var(--wine-rule); padding:.6rem; margin-bottom:1rem; display:grid; gap:.3rem; }
+.wine-map-search-results > p { font-size:.75rem; padding:.3rem; }
+.wine-map-search-results button { text-align:left; display:grid; gap:.25rem; padding:.65rem; background:rgb(var(--color-surface)/.6); }
+.wine-map-search-results button span { font-size:.72rem; color:rgb(var(--color-ink)/.65); }
+.wine-guide-page .wine-map-country-picker { flex-wrap:nowrap; overflow-x:auto; padding-block:.3rem .7rem; scrollbar-width:thin; }
+.wine-guide-page .wine-map-country-picker button { flex:none; min-height:2.6rem; font-size:.73rem; }
+.wine-guide-page .wine-map-stage { grid-template-columns:minmax(0,1.8fr) minmax(17rem,.8fr); border-radius:.6rem; overflow:clip; }
+.wine-guide-page .wine-map-frame { padding:.65rem; align-self:start; }
+.wine-guide-page .wine-map-breadcrumbs { font-size:.78rem; min-height:2.8rem; }
+.wine-guide-page .wine-map-viewport { isolation:isolate; }
+.wine-guide-page .wine-map-viewport svg { touch-action:none; }
+.wine-guide-page .wine-map-viewport-controls button { min-width:2.5rem; min-height:2.5rem; font-size:1rem; }
+.wine-guide-page .wine-map-viewport-controls .wine-map-reset { font-size:.72rem; }
+.wine-guide-page .wine-world-labels { pointer-events:auto; }
+.wine-world-labels g[role=button] { cursor:pointer; outline:none; }
+.wine-guide-page .wine-world-labels rect { fill:#fffff6; stroke:#697365; stroke-width:.5; opacity:.94; }
+.wine-guide-page .wine-world-labels text { font-size:11px; fill:#253629; stroke:none; letter-spacing:0; font-weight:650; }
+.wine-world-labels g:hover rect, .wine-world-labels g:focus-visible rect { fill:#e0c7ca; stroke:#803d50; stroke-width:2; }
+.wine-atlas-neighbour { fill:#e5e5d9; stroke:#aeb8a7; stroke-width:.7; vector-effect:non-scaling-stroke; }
+.wine-atlas-country { fill:#f3f0dd; stroke:#778978; stroke-width:1; vector-effect:non-scaling-stroke; }
+.wine-region-explorer[data-basemap=atlas] .wine-vector-map-paper { fill:#f0ecdf; }
+.wine-region-explorer[data-basemap=atlas] .wine-country-boundary-map .wine-vector-map-paper { fill:#dce9ee; }
+.wine-atlas-rivers path { fill:none; stroke:#6d9db2; stroke-width:1.3; vector-effect:non-scaling-stroke; }
+.wine-region-explorer[data-basemap=atlas] .wine-country-region-shape { fill-opacity:1; }
+.wine-region-explorer[data-basemap=atlas] .wine-country-shared-borders { stroke:#7b8676; filter:none; }
+.wine-guide-page .wine-country-region-labels text { font-size:14px; }
+.wine-guide-page .wine-vector-map-key { font-size:.72rem; line-height:1.5; }
+.wine-guide-page .wine-map-drag-hint { pointer-events:none; }
+.wine-variety-controls { display:grid; grid-template-columns:minmax(12rem,2fr) repeat(3,minmax(7rem,1fr)); gap:.75rem; }
+.wine-variety-count { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin:1rem 0; font-size:.76rem; color:rgb(var(--color-ink)/.65); }
+.wine-variety-count button { text-decoration:underline; color:rgb(var(--wine-red)); }
+.wine-variety-library { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; max-height:48rem; overflow-y:auto; padding:.25rem .6rem .8rem .25rem; scrollbar-width:thin; overscroll-behavior:contain; }
+.wine-variety-card { display:flex; flex-direction:column; border:1px solid var(--wine-rule); text-align:left; background:rgb(var(--color-surface)/.25); transition:border-color 160ms,background 160ms; min-width:0; }
+.wine-variety-card:hover { border-color:rgb(var(--wine-red)/.65); background:rgb(var(--wine-red)/.04); }
+.wine-variety-card:focus-visible { outline:3px solid rgb(var(--wine-red)); outline-offset:2px; }
+.wine-variety-image { width:100%; aspect-ratio:4/3; display:grid; place-items:center; overflow:hidden; background:#f9f7ef; padding:.6rem; }
+.wine-variety-image img { width:100%; height:100%; min-height:0; object-fit:contain; }
+.wine-variety-no-image { padding:1rem; font-size:.75rem; color:#666658; text-align:center; }
+.wine-variety-card-copy { display:grid; gap:.5rem; padding:1rem; flex:1; align-content:start; }
+.wine-variety-card-copy small { font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; color:rgb(var(--wine-red)); }
+.wine-variety-card-copy strong { font-size:1rem; line-height:1.3; }
+.wine-variety-card-copy > span { font-size:.72rem; color:rgb(var(--color-ink)/.65); }
+.wine-variety-card-copy b { font-size:.66rem; margin-top:.4rem; color:rgb(var(--wine-red)); font-weight:500; }
+.wine-reference-note { border-block:1px solid var(--wine-rule); margin-top:1rem; padding:1rem 0; font-size:.76rem; line-height:1.7; }
+.wine-reference-note summary { cursor:pointer; font-weight:650; }
+.wine-reference-note p { margin-block:.75rem; max-width:85ch; }
+.wine-reference-note a { text-decoration:underline; }
+.wine-variety-dialog { margin:auto; width:min(64rem,calc(100vw - 2rem)); max-height:calc(100dvh - 3rem); padding:0; border:1px solid var(--wine-rule); border-radius:.5rem; background:rgb(var(--color-paper)); color:rgb(var(--color-ink)); box-shadow:0 24px 100px #0005; overflow:hidden; }
+.wine-variety-dialog::backdrop { background:#101610aa; backdrop-filter:blur(5px); }
+.wine-variety-dialog > header { display:flex; justify-content:space-between; gap:1rem; align-items:center; padding:1.2rem 1.5rem; border-bottom:1px solid var(--wine-rule); }
+.wine-variety-dialog h2 { font-family:var(--font-display),serif; font-size:clamp(1.5rem,4vw,2.4rem); line-height:1.2; margin-top:.4rem; }
+.wine-variety-dialog > header > button { padding:.7rem 1rem; border:1px solid var(--wine-rule); border-radius:2rem; flex:none; font-size:.8rem; }
+.wine-variety-entry { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:2rem; padding:1.5rem; max-height:calc(100dvh - 11rem); overflow:auto; overscroll-behavior:contain; }
+.wine-variety-entry figure > img { width:100%; height:22rem; object-fit:contain; background:#f9f7ef; padding:1rem; }
+.wine-variety-entry figcaption { font-size:.67rem; line-height:1.6; margin-top:.6rem; color:rgb(var(--color-ink)/.65); }
+.wine-variety-entry a { text-decoration:underline; text-underline-offset:3px; }
+.wine-variety-entry section { margin-top:1.25rem; }
+.wine-variety-entry h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:rgb(var(--wine-red)); margin-bottom:.45rem; }
+.wine-variety-entry p { font-size:.88rem; line-height:1.75; }
+.wine-variety-facts section:first-child { margin-top:0; }
+.wine-variety-references { border-top:1px solid var(--wine-rule); padding-top:1rem; }
+.wine-variety-references a { display:block; font-size:.75rem; margin-top:.6rem; }
+@media(min-width:1600px) { .wine-variety-library { grid-template-columns:repeat(5,minmax(0,1fr)); } }
+@media(max-width:1100px) { .wine-guide-page .wine-map-stage { grid-template-columns:minmax(0,1fr); } .wine-reference-index > ol { grid-template-columns:repeat(3,minmax(0,1fr)); } .wine-variety-library { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media(max-width:760px) { .wine-guide-page .wine-reference-start { grid-template-columns:1fr; } .wine-reference-start > a { padding:1rem .4rem; } .wine-reference-start > a + a { border-left:0; border-top:1px solid var(--wine-rule); } .wine-reference-index > header { display:grid; } .wine-reference-index label { width:100%; } .wine-reference-index > ol { grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.4rem 1rem; } .wine-variety-controls { grid-template-columns:repeat(2,minmax(0,1fr)); } .wine-variety-controls label:first-child { grid-column:1/-1; } .wine-variety-library { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; max-height:40rem; } .wine-variety-card-copy { padding:.65rem; } .wine-variety-card-copy strong { font-size:.88rem; } .wine-atlas-toolbar { flex-wrap:wrap; } .wine-atlas-toolbar label { width:100%; } .wine-variety-dialog { width:calc(100vw - 1rem); max-height:calc(100dvh - 1rem); } .wine-variety-entry { grid-template-columns:1fr; gap:1rem; padding:1rem; max-height:calc(100dvh - 9rem); } .wine-variety-entry figure > img { height:17rem; } .wine-variety-dialog > header { padding:1rem; } }
+@media(prefers-reduced-motion:reduce) { .wine-variety-card { transition:none; } }
+
+/* Keep supporting map text readable alongside the larger atlas. */
+.wine-guide-page .wine-map-summary { padding:1.25rem; }
+.wine-guide-page .wine-map-summary :is(p,dd) { font-size:.8rem; line-height:1.7; }
+.wine-guide-page .wine-map-summary dt { font-size:.66rem; }
+.wine-guide-page .wine-region-index button { padding:.75rem; }
+.wine-guide-page .wine-region-index button strong { font-size:.8rem; }
+.wine-guide-page .wine-region-index button span { font-size:.68rem; }
+.wine-guide-page .wine-map-source-note { font-size:.72rem; line-height:1.7; }
+
+.wine-guide-page .wine-section-intro > p { font-size:.9rem; line-height:1.8; }
+.wine-guide-page .wine-vector-map-key { font-size:.75rem; }
+@media(max-width:760px) {
+  .wine-guide-page .wine-map-summary :is(p,dd) { font-size:.9rem; }
+  .wine-guide-page .wine-map-stage { overflow:hidden; }
+  .wine-guide-page .wine-chapter-rail { padding-right:3rem; }
+}
+.wine-guide-page :is(.wine-guide, .wine-guide-chapter, .wine-guide-chapter-sections, .wine-section, .wine-section-body, .wine-cellar-reception > li > div) { min-width:0; }
+.wine-guide-page .wine-cellar-reception { min-width:0; overflow-wrap:anywhere; }
+.dark .wine-guide-page :is(.wine-reference-start span, .wine-reference-index > ol > li > a, .wine-variety-card-copy small, .wine-variety-card-copy b, .wine-variety-count button, .wine-variety-entry h3) { color:#e6b2bd; }
+.dark .wine-guide-page .wine-chapter-rail a[aria-current],
+.dark .wine-guide-page .wine-basemap-switch button[aria-pressed=true] { background:#683344; color:#fff2f5; }
+.wine-variety-entry > div > .wine-variety-no-image { color:rgb(var(--color-ink)/.65); }
+
+/* Continent names leave the country shapes available for direct selection. */
+.wine-guide-page .wine-world-labels.wine-continent-labels { pointer-events:none; }
+.wine-guide-page .wine-continent-labels text { font-size:11px; font-weight:750; letter-spacing:.06em; text-transform:uppercase; paint-order:stroke; stroke:#f6f2e8; stroke-width:3px; stroke-linejoin:round; }
+.wine-guide-page .wine-country-boundary-map .wine-country-region-labels text { font-size:14px; stroke:none; }
+.wine-guide-page .wine-region-marker-leader { stroke:#4d5043; stroke-width:1; pointer-events:none; }
+.wine-guide-page .wine-region-number { display:inline-grid; place-items:center; width:1.6rem; height:1.6rem; margin-right:.5rem; border:1px solid rgb(var(--color-text)/.3); border-radius:50%; font-size:.75rem; flex:none; }
+.wine-guide-page .wine-region-index button span { display:flex; align-items:center; font-size:.8rem; }

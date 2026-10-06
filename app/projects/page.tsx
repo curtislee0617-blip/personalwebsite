@@ -7,10 +7,14 @@ import { ProjectCarousel } from "@/components/project-carousel";
 import { SpringLink } from "@/components/spring-links";
 import { websiteInteractionTools } from "@/lib/interaction-toolkit";
 import { projects } from "@/lib/projects";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 export const metadata: Metadata = { title: "Projects" };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const isAdmin = await isRecipeAdminAuthenticated();
+  const visibleProjects = isAdmin ? projects : projects.filter((project) => project.slug !== "bi1x");
+
   return (
     <>
       <PageIntro
@@ -20,7 +24,7 @@ export default function ProjectsPage() {
       />
 
       <section className="page-section pt-6 sm:pt-7">
-        <ProjectCarousel projects={projects} />
+        <ProjectCarousel projects={visibleProjects} />
 
         <section aria-labelledby="creative-projects-title" className="creative-projects-section">
           <div className="creative-projects-heading">

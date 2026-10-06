@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/page-intro";
 import { HistoryBackButton } from "@/components/history-back-button";
 import { getProjectBySlug, projects } from "@/lib/projects";
+import { isRecipeAdminAuthenticated } from "@/lib/recipe-admin-auth";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -31,6 +32,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
 export default async function ProjectDetailPage({ params, searchParams }: ProjectPageProps) {
   const { slug } = await params;
+  if (slug === "bi1x" && !(await isRecipeAdminAuthenticated())) notFound();
   const { from } = await searchParams;
   const project = getProjectBySlug(slug);
 
