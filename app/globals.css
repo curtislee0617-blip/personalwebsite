@@ -233,7 +233,7 @@ html.dashboard-resizing .site-app-shell { transition: none !important; }
 .dashboard-route-loading {
   position: fixed;
   inset: 0 0 0 var(--dashboard-sidebar-width);
-  z-index: 65;
+  z-index: 45;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -1410,27 +1410,24 @@ body.has-page-cursor * { cursor: inherit; }
   );
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask {
-  background: none;
-  -webkit-mask-image: none;
-  mask-image: none;
+  -webkit-mask-image:
+    radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%),
+    radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--contact-far-mask-start, 0)) 0% var(--contact-near-end), rgb(0 0 0 / var(--contact-far-mask-end, 0)) var(--contact-middle-start) 148%);
+  mask-image:
+    radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%),
+    radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--contact-far-mask-start, 0)) 0% var(--contact-near-end), rgb(0 0 0 / var(--contact-far-mask-end, 0)) var(--contact-middle-start) 148%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: left top;
+  mask-position: left top;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-composite: var(--contact-mask-composite-webkit, source-over);
+  mask-composite: var(--contact-mask-composite, add);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::before,
 .contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgb(2 22 55) 0%, rgb(3 24 58) 46%, rgb(4 22 50) 100%);
-}
-.contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::before {
-  inset: 0 50% 0 0;
-  -webkit-mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
-  mask-image: radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--la-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--london-night)) var(--contact-middle-start) 148%);
-}
-.contact-cities-picture[data-light-direction="left"] .contact-city-night-mask::after {
-  inset: 0 0 0 50%;
-  --contact-far-curve: ellipse 69.35194cqw 180cqw at -19.624cqw calc(50% - 12.8549061cqw);
-  -webkit-mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
-  mask-image: radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--london-night)) 0% var(--contact-near-end), rgb(0 0 0 / var(--hk-night)) var(--contact-middle-start) 148%);
+  content: none;
 }
 .contact-cities-backdrop-frame { position: absolute; inset: 0; z-index: 0; display: block; overflow: hidden; background: var(--contact-art-edge); pointer-events: none; }
 .contact-cities-night-backdrop { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
@@ -1456,6 +1453,13 @@ body.has-page-cursor * { cursor: inherit; }
 }
 .contact-city-glow-field { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 25% 30% at 14.7% 62%, rgb(255 190 111 / calc(0.15 * var(--la-night))), transparent 76%), radial-gradient(ellipse 27% 44% at 87.2% 52%, rgb(71 161 255 / calc(0.16 * var(--hk-night))), transparent 78%); filter: blur(8px); mix-blend-mode: screen; pointer-events: none; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%); }
 .contact-moon-phase-label { position: absolute; left: clamp(0.65rem, 3.5%, 1.1rem); top: clamp(0.55rem, 4%, 0.85rem); z-index: 12; display: inline-block; width: max-content; max-width: calc(100% - 1.3rem); margin: 0; padding: 0; overflow: hidden; background: transparent; color: var(--moon-phase-label-color); font-family: var(--font-ui); font-size: clamp(0.46rem, 0.78vw, 0.58rem); font-weight: 700; letter-spacing: 0.08em; line-height: 1; opacity: 1; pointer-events: none; text-overflow: ellipsis; text-shadow: 0 1px 2px var(--moon-phase-label-shadow); text-transform: uppercase; transition: color 1s linear, text-shadow 1s linear; white-space: nowrap; }
+.home-dashboard-pixel-artwork .contact-moon-phase-label { left: auto; right: clamp(0.45rem, 2.2%, 0.85rem); top: clamp(0.45rem, 3%, 0.7rem); max-width: calc(32.8% - 0.5rem); overflow: visible; color: var(--home-moon-phase-label-color, var(--moon-phase-label-color)); font-size: clamp(0.56rem, 2cqw, 0.65rem); font-weight: 650; letter-spacing: 0.015em; line-height: 1.25; text-align: right; text-overflow: clip; text-shadow: 0 1px 1px var(--home-moon-phase-label-shadow, var(--moon-phase-label-shadow)); text-transform: none; text-wrap: balance; transition: color 240ms ease-out, text-shadow 240ms ease-out; white-space: normal; }
+/* The live solar position changes the direction of the curved terminator after
+   hydration. Fade that edge in only after the first real time is available so
+   its fallback geometry cannot flash as a straight blue seam on phones. */
+.home-dashboard-pixel-artwork .contact-cities-picture .contact-city-night-mask { transition: opacity 240ms ease-out; }
+.home-dashboard-pixel-artwork .contact-cities-picture[data-time-ready="false"] .contact-city-night-mask { opacity: 0; }
+.home-dashboard-pixel-artwork .contact-cities-picture[data-time-ready="true"] .contact-city-night-mask { opacity: 1; }
 .contact-cities-art-composite { position: absolute; inset: 0; z-index: 0; display: block; }
 .contact-city-art-layer { position: absolute; top: 0; bottom: 0; display: block; background-repeat: no-repeat; image-rendering: crisp-edges; image-rendering: pixelated; }
 .contact-city-art-layer-day { background-image: url('/contact-cities-pixel-art-day-foreground-v1.png'); }
@@ -1523,49 +1527,65 @@ body.has-page-cursor * { cursor: inherit; }
 .contact-city-atmosphere-sunset {
   background: radial-gradient(var(--contact-transition-curve), rgb(255 122 86 / calc(0.24 * var(--hk-sunset))) 0% var(--contact-near-end), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) var(--contact-middle-start) var(--contact-middle-end), rgb(255 104 69 / calc(0.26 * var(--la-sunset))) var(--contact-far-start) 148%);
 }
-/* Adjacent layout boxes share one edge without painting translucent pixels
-   twice during the initial lighting fade. The right panel's gradient origin
-   is offset by its 50cqw position to preserve the scene-wide curvature.
-   This keeps the seam clear of the curved twilight edge on taller frames. */
+/* Full-width masks preserve both curved transitions without a tiled edge.
+   The second mask adjusts London's opacity to HK's; each atmospheric tint
+   uses one color so overlapping masks cannot darken the middle of the sky. */
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span {
-  background: none;
+  background: rgb(var(--contact-atmosphere-color));
+  -webkit-mask-image:
+    radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--contact-atmosphere-la, 0)) 0% var(--contact-near-end), rgb(0 0 0 / var(--contact-atmosphere-london, 0)) var(--contact-middle-start) 148%),
+    radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--contact-atmosphere-far-start, 0)) 0% var(--contact-near-end), rgb(0 0 0 / var(--contact-atmosphere-far-end, 0)) var(--contact-middle-start) 148%);
+  mask-image:
+    radial-gradient(var(--contact-transition-curve), rgb(0 0 0 / var(--contact-atmosphere-la, 0)) 0% var(--contact-near-end), rgb(0 0 0 / var(--contact-atmosphere-london, 0)) var(--contact-middle-start) 148%),
+    radial-gradient(var(--contact-far-curve), rgb(0 0 0 / var(--contact-atmosphere-far-start, 0)) 0% var(--contact-near-end), rgb(0 0 0 / var(--contact-atmosphere-far-end, 0)) var(--contact-middle-start) 148%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: left top;
+  mask-position: left top;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-composite: var(--contact-atmosphere-composite-webkit, source-over);
+  mask-composite: var(--contact-atmosphere-composite, add);
 }
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::before,
 .contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::after {
-  content: "";
-  position: absolute;
-  inset: 0;
+  content: none;
 }
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::before {
-  inset: 0 50% 0 0;
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue {
+  --contact-atmosphere-color: 50 65 88;
+  --contact-atmosphere-la: calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night));
+  --contact-atmosphere-london: calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night));
+  --contact-atmosphere-far-start: var(--contact-blue-far-mask-start, 0);
+  --contact-atmosphere-far-end: var(--contact-blue-far-mask-end, 0);
+  --contact-atmosphere-composite: var(--contact-blue-mask-composite, add);
+  --contact-atmosphere-composite-webkit: var(--contact-blue-mask-composite-webkit, source-over);
 }
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere > span::after {
-  inset: 0 0 0 50%;
-  --contact-far-curve: ellipse 69.35194cqw 180cqw at -19.624cqw calc(50% - 12.8549061cqw);
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-dawn {
+  --contact-atmosphere-color: 255 163 101;
+  --contact-atmosphere-la: calc(0.31 * var(--la-dawn));
+  --contact-atmosphere-london: calc(0.27 * var(--london-dawn));
+  --contact-atmosphere-far-start: var(--contact-dawn-far-mask-start, 0);
+  --contact-atmosphere-far-end: var(--contact-dawn-far-mask-end, 0);
+  --contact-atmosphere-composite: var(--contact-dawn-mask-composite, add);
+  --contact-atmosphere-composite-webkit: var(--contact-dawn-mask-composite-webkit, source-over);
 }
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue::before {
-  background: radial-gradient(var(--contact-transition-curve), rgb(45 54 93 / calc(0.19 * var(--la-blue-hour) + 0.04 * var(--la-night))) 0% var(--contact-near-end), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) var(--contact-middle-start) 148%);
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-golden {
+  --contact-atmosphere-color: 242 198 139;
+  --contact-atmosphere-la: calc(0.11 * var(--la-golden));
+  --contact-atmosphere-london: calc(0.08 * var(--london-golden));
+  --contact-atmosphere-far-start: var(--contact-golden-far-mask-start, 0);
+  --contact-atmosphere-far-end: var(--contact-golden-far-mask-end, 0);
+  --contact-atmosphere-composite: var(--contact-golden-mask-composite, add);
+  --contact-atmosphere-composite-webkit: var(--contact-golden-mask-composite-webkit, source-over);
 }
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-blue::after {
-  background: radial-gradient(var(--contact-far-curve), rgb(50 65 88 / calc(0.17 * var(--london-blue-hour) + 0.04 * var(--london-night))) 0% var(--contact-near-end), rgb(36 58 98 / calc(0.18 * var(--hk-blue-hour) + 0.04 * var(--hk-night))) var(--contact-middle-start) 148%);
-}
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-dawn::before {
-  background: radial-gradient(var(--contact-transition-curve), rgb(255 151 82 / calc(0.31 * var(--la-dawn))) 0% var(--contact-near-end), rgb(255 163 101 / calc(0.27 * var(--london-dawn))) var(--contact-middle-start) 148%);
-}
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-dawn::after {
-  background: radial-gradient(var(--contact-far-curve), rgb(255 163 101 / calc(0.27 * var(--london-dawn))) 0% var(--contact-near-end), rgb(255 144 78 / calc(0.3 * var(--hk-dawn))) var(--contact-middle-start) 148%);
-}
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-golden::before {
-  background: radial-gradient(var(--contact-transition-curve), rgb(255 181 84 / calc(0.11 * var(--la-golden))) 0% var(--contact-near-end), rgb(242 198 139 / calc(0.08 * var(--london-golden))) var(--contact-middle-start) 148%);
-}
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-golden::after {
-  background: radial-gradient(var(--contact-far-curve), rgb(242 198 139 / calc(0.08 * var(--london-golden))) 0% var(--contact-near-end), rgb(255 194 112 / calc(0.1 * var(--hk-golden))) var(--contact-middle-start) 148%);
-}
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-sunset::before {
-  background: radial-gradient(var(--contact-transition-curve), rgb(255 104 69 / calc(0.26 * var(--la-sunset))) 0% var(--contact-near-end), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) var(--contact-middle-start) 148%);
-}
-.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-sunset::after {
-  background: radial-gradient(var(--contact-far-curve), rgb(223 137 113 / calc(0.2 * var(--london-sunset))) 0% var(--contact-near-end), rgb(255 122 86 / calc(0.24 * var(--hk-sunset))) var(--contact-middle-start) 148%);
+.contact-cities-picture[data-light-direction="left"] .contact-city-atmosphere-sunset {
+  --contact-atmosphere-color: 223 137 113;
+  --contact-atmosphere-la: calc(0.26 * var(--la-sunset));
+  --contact-atmosphere-london: calc(0.2 * var(--london-sunset));
+  --contact-atmosphere-far-start: var(--contact-sunset-far-mask-start, 0);
+  --contact-atmosphere-far-end: var(--contact-sunset-far-mask-end, 0);
+  --contact-atmosphere-composite: var(--contact-sunset-mask-composite, add);
+  --contact-atmosphere-composite-webkit: var(--contact-sunset-mask-composite-webkit, source-over);
 }
 .contact-harbour-group { position: absolute; inset: 0; display: block; transform: translateX(67.2%); pointer-events: none; }
 .contact-harbour-boat-group { z-index: 3; }
@@ -1998,7 +2018,7 @@ body.has-page-cursor * { cursor: inherit; }
 
 .section-loading-cards,
 .section-loading-engine,
-.section-loading-home,
+.section-loading-home:not(.section-loading),
 .section-loading-document,
 .section-loading-envelope {
   position: relative;
@@ -9835,13 +9855,14 @@ html:not(.js-reveal-ready) [data-reveal-child] > *,
    description, then actions. Pure CSS so it replays on client-side
    navigations and degrades to plain visible content everywhere else. */
 @keyframes page-intro-rise {
-  from { opacity: 0; transform: translateY(0.85rem); }
+  from { opacity: 0; transform: translateY(0.4rem); }
   to { opacity: 1; transform: none; }
 }
 
-.page-intro-title { animation: page-intro-rise 640ms var(--ease-standard) backwards; }
-.page-intro-description { animation: page-intro-rise 640ms var(--ease-standard) 110ms backwards; }
-.page-intro-actions { animation: page-intro-rise 640ms var(--ease-standard) 210ms backwards; }
+.page-intro-title { animation: page-intro-rise 360ms var(--ease-standard) backwards; }
+.page-intro-description { animation: page-intro-rise 360ms var(--ease-standard) 40ms backwards; }
+.page-intro-actions { animation: page-intro-rise 360ms var(--ease-standard) 70ms backwards; }
+main[data-route-revealed="true"] :is(.page-intro-title, .page-intro-description, .page-intro-actions) { animation: none; }
 
 /* Tool-thumbnail demos. Idle cards show a finished state; the demo plays
    only while the card is hovered (desktop) or snapped into carousel focus
@@ -12394,7 +12415,10 @@ html.dashboard-undocking .home-entry-center::after,
   scale: var(--press-scale, 1);
   translate: 0 var(--press-y, 0px);
   touch-action: manipulation;
+  transition-property: background-color, border-color, box-shadow, color, opacity;
 }
+.recipe-anchor-tab.spring-control:is(:hover, :focus-visible),
+.site-menu-link.spring-control:is(:hover, :focus-visible) { transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .spring-control { scale: 1; translate: none; }
 }
@@ -12691,6 +12715,25 @@ html.dashboard-mode .home-dashboard-panel,
 .recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-description { display: none; }
 .recipe-library-page .recipe-browser-grid .recipe-card:not([open]) .recipe-card-date { display: block; margin-top: 0.5rem; font-size: 0.6rem; letter-spacing: 0.03em; }
 .recipe-library-page .recipe-browser-grid .recipe-card[open] { padding: 1.25rem !important; background: rgb(var(--color-surface) / 0.75) !important; }
+/* An opened recipe reads as an article, with a full-width title rather than
+   the fixed-height thumbnail and clipped copy used in the browsing grid. */
+.recipe-card[open] > .recipe-card-summary { display: block; height: auto; min-height: 0; overflow: visible; }
+.recipe-card[open] > .recipe-card-summary > .recipe-card-thumbnail { display: none; }
+.recipe-card[open] > .recipe-card-summary > .recipe-card-copy { height: auto; min-height: 0; overflow: visible; }
+.recipe-card[open] > .recipe-card-summary .recipe-card-copy > h3 {
+  display: block;
+  margin-top: 0;
+  overflow: visible;
+  font-size: clamp(1.5rem, 3vw, 2.5rem) !important;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  overflow-wrap: break-word;
+  word-break: normal;
+  -webkit-line-clamp: unset;
+}
+.recipe-card-action-close,
+.recipe-card[open] .recipe-card-action-open { display: none; }
+.recipe-card[open] .recipe-card-action-close { display: inline; }
 .recipe-browser-empty { padding: 2rem 0; color: rgb(var(--color-ink) / 0.5); }
 .recipe-show-more { display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem auto 0; padding: 0.75rem 1.25rem; border: 1px solid rgb(var(--color-ink) / 0.15); border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
 .recipe-show-more span { color: rgb(var(--color-ink) / 0.5); font-size: 0.7rem; font-weight: 400; }
@@ -13016,6 +13059,10 @@ html.dashboard-liquid-transition[data-navigation-phase="dock-loading"] .dashboar
   display: grid;
   inset: 0 0 0 var(--dashboard-sidebar-width);
 }
+html.dashboard-liquid-transition:is([data-navigation-phase="home-loading"], [data-navigation-phase="route-loading"]) .dashboard-route-loading-dock {
+  display: grid;
+  inset: 0;
+}
 html.dashboard-dock-staging:is([data-navigation-phase="lift"], [data-navigation-phase="route"]) .dashboard-sidebar {
   visibility: hidden !important;
   opacity: 0 !important;
@@ -13034,3 +13081,15 @@ html.dashboard-dock-staging .dashboard-sidebar :is(.dashboard-sidebar-subtitle, 
   isolation: isolate;
 }
 .navigation-corner-anchor { visibility: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .site-app-shell,
+  .dashboard-sidebar,
+  .dashboard-sidebar-subtitle,
+  .dashboard-sidebar-leaves,
+  .dashboard-sidebar-tree-children,
+  .dashboard-sidebar-row > button,
+  .dashboard-sidebar-group-row > button i,
+  .dashboard-sidebar-tree-row > button i { transition: none !important; }
+}

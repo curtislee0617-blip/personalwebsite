@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { animated } from "@react-spring/web";
 import type { ComponentProps } from "react";
-import { usePressSpring } from "@/components/use-press-spring";
+import { composePressHandlers, usePressSpring } from "@/components/use-press-spring";
 
 const AnimatedLink = animated(Link);
 
@@ -12,11 +12,11 @@ type SpringAnchorProps = ComponentProps<"a"> & { lift?: number };
 type SpringButtonProps = ComponentProps<"button"> & { lift?: number };
 
 export function SpringButton({ lift = 2, className = "", style, type = "button", ...props }: SpringButtonProps) {
-  const spring = usePressSpring(lift);
+  const spring = usePressSpring(lift, props.disabled);
   return (
     <animated.button
       {...props}
-      {...spring.handlers}
+      {...composePressHandlers(spring.handlers, props)}
       type={type}
       className={`spring-control ${className}`.trim()}
       style={{ ...style, ...spring.style }}
@@ -29,7 +29,7 @@ export function SpringLink({ lift = 2, className = "", style, ...props }: Spring
   return (
     <AnimatedLink
       {...props}
-      {...spring.handlers}
+      {...composePressHandlers(spring.handlers, props)}
       className={`spring-control ${className}`.trim()}
       style={{ ...style, ...spring.style }}
     />
@@ -41,7 +41,7 @@ export function SpringAnchor({ lift = 2, className = "", style, ...props }: Spri
   return (
     <animated.a
       {...props}
-      {...spring.handlers}
+      {...composePressHandlers(spring.handlers, props)}
       className={`spring-control ${className}`.trim()}
       style={{ ...style, ...spring.style }}
     />

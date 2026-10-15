@@ -17,7 +17,9 @@ type DocumentWithViewTransitions = Document & {
 
 const THEME_TRANSITION_MS = 1240;
 const FALLBACK_TRANSITION_MS = 560;
-const RADIAL_TRANSITION_EASING = "cubic-bezier(.22, .92, .25, 1)";
+// Keep the reveal moving through the whole duration instead of racing across
+// the page on its first frames and then spending most of its time settling.
+const RADIAL_TRANSITION_EASING = "cubic-bezier(.25, .46, .45, .94)";
 
 function SunIcon() {
   return (
@@ -68,15 +70,13 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
   const [iconSpring, iconApi] = useSpring(() => ({
     rotate: 0,
     scale: 1,
-    opacity: 1,
-    config: { mass: 0.65, tension: 330, friction: 25 },
+    config: { mass: 0.5, tension: 320, friction: 26 },
   }));
   const isDark = useSyncExternalStore(subscribeTheme, readTheme, readServerTheme);
   const icon = (
     <animated.span
       className="theme-toggle-icon"
       style={{
-        opacity: iconSpring.opacity,
         scale: iconSpring.scale,
         rotate: iconSpring.rotate.to((degrees) => `${degrees}deg`),
       }}
@@ -86,14 +86,15 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
   );
 
   function settleIcon(next: boolean) {
-    iconApi.set({ rotate: next ? -25 : 25, scale: 0.78, opacity: 0.72 });
-    void iconApi.start({ rotate: 0, scale: 1, opacity: 1 });
+    iconApi.stop();
+    iconApi.set({ rotate: next ? -12 : 12, scale: 0.9 });
+    void iconApi.start({ rotate: 0, scale: 1 });
   }
 
   async function toggle(event: MouseEvent<HTMLButtonElement>) {
     const root = document.documentElement;
     // A document can run only one theme transition, even with several toggles.
-    if (root.dataset.themeTransition || root.dataset.themeColorTransition) return;
+    if (root.dataset.themeTransition || root.dataset.themeColorTransition || root.dataset.navigationPhase) return;
 
     spring.reset();
     const next = !readTheme();
@@ -103,22 +104,17 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     const bounds = (button.querySelector("svg") ?? button).getBoundingClientRect();
     const x = bounds.left + bounds.width / 2;
     const y = bounds.top + bounds.height / 2;
-    const flip = () => applyTheme(next);
+    let themeApplied = false;
+    const flip = () => {
+      if (themeApplied) return;
+      applyTheme(next);
+      themeApplied = true;
+    };
     const doc = document as DocumentWithViewTransitions;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       flip();
-      iconApi.set({ rotate: 0, scale: 1, opacity: 1 });
-      return;
-    }
-
-    if (typeof doc.startViewTransition !== "function") {
-      root.dataset.themeColorTransition = "active";
-      // Establish the fallback styles before changing the palette.
-      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
-      flip();
-      settleIcon(next);
-      window.setTimeout(() => delete root.dataset.themeColorTransition, FALLBACK_TRANSITION_MS);
+      iconApi.set({ rotate: 0, scale: 1 });
       return;
     }
 
@@ -129,15 +125,57 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
     const circle = (r: number) => `circle(${r}px at ${x}px ${y}px)`;
     let transition: ViewTransition | undefined;
     let animation: Animation | undefined;
-    root.dataset.themeTransition = next ? "light-to-dark" : "dark-to-light";
-    button.dataset.themeAnimating = "true";
+    let fallbackFrame: number | undefined;
+    let fallbackTimer: number | undefined;
+    let finishFallbackWait: (() => void) | undefined;
+    let interrupted = false;
+
+    function finishForNavigation() {
+      interrupted = true;
+      transition?.skipTransition();
+      animation?.cancel();
+      if (fallbackFrame !== undefined) window.cancelAnimationFrame(fallbackFrame);
+      if (fallbackTimer !== undefined) window.clearTimeout(fallbackTimer);
+      finishFallbackWait?.();
+      iconApi.stop();
+      iconApi.set({ rotate: 0, scale: 1 });
+    }
+
+    window.addEventListener("site-navigation-start", finishForNavigation);
 
     try {
+      if (typeof doc.startViewTransition !== "function") {
+        root.dataset.themeColorTransition = "active";
+        // Establish the fallback styles before changing the palette.
+        await new Promise<void>((resolve) => {
+          finishFallbackWait = resolve;
+          fallbackFrame = window.requestAnimationFrame(() => {
+            fallbackFrame = undefined;
+            finishFallbackWait = undefined;
+            resolve();
+          });
+        });
+        flip();
+        if (interrupted) return;
+        settleIcon(next);
+        await new Promise<void>((resolve) => {
+          finishFallbackWait = resolve;
+          fallbackTimer = window.setTimeout(resolve, FALLBACK_TRANSITION_MS);
+        });
+        return;
+      }
+
+      root.dataset.themeTransition = next ? "light-to-dark" : "dark-to-light";
+      button.dataset.themeAnimating = "true";
       transition = doc.startViewTransition(flip);
       // Observe both promises immediately, including browsers that skip capture.
       const finished = transition.finished.catch(() => undefined);
       const updated = transition.updateCallbackDone.catch(() => undefined);
       await transition.ready;
+      if (interrupted) {
+        await updated;
+        return;
+      }
       settleIcon(next);
       animation = root.animate(
         { clipPath: next ? [circle(radius), circle(0)] : [circle(0), circle(radius)] },
@@ -148,17 +186,23 @@ export function ThemeToggle({ variant = "floating" }: { variant?: "floating" | "
           pseudoElement: next ? "::view-transition-old(root)" : "::view-transition-new(root)",
         },
       );
-      await Promise.all([finished, updated]);
+      // Wait for our reveal as well as the browser lifecycle. A browser that
+      // finishes capture early must not cancel the circle halfway through.
+      await Promise.all([animation.finished, finished, updated]);
     } catch {
       // Unsupported capture/animation should still apply exactly one theme flip.
       transition?.skipTransition();
       if (transition) await transition.updateCallbackDone.catch(() => undefined);
       if (readTheme() !== next) flip();
-      settleIcon(next);
+      if (!interrupted) settleIcon(next);
     } finally {
+      window.removeEventListener("site-navigation-start", finishForNavigation);
+      if (fallbackFrame !== undefined) window.cancelAnimationFrame(fallbackFrame);
+      if (fallbackTimer !== undefined) window.clearTimeout(fallbackTimer);
       animation?.cancel();
       delete button.dataset.themeAnimating;
       delete root.dataset.themeTransition;
+      delete root.dataset.themeColorTransition;
     }
   }
 

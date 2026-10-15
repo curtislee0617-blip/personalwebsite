@@ -56,8 +56,13 @@ function waitForRoutePaint(href: string, aborted: () => boolean, allowLoading = 
       const contentReady = homeMounted === (destination.pathname === "/")
         && (allowLoading || !document.querySelector(".site-app-shell main .section-loading"));
 
-      if ((routeMatches && contentReady) || (!allowLoading && performance.now() - startedAt > 5000)) {
-        void nextPaint(2).then(() => resolve(routeMatches));
+      if (routeMatches && contentReady) {
+        void nextPaint(2).then(() => resolve(!aborted()));
+        return;
+      }
+      // Redirects and failed requests must also release the navigation lock.
+      if (performance.now() - startedAt > 8000) {
+        resolve(false);
         return;
       }
 
@@ -215,8 +220,24 @@ function createBubbleClone(href: string, source: HTMLElement): BubbleClone | nul
   return { href, shell, sourceLayer, sourceSurface, start };
 }
 
+// The surface may change aspect ratio, but typography must never stretch with
+// it. Keep both content snapshots at their native size throughout the flight.
+function positionBubble(
+  shell: HTMLElement,
+  layers: HTMLElement[],
+  x: number,
+  y: number,
+  scaleX: number,
+  scaleY: number,
+) {
+  shell.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scaleX}, ${scaleY})`;
+  const inverse = `scale(${1 / scaleX}, ${1 / scaleY})`;
+  layers.forEach((layer) => { layer.style.transform = inverse; });
+}
+
 export async function runDashboardBubbleTransition({ direction, href, router }: DashboardBubbleTransitionOptions) {
   if (navigationInProgress) return;
+  window.dispatchEvent(new Event("site-navigation-start"));
   const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
   try { router.prefetch?.(href); } catch { /* Prefetch is optional. */ }
   if (preference.matches) {
@@ -245,10 +266,11 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
   overlay.inert = true;
   overlay.setAttribute("aria-hidden", "true");
   const animation: { timeline: gsap.core.Timeline | null } = { timeline: null };
-  let departureDrift: gsap.core.Tween | null = null;
   let resolveMotion: (() => void) | undefined;
   let cancelled = false;
   let skipMotion = false;
+  let routeRequested = false;
+  let loadingTimer: number | undefined;
   const play = (build: (timeline: gsap.core.Timeline) => void) => new Promise<void>((resolve) => {
     if (cancelled) { resolve(); return; }
     resolveMotion = resolve;
@@ -262,7 +284,27 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
   const finishMotion = () => { skipMotion = true; animation.timeline?.progress(1); };
   const cancel = () => { cancelled = true; animation.timeline?.kill(); resolveMotion?.(); };
   const setPhase = (phase: string) => { root.dataset.navigationPhase = phase; };
-
+  const requestRoute = () => {
+    if (routeRequested || cancelled) return;
+    routeRequested = true;
+    router.push(href);
+  };
+  const clearLoading = () => {
+    window.clearTimeout(loadingTimer);
+    window.dispatchEvent(new CustomEvent(DASHBOARD_LOADING_EVENT, { detail: null }));
+  };
+  const waitForDestination = async (phase: "home-loading" | "route-loading", allowLoading = false) => {
+    loadingTimer = window.setTimeout(() => {
+      if (cancelled) return;
+      setPhase(phase);
+      window.dispatchEvent(new CustomEvent(DASHBOARD_LOADING_EVENT, { detail: href }));
+    }, 150);
+    try {
+      return await waitForRoutePaint(href, () => cancelled, allowLoading);
+    } finally {
+      clearLoading();
+    }
+  };
 
   navigationInProgress = true;
   window.addEventListener("resize", finishMotion);
@@ -292,7 +334,7 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
             const height = element.getBoundingClientRect().height;
             gsap.set(element, { height, overflow: "hidden", transition: "none" });
           });
-          if (opened.length) tl.to(opened, { height: 0, opacity: 0, duration: 0.28, ease: "power2.inOut" }, depth * 0.07);
+          if (opened.length) tl.to(opened, { height: 0, opacity: 0, duration: 0.2, ease: "power2.inOut" }, depth * 0.035);
         }));
         if (cancelled) return;
         window.dispatchEvent(new Event(DASHBOARD_FOLD_EVENT));
@@ -300,20 +342,20 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
       }
       if (cancelled) return;
       if (compact) {
-        const menuRect = source.getBoundingClientRect();
         remember(source);
         gsap.set(source, {
           transition: "none",
-          transformOrigin: `${corner.x - menuRect.left}px ${corner.y - menuRect.top}px`,
           pointerEvents: "none",
         });
         if (menuButton) remember(menuButton);
         setPhase("menu-close");
         await play((tl) => {
-          tl.to(source, { scale: 0.12, opacity: 0, duration: 0.3, ease: "power2.inOut" }, 0);
+          // Preserve the origin already measured by the menu's spring, even
+          // when Home is selected before that spring has finished opening.
+          tl.to(source, { scale: 0.12, opacity: 0, duration: 0.24, ease: "power2.inOut" }, 0);
           // Finish closing the menu before handing the corner to the dashboard.
-          tl.to(root, { "--navigation-page-opacity": 0, duration: 0.16 }, 0.3);
-          if (menuButton) tl.to(menuButton, { opacity: 0, duration: 0.16 }, 0.3);
+          tl.to(root, { "--navigation-page-opacity": 0, duration: 0.14 }, 0.24);
+          if (menuButton) tl.to(menuButton, { opacity: 0, duration: 0.14 }, 0.24);
         });
       } else {
         setPhase("labels-lift");
@@ -323,18 +365,19 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
         overlay.append(...returning.map(({ shell }) => shell));
         rows.forEach((element) => { remember(element).style.visibility = "hidden"; });
         remember(source);
-        departureDrift = gsap.to(returning.map(({ shell }) => shell), {
-          x: 360, y: -24, duration: 6, ease: "none",
-        });
         await play((tl) => {
-          tl.to(source, { x: -source.getBoundingClientRect().width - 24, opacity: 0, duration: 0.3, ease: "power2.in" }, 0);
-          tl.to(root, { "--navigation-page-opacity": 0, duration: 0.22 }, 0);
+          tl.to(source, { x: -source.getBoundingClientRect().width - 24, opacity: 0, duration: 0.24, ease: "power2.inOut" }, 0);
+          tl.to(returning.map(({ shell }) => shell), { x: -16, opacity: 0, duration: 0.18, ease: "power2.inOut" }, 0);
+          tl.to(root, { "--navigation-page-opacity": 0, duration: 0.18 }, 0);
+          // Start loading as soon as the outgoing page is hidden. The labels
+          // leave with the sidebar instead of hovering while Home is pending.
+          tl.call(requestRoute, [], 0.18);
         });
       }
       if (cancelled) return;
       setPhase("route");
-      router.push(href);
-      if (!await waitForRoutePaint(href, () => cancelled) || cancelled) return;
+      requestRoute();
+      if (!await waitForDestination("home-loading") || cancelled) return;
       const started = performance.now();
       while (!document.querySelector(".home-entry-settled") && performance.now() - started < 1500 && !cancelled) await nextPaint();
       if (cancelled) return;
@@ -364,47 +407,59 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
         const art = destination.querySelector<HTMLElement>(".home-dashboard-pixel-art");
         const heading = destination.querySelector<HTMLElement>(".home-dashboard-heading > div:first-child");
         const labels = Array.from(destination.querySelectorAll<HTMLElement>(".home-dashboard-group > h2"));
-        if (art) { remember(art); gsap.set(art, { opacity: 0, y: Math.min(110, art.offsetHeight * 0.65), scale: 0.92, transformOrigin: "50% 100%" }); }
-        if (heading) { remember(heading); gsap.set(heading, { opacity: 0, y: 10 }); }
+        if (art) { remember(art); gsap.set(art, { opacity: 0, y: Math.min(28, art.offsetHeight * 0.2), scale: 0.98, transformOrigin: "50% 100%" }); }
+        if (heading) { remember(heading); gsap.set(heading, { opacity: 0, y: 6 }); }
         labels.forEach((label) => { remember(label); gsap.set(label, { opacity: 0 }); });
-        departureDrift?.kill();
         setPhase("dashboard-assemble");
-        const dashboardCopyRevealStart = 1.15;
-        const dashboardCopyRevealDuration = 1;
+        const dashboardCopyRevealStart = 0.26;
+        const dashboardCopyRevealDuration = 0.58;
         await play((tl) => {
           tl.to(root, { "--navigation-page-opacity": 1, duration: 0.28 }, 0);
-          tl.to(destination, { opacity: 1, duration: 0.6 }, 0.15);
-          tl.to(border, { attr: { "stroke-dashoffset": 0 }, duration: 0.95, ease: "power1.inOut" }, 0.25);
+          tl.to(destination, { opacity: 1, duration: 0.4 }, 0);
+          tl.to(border, { attr: { "stroke-dashoffset": 0 }, duration: 0.72, ease: "power1.inOut" }, 0.06);
           returning.forEach(({ href: key, shell, sourceLayer, sourceSurface, start }, index) => {
             const target = targets.get(key);
             if (!target) { tl.to(shell, { opacity: 0, duration: 0.2 }, 0); return; }
             const end = target.getBoundingClientRect();
             const targetLayer = createContentLayer(target, "target");
             const targetSurface = createSurface(target, "target");
-            Object.assign(targetLayer.style, { width: `${end.width}px`, height: `${end.height}px`, transform: `scale(${start.width / end.width}, ${start.height / end.height})`, opacity: "0" });
+            Object.assign(targetLayer.style, { width: `${end.width}px`, height: `${end.height}px`, opacity: "0" });
             targetSurface.style.opacity = "0";
             shell.append(targetSurface, targetLayer);
-            const departure = { x: start.left + Number(gsap.getProperty(shell, "x")), y: start.top + Number(gsap.getProperty(shell, "y")) };
-            const control = { x: (departure.x + end.left) / 2, y: Math.min(departure.y, end.top) - 35 - index * 4 };
+            const departure = { x: start.left, y: start.top };
+            const control = {
+              // Tools changes vertical order with Recipes and Restaurants.
+              // Give it a separate curved lane so those labels never cross.
+              x: (departure.x + end.left) / 2 + (key === "/tools" ? Math.min(180, window.innerWidth * 0.125) : 0),
+              y: (departure.y + end.top) / 2 - Math.min(20, Math.abs(end.top - departure.y) * 0.1),
+            };
+            const duration = 0.7 + index * 0.018;
             const progress = { value: 0 };
+            tl.to(shell, { opacity: 1, duration: 0.16, ease: "power1.out" }, 0);
             tl.to(progress, {
-              value: 1, duration: 0.92 + index * 0.035, ease: "power1.out",
+              value: 1, duration, ease: "power1.inOut",
               onUpdate: () => {
                 const p = progress.value;
                 const q = 1 - p;
-                gsap.set(shell, {
-                  x: q * q * departure.x + 2 * q * p * control.x + p * p * end.left - start.left,
-                  y: q * q * departure.y + 2 * q * p * control.y + p * p * end.top - start.top,
-                  scaleX: 1 + (end.width / start.width - 1) * p,
-                  scaleY: 1 + (end.height / start.height - 1) * p,
-                });
+                // Keep the compact label readable in flight; form the wider
+                // dashboard card only as it reaches its own destination.
+                const morph = Math.max(0, Math.min(1, (p - 0.5) * 2));
+                const dimensions = morph * morph * (3 - 2 * morph);
+                positionBubble(shell, [sourceLayer, targetLayer],
+                  q * q * departure.x + 2 * q * p * control.x + p * p * end.left - start.left,
+                  q * q * departure.y + 2 * q * p * control.y + p * p * end.top - start.top,
+                  1 + (end.width / start.width - 1) * dimensions,
+                  1 + (end.height / start.height - 1) * dimensions,
+                );
               },
               onComplete: () => { target.style.visibility = "visible"; shell.style.display = "none"; },
             }, 0);
-            tl.to([sourceLayer, sourceSurface], { opacity: 0, duration: 0.25 }, 0.12);
-            tl.to([targetLayer, targetSurface], { opacity: 1, duration: 0.3 }, 0.3);
+            tl.to(sourceLayer, { opacity: 0, duration: 0.16 }, duration - 0.2);
+            tl.to(targetLayer, { opacity: 1, duration: 0.16 }, duration - 0.18);
+            tl.to(sourceSurface, { opacity: 0, duration: 0.2 }, 0.1);
+            tl.to(targetSurface, { opacity: 1, duration: 0.18 }, duration - 0.18);
           });
-          tl.to(labels, { opacity: 1, duration: 0.4 }, 0.55);
+          tl.to(labels, { opacity: 1, duration: 0.3 }, 0.28);
           if (art) tl.to(art, {
             opacity: 1, y: 0, scale: 1,
             duration: dashboardCopyRevealDuration,
@@ -429,7 +484,7 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
         setPhase("corner-home-reveal");
         await play((tl) => {
           tl.to(root, { "--navigation-page-opacity": 1, duration: 0.3 }, 0);
-          if (destination) tl.to(destination, { opacity: 1, scale: 1, y: 0, duration: 0.65, ease: "back.out(1.15)" }, 0);
+          if (destination) tl.to(destination, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power3.out" }, 0);
         });
       }
     } else if (compact) {
@@ -451,20 +506,23 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
         transformOrigin: `${box.left + box.width / 2 - sourceRect.left}px ${box.top + box.height / 2 - sourceRect.top}px`,
       });
       await play((tl) => {
-        tl.to(source, { scale: 0.06, duration: 0.55, ease: "power2.inOut" }, 0);
-        tl.to(source, { opacity: 0, duration: 0.14 }, 0.41);
-        tl.to(root, { "--navigation-page-opacity": 0, duration: 0.18 }, 0.37);
+        tl.to(source, { scale: 0.06, duration: 0.44, ease: "power2.inOut" }, 0);
+        tl.to(source, { opacity: 0, duration: 0.14 }, 0.3);
+        tl.to(root, { "--navigation-page-opacity": 0, duration: 0.16 }, 0.28);
       });
       if (cancelled) return;
       setPhase("route");
-      router.push(href);
-      if (!await waitForRoutePaint(href, () => cancelled) || cancelled) return;
+      requestRoute();
+      // Reveal the real navigation and Next's fallback as soon as it commits;
+      // waiting for all page data here leaves mobile users on a blank screen.
+      if (!await waitForDestination("route-loading", true) || cancelled) return;
       const destination = document.querySelector<HTMLElement>(".site-menu-button");
-      if (destination) { remember(destination); gsap.set(destination, { scale: 0.35, opacity: 0 }); }
+      if (destination) { remember(destination); gsap.set(destination, { opacity: 0 }); }
       setPhase("menu-reveal");
       await play((tl) => {
         tl.to(root, { "--navigation-page-opacity": 1, duration: 0.28 }, 0);
-        if (destination) tl.to(destination, { scale: 1, opacity: 1, duration: 0.6, ease: "elastic.out(1, 0.65)" }, 0);
+        // The button's transform belongs to React Spring; avoid a second owner.
+        if (destination) tl.to(destination, { opacity: 1, duration: 0.24, ease: "power2.out" }, 0.04);
       });
     } else {
       setPhase("lift");
@@ -478,7 +536,7 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
       // the home route. Route latency must never delay the docking animation.
       await nextPaint();
       if (cancelled) return;
-      if (!sidebar) { router.push(href); return; }
+      if (!sidebar) { requestRoute(); return; }
       remember(sidebar);
       // Staging CSS makes the final, folded geometry measurable without flashing.
       gsap.set(sidebar, { x: 0, opacity: 1, visibility: "hidden", transition: "none" });
@@ -490,19 +548,18 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
       hiddenParts.forEach((element) => { remember(element).style.visibility = "hidden"; });
       const sidebarRect = sidebar.getBoundingClientRect();
       setPhase("taskbar-emerge");
-      gsap.set(sidebar, { x: -sidebarRect.right - 24, scaleX: 0.82, visibility: "visible", transformOrigin: "0% 50%" });
-      const accelerate = gsap.parseEase("sine.inOut");
+      gsap.set(sidebar, { x: -sidebarRect.right - 24, scaleX: 0.96, visibility: "visible", transformOrigin: "0% 50%" });
       await play((tl) => {
         tl.to(root, { "--navigation-page-opacity": 0, duration: 0.24 }, 0);
-        tl.call(() => router.push(href), [], 0.24);
-        tl.to(sidebar, { x: 0, scaleX: 1, duration: 0.58, ease: "back.out(0.7)" }, 0);
+        tl.call(requestRoute, [], 0.24);
+        tl.to(sidebar, { x: 0, scaleX: 1, duration: 0.46, ease: "back.out(0.35)" }, 0);
         clones.forEach(({ href: key, shell, sourceLayer, sourceSurface, start }, index) => {
           const target = targets.get(key);
           const end = targetRects.get(key);
           if (!target || !end || !end.width) { tl.to(shell, { opacity: 0, duration: 0.2 }, 0); return; }
           const targetLayer = createContentLayer(target, "target");
           const targetSurface = createSurface(target, "target");
-          Object.assign(targetLayer.style, { width: `${end.width}px`, height: `${end.height}px`, transform: `scale(${start.width / end.width}, ${start.height / end.height})`, opacity: "0" });
+          Object.assign(targetLayer.style, { width: `${end.width}px`, height: `${end.height}px`, opacity: "0" });
           targetSurface.style.opacity = "0";
           shell.append(targetSurface, targetLayer);
           const progress = { value: 0 };
@@ -511,21 +568,22 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
             y: start.top + Number(gsap.getProperty(shell, "y")),
             scale: Number(gsap.getProperty(shell, "scaleX")),
           };
-          const control = { x: (departure.x + end.left) / 2, y: Math.min(departure.y, end.top) - 45 - index * 6 };
-          const duration = 0.94 + index * 0.035;
+          const control = {
+            x: (departure.x + end.left) / 2 + (key === "/tools" ? Math.min(180, window.innerWidth * 0.125) : 0),
+            y: Math.min(departure.y, end.top) - 24 - index * 2,
+          };
+          const duration = 0.72 + index * 0.018;
           tl.to(progress, {
-            // Mostly constant travel speed with a gentle easing at each end.
-            value: 1, duration, ease: (p: number) => p * 0.7 + accelerate(p) * 0.3,
+            value: 1, duration, ease: "power1.out",
             onUpdate: () => {
               const p = progress.value;
               const q = 1 - p;
-              gsap.set(shell, {
-                x: q * q * departure.x + 2 * q * p * control.x + p * p * end.left - start.left,
-                y: q * q * departure.y + 2 * q * p * control.y + p * p * end.top - start.top,
-                scaleX: departure.scale + (end.width / start.width - departure.scale) * p,
-                scaleY: departure.scale + (end.height / start.height - departure.scale) * p,
-                rotation: Math.sin(p * Math.PI) * (index % 2 ? 3 : -3),
-              });
+              positionBubble(shell, [sourceLayer, targetLayer],
+                q * q * departure.x + 2 * q * p * control.x + p * p * end.left - start.left,
+                q * q * departure.y + 2 * q * p * control.y + p * p * end.top - start.top,
+                departure.scale + (end.width / start.width - departure.scale) * p,
+                departure.scale + (end.height / start.height - departure.scale) * p,
+              );
             },
             onComplete: () => {
               const item = target.closest<HTMLElement>(".dashboard-sidebar-item");
@@ -533,13 +591,15 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
               shell.style.display = "none";
             },
           }, 0);
-          tl.to([sourceLayer, sourceSurface], { opacity: 0, duration: 0.24 }, duration * 0.48);
-          tl.to([targetLayer, targetSurface], { opacity: 1, duration: 0.24 }, duration * 0.55);
+          tl.to(sourceLayer, { opacity: 0, duration: 0.16 }, 0.1);
+          tl.to(targetLayer, { opacity: 1, duration: 0.16 }, 0.18);
+          tl.to(sourceSurface, { opacity: 0, duration: 0.3 }, 0.1);
+          tl.to(targetSurface, { opacity: 1, duration: 0.3 }, 0.1);
         });
         const finishing = hiddenParts.filter((element) => !element.classList.contains("dashboard-sidebar-item"));
         finishing.forEach((element) => {
           const profile = element.classList.contains("dashboard-sidebar-profile");
-          tl.fromTo(element, { y: profile ? -75 : 0, opacity: 0 }, { visibility: "visible", y: 0, opacity: 1, duration: profile ? 0.6 : 0.25, ease: profile ? "bounce.out" : "power1.out" }, profile ? 1.2 : 1.12);
+          tl.fromTo(element, { y: profile ? -24 : 0, opacity: 0 }, { visibility: "visible", y: 0, opacity: 1, duration: profile ? 0.4 : 0.2, ease: "power2.out" }, profile ? 0.83 : 0.72);
         });
       });
       if (cancelled) return;
@@ -559,12 +619,8 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
         tl.to(root, { "--navigation-page-opacity": 1, duration: 0.28, ease: "power1.out" }, 0);
       });
     }
-    if (!cancelled) ScrollTrigger.refresh();
   } finally {
-    if (direction === "dock" && !compact) {
-      window.dispatchEvent(new CustomEvent(DASHBOARD_LOADING_EVENT, { detail: null }));
-    }
-    departureDrift?.kill();
+    clearLoading();
     animation.timeline?.kill();
     overlay.remove();
     for (const [element, style] of saved) {
@@ -579,5 +635,10 @@ export async function runDashboardBubbleTransition({ direction, href, router }: 
     window.removeEventListener("popstate", cancel);
     preference.removeEventListener("change", finishMotion);
     navigationInProgress = false;
+  }
+  // Measure only the settled layout, after removing staging and inline styles.
+  if (!cancelled) {
+    await nextPaint();
+    if (!navigationInProgress) ScrollTrigger.refresh();
   }
 }

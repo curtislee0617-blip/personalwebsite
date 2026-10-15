@@ -20,6 +20,7 @@ const links = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const shellRef = useRef<HTMLElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const navigatingRef = useRef(false);
@@ -49,6 +50,7 @@ export function SiteHeader() {
       else closeMenu();
       return;
     }
+    setClosing(false);
     setOpen(true);
   }
 
@@ -74,16 +76,16 @@ export function SiteHeader() {
     let revision = 0;
     const clearAnimationStyles = () => {
       delete panel.dataset.menuAnimating;
-      panel.style.removeProperty("transform-origin");
       panel.style.removeProperty("pointer-events");
     };
     const render = (progress: number) => {
       panel.style.transform = `scale(${0.12 + 0.88 * progress})`;
       panel.style.opacity = String(progress);
-      panel.style.pointerEvents = progress >= 1 ? "auto" : "none";
+      panel.style.pointerEvents = menuTargetRef.current && progress > 0.1 ? "auto" : "none";
     };
     const animate = (show: boolean) => {
       menuTargetRef.current = show;
+      setClosing(!show);
       panel.dataset.menuAnimating = "true";
       const currentRevision = ++revision;
       void motion.start({ to: show ? 1 : 0, config: CORNER_SPRING, onChange: ({ value }) => render(value) })
@@ -106,6 +108,7 @@ export function SiteHeader() {
       window.removeEventListener("resize", settle);
       preference.removeEventListener("change", settle);
       clearAnimationStyles();
+      panel.style.removeProperty("transform-origin");
       panel.style.removeProperty("opacity");
       panel.style.removeProperty("transform");
     };
@@ -128,6 +131,7 @@ export function SiteHeader() {
       navigatingRef.current = true;
       // Let the navigation director close the menu before revealing Home.
       openingMenuRef.current?.stop();
+      setClosing(true);
       try {
         await runDashboardBubbleTransition({ direction: "undock", href, router });
       } finally {
@@ -171,16 +175,16 @@ export function SiteHeader() {
       <SpringButton
         ref={buttonRef}
         type="button"
-        className={`site-menu-button ${open ? "is-open" : ""}`}
+        className={`site-menu-button ${open && !closing ? "is-open" : ""}`}
         onClick={toggleMenu}
-        aria-expanded={open}
+        aria-expanded={open && !closing}
         aria-controls="site-menu-panel"
-        aria-label={open ? "Close navigation" : "Open navigation"}
+        aria-label={open && !closing ? "Close navigation" : "Open navigation"}
       >
         <span /><span /><span />
       </SpringButton>
 
-      <div id="site-menu-panel" className={`site-menu-panel ${open ? "is-open" : ""}`} aria-hidden={!open} inert={!open}>
+      <div id="site-menu-panel" className={`site-menu-panel ${open ? "is-open" : ""}`} aria-hidden={!open || closing} inert={!open || closing}>
         <div className="site-menu-titlebar mb-5 flex items-center justify-between border-b border-ink/10 pb-4">
           <Link
             href="/"

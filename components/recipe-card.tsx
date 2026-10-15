@@ -182,7 +182,10 @@ export function RecipeCard({
               )}
             </p>
           )}
-          {hasExpandedContent && <p className="recipe-card-action mt-5 text-sm font-semibold text-moss">Open recipe ↓</p>}
+          {hasExpandedContent && <p className="recipe-card-action mt-5 text-sm font-semibold text-moss">
+            <span className="recipe-card-action-open">Open recipe ↓</span>
+            <span className="recipe-card-action-close">Close recipe ↑</span>
+          </p>}
         </div>
       </summary>
 

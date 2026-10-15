@@ -5,7 +5,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -278,14 +280,27 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const [hasRecipeAdminAccess, setHasRecipeAdminAccess] = useState(false);
   const [routeLoading, setRouteLoading] = useState<DashboardRouteLoading | null>(null);
   const [dockLoading, setDockLoading] = useState<Pick<DashboardRouteLoading, "title" | "variant"> | null>(null);
-  const routeLoadingStartedRef = useRef(0);
+  const routeLoadingTimersRef = useRef<{ delay?: number; timeout?: number }>({});
+  const pendingRouteLoadingRef = useRef<DashboardRouteLoading | null>(null);
+  const previousPathRef = useRef(pathname);
+  const appShellRef = useRef<HTMLDivElement>(null);
   const sidebarWidthRef = useRef(DEFAULT_SIDEBAR_WIDTH);
   const sidebarResizerRef = useRef<HTMLDivElement>(null);
   const resizingPointerRef = useRef<number | null>(null);
   const homeTransitionRef = useRef(false);
   const recipeNavigationLoaded = useRef(false);
   const recipesExpanded = expanded["/recipes"] ?? pathname.startsWith("/recipes");
-  const activeRouteLoading = dockLoading ?? routeLoading;
+  // A committed route must never retain the previous page's loading overlay,
+  // even for the frame before its effects have cleaned up the pending request.
+  const activeRouteLoading = dockLoading ?? (routeLoading?.fromPath === pathname ? routeLoading : null);
+
+  const clearRouteLoading = useCallback(() => {
+    window.clearTimeout(routeLoadingTimersRef.current.delay);
+    window.clearTimeout(routeLoadingTimersRef.current.timeout);
+    routeLoadingTimersRef.current = {};
+    pendingRouteLoadingRef.current = null;
+    setRouteLoading(null);
+  }, []);
 
   useEffect(() => {
     const showDockLoading = (event: Event) => {
@@ -355,19 +370,105 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!routeLoading || routeLoading.fromPath === pathname) return;
-
-    const elapsed = performance.now() - routeLoadingStartedRef.current;
-    const timer = window.setTimeout(() => setRouteLoading(null), Math.max(0, 180 - elapsed));
-    return () => window.clearTimeout(timer);
-  }, [pathname, routeLoading]);
+    const cancelPendingLoading = () => clearRouteLoading();
+    const events = ["popstate", "pagehide", "pageshow", "error", "unhandledrejection"] as const;
+    events.forEach((event) => window.addEventListener(event, cancelPendingLoading));
+    return () => {
+      events.forEach((event) => window.removeEventListener(event, cancelPendingLoading));
+      window.clearTimeout(routeLoadingTimersRef.current.delay);
+      window.clearTimeout(routeLoadingTimersRef.current.timeout);
+      pendingRouteLoadingRef.current = null;
+    };
+  }, [clearRouteLoading]);
 
   useEffect(() => {
-    if (!routeLoading) return;
-
-    const timer = window.setTimeout(() => setRouteLoading(null), 8000);
+    // Rendering already excludes a loader from the previous pathname. Clear
+    // its bookkeeping after commit without forcing a second layout render.
+    const timer = window.setTimeout(clearRouteLoading, 0);
     return () => window.clearTimeout(timer);
-  }, [routeLoading]);
+  }, [pathname, clearRouteLoading]);
+
+  useLayoutEffect(() => {
+    const previousPath = previousPathRef.current;
+    previousPathRef.current = pathname;
+
+    const root = document.documentElement;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const main = appShellRef.current?.querySelector<HTMLElement>("main");
+    // The director also owns the first Home → page reveal, including a page
+    // streamed after its loading fallback. Suppress child title entrances now.
+    if (main && root.classList.contains("dashboard-liquid-transition")) {
+      main.dataset.routeRevealed = "true";
+    }
+    const anotherTransitionIsActive = () => root.classList.contains("dashboard-liquid-transition")
+      || Boolean(root.dataset.themeTransition || root.dataset.themeColorTransition);
+    if (
+      previousPath === pathname
+      || previousPath === "/"
+      || pathname === "/"
+      || reduceMotion.matches
+      || anotherTransitionIsActive()
+    ) return;
+
+    if (!main || typeof main.animate !== "function") return;
+
+    let disposed = false;
+    let animation: Animation | null = null;
+    let observer: MutationObserver | null = null;
+    let timeout: number | undefined;
+    const finishReveal = () => root.classList.remove("page-route-revealing");
+    const revealPage = () => {
+      if (disposed) return true;
+      // App Router may commit its loading.tsx before streaming the page. Wait
+      // for the actual content so the spinner and page do not both fly in.
+      if (main.querySelector(".section-loading")) return false;
+      observer?.disconnect();
+      window.clearTimeout(timeout);
+      if (reduceMotion.matches || anotherTransitionIsActive()) return true;
+
+      // Keep independent title/description entrances from replaying after the
+      // short whole-page reveal has finished. This main survives route swaps.
+      main.dataset.routeRevealed = "true";
+      root.classList.add("page-route-revealing");
+      animation = main.animate(
+        [
+          { opacity: 0.78, transform: "translateY(4px)" },
+          { opacity: 1, transform: "none" },
+        ],
+        { duration: 180, easing: "cubic-bezier(.2, .7, .3, 1)" },
+      );
+      animation.onfinish = finishReveal;
+      animation.oncancel = finishReveal;
+      return true;
+    };
+    const cancelReveal = () => {
+      disposed = true;
+      observer?.disconnect();
+      window.clearTimeout(timeout);
+      // Cancel before another navigation takes ownership of page motion.
+      if (animation) {
+        animation.onfinish = null;
+        animation.oncancel = null;
+        animation.cancel();
+      }
+      finishReveal();
+    };
+    const onMotionPreferenceChange = () => { if (reduceMotion.matches) cancelReveal(); };
+    window.addEventListener("site-navigation-start", cancelReveal);
+    reduceMotion.addEventListener("change", onMotionPreferenceChange);
+
+    if (!revealPage()) {
+      observer = new MutationObserver(() => { revealPage(); });
+      observer.observe(main, { childList: true, subtree: true });
+      timeout = window.setTimeout(() => observer?.disconnect(), 8000);
+    }
+
+    return () => {
+      window.removeEventListener("site-navigation-start", cancelReveal);
+      reduceMotion.removeEventListener("change", onMotionPreferenceChange);
+      cancelReveal();
+    };
+  }, [pathname]);
 
   useEffect(() => {
     if (!isDashboard || !recipesExpanded || recipeNavigationLoaded.current) return;
@@ -513,11 +614,24 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       || destination.pathname === "/"
     ) return;
 
-    routeLoadingStartedRef.current = performance.now();
-    setRouteLoading({
+    window.dispatchEvent(new Event("site-navigation-start"));
+    clearRouteLoading();
+    const loading = {
       fromPath: pathname,
       ...loadingDetailsForPath(destination.pathname),
-    });
+    };
+    pendingRouteLoadingRef.current = loading;
+    routeLoadingTimersRef.current.delay = window.setTimeout(() => {
+      if (
+        pendingRouteLoadingRef.current !== loading
+        || document.documentElement.classList.contains("dashboard-liquid-transition")
+        || appShellRef.current?.querySelector("main .section-loading")
+      ) return;
+      setRouteLoading(loading);
+    }, 150);
+    // App Router has no route-error event. History/error listeners and route
+    // commits normally clear this; the timeout also covers cancelled requests.
+    routeLoadingTimersRef.current.timeout = window.setTimeout(clearRouteLoading, 8000);
   }
 
   function returnToHome(event: ReactMouseEvent<HTMLAnchorElement>) {
@@ -533,7 +647,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     if (pathname === "/" || homeTransitionRef.current) return;
 
     homeTransitionRef.current = true;
-    setRouteLoading(null);
+    clearRouteLoading();
     void runDashboardBubbleTransition({
       direction: "undock",
       href: "/",
@@ -738,7 +852,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <div className="site-app-shell" onClickCapture={beginDashboardNavigation}>{children}</div>
+      <div className="site-app-shell" onClickCapture={beginDashboardNavigation} ref={appShellRef}>{children}</div>
     </>
   );
 }

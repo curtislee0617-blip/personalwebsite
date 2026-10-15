@@ -126,6 +126,20 @@ function cycleVariables(prefix: "hk" | "london" | "la", cycle: CityCycle) {
   };
 }
 
+function farMaskVariables(prefix: string, middleAlpha: number, farAlpha: number) {
+  const intersects = farAlpha < middleAlpha;
+  const adjustment = intersects
+    ? farAlpha / middleAlpha
+    : middleAlpha < 1 ? (farAlpha - middleAlpha) / (1 - middleAlpha) : 0;
+
+  return {
+    [`--${prefix}-far-mask-start`]: intersects ? 1 : 0,
+    [`--${prefix}-far-mask-end`]: adjustment.toFixed(6),
+    [`--${prefix}-mask-composite`]: intersects ? "intersect" : "add",
+    [`--${prefix}-mask-composite-webkit`]: intersects ? "source-in" : "source-over",
+  };
+}
+
 export function useContactCityNow() {
   return useContext(ContactCityNowContext);
 }
@@ -203,7 +217,10 @@ export function ContactCityArtCycle({
   ] satisfies Parameters<typeof getContactCelestial>[0];
   const sharedSun = getContactCelestial(celestialCities, 0, "sun");
   const sharedMoon = getContactCelestial(celestialCities, 1, "moon");
-  const moonLabelNight = smoothReveal((losAngeles.night - 0.5) * 2);
+  // The full artwork labels the LA sky; the compact home label sits over HK.
+  // Finish the contrast change while the sky is darkening, before nightfall.
+  const moonLabelNight = smoothReveal((losAngeles.night - 0.32) / 0.25);
+  const homeMoonLabelNight = smoothReveal((hongKong.night - 0.32) / 0.25);
   const edgeOverlap = Math.min(losAngeles.daylight, hongKong.daylight)
     * (1 - london.daylight);
   const dualEdgePhase = smoothReveal((edgeOverlap - 0.04) / 0.22);
@@ -227,6 +244,16 @@ export function ContactCityArtCycle({
     ...cycleVariables("hk", hongKong),
     ...cycleVariables("london", london),
     ...cycleVariables("la", losAngeles),
+    // Full-width masks blend each field through London without a tiled edge.
+    ...farMaskVariables("contact", london.night, hongKong.night),
+    ...farMaskVariables(
+      "contact-blue",
+      0.17 * london.blueHour + 0.04 * london.night,
+      0.18 * hongKong.blueHour + 0.04 * hongKong.night,
+    ),
+    ...farMaskVariables("contact-dawn", 0.27 * london.dawn, 0.3 * hongKong.dawn),
+    ...farMaskVariables("contact-golden", 0.08 * london.goldenHour, 0.1 * hongKong.goldenHour),
+    ...farMaskVariables("contact-sunset", 0.2 * london.sunset, 0.24 * hongKong.sunset),
     "--hk-clock-color": blendRgb([54, 51, 44], [229, 242, 255], hongKong.night),
     "--hk-clock-muted": blendRgb([105, 99, 86], [196, 218, 242], hongKong.night),
     "--london-clock-color": blendRgb([54, 51, 44], [229, 242, 255], london.night),
@@ -241,6 +268,16 @@ export function ContactCityArtCycle({
       [255, 251, 239],
       [0, 14, 38],
       moonLabelNight,
+    ),
+    "--home-moon-phase-label-color": blendRgb(
+      [62, 56, 44],
+      [242, 246, 252],
+      homeMoonLabelNight,
+    ),
+    "--home-moon-phase-label-shadow": blendRgb(
+      [255, 251, 239],
+      [0, 14, 38],
+      homeMoonLabelNight,
     ),
     "--travelling-label-color": blendRgb(
       [82, 74, 59],
@@ -290,11 +327,12 @@ export function ContactCityArtCycle({
         data-moon-waxing={moonPhase.waxing}
         data-scrubbing={timeSource.kind === "preview" && timeSource.scrubbing ? "true" : "false"}
         data-time-source={timeSource.kind}
+        data-time-ready={now ? "true" : "false"}
         style={style}
       >
         {now ? (
           <span className="contact-moon-phase-label">
-            Moon · {moonPhase.label} · {moonIllumination}% illuminated
+            {moonPhase.label} · {moonIllumination}% lit
           </span>
         ) : null}
         <div className="contact-cities-backdrop-frame" aria-hidden="true">

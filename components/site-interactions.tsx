@@ -5,39 +5,52 @@ import { useEffect } from "react";
 
 // Two lightweight, progressive-enhancement interactions shared across pages:
 //
-//  1. Scroll reveal — elements marked with `data-reveal` fade and lift into
-//     place the first time they enter the viewport. The animation never changes
-//     the rendered HTML or hides content in CSS, so streamed pages remain
-//     readable before hydration and under unreliable network conditions.
+//  1. Scroll reveal — offscreen elements marked with `data-reveal` fade and
+//     lift as they approach the viewport. Already visible content stays settled,
+//     so hydration and streamed responses never hide something the user saw.
 //  2. Pointer spotlight — cards marked with `data-spotlight` track the pointer
 //     with a soft highlight by exposing `--spotlight-x` / `--spotlight-y`.
 export function SiteInteractions() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (
-      reduceMotion
+      preference.matches
       || typeof IntersectionObserver === "undefined"
       || typeof Element.prototype.animate !== "function"
     ) return;
 
     const registeredTargets = new WeakSet<HTMLElement>();
     const animations = new Set<Animation>();
+    let disposed = false;
 
     const animateTarget = (target: HTMLElement) => {
-      const delay = Number.parseFloat(
-        getComputedStyle(target).getPropertyValue("--reveal-delay"),
-      ) || 0;
+      if (
+        disposed
+        || preference.matches
+        || !target.isConnected
+        || document.documentElement.classList.contains("dashboard-liquid-transition")
+        // Fast scrolling can already have exposed the card before the callback.
+        || target.getBoundingClientRect().top < window.innerHeight - 24
+      ) return;
+
+      const style = getComputedStyle(target);
+      const delay = Math.min(80, Math.max(0, Number.parseFloat(style.getPropertyValue("--reveal-delay")) || 0));
+      // Press springs own their transforms and individual translate property.
+      // A fade can run alongside them without cancelling an active interaction.
+      const canLift = !target.classList.contains("spring-control")
+        && CSS.supports("translate", "0 10px")
+        && (!style.translate || style.translate === "none");
       const animation = target.animate(
-        [
-          { opacity: 0, transform: "translateY(16px)" },
-          { opacity: 1, transform: "none" },
-        ],
+        canLift
+          ? [{ opacity: 0, translate: "0 10px" }, { opacity: style.opacity, translate: "0 0" }]
+          : [{ opacity: 0 }, { opacity: style.opacity }],
         {
           delay,
-          duration: 620,
+          duration: 420,
           easing: "cubic-bezier(.22, 1, .36, 1)",
+          fill: "backwards",
         },
       );
       animations.add(animation);
@@ -50,28 +63,22 @@ export function SiteInteractions() {
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          // Elements taller than the viewport can never reach the 12% ratio,
-          // so reveal them as soon as any part scrolls into view.
-          const tall = entry.boundingClientRect.height > window.innerHeight * 0.8;
-          if (entry.intersectionRatio < 0.12 && !tall) return;
           animateTarget(entry.target as HTMLElement);
           observer.unobserve(entry.target);
         });
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: [0, 0.12] },
+      { rootMargin: "0px 0px 64px 0px", threshold: 0 },
     );
 
     const registerTarget = (target: HTMLElement) => {
-      if (registeredTargets.has(target)) return;
+      if (disposed || registeredTargets.has(target)) return;
       registeredTargets.add(target);
 
-      // Elements already on screen at load should reveal immediately so nothing
-      // sits blank above the fold.
-      if (target.getBoundingClientRect().top < window.innerHeight * 0.9) {
-        animateTarget(target);
-      } else {
-        observer.observe(target);
-      }
+      // Avoid replaying an entrance over already-painted or streamed content,
+      // including hidden accordions and horizontally scrolling carousel cards.
+      const rect = target.getBoundingClientRect();
+      if (!rect.width || !rect.height || rect.top < window.innerHeight + 24) return;
+      observer.observe(target);
     };
 
     const registerTree = (node: Node) => {
@@ -90,10 +97,21 @@ export function SiteInteractions() {
     });
     mutationObserver.observe(document.body, { childList: true, subtree: true });
 
-    return () => {
+    const stopReveals = () => {
+      disposed = true;
       observer.disconnect();
       mutationObserver.disconnect();
       animations.forEach((animation) => animation.cancel());
+      animations.clear();
+    };
+    const syncPreference = () => {
+      if (preference.matches) stopReveals();
+    };
+    preference.addEventListener("change", syncPreference);
+
+    return () => {
+      stopReveals();
+      preference.removeEventListener("change", syncPreference);
     };
   }, [pathname]);
 
